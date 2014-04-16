@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'django_countries',
     'tastypie',
+    'tastypie_swagger',
     'corsheaders',
     'people',
     'production',
@@ -108,4 +109,4 @@ CORS_ORIGIN_ALLOW_ALL = True
 TASTYPIE_FULL_DEBUG = DEBUG
 APPEND_SLASH = False
 TASTYPIE_ALLOW_MISSING_SLASH=True
-
+TASTYPIE_SWAGGER_API_MODULE = 'ifresnoy.urls.v1_api'
