@@ -4,6 +4,7 @@ from .models import Film, Installation, Event
 
 class ProductionAdmin(admin.ModelAdmin):
     list_display = ('title', 'subtitle', 'production_date')
+    filter_horizontal = ('galleries', 'authors')
 
     
 admin.site.register(Film, ProductionAdmin)

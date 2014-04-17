@@ -1,4 +1,6 @@
+from tastypie import fields
 from tastypie.resources import ModelResource
+
 from .models import Promotion, Student
 
 class PromotionResource(ModelResource):
@@ -10,3 +12,5 @@ class StudentResource(ModelResource):
     class Meta:
         queryset = Student.objects.all()
         resource_name = 'school/student'
+
+    promotion = fields.ForeignKey(PromotionResource, 'promotion')
