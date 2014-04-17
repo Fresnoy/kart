@@ -97,7 +97,8 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
 )
 
-
+# MEDIA & STATIC
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
@@ -108,5 +109,6 @@ GRAPPELLI_ADMIN_TITLE = 'iFresnoy'
 CORS_ORIGIN_ALLOW_ALL = True
 TASTYPIE_FULL_DEBUG = DEBUG
 APPEND_SLASH = False
-TASTYPIE_ALLOW_MISSING_SLASH=True
+TASTYPIE_ALLOW_MISSING_SLASH = True
+TASTYPIE_DEFAULT_FORMATS = ['json']
 TASTYPIE_SWAGGER_API_MODULE = 'ifresnoy.urls.v1_api'
