@@ -26,6 +26,12 @@ class Artwork(Production):
     credits_fr = models.TextField(blank=True, null=True)
     credits_en = models.TextField(blank=True, null=True)
 
+    thanks_fr = models.TextField(blank=True, null=True)
+    thanks_en = models.TextField(blank=True, null=True)
+
+    copyright_fr = models.TextField(blank=True, null=True)
+    copyright_en = models.TextField(blank=True, null=True)
+    
     process_galleries = models.ManyToManyField(Gallery, blank=True, related_name='artworks_process')
     mediation_galleries = models.ManyToManyField(Gallery, blank=True, related_name='artworks_mediation')
     in_situ_galleries = models.ManyToManyField(Gallery, blank=True, related_name='artworks_insitu')
