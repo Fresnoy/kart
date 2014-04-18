@@ -4,24 +4,27 @@ from tastypie.resources import ModelResource
 from assets.api import GalleryResource
 from people.api import ArtistResource
 
-from .models import Installation, Film, Event
+from .models import Installation, Film, Performance
 
-class ProductionResource(ModelResource):
-    galleries = fields.ToManyField(GalleryResource, 'galleries', full=True)
+class ArtworkResource(ModelResource):
+    process_galleries = fields.ToManyField(GalleryResource, 'process_galleries', full=True)
+    mediation_galleries = fields.ToManyField(GalleryResource, 'mediation_galleries', full=True)
+    in_situ_galleries = fields.ToManyField(GalleryResource, 'in_situ_galleries', full=True)
+    
     authors = fields.ToManyField(ArtistResource, 'authors')
 
-class InstallationResource(ProductionResource):
+class InstallationResource(ArtworkResource):
     class Meta:
         queryset = Installation.objects.all()
         resource_name = 'production/installation'
 
-class FilmResource(ProductionResource):
+class FilmResource(ArtworkResource):
     class Meta:
         queryset = Film.objects.all()
         resource_name = 'production/film'
 
-class EventResource(ProductionResource):
+class PerformanceResource(ArtworkResource):
     class Meta:
-        queryset = Event.objects.all()
-        resource_name = 'production/event'
-        
+        queryset = Performance.objects.all()
+        resource_name = 'production/performance'
+

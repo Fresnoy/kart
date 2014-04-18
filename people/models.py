@@ -17,10 +17,6 @@ class FresnoyProfile(models.Model):
     residence_address = models.TextField(blank=True)
     residence_country = CountryField(blank=True)
 
-    twitter_account = models.CharField(max_length=100, blank=True)
-    facebook_profile = models.URLField(blank=True)
-    website = models.URLField(blank=True)
-
     homeland_phone = models.CharField(max_length=50, blank=True)
     residence_phone = models.CharField(max_length=50, blank=True)
 
@@ -34,6 +30,10 @@ class Artist(models.Model):
     bio_short_en = models.TextField(blank=True)
     bio_fr = models.TextField(blank=True)
     bio_en = models.TextField(blank=True)
+
+    twitter_account = models.CharField(max_length=100, blank=True)
+    facebook_profile = models.URLField(blank=True)
+    website = models.URLField(blank=True)
     
     def __unicode__(self):    
         return u"%s (%s)" % (self.user, self.nickname)

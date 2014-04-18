@@ -1,7 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
 
-from production.models import Installation, Film, Event
 from people.models import Artist
 
 # Create your models here.

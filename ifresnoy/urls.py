@@ -6,7 +6,8 @@ admin.autodiscover()
 
 from tastypie.api import Api
 from people.api import ArtistResource, StaffResource
-from production.api import InstallationResource, FilmResource, EventResource
+from production.api import InstallationResource, FilmResource
+from diffusion.api import PlaceResource, EventResource
 from school.api import PromotionResource, StudentResource
 
 
@@ -18,6 +19,8 @@ v1_api.register(PromotionResource())
 v1_api.register(StudentResource())
 v1_api.register(ArtistResource())
 v1_api.register(StaffResource())
+v1_api.register(PlaceResource())
+v1_api.register(EventResource())
 
 urlpatterns = patterns('',
     # Examples:
