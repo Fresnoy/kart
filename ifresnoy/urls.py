@@ -6,8 +6,8 @@ admin.autodiscover()
 
 from tastypie.api import Api
 from people.api import ArtistResource, StaffResource
-from production.api import InstallationResource, FilmResource
-from diffusion.api import PlaceResource, EventResource
+from production.api import InstallationResource, FilmResource, EventResource
+from diffusion.api import PlaceResource
 from school.api import PromotionResource, StudentResource
 
 

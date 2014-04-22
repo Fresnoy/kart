@@ -43,3 +43,17 @@ class Staff(models.Model):
     Someone working at Le Fresnoy (insider) or for a production
     """
     user = models.ForeignKey(User)
+
+    def __unicode__(self):
+        return self.user.username
+
+class Organization(models.Model):
+    """
+    An org 
+    """
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    picture = models.ImageField(upload_to='organizations/', blank=True)
+
+    def __unicode__(self):
+        return self.name

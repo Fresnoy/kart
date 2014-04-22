@@ -3,8 +3,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 
-from .models import Artist, Staff, FresnoyProfile
-
+from .models import Artist, Staff, FresnoyProfile, Organization
 
 class ArtistAdmin(admin.ModelAdmin):
     list_display = ('user', 'nickname')
@@ -22,3 +21,4 @@ admin.site.unregister(User)
 admin.site.register(User, FresnoyProfileAdmin)
 admin.site.register(Artist, ArtistAdmin)
 admin.site.register(Staff)
+admin.site.register(Organization)
