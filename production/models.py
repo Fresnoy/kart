@@ -2,6 +2,8 @@ from django.db import models
 
 from diffusion.models import Place
 
+from model_utils.managers import InheritanceManager
+
 from people.models import Artist, Staff, Organization
 from assets.models import Gallery
 
@@ -48,7 +50,14 @@ class Production(models.Model):
 
     def __unicode__(self):
         return u"%s" % self.title
-    
+
+
+class SubclassesManager(InheritanceManager):
+    """
+    http://stackoverflow.com/a/20998123
+    """
+    def get_queryset(self):
+        return super(SubclassesManager, self).get_queryset().select_subclasses()
     
 class Artwork(Production):
     production_date = models.DateField()
@@ -66,7 +75,9 @@ class Artwork(Production):
     mediation_galleries = models.ManyToManyField(Gallery, blank=True, related_name='artworks_mediation')
     in_situ_galleries = models.ManyToManyField(Gallery, blank=True, related_name='artworks_insitu')
 
-    authors = models.ManyToManyField(Artist, related_name="%(class)s")    
+    authors = models.ManyToManyField(Artist, related_name="%(class)s")
+
+    objects = SubclassesManager()
     
     
 class Film(Artwork):
@@ -103,4 +114,26 @@ class Event(Production):
     subevents = models.ManyToManyField('self', blank=True)
 
 class Exhibition(Event):
-    pass # TODO
+    pass # TODO?
+
+class Itinerary(models.Model):
+    class Meta:
+        verbose_name_plural = 'itineraries'
+    
+    label = models.CharField(max_length=255)
+    description = models.TextField()
+    event = models.ForeignKey(Event, limit_choices_to={'type': 'EXHIB'}, related_name='itineraries')
+    artworks = models.ManyToManyField(Artwork, through='ItineraryArtwork')
+
+    def __unicode__(self):
+        return self.label
+
+class ItineraryArtwork(models.Model):
+    class Meta:
+        ordering = ('order',)
+        unique_together = (('itinerary', 'artwork'), ('itinerary', 'order'))
+        
+    itinerary = models.ForeignKey(Itinerary)
+    artwork = models.ForeignKey(Artwork)
+    order = models.PositiveIntegerField()
+

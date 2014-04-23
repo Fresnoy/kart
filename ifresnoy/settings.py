@@ -46,7 +46,7 @@ INSTALLED_APPS = (
     'production',
     'diffusion',
     'school',
-    'assets'
+    'assets',
 )
 
 MIDDLEWARE_CLASSES = (
