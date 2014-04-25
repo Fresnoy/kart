@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'tastypie',
     'tastypie_swagger',
     'corsheaders',
+    'common',    
     'people',
     'production',
     'diffusion',

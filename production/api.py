@@ -1,6 +1,7 @@
 from tastypie import fields
 from tastypie.resources import ModelResource
 
+from common.api import WebsiteResource
 from assets.api import GalleryResource
 from people.api import ArtistResource, StaffResource, OrganizationResource
 from diffusion.api import PlaceResource
@@ -10,6 +11,7 @@ from .models import Installation, Film, Performance, Event, Itinerary, Artwork
 class ProductionResource(ModelResource):
     collaborators = fields.ToManyField(StaffResource, 'collaborators', full=True)
     partners = fields.ToManyField(OrganizationResource, 'partners', full=True)
+    websites = fields.ToManyField(WebsiteResource, 'websites', full=True)
 
 class AbstractArtworkResource(ProductionResource):
     """

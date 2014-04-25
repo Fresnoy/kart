@@ -3,6 +3,7 @@ from django.db import models
 
 from django_countries.fields import CountryField
 
+from common.models import Website
 
 class FresnoyProfile(models.Model):
     user = models.OneToOneField(User, related_name='profile')
@@ -33,7 +34,7 @@ class Artist(models.Model):
 
     twitter_account = models.CharField(max_length=100, blank=True)
     facebook_profile = models.URLField(blank=True)
-    website = models.URLField(blank=True)
+    websites = models.ManyToManyField(Website, blank=True)
     
     def __unicode__(self):    
         return u"%s (%s)" % (self.user, self.nickname)

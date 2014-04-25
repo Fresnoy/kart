@@ -4,6 +4,7 @@ from diffusion.models import Place
 
 from model_utils.managers import InheritanceManager
 
+from common.models import Website
 from people.models import Artist, Staff, Organization
 from assets.models import Gallery
 
@@ -38,7 +39,7 @@ class Production(models.Model):
     subtitle = models.CharField(max_length=255)
 
     picture = models.ImageField(upload_to='production/')
-    website = models.URLField(blank=True, null=True)
+    websites = models.ManyToManyField(Website, blank=True)
 
     collaborators = models.ManyToManyField(Staff, through=ProductionStaffTask, blank=True, related_name="%(class)s")
     partners = models.ManyToManyField(Organization, through=ProductionOrganizationTask, blank=True, related_name="%(class)s")
