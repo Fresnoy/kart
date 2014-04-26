@@ -30,6 +30,7 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
     (r'^', include(v1_api.urls)),
     (r'^grappelli/', include('grappelli.urls')),
+    url('^markdown/', include( 'django_markdown.urls')),
     url(r'v1/doc/',
       include('tastypie_swagger.urls', namespace='ifresnoy_tastypie_swagger'),
       kwargs={"tastypie_api_module":"ifresnoy.urls.v1_api", "namespace":"ifresnoy_tastypie_swagger"}

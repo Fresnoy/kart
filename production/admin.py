@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django_markdown.admin import MarkdownModelAdmin
 
 from .models import Production, Film, Installation, Performance, StaffTask, OrganizationTask, Event, Itinerary
 
@@ -8,7 +9,7 @@ class CollaboratorsInline(admin.TabularInline):
 class PartnersInline(admin.TabularInline):                                                                                               
     model = Production.partners.through
 
-class ProductionAdmin(admin.ModelAdmin):
+class ProductionAdmin(MarkdownModelAdmin):
     list_display = ('title', 'subtitle')
     inlines = (CollaboratorsInline, PartnersInline)
     

@@ -121,8 +121,10 @@ class Itinerary(models.Model):
     class Meta:
         verbose_name_plural = 'itineraries'
     
-    label = models.CharField(max_length=255)
-    description = models.TextField()
+    label_fr = models.CharField(max_length=255)
+    label_en = models.CharField(max_length=255)
+    description_fr = models.TextField()
+    description_en = models.TextField()    
     event = models.ForeignKey(Event, limit_choices_to={'type': 'EXHIB'}, related_name='itineraries')
     artworks = models.ManyToManyField(Artwork, through='ItineraryArtwork')
 
