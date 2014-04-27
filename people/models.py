@@ -4,10 +4,11 @@ from django.db import models
 from django_countries.fields import CountryField
 
 from common.models import Website
+from common.utils import make_filepath
 
 class FresnoyProfile(models.Model):
     user = models.OneToOneField(User, related_name='profile')
-    photo = models.ImageField(upload_to="user_photos")
+    photo = models.ImageField(upload_to=make_filepath)
     
     birthdate = models.DateField()
     birthplace = models.CharField(max_length=255)
@@ -54,7 +55,7 @@ class Organization(models.Model):
     """
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    picture = models.ImageField(upload_to='organizations/', blank=True)
+    picture = models.ImageField(upload_to=make_filepath, blank=True)
 
     def __unicode__(self):
         return self.name

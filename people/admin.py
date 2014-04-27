@@ -1,12 +1,13 @@
 from django.contrib import admin
-
-from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
+
+from django_markdown.admin import MarkdownModelAdmin
 
 from .forms import UserCreateForm
 from .models import Artist, Staff, FresnoyProfile, Organization
 
-class ArtistAdmin(admin.ModelAdmin):
+class ArtistAdmin(MarkdownModelAdmin):
     list_display = ('user', 'nickname')
 
 class FresnoyProfileInline(admin.StackedInline):
