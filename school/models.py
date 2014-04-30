@@ -18,7 +18,7 @@ class Student(Artist):
     """
     An artist, part of a promotion, studying for at least 2 years.
     """
-    number = models.CharField(max_length=50)
+    number = models.CharField(max_length=50, null=True, blank=True)
     promotion = models.ForeignKey(Promotion, related_name='students')
 
     def __unicode__(self):

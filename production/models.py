@@ -37,7 +37,7 @@ class ProductionOrganizationTask(models.Model):
    
 class Production(models.Model):
     title = models.CharField(max_length=255)
-    subtitle = models.CharField(max_length=255)
+    subtitle = models.CharField(max_length=255, null=True, blank=True)
 
     picture = models.ImageField(upload_to=make_filepath)
     websites = models.ManyToManyField(Website, blank=True)

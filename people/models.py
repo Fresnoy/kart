@@ -10,9 +10,9 @@ class FresnoyProfile(models.Model):
     user = models.OneToOneField(User, related_name='profile')
     photo = models.ImageField(upload_to=make_filepath)
     
-    birthdate = models.DateField()
-    birthplace = models.CharField(max_length=255)
-    birthplace_country = CountryField()
+    birthdate = models.DateField(null=True, blank=True)
+    birthplace = models.CharField(max_length=255, null=True, blank=True)
+    birthplace_country = CountryField(null=True, blank=True)
 
     homeland_address = models.TextField(blank=True)
     homeland_country = CountryField(blank=True)
