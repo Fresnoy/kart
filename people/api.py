@@ -1,3 +1,5 @@
+from django.contrib.auth.models import User
+
 from tastypie import fields
 from tastypie.resources import ModelResource
 
@@ -5,12 +7,31 @@ from common.api import WebsiteResource
 
 from .models import Artist, Staff, Organization
 
+class UserResource(ModelResource):
+    class Meta:
+        queryset = User.objects.exclude(pk=-1) # Exclude anonymous user
+        detail_uri_name = 'username'
+        resource_name = 'people/user'
+        fields = ['username', 'first_name', 'last_name']
+
+    def dehydrate(self, bundle):
+        bundle.data['photo'] = bundle.obj.profile.photo
+        bundle.data['birthdate'] = bundle.obj.profile.birthdate
+        bundle.data['birthplace'] = bundle.obj.profile.birthplace
+        bundle.data['cursus'] = bundle.obj.profile.cursus        
+        #bundle.data['first_name'] = bundle.obj.user.first_name
+        #bundle.data['last_name'] = bundle.obj.user.last_name
+        return bundle
+        
+
 class ArtistResource(ModelResource):
     class Meta:
         queryset = Artist.objects.all()
         resource_name = 'people/artist'
 
     websites = fields.ToManyField(WebsiteResource, 'websites', full=True)
+    user = fields.ForeignKey(UserResource, 'user', full=True)
+    artworks = fields.ToManyField('production.api.ArtworkResource', 'artworks', full=True, null=True)
 
 class StaffResource(ModelResource):
     class Meta:

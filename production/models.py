@@ -77,7 +77,7 @@ class Artwork(Production):
     mediation_galleries = models.ManyToManyField(Gallery, blank=True, related_name='artworks_mediation')
     in_situ_galleries = models.ManyToManyField(Gallery, blank=True, related_name='artworks_insitu')
 
-    authors = models.ManyToManyField(Artist, related_name="%(class)s")
+    authors = models.ManyToManyField(Artist, related_name="%(class)ss")
 
     objects = SubclassesManager()
     
