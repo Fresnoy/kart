@@ -1,10 +1,12 @@
 from tastypie import fields
-from tastypie.resources import ModelResource
+from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
 
 from common.api import WebsiteResource
 from assets.api import GalleryResource
 from people.api import ArtistResource, StaffResource, OrganizationResource
 from diffusion.api import PlaceResource
+
+
 
 from .models import Installation, Film, Performance, Event, Itinerary, Artwork
 
@@ -29,6 +31,7 @@ class ArtworkResource(AbstractArtworkResource):
     class Meta:
         queryset = Artwork.objects.all()
         resource_name = 'production/artwork'
+        filtering = {'authors': ALL_WITH_RELATIONS}
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
 
@@ -40,6 +43,7 @@ class ArtworkResource(AbstractArtworkResource):
                 res = res_type()
                 rr_bundle = res.build_bundle(obj=bundle.obj, request=bundle.request)
                 bundle.data = res.full_dehydrate(rr_bundle).data
+                bundle.data['type'] = u"%s" % res_type.Meta.queryset.model.__name__.lower()
                 break
 
         return bundle    
@@ -48,6 +52,7 @@ class InstallationResource(AbstractArtworkResource):
     class Meta:
         queryset = Installation.objects.all()
         resource_name = 'production/installation'
+        filtering = {'authors': ALL_WITH_RELATIONS}                
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)        
 
@@ -55,6 +60,7 @@ class FilmResource(AbstractArtworkResource):
     class Meta:
         queryset = Film.objects.all()
         resource_name = 'production/film'
+        filtering = {'authors': ALL_WITH_RELATIONS}        
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)        
 
@@ -62,6 +68,7 @@ class PerformanceResource(AbstractArtworkResource):
     class Meta:
         queryset = Performance.objects.all()
         resource_name = 'production/performance'
+        filtering = {'authors': ALL_WITH_RELATIONS}
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)        
 

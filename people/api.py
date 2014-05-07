@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 
 from tastypie import fields
-from tastypie.resources import ModelResource
+from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
 
 from common.api import WebsiteResource
 
@@ -28,6 +28,8 @@ class ArtistResource(ModelResource):
     class Meta:
         queryset = Artist.objects.all()
         resource_name = 'people/artist'
+        filtering = {'resource_uri': ALL}
+        fields = ['id', 'nickname', 'bio_short_fr', 'bio_short_en', 'bio_fr', 'bio_en', 'twitter_account', 'facebook_profile']
 
     websites = fields.ToManyField(WebsiteResource, 'websites', full=True)
     user = fields.ForeignKey(UserResource, 'user', full=True)
