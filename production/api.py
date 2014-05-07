@@ -30,6 +30,8 @@ class ArtworkResource(AbstractArtworkResource):
         queryset = Artwork.objects.all()
         resource_name = 'production/artwork'
 
+    authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
+
     def dehydrate(self, bundle):
         res_types = (InstallationResource, FilmResource, PerformanceResource)
 
@@ -47,15 +49,21 @@ class InstallationResource(AbstractArtworkResource):
         queryset = Installation.objects.all()
         resource_name = 'production/installation'
 
+    authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)        
+
 class FilmResource(AbstractArtworkResource):
     class Meta:
         queryset = Film.objects.all()
         resource_name = 'production/film'
 
+    authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)        
+
 class PerformanceResource(AbstractArtworkResource):
     class Meta:
         queryset = Performance.objects.all()
         resource_name = 'production/performance'
+
+    authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)        
 
 class EventResource(ProductionResource):
     class Meta:

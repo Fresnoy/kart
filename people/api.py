@@ -31,7 +31,7 @@ class ArtistResource(ModelResource):
 
     websites = fields.ToManyField(WebsiteResource, 'websites', full=True)
     user = fields.ForeignKey(UserResource, 'user', full=True)
-    artworks = fields.ToManyField('production.api.ArtworkResource', 'artworks', full=True, null=True)
+    artworks = fields.ToManyField('production.api.ArtworkResource', 'artworks', full=False, null=True, use_in=['detail'])
 
 class StaffResource(ModelResource):
     class Meta:
