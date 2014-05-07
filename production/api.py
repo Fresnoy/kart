@@ -25,15 +25,21 @@ class AbstractArtworkResource(ProductionResource):
     in_situ_galleries = fields.ToManyField(GalleryResource, 'in_situ_galleries', full=True)
     
     authors = fields.ToManyField(ArtistResource, 'authors')
+
+    def dehydrate(self, bundle):
+        bundle.data["type"] = self.Meta.queryset.model.__name__.lower()
+
+        return bundle
     
     
 class ArtworkResource(AbstractArtworkResource):
     class Meta:
         queryset = Artwork.objects.all()
         resource_name = 'production/artwork'
-        filtering = {'authors': ALL_WITH_RELATIONS}
+        filtering = {'authors': ALL_WITH_RELATIONS, 'events': ALL_WITH_RELATIONS}
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
+    events = fields.ToManyField('production.api.EventResource', 'events', full=False)
 
     def dehydrate(self, bundle):
         res_types = (InstallationResource, FilmResource, PerformanceResource)
@@ -52,25 +58,29 @@ class InstallationResource(AbstractArtworkResource):
     class Meta:
         queryset = Installation.objects.all()
         resource_name = 'production/installation'
-        filtering = {'authors': ALL_WITH_RELATIONS}                
+        filtering = {'authors': ALL_WITH_RELATIONS, 'events': ALL_WITH_RELATIONS}
 
-    authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)        
+    authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
+    events = fields.ToManyField('production.api.EventResource', 'events', full=False)
+    
 
 class FilmResource(AbstractArtworkResource):
     class Meta:
         queryset = Film.objects.all()
         resource_name = 'production/film'
-        filtering = {'authors': ALL_WITH_RELATIONS}        
+        filtering = {'authors': ALL_WITH_RELATIONS, 'events': ALL_WITH_RELATIONS}
 
-    authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)        
+    authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
+    events = fields.ToManyField('production.api.EventResource', 'events', full=False)    
 
 class PerformanceResource(AbstractArtworkResource):
     class Meta:
         queryset = Performance.objects.all()
         resource_name = 'production/performance'
-        filtering = {'authors': ALL_WITH_RELATIONS}
-
-    authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)        
+        filtering = {'authors': ALL_WITH_RELATIONS, 'events': ALL_WITH_RELATIONS}
+        
+    authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
+    events = fields.ToManyField('production.api.EventResource', 'events', full=False)    
 
 class EventResource(ProductionResource):
     class Meta:
@@ -79,9 +89,9 @@ class EventResource(ProductionResource):
     
     place = fields.ForeignKey(PlaceResource, 'place', full=True)
 
-    installations = fields.ToManyField(InstallationResource, 'installations')
-    films = fields.ToManyField(FilmResource, 'films')
-    performances = fields.ToManyField(PerformanceResource, 'performances')    
+    installations = fields.ToManyField(InstallationResource, 'installations', full=True, full_list=False, full_detail=True)
+    films = fields.ToManyField(FilmResource, 'films', full=True, full_list=False, full_detail=True)
+    performances = fields.ToManyField(PerformanceResource, 'performances', full=True, full_list=False, full_detail=True)
 
 
 class ItineraryResource(ModelResource):
