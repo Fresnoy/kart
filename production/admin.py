@@ -23,13 +23,13 @@ class EventAdmin(ProductionAdmin):
 class ItineraryArtworkInline(admin.TabularInline):                                                                                               
     model = Itinerary.artworks.through
 
-class ItineraryAdmin(admin.ModelAdmin):
+class ItineraryAdmin(MarkdownModelAdmin):
     inlines = (ItineraryArtworkInline,)
 
     
 # Tasks
-admin.site.register(OrganizationTask)
-admin.site.register(StaffTask)
+admin.site.register(OrganizationTask, MarkdownModelAdmin)
+admin.site.register(StaffTask, MarkdownModelAdmin)
 
 # Artworks
 admin.site.register(Film, ArtworkAdmin)

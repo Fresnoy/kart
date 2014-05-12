@@ -99,7 +99,8 @@ class ItineraryResource(ModelResource):
         queryset = Itinerary.objects.all()
         resource_name = 'production/itinerary'
 
-    artworks = fields.ToManyField(ArtworkResource, 'artworks', full=True)
+    artworks = fields.ToManyField(ArtworkResource, 'artworks', use_in=['detail'], full_detail=True, full_list=False, full=True, blank=True)
+    gallery = fields.ToManyField(GalleryResource, 'gallery', use_in=['detail'], full_detail=True, full=True, blank=True)
 
         
 class ExhibitionResource(EventResource):

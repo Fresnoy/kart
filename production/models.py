@@ -128,9 +128,10 @@ class Itinerary(models.Model):
     description_en = models.TextField()    
     event = models.ForeignKey(Event, limit_choices_to={'type': 'EXHIB'}, related_name='itineraries')
     artworks = models.ManyToManyField(Artwork, through='ItineraryArtwork')
+    gallery = models.ManyToManyField(Gallery, blank=True, related_name='itineraries')
 
     def __unicode__(self):
-        return self.label
+        return self.label_fr
 
 class ItineraryArtwork(models.Model):
     class Meta:
