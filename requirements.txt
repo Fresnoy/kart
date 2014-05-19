@@ -9,3 +9,4 @@ django-tastypie-swagger==0.1.2
 django-model-utils==2.0.3
 django-markdown==0.5.4
 south==0.8.4
+django-uuidfield==0.5
