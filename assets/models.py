@@ -9,6 +9,8 @@ class Gallery(models.Model):
     label = models.CharField(max_length=255)
     description = models.TextField()
 
+    updated_on = models.DateTimeField(auto_now=True)    
+
     def __unicode__(self):
         return u"%s - %s" % (self.label, self.description)
 
@@ -20,6 +22,8 @@ class Medium(models.Model):
     """
     Anything that looks like a file.
     """
+    updated_on = models.DateTimeField(auto_now=True)
+    
     label = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(null=True, blank=True)
     picture = models.ImageField(upload_to=make_filepath, null=True, blank=True)

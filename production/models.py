@@ -39,6 +39,8 @@ class Production(models.Model):
     title = models.CharField(max_length=255)
     subtitle = models.CharField(max_length=255, null=True, blank=True)
 
+    updated_on = models.DateTimeField(auto_now=True)    
+
     picture = models.ImageField(upload_to=make_filepath)
     websites = models.ManyToManyField(Website, blank=True)
 
@@ -121,7 +123,9 @@ class Exhibition(Event):
 class Itinerary(models.Model):
     class Meta:
         verbose_name_plural = 'itineraries'
-    
+
+    updated_on = models.DateTimeField(auto_now=True)
+        
     label_fr = models.CharField(max_length=255)
     label_en = models.CharField(max_length=255)
     description_fr = models.TextField()

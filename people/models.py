@@ -35,6 +35,8 @@ class Artist(models.Model):
     bio_fr = models.TextField(blank=True)
     bio_en = models.TextField(blank=True)
 
+    updated_on = models.DateTimeField(auto_now=True)
+
     twitter_account = models.CharField(max_length=100, blank=True)
     facebook_profile = models.URLField(blank=True)
     websites = models.ManyToManyField(Website, blank=True)
@@ -47,6 +49,7 @@ class Staff(models.Model):
     Someone working at Le Fresnoy (insider) or for a production
     """
     user = models.ForeignKey(User)
+    updated_on = models.DateTimeField(auto_now=True)    
 
     def __unicode__(self):
         return self.user.username
@@ -58,6 +61,7 @@ class Organization(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     picture = models.ImageField(upload_to=make_filepath, blank=True)
+    updated_on = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
         return self.name
