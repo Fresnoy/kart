@@ -10,7 +10,7 @@ from common.utils import make_filepath
 
 class FresnoyProfile(models.Model):
     user = models.OneToOneField(User, related_name='profile')
-    photo = models.ImageField(upload_to=make_filepath)
+    photo = models.ImageField(upload_to=make_filepath, blank=True, null=True)
     
     birthdate = models.DateField(null=True, blank=True)
     birthplace = models.CharField(max_length=255, null=True, blank=True)
