@@ -1,7 +1,7 @@
 from tastypie import fields
 from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
 
-from common.api import WebsiteResource
+from common.api import WebsiteResource, BTBeaconResource
 from assets.api import GalleryResource
 from people.api import ArtistResource, StaffResource, OrganizationResource
 from diffusion.api import PlaceResource
@@ -25,6 +25,7 @@ class AbstractArtworkResource(ProductionResource):
     in_situ_galleries = fields.ToManyField(GalleryResource, 'in_situ_galleries', full=True)
     
     authors = fields.ToManyField(ArtistResource, 'authors')
+    beacons = fields.ToManyField(BTBeaconResource, 'beacons', full=True)
 
     def dehydrate(self, bundle):
         bundle.data["type"] = self.Meta.queryset.model.__name__.lower()

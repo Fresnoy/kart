@@ -15,7 +15,7 @@ class ProductionAdmin(MarkdownModelAdmin):
     
 class ArtworkAdmin(ProductionAdmin):
     list_display = (ProductionAdmin.list_display + ('production_date',))
-    filter_horizontal = ('process_galleries', 'mediation_galleries', 'in_situ_galleries', 'authors')
+    filter_horizontal = ('process_galleries', 'mediation_galleries', 'in_situ_galleries', 'authors', 'beacons')
 
 class EventAdmin(ProductionAdmin):
     list_display = (ProductionAdmin.list_display + ('starting_date', 'ending_date'))

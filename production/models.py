@@ -4,7 +4,7 @@ from diffusion.models import Place
 
 from model_utils.managers import InheritanceManager
 
-from common.models import Website
+from common.models import Website, BTBeacon
 from common.utils import make_filepath
 from people.models import Artist, Staff, Organization
 from assets.models import Gallery
@@ -80,6 +80,8 @@ class Artwork(Production):
     in_situ_galleries = models.ManyToManyField(Gallery, blank=True, related_name='artworks_insitu')
 
     authors = models.ManyToManyField(Artist, related_name="%(class)ss")
+
+    beacons = models.ManyToManyField(BTBeacon, related_name="%(class)ss", blank=True)
 
     objects = SubclassesManager()
     

@@ -1,5 +1,14 @@
 from django.db import models
 
+from uuidfield import UUIDField
+
+class BTBeacon(models.Model):
+    label = models.CharField(max_length=255)
+    uuid = UUIDField(unique=True)
+
+    def __unicode__(self):
+        return u"%s (%s)" % (self.label, self.uuid)
+
 class Website(models.Model):
     LANGUAGES = (
         ('FR', 'French'),
