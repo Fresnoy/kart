@@ -9,6 +9,7 @@ from .models import Artist, Staff, FresnoyProfile, Organization
 
 class ArtistAdmin(MarkdownModelAdmin):
     list_display = ('user', 'nickname')
+    filter_horizontal = ('websites',)    
 
 class FresnoyProfileInline(admin.StackedInline):
     model = FresnoyProfile

@@ -9,4 +9,8 @@ class Website(models.Model):
     title_en = models.CharField(max_length=255)
     language = models.CharField(choices=LANGUAGES, max_length=2)
     url = models.URLField()
+
+
+    def __unicode__(self):
+        return self.title_fr
     
