@@ -8,8 +8,15 @@ from .forms import UserCreateForm
 from .models import Artist, Staff, FresnoyProfile, Organization
 
 class ArtistAdmin(MarkdownModelAdmin):
-    list_display = ('user', 'nickname')
-    filter_horizontal = ('websites',)    
+    list_display = ('firstname', 'lastname', 'nickname')
+    filter_horizontal = ('websites',)
+    search_fields = ['user__first_name', 'user__last_name']
+
+    def firstname(self, obj):
+        return obj.user.first_name
+
+    def lastname(self, obj):
+        return obj.user.last_name
 
 class FresnoyProfileInline(admin.StackedInline):
     model = FresnoyProfile
