@@ -1,12 +1,11 @@
 from tastypie import fields
+from tastypie.cache import SimpleCache
 from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
 
 from common.api import WebsiteResource, BTBeaconResource
 from assets.api import GalleryResource
 from people.api import ArtistResource, StaffResource, OrganizationResource
 from diffusion.api import PlaceResource
-
-
 
 from .models import Installation, Film, Performance, Event, Itinerary, Artwork
 
@@ -38,6 +37,7 @@ class ArtworkResource(AbstractArtworkResource):
         queryset = Artwork.objects.all()
         resource_name = 'production/artwork'
         filtering = {'authors': ALL_WITH_RELATIONS, 'events': ALL_WITH_RELATIONS}
+        cache = SimpleCache(timeout=10)
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
     events = fields.ToManyField('production.api.EventResource', 'events', full=False)
