@@ -32,6 +32,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    'sortedm2m',
     'django_countries',
     'django_markdown',
     'tastypie',

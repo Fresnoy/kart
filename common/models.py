@@ -5,6 +5,8 @@ from uuidfield import UUIDField
 class BTBeacon(models.Model):
     label = models.CharField(max_length=255)
     uuid = UUIDField(unique=True)
+    rssi_in = models.IntegerField()
+    rssi_out = models.IntegerField()
 
     def __unicode__(self):
         return u"%s (%s)" % (self.label, self.uuid)

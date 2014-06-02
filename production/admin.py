@@ -3,11 +3,9 @@ from django_markdown.admin import MarkdownModelAdmin
 
 from .models import Production, Film, Installation, Performance, StaffTask, OrganizationTask, Event, Itinerary
 
-class CollaboratorsInline(admin.TabularInline):                                                                                               
-    model = Production.collaborators.through
+class CollaboratorsInline(admin.TabularInline):                                                        model = Production.collaborators.through
 
-class PartnersInline(admin.TabularInline):                                                                                               
-    model = Production.partners.through
+class PartnersInline(admin.TabularInline):                                                             model = Production.partners.through
 
 class ProductionAdmin(MarkdownModelAdmin):
     list_display = ('title', 'subtitle')
@@ -15,7 +13,7 @@ class ProductionAdmin(MarkdownModelAdmin):
     
 class ArtworkAdmin(ProductionAdmin):
     list_display = (ProductionAdmin.list_display + ('production_date',))
-    filter_horizontal = ('process_galleries', 'mediation_galleries', 'in_situ_galleries', 'authors', 'beacons')
+    filter_horizontal = ('authors', 'beacons')
 
 class EventAdmin(ProductionAdmin):
     list_display = (ProductionAdmin.list_display + ('starting_date', 'ending_date'))

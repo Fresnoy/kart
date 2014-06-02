@@ -1,5 +1,7 @@
 from django.db import models
 
+from sortedm2m.fields import SortedManyToManyField
+
 from diffusion.models import Place
 
 from model_utils.managers import InheritanceManager
@@ -62,7 +64,7 @@ class SubclassesManager(InheritanceManager):
     """
     def get_queryset(self):
         return super(SubclassesManager, self).get_queryset().select_subclasses()
-    
+
 class Artwork(Production):
     production_date = models.DateField()
     
@@ -75,9 +77,9 @@ class Artwork(Production):
     copyright_fr = models.TextField(blank=True, null=True)
     copyright_en = models.TextField(blank=True, null=True)
     
-    process_galleries = models.ManyToManyField(Gallery, blank=True, related_name='artworks_process')
-    mediation_galleries = models.ManyToManyField(Gallery, blank=True, related_name='artworks_mediation')
-    in_situ_galleries = models.ManyToManyField(Gallery, blank=True, related_name='artworks_insitu')
+    process_galleries = SortedManyToManyField(Gallery, blank=True, related_name='artworks_process')
+    mediation_galleries = SortedManyToManyField(Gallery, blank=True, related_name='artworks_mediation')
+    in_situ_galleries = SortedManyToManyField(Gallery, blank=True, related_name='artworks_insitu')
 
     authors = models.ManyToManyField(Artist, related_name="%(class)ss")
 

@@ -23,6 +23,8 @@ class Medium(models.Model):
     Anything that looks like a file.
     """
     updated_on = models.DateTimeField(auto_now=True)
+
+    position = models.PositiveIntegerField(default=1)
     
     label = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(null=True, blank=True)
@@ -36,5 +38,6 @@ class Medium(models.Model):
 
     class Meta:
         verbose_name_plural = "media"
+        ordering = ('position',)
         
 
