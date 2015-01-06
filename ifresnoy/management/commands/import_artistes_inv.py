@@ -29,8 +29,8 @@ class Command(BaseCommand):
             with open(filepath, 'r') as csvfile:
                 csv_file = csv.reader(csvfile, delimiter=';')
                 for row in csv_file:
-                    last_name = row[0].decode('utf-8').title() #
-                    first_name = row[1].decode('utf-8').title()
+                    last_name = row[0].decode('utf-8').strip().title() #
+                    first_name = row[1].decode('utf-8').strip().title()
                     start_year = int(row[2].decode('utf-8'))
                     end_year = int(row[3].decode('utf-8'))
 

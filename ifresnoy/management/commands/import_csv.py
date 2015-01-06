@@ -62,12 +62,12 @@ class Command(BaseCommand):
                     # Make promotion
                     # Make student
                     # Make artwork
-                    user, created = User.objects.get_or_create(username=username, first_name=firstname, last_name=lastname, email=email)
-                    if created:
-                        print "%s created" % user
-                    profile, created = FresnoyProfile.objects.get_or_create(user=user)
+                    print u" * %s by %s %s (username=%s)" % (title, firstname, lastname, username)
+                    user = User.objects.get(username=username, first_name=firstname, last_name=lastname, email=email)
+                    print "  `-- found user %s" % user
+                    profile = FresnoyProfile.objects.get(user=user)
+                    student = Student.objects.get(user=user)
 
-                    student, created = Student.objects.get_or_create(user=user, promotion_id=1)
                     student.bio_fr = bio_fr
                     student.bio_en = bio_en
                     for url in websites.split(" "):

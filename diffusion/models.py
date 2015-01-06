@@ -16,3 +16,6 @@ class Award(models.Model):
     Awards given to artworks & such.
     """
     pass
+    # event
+    # artwork
+    # -> award (textfield)

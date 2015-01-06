@@ -24,7 +24,7 @@ SECRET_KEY = '$17%$7@*^nmx&(mb)5=o9v9if&_%s67-*^-skk!iaef3%16*12'
 
 INSTALLED_APPS = (
     'south',
-    'grappelli',    
+    'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -35,10 +35,11 @@ INSTALLED_APPS = (
     'sortedm2m',
     'django_countries',
     'django_markdown',
+    'ifresnoy',
     'tastypie',
     'tastypie_swagger',
     'corsheaders',
-    'common',    
+    'common',
     'people',
     'production',
     'diffusion',

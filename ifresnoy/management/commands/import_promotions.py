@@ -7,7 +7,7 @@ from django.core.management.base import BaseCommand, CommandError
 from school.models import Promotion
 
 class Command(BaseCommand):
-    help = 'Import panorama from a CSV file'
+    help = 'Import promotion from a CSV file'
 
     option_list = BaseCommand.option_list + (
         make_option(
