@@ -3,6 +3,7 @@ import csv
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
+from django.utils.text import slugify
 
 from django.contrib.auth.models import User
 from people.models import FresnoyProfile, Artist
@@ -33,17 +34,18 @@ class Command(BaseCommand):
             with open(filepath, 'r') as csvfile:
                 csv_file = csv.reader(csvfile, delimiter=';', quotechar='"')
                 for row in csv_file:
-                    username = row[0].decode('utf-8').lower() #
+                    # username = row[0].decode('utf-8').lower() #
                     password = row[1].decode('utf-8')
-                    firstname = row[2].decode('utf-8').title() #
-                    lastname = row[3].decode('utf-8').title() #
+                    firstname = row[2].decode('utf-8').strip().title() #
+                    lastname = row[3].decode('utf-8').strip().title() #
+                    username = slugify(u"%s%s" % (firstname[0], "".join(lastname.split())))
                     email = row[4].decode('utf-8') #
                     websites = row[5].decode('utf-8') #
                     photo = row[6].decode('utf-8')
                     bio_fr = row[7].decode('utf-8') #
                     bio_en = row[8].decode('utf-8') #
                     genre = row[9].decode('utf-8') #
-                    title = row[10].decode('utf-8').capitalize() #
+                    title = row[10].decode('utf-8').strip().capitalize() #
                     subtitle = row[11].decode('utf-8') #
                     desc_fr = row[12].decode('utf-8') #
                     desc_en = row[13].decode('utf-8') #
@@ -63,17 +65,25 @@ class Command(BaseCommand):
                     # Make student
                     # Make artwork
                     print u" * %s by %s %s (username=%s)" % (title, firstname, lastname, username)
-                    user = User.objects.get(username=username, first_name=firstname, last_name=lastname, email=email)
+                    user = User.objects.get(username=username, first_name=firstname, last_name=lastname)
                     print "  `-- found user %s" % user
                     profile = FresnoyProfile.objects.get(user=user)
-                    student = Student.objects.get(user=user)
 
-                    student.bio_fr = bio_fr
-                    student.bio_en = bio_en
+                    try:
+                        artist = Student.objects.get(user=user)
+                    except Student.DoesNotExist:
+                        try:
+                            artist = Artist.objects.get(user=user)
+                        except Artist.DoesNotExist:
+                            raise
+
+
+                    artist.bio_fr = bio_fr
+                    artist.bio_en = bio_en
                     for url in websites.split(" "):
                         website, created = Website.objects.get_or_create(url=url, language="FR", title_fr="%s %s" % (firstname, lastname), title_en="%s %s" % (firstname, lastname))
-                        student.websites.add(website)
-                    student.save()
+                        artist.websites.add(website)
+                    artist.save()
 
                     # Pb: Artiste invité ou étudiant ?
                     # Quelle promotion pour un étudiant ?
@@ -96,7 +106,7 @@ class Command(BaseCommand):
                     artwork.credit_en = credit_en
                     artwork.copyright_fr = copyright_fr
                     artwork.copyright_en = copyright_en
-                    artwork.authors.add(student)
+                    artwork.authors.add(artist)
                     if genre == "installation":
                         artwork.technical_description = tech_desc
                     artwork.save()
