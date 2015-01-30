@@ -6,9 +6,11 @@ from django.core.management.base import BaseCommand, CommandError
 from django.utils.text import slugify
 
 from django.contrib.auth.models import User
+from common.models import Website
 from people.models import FresnoyProfile, Artist
 from school.models import Student
-from common.models import Website
+from people.models import Organization
+from production.models import Event, OrganizationTask, ProductionOrganizationTask
 from production.models import Film, Installation, Performance
 
 class Command(BaseCommand):
@@ -33,7 +35,7 @@ class Command(BaseCommand):
         try:
             with open(filepath, 'r') as csvfile:
                 csv_file = csv.reader(csvfile, delimiter=';', quotechar='"')
-                for row in csv_file:
+                for idx, row in enumerate(csv_file):
                     # username = row[0].decode('utf-8').lower() #
                     password = row[1].decode('utf-8')
                     firstname = row[2].decode('utf-8').strip().title() #
@@ -64,7 +66,7 @@ class Command(BaseCommand):
                     # Make promotion
                     # Make student
                     # Make artwork
-                    print u" * %s by %s %s (username=%s)" % (title, firstname, lastname, username)
+                    print u" * [%d] %s by %s %s (username=%s)" % (idx, title, firstname, lastname, username)
                     user = User.objects.get(username=username, first_name=firstname, last_name=lastname)
                     print "  `-- found user %s" % user
                     profile = FresnoyProfile.objects.get(user=user)
@@ -110,6 +112,27 @@ class Command(BaseCommand):
                     if genre == "installation":
                         artwork.technical_description = tech_desc
                     artwork.save()
+
+                    # Lookup Panorama and link it
+                    try:
+                        pano = Event.objects.get(title="Panorama %s" % pano_num)
+                    except:
+                        raise Exception("Error: Panorama %s not found, create it!" % pano_num)
+
+                    if genre == "installation":
+                        pano.installations.add(artwork)
+                    elif genre == "film":
+                        pano.films.add(artwork)
+                    elif genre == "performance":
+                        pano.performances.add(artwork)
+
+                    pano.save()
+
+                    # Mark this artwork as being a production of the Fresnoy
+                    lefresnoy = Organization.objects.get(name="Le Fresnoy")
+                    producer = OrganizationTask.objects.get(label="Producteur")
+                    ProductionOrganizationTask.objects.get_or_create(organization=lefresnoy, production=artwork, task=producer)
+
 
                     print "."
 

@@ -14,7 +14,7 @@ from assets.models import Gallery
 class Task(models.Model):
     class Meta:
         abstract = True
-        
+
     label = models.CharField(max_length=255)
     description = models.TextField()
 
@@ -31,17 +31,17 @@ class ProductionStaffTask(models.Model):
     staff = models.ForeignKey(Staff)
     production = models.ForeignKey('Production')
     task = models.ForeignKey(StaffTask)
-    
+
 class ProductionOrganizationTask(models.Model):
     organization = models.ForeignKey(Organization)
     production = models.ForeignKey('Production')
-    task = models.ForeignKey(StaffTask)
-   
+    task = models.ForeignKey(OrganizationTask)
+
 class Production(models.Model):
     title = models.CharField(max_length=255)
     subtitle = models.CharField(max_length=255, null=True, blank=True)
 
-    updated_on = models.DateTimeField(auto_now=True)    
+    updated_on = models.DateTimeField(auto_now=True)
 
     picture = models.ImageField(upload_to=make_filepath)
     websites = models.ManyToManyField(Website, blank=True)
@@ -67,7 +67,7 @@ class SubclassesManager(InheritanceManager):
 
 class Artwork(Production):
     production_date = models.DateField()
-    
+
     credits_fr = models.TextField(blank=True, null=True)
     credits_en = models.TextField(blank=True, null=True)
 
@@ -76,7 +76,7 @@ class Artwork(Production):
 
     copyright_fr = models.TextField(blank=True, null=True)
     copyright_en = models.TextField(blank=True, null=True)
-    
+
     process_galleries = SortedManyToManyField(Gallery, blank=True, related_name='artworks_process')
     mediation_galleries = SortedManyToManyField(Gallery, blank=True, related_name='artworks_mediation')
     in_situ_galleries = SortedManyToManyField(Gallery, blank=True, related_name='artworks_insitu')
@@ -86,8 +86,8 @@ class Artwork(Production):
     beacons = models.ManyToManyField(BTBeacon, related_name="%(class)ss", blank=True)
 
     objects = SubclassesManager()
-    
-    
+
+
 class Film(Artwork):
     pass
 
@@ -106,12 +106,12 @@ class Event(Production):
         ('WORKSHOP', 'Workshop'),
         ('EVENING', 'Evening')
     )
-    
+
     type = models.CharField(max_length=10, choices=TYPE_CHOICES)
-    
+
     starting_date = models.DateTimeField()
     ending_date = models.DateTimeField()
-    
+
     place = models.ForeignKey(Place)
 
     # artwork types
@@ -129,11 +129,11 @@ class Itinerary(models.Model):
         verbose_name_plural = 'itineraries'
 
     updated_on = models.DateTimeField(auto_now=True)
-        
+
     label_fr = models.CharField(max_length=255)
     label_en = models.CharField(max_length=255)
     description_fr = models.TextField()
-    description_en = models.TextField()    
+    description_en = models.TextField()
     event = models.ForeignKey(Event, limit_choices_to={'type': 'EXHIB'}, related_name='itineraries')
     artworks = models.ManyToManyField(Artwork, through='ItineraryArtwork')
     gallery = models.ManyToManyField(Gallery, blank=True, related_name='itineraries')
@@ -145,8 +145,7 @@ class ItineraryArtwork(models.Model):
     class Meta:
         ordering = ('order',)
         unique_together = (('itinerary', 'artwork'), ('itinerary', 'order'))
-        
+
     itinerary = models.ForeignKey(Itinerary)
     artwork = models.ForeignKey(Artwork)
     order = models.PositiveIntegerField()
-
