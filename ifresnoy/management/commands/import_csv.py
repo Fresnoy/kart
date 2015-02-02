@@ -100,12 +100,12 @@ class Command(BaseCommand):
                         raise Exception("Unknown Prod Class")
 
                     artwork, created = ProdClass.objects.get_or_create(title=title, subtitle=subtitle, production_date=prod_date)
-                    artwork.desc_fr = desc_fr
-                    artwork.desc_en = desc_en
+                    artwork.description_fr = desc_fr
+                    artwork.description_en = desc_en
                     artwork.thanks_fr = thanks_fr
                     artwork.thanks_en = thanks_en
-                    artwork.credit_fr = credit_fr
-                    artwork.credit_en = credit_en
+                    artwork.credits_fr = credit_fr
+                    artwork.credits_en = credit_en
                     artwork.copyright_fr = copyright_fr
                     artwork.copyright_en = copyright_en
                     artwork.authors.add(artist)
