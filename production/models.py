@@ -56,7 +56,7 @@ class Production(models.Model):
     description_en = models.TextField(blank=True, null=True)
 
     def __unicode__(self):
-        return self.title
+        return "Production %s" % self.id
 
 
 class SubclassesManager(InheritanceManager):
