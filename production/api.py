@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from tastypie import fields
 from tastypie.cache import SimpleCache
 from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
@@ -22,7 +23,7 @@ class AbstractArtworkResource(ProductionResource):
     process_galleries = fields.ToManyField(GalleryResource, 'process_galleries', full=True)
     mediation_galleries = fields.ToManyField(GalleryResource, 'mediation_galleries', full=True)
     in_situ_galleries = fields.ToManyField(GalleryResource, 'in_situ_galleries', full=True)
-    
+
     authors = fields.ToManyField(ArtistResource, 'authors')
     beacons = fields.ToManyField(BTBeaconResource, 'beacons', full=True)
 
@@ -30,8 +31,8 @@ class AbstractArtworkResource(ProductionResource):
         bundle.data["type"] = self.Meta.queryset.model.__name__.lower()
 
         return bundle
-    
-    
+
+
 class ArtworkResource(AbstractArtworkResource):
     class Meta:
         queryset = Artwork.objects.all()
@@ -53,7 +54,7 @@ class ArtworkResource(AbstractArtworkResource):
                 bundle.data['type'] = u"%s" % res_type.Meta.queryset.model.__name__.lower()
                 break
 
-        return bundle    
+        return bundle
 
 class InstallationResource(AbstractArtworkResource):
     class Meta:
@@ -63,7 +64,7 @@ class InstallationResource(AbstractArtworkResource):
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
     events = fields.ToManyField('production.api.EventResource', 'events', full=False)
-    
+
 
 class FilmResource(AbstractArtworkResource):
     class Meta:
@@ -72,22 +73,22 @@ class FilmResource(AbstractArtworkResource):
         filtering = {'authors': ALL_WITH_RELATIONS, 'events': ALL_WITH_RELATIONS}
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
-    events = fields.ToManyField('production.api.EventResource', 'events', full=False)    
+    events = fields.ToManyField('production.api.EventResource', 'events', full=False)
 
 class PerformanceResource(AbstractArtworkResource):
     class Meta:
         queryset = Performance.objects.all()
         resource_name = 'production/performance'
         filtering = {'authors': ALL_WITH_RELATIONS, 'events': ALL_WITH_RELATIONS}
-        
+
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
-    events = fields.ToManyField('production.api.EventResource', 'events', full=False)    
+    events = fields.ToManyField('production.api.EventResource', 'events', full=False)
 
 class EventResource(ProductionResource):
     class Meta:
         queryset = Event.objects.all()
         resource_name = 'production/event'
-    
+
     place = fields.ForeignKey(PlaceResource, 'place', full=True)
 
     installations = fields.ToManyField(InstallationResource, 'installations', full=True, full_list=False, full_detail=True)
@@ -103,11 +104,10 @@ class ItineraryResource(ModelResource):
     artworks = fields.ToManyField(ArtworkResource, 'artworks', use_in=['detail'], full_detail=True, full_list=False, full=True, blank=True)
     gallery = fields.ToManyField(GalleryResource, 'gallery', use_in=['detail'], full_detail=True, full=True, blank=True)
 
-        
+
 class ExhibitionResource(EventResource):
     class Meta:
         queryset = Event.objects.filter(type='EXHIB')
-        resource_name = 'production/exhibition'        
+        resource_name = 'production/exhibition'
 
     itineraries = fields.ToManyField(ItineraryResource, 'itineraries', full_list=False, full_detail=True)
-
