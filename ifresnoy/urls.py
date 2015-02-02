@@ -6,7 +6,7 @@ admin.autodiscover()
 
 from tastypie.api import Api
 from people.api import ArtistResource, StaffResource
-from production.api import InstallationResource, FilmResource, EventResource, ExhibitionResource, ItineraryResource, ArtworkResource
+from production.api import InstallationResource, FilmResource, PerformanceResource, EventResource, ExhibitionResource, ItineraryResource, ArtworkResource
 from diffusion.api import PlaceResource
 from school.api import PromotionResource, StudentResource
 
@@ -14,6 +14,7 @@ from school.api import PromotionResource, StudentResource
 v1_api = Api(api_name='v1')
 v1_api.register(InstallationResource())
 v1_api.register(FilmResource())
+v1_api.register(PerformanceResource())
 v1_api.register(EventResource())
 v1_api.register(PromotionResource())
 v1_api.register(StudentResource())
