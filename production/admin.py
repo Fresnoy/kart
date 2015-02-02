@@ -3,14 +3,17 @@ from django_markdown.admin import MarkdownModelAdmin
 
 from .models import Production, Film, Installation, Performance, StaffTask, OrganizationTask, Event, Itinerary
 
-class CollaboratorsInline(admin.TabularInline):                                                        model = Production.collaborators.through
+class CollaboratorsInline(admin.TabularInline):
+    model = Production.collaborators.through
 
-class PartnersInline(admin.TabularInline):                                                             model = Production.partners.through
+class PartnersInline(admin.TabularInline):
+    model = Production.partners.through
 
 class ProductionAdmin(MarkdownModelAdmin):
     list_display = ('title', 'subtitle')
+    search_fields = ['title']
     inlines = (CollaboratorsInline, PartnersInline)
-    
+
 class ArtworkAdmin(ProductionAdmin):
     list_display = (ProductionAdmin.list_display + ('production_date',))
     filter_horizontal = ('authors', 'beacons')
@@ -18,13 +21,13 @@ class ArtworkAdmin(ProductionAdmin):
 class EventAdmin(ProductionAdmin):
     list_display = (ProductionAdmin.list_display + ('starting_date', 'ending_date'))
 
-class ItineraryArtworkInline(admin.TabularInline):                                                                                               
+class ItineraryArtworkInline(admin.TabularInline):
     model = Itinerary.artworks.through
 
 class ItineraryAdmin(MarkdownModelAdmin):
     inlines = (ItineraryArtworkInline,)
 
-    
+
 # Tasks
 admin.site.register(OrganizationTask, MarkdownModelAdmin)
 admin.site.register(StaffTask, MarkdownModelAdmin)
@@ -39,4 +42,3 @@ admin.site.register(Event, EventAdmin)
 
 # Itinerary
 admin.site.register(Itinerary, ItineraryAdmin)
-
