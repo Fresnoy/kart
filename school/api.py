@@ -12,5 +12,10 @@ class StudentResource(ModelResource):
     class Meta:
         queryset = Student.objects.all()
         resource_name = 'school/student'
+        filtering = {
+            'user': ALL_WITH_RELATIONS,
+            'promotion': ALL,
+        }
+
 
     promotion = fields.ForeignKey(PromotionResource, 'promotion')

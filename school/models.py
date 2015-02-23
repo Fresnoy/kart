@@ -7,6 +7,9 @@ class Promotion(models.Model):
     """
     A promotion of students, for at least 2 years.
     """
+    class Meta:
+        ordering = ['starting_year']
+
     name = models.CharField(max_length=255)
     starting_year = models.PositiveSmallIntegerField()
     ending_year = models.PositiveSmallIntegerField()
@@ -23,4 +26,3 @@ class Student(Artist):
 
     def __unicode__(self):
         return "%s (%s/%s)" % (self.user, self.nickname, self.number)
-    
