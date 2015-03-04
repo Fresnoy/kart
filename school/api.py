@@ -9,6 +9,7 @@ class PromotionResource(ModelResource):
     class Meta:
         queryset = Promotion.objects.all()
         resource_name = 'school/promotion'
+        ordering = ['starting_year']
 
 class StudentResource(ArtistResource):
     class Meta:
