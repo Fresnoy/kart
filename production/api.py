@@ -95,6 +95,8 @@ class EventResource(ProductionResource):
     films = fields.ToManyField(FilmResource, 'films', full=True, full_list=False, full_detail=True)
     performances = fields.ToManyField(PerformanceResource, 'performances', full=True, full_list=False, full_detail=True)
 
+    subevents = fields.ToManyField('production.api.EventResource', 'subevents')
+
 
 class ItineraryResource(ModelResource):
     class Meta:
