@@ -81,6 +81,8 @@ class Artwork(Production):
     process_galleries = SortedManyToManyField(Gallery, blank=True, related_name='artworks_process')
     mediation_galleries = SortedManyToManyField(Gallery, blank=True, related_name='artworks_mediation')
     in_situ_galleries = SortedManyToManyField(Gallery, blank=True, related_name='artworks_insitu')
+    press_galleries = SortedManyToManyField(Gallery, blank=True, related_name='artworks_press')
+    teaser_galleries = SortedManyToManyField(Gallery, blank=True, related_name='artworks_teaser')
 
     authors = models.ManyToManyField(Artist, related_name="%(class)ss")
 

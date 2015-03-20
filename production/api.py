@@ -23,6 +23,8 @@ class AbstractArtworkResource(ProductionResource):
     process_galleries = fields.ToManyField(GalleryResource, 'process_galleries', full=True)
     mediation_galleries = fields.ToManyField(GalleryResource, 'mediation_galleries', full=True)
     in_situ_galleries = fields.ToManyField(GalleryResource, 'in_situ_galleries', full=True)
+    press_galleries = fields.ToManyField(GalleryResource, 'press_galleries', full=True)
+    teaser_galleries = fields.ToManyField(GalleryResource, 'teaser_galleries', full=True)
 
     authors = fields.ToManyField(ArtistResource, 'authors')
     beacons = fields.ToManyField(BTBeaconResource, 'beacons', full=True)
