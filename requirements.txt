@@ -11,3 +11,5 @@ django-markdown==0.5.4
 south==0.8.4
 django-uuidfield==0.5
 django-sortedm2m==0.7.0
+django-haystack==2.3.1
+elasticsearch=1.4.0
