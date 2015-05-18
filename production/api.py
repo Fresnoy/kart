@@ -44,7 +44,7 @@ class ArtworkResource(AbstractArtworkResource):
     class Meta:
         queryset = Artwork.objects.all()
         resource_name = 'production/artwork'
-        filtering = {'authors': ALL_WITH_RELATIONS, 'events': ALL_WITH_RELATIONS}
+        filtering = {'authors': ALL_WITH_RELATIONS, 'events': ALL_WITH_RELATIONS, 'title': ALL}
         # cache = SimpleCache(timeout=10)
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
@@ -75,7 +75,7 @@ class ArtworkResource(AbstractArtworkResource):
         self.throttle_check(request)
 
         # Do the query.
-        sqs = SearchQuerySet().models(Film, Installation, Performance).load_all().auto_query(request.GET.get('q', ''))
+        sqs = SearchQuerySet().models(Film, Installation, Performance).load_all().autocomplete(content_auto=request.GET.get('q', ''))
         paginator = Paginator(sqs, 20)
 
         try:

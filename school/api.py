@@ -38,7 +38,7 @@ class StudentResource(ArtistResource):
         self.throttle_check(request)
 
         # Do the query.
-        sqs = SearchQuerySet().models(Student).load_all().auto_query(request.GET.get('q', ''))
+        sqs = SearchQuerySet().models(Student).load_all().autocomplete(content_auto=request.GET.get('q', ''))
         paginator = Paginator(sqs, 20)
 
         try:

@@ -7,6 +7,7 @@ class StudentIndex(indexes.SearchIndex, indexes.Indexable):
     firstname = indexes.CharField(model_attr='user__first_name')
     lastname = indexes.CharField(model_attr='user__last_name')
     promotion = indexes.CharField(model_attr='promotion')
+    content_auto = indexes.EdgeNgramField(use_template=True)
 
     def get_model(self):
         return Student

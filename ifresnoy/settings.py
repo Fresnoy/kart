@@ -33,6 +33,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_extensions',
     'haystack',
+    'elasticstack',
     'sortedm2m',
     'django_countries',
     'django_markdown',
@@ -97,3 +98,48 @@ APPEND_SLASH = False
 TASTYPIE_ALLOW_MISSING_SLASH = True
 TASTYPIE_DEFAULT_FORMATS = ['json']
 TASTYPIE_SWAGGER_API_MODULE = 'ifresnoy.urls.v1_api'
+
+# SEARCH SETTINGS
+ELASTICSEARCH_INDEX_SETTINGS = {
+    'settings': {
+        "analysis": {
+            "analyzer": {
+                "ngram_analyzer": {
+                    "type": "custom",
+                    "tokenizer": "lowercase",
+                    "filter": ["haystack_ngram"]
+                },
+                "edgengram_analyzer": {
+                    "type": "custom",
+                    "tokenizer": "lowercase",
+                    "filter": ["haystack_edgengram"]
+                }
+            },
+            "tokenizer": {
+                "haystack_ngram_tokenizer": {
+                    "type": "nGram",
+                    "min_gram": 3,
+                    "max_gram": 10,
+                },
+                "haystack_edgengram_tokenizer": {
+                    "type": "edgeNGram",
+                    "min_gram": 3,
+                    "max_gram": 10,
+                    "side": "front"
+                }
+            },
+            "filter": {
+                "haystack_ngram": {
+                    "type": "nGram",
+                    "min_gram": 3,
+                    "max_gram": 10
+                },
+                "haystack_edgengram": {
+                    "type": "edgeNGram",
+                    "min_gram": 3,
+                    "max_gram": 10
+                }
+            }
+        }
+    }
+}
