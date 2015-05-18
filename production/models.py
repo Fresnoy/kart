@@ -39,6 +39,8 @@ class ProductionOrganizationTask(models.Model):
     task = models.ForeignKey(OrganizationTask)
 
 class Production(models.Model):
+    class Meta:
+        ordering = ['title']
     title = models.CharField(max_length=255)
     subtitle = models.CharField(max_length=255, null=True, blank=True)
 
