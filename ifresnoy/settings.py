@@ -107,25 +107,24 @@ ELASTICSEARCH_INDEX_SETTINGS = {
                 "ngram_analyzer": {
                     "type": "custom",
                     "tokenizer": "lowercase",
-                    "filter": ["haystack_ngram"]
+                    "filter": ["standard", "asciifolding", "worddelimiter", "lowercase", "stop", "haystack_ngram"] # , "my_snow"]
                 },
                 "edgengram_analyzer": {
                     "type": "custom",
                     "tokenizer": "lowercase",
-                    "filter": ["haystack_edgengram"]
+                    "filter": ["standard", "asciifolding", "worddelimiter", "lowercase", "stop", "haystack_edgengram"] # , "my_snow"]
                 }
             },
             "tokenizer": {
                 "haystack_ngram_tokenizer": {
                     "type": "nGram",
                     "min_gram": 3,
-                    "max_gram": 10,
+                    "max_gram": 5,
                 },
                 "haystack_edgengram_tokenizer": {
                     "type": "edgeNGram",
                     "min_gram": 3,
-                    "max_gram": 10,
-                    "side": "front"
+                    "max_gram": 5,
                 }
             },
             "filter": {
@@ -138,6 +137,22 @@ ELASTICSEARCH_INDEX_SETTINGS = {
                     "type": "edgeNGram",
                     "min_gram": 3,
                     "max_gram": 10
+                },
+                "snowball": {
+                    "type": "snowball",
+                    "language": "French"
+                },
+                "elision": {
+                    "type": "elision",
+                    "articles": ["l", "m", "t", "qu", "n", "s", "j", "d"]
+                },
+                "stopwords": {
+                    "type": "stop",
+                    "stopwords": "_french_",
+                    "ignore_case": True
+                },
+                "worddelimiter": {
+                    "type": "word_delimiter"
                 }
             }
         }
