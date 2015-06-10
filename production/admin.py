@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django_markdown.admin import MarkdownModelAdmin
 
-from .models import Production, Film, Installation, Performance, StaffTask, OrganizationTask, Event, Itinerary
+from .models import Production, FilmGenre, Film, InstallationGenre, Installation, Performance, StaffTask, OrganizationTask, Event, Itinerary
 
 class CollaboratorsInline(admin.TabularInline):
     model = Production.collaborators.through
@@ -27,13 +27,21 @@ class ItineraryArtworkInline(admin.TabularInline):
 class ItineraryAdmin(MarkdownModelAdmin):
     inlines = (ItineraryArtworkInline,)
 
+class FilmGenreAdmin(admin.ModelAdmin):
+    pass
+
+class InstallationGenreAdmin(admin.ModelAdmin):
+    pass
+
 
 # Tasks
 admin.site.register(OrganizationTask, MarkdownModelAdmin)
 admin.site.register(StaffTask, MarkdownModelAdmin)
 
 # Artworks
+admin.site.register(FilmGenre, FilmGenreAdmin)
 admin.site.register(Film, ArtworkAdmin)
+admin.site.register(InstallationGenre, InstallationGenreAdmin)
 admin.site.register(Installation, ArtworkAdmin)
 admin.site.register(Performance, ArtworkAdmin)
 

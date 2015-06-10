@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
+from model_utils.managers import InheritanceManager
 from sortedm2m.fields import SortedManyToManyField
 
-from diffusion.models import Place
-
-from model_utils.managers import InheritanceManager
-
+from assets.models import Gallery
 from common.models import Website, BTBeacon
 from common.utils import make_filepath
+from diffusion.models import Place
 from people.models import Artist, Staff, Organization
-from assets.models import Gallery
+
 
 class Task(models.Model):
     class Meta:
@@ -42,6 +41,7 @@ class Production(models.Model):
     class Meta:
         ordering = ['title']
     title = models.CharField(max_length=255)
+    former_title = models.CharField(max_length=255, null=True, blank=True)
     subtitle = models.CharField(max_length=255, null=True, blank=True)
 
     updated_on = models.DateTimeField(auto_now=True)
@@ -92,12 +92,70 @@ class Artwork(Production):
 
     objects = SubclassesManager()
 
+class FilmGenre(models.Model):
+    label = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return self.label
 
 class Film(Artwork):
-    pass
+    SHOOTING_FORMAT_CHOICES = (
+        ('SUP8', 'Super 8'),
+        ('SUP16', 'Super 16'),
+        ('SUP35', 'Super 35'),
+        ('35MM', "35 MM"),
+        ('70MM', "70 MM"),
+        ('DV', "DV"),
+        ('DVCAM', "DV-CAM"),
+        ('HD', "HD"),
+        ('HDCAM', "HD-CAM"),
+        ('HDCINE', "HD CINEMASCOPE"),
+        ('CREANUM', "CREATION NUMERIQUE"),
+        ('BETASP', "BETA SP"),
+        ('BETANUM', "BETA NUM."),
+        ('DIGICAM', "APPAREIL PHOTO"),
+        ('MOBILE', "MOBILE"),
+        ('HI8', "HI8"),
+        ('AVCHD', "AVCHD"),
+        ('XDCAMEX', "XDcamEX"),
+        ('3DREL', "RELIEF 3D"),
+        ('2K', "2K"),
+        ('4K', "4K")
+    )
+
+    ASPECT_RATIO_CHOICES = (
+        ('1.33', "1.33"),
+        ('1.37', "1.37"),
+        ('1.66', "1.66"),
+        ('1.77', "1.77"),
+        ('1.85', "1.85"),
+        ('1.89', "1.89"),
+        ('2.35', "2.35"),
+        ('4/3', "4/3"),
+        ('16/9', "16/9")
+    )
+
+    PROCESS_CHOICES = (
+        ('COLOR', "Couleur"),
+        ('BW', "Noir & Blanc"),
+        ('COLORBW', "NB & Couleur"),
+        ('SEPIA', "Sépia")
+    )
+    duration = models.DurationField(blank=True, null=True, help_text="Sous la forme HH:MM:SS")
+    shooting_format = models.CharField(choices=SHOOTING_FORMAT_CHOICES, max_length=10, blank=True)
+    aspect_ratio = models.CharField(choices=ASPECT_RATIO_CHOICES, max_length=10, blank=True)
+    process = models.CharField(choices=PROCESS_CHOICES, max_length=10, blank=True)
+    genres = models.ManyToManyField(FilmGenre)
+
+class InstallationGenre(models.Model):
+    label = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return self.label
 
 class Installation(Artwork):
     technical_description = models.TextField(blank=True)
+    genres = models.ManyToManyField(InstallationGenre)
 
 class Performance(Artwork):
     pass
