@@ -59,3 +59,15 @@ class StaffTaskAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.TextField: {'widget': AdminPagedownWidget },
     }
+
+@admin.register(Film)
+class FilmAdmin(ProductionAdmin):
+    pass
+
+@admin.register(Performance)
+class PerformanceAdmin(ProductionAdmin):
+    pass
+
+@admin.register(Installation)
+class InstallationAdmin(ProductionAdmin):
+    pass
