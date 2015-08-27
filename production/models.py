@@ -212,3 +212,12 @@ class ItineraryArtwork(models.Model):
     itinerary = models.ForeignKey(Itinerary)
     artwork = models.ForeignKey(Artwork)
     order = models.PositiveIntegerField()
+
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
+
+@receiver(post_delete, sender=Performance)
+@receiver(post_delete, sender=Film)
+@receiver(post_delete, sender=Installation)
+def delete_parent(sender, instance, using, **kwargs):
+    print("delete parent!")

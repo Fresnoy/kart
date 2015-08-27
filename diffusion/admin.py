@@ -1,9 +1,20 @@
 from django.contrib import admin
+from django.db import models
 
-from django_markdown.admin import MarkdownModelAdmin
+from pagedown.widgets import AdminPagedownWidget
 
 from .models import Place, Award
 
-admin.site.register(Place, MarkdownModelAdmin)
-admin.site.register(Award, MarkdownModelAdmin)
+class AwardAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': AdminPagedownWidget },
+    }
 
+class PlaceAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': AdminPagedownWidget },
+    }
+
+
+admin.site.register(Place, PlaceAdmin)
+admin.site.register(Award, AwardAdmin)

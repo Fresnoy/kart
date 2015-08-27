@@ -1,12 +1,17 @@
 from django.contrib import admin
+from django.db import models
 
-from django_markdown.admin import MarkdownModelAdmin
+from pagedown.widgets import AdminPagedownWidget
 
 from .models import Promotion, Student
 
-class StudentAdmin(MarkdownModelAdmin):
+class StudentAdmin(admin.ModelAdmin):
     list_display = ('user', 'number', 'promotion', 'nickname')
     search_fields = ('number', 'user__first_name', 'user__last_name')
-    
+
+    formfield_overrides = {
+        models.TextField: {'widget': AdminPagedownWidget },
+    }
+
 admin.site.register(Promotion)
 admin.site.register(Student, StudentAdmin)

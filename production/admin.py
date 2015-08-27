@@ -1,5 +1,7 @@
 from django.contrib import admin
-from django_markdown.admin import MarkdownModelAdmin
+from django.db import models
+
+from pagedown.widgets import AdminPagedownWidget
 
 from .models import Production, FilmGenre, Film, InstallationGenre, Installation, Performance, StaffTask, OrganizationTask, Event, Itinerary
 
@@ -9,44 +11,51 @@ class CollaboratorsInline(admin.TabularInline):
 class PartnersInline(admin.TabularInline):
     model = Production.partners.through
 
-class ProductionAdmin(MarkdownModelAdmin):
+@admin.register(Production)
+class ProductionAdmin(admin.ModelAdmin):
     list_display = ('title', 'subtitle')
     search_fields = ['title']
     inlines = (CollaboratorsInline, PartnersInline)
+
+    formfield_overrides = {
+        models.TextField: {'widget': AdminPagedownWidget },
+    }
 
 class ArtworkAdmin(ProductionAdmin):
     list_display = (ProductionAdmin.list_display + ('production_date',))
     filter_horizontal = ('authors', 'beacons')
 
+@admin.register(Event)
 class EventAdmin(ProductionAdmin):
     list_display = (ProductionAdmin.list_display + ('starting_date', 'ending_date'))
 
 class ItineraryArtworkInline(admin.TabularInline):
     model = Itinerary.artworks.through
 
-class ItineraryAdmin(MarkdownModelAdmin):
+@admin.register(Itinerary)
+class ItineraryAdmin(admin.ModelAdmin):
     inlines = (ItineraryArtworkInline,)
 
+    formfield_overrides = {
+        models.TextField: {'widget': AdminPagedownWidget },
+    }
+
+@admin.register(FilmGenre)
 class FilmGenreAdmin(admin.ModelAdmin):
     pass
 
+@admin.register(InstallationGenre)
 class InstallationGenreAdmin(admin.ModelAdmin):
     pass
 
+@admin.register(OrganizationTask)
+class OrganizationTaskAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': AdminPagedownWidget },
+    }
 
-# Tasks
-admin.site.register(OrganizationTask, MarkdownModelAdmin)
-admin.site.register(StaffTask, MarkdownModelAdmin)
-
-# Artworks
-admin.site.register(FilmGenre, FilmGenreAdmin)
-admin.site.register(Film, ArtworkAdmin)
-admin.site.register(InstallationGenre, InstallationGenreAdmin)
-admin.site.register(Installation, ArtworkAdmin)
-admin.site.register(Performance, ArtworkAdmin)
-
-# Events
-admin.site.register(Event, EventAdmin)
-
-# Itinerary
-admin.site.register(Itinerary, ItineraryAdmin)
+@admin.register(StaffTask)
+class StaffTaskAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': AdminPagedownWidget },
+    }
