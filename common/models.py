@@ -7,6 +7,8 @@ class BTBeacon(models.Model):
     uuid = UUIDField(unique=True)
     rssi_in = models.IntegerField()
     rssi_out = models.IntegerField()
+    x = models.FloatField()
+    y = models.FloatField()
 
     def __unicode__(self):
         return u"%s (%s)" % (self.label, self.uuid)
@@ -24,4 +26,3 @@ class Website(models.Model):
 
     def __unicode__(self):
         return self.title_fr
-    
