@@ -24,6 +24,8 @@ class UserResource(ModelResource):
         bundle.data['birthdate'] = bundle.obj.profile.birthdate
         bundle.data['birthplace'] = bundle.obj.profile.birthplace
         bundle.data['cursus'] = bundle.obj.profile.cursus
+        bundle.data['homeland_country'] = bundle.obj.profile.homeland_country
+        bundle.data['birthplace_country'] = bundle.obj.profile.birthplace_country
         #bundle.data['first_name'] = bundle.obj.user.first_name
         #bundle.data['last_name'] = bundle.obj.user.last_name
         return bundle
