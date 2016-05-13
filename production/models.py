@@ -62,7 +62,8 @@ class Production(PolymorphicModel):
     description_en = models.TextField(blank=True, null=True)
 
     def __unicode__(self):
-        return "Production %s" % self.id
+        # return "Production %s" % self.id
+        return self.title
 
 
 class Artwork(Production):
