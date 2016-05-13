@@ -13,11 +13,11 @@ from assets.api import GalleryResource
 from people.api import ArtistResource, StaffResource, OrganizationResource
 from diffusion.api import PlaceResource
 
-from .models import Installation, Film, Performance, Event, Itinerary, Artwork
+from .models import Installation, Film, Performance, Event, Itinerary, Artwork, FilmGenre
 
 class ProductionResource(ModelResource):
     collaborators = fields.ToManyField(StaffResource, 'collaborators', full=True)
-    partners = fields.ToManyField(OrganizationResource, 'partners', full=True)
+    partners = fields.ToManyField(OrganizationResource, 'partners', full=True )
     websites = fields.ToManyField(WebsiteResource, 'websites', full=True)
 
 class AbstractArtworkResource(ProductionResource):
@@ -97,6 +97,11 @@ class ArtworkResource(AbstractArtworkResource):
         self.log_throttled_access(request)
         return self.create_response(request, object_list)
 
+class InstallationGenreResource(ModelResource):
+    class Meta:
+        queryset = FilmGenre.objects.all()
+        resource_name = 'production/installationgenre'
+
 
 class InstallationResource(AbstractArtworkResource):
     class Meta:
@@ -106,6 +111,13 @@ class InstallationResource(AbstractArtworkResource):
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
     events = fields.ToManyField('production.api.EventResource', 'events', full=False)
+    genres = fields.ToManyField(InstallationGenreResource, 'genres', full=True)
+
+
+class FilmGenreResource(ModelResource):
+    class Meta:
+        queryset = FilmGenre.objects.all()
+        resource_name = 'production/filmgenre'
 
 
 class FilmResource(AbstractArtworkResource):
@@ -116,6 +128,9 @@ class FilmResource(AbstractArtworkResource):
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
     events = fields.ToManyField('production.api.EventResource', 'events', full=False)
+    genres = fields.ToManyField(FilmGenreResource, 'genres', full=True)
+
+
 
 class PerformanceResource(AbstractArtworkResource):
     class Meta:
