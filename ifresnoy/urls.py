@@ -6,7 +6,11 @@ admin.autodiscover()
 
 from tastypie.api import Api
 from people.api import ArtistResource, StaffResource
+<<<<<<< 9100186f39179ceb3ce72db4f7a6dfbc735d4b79
 from production.api import InstallationResource, InstallationGenreResource, FilmResource, FilmGenreResource, PerformanceResource, EventResource, ExhibitionResource, ItineraryResource, ArtworkResource, ProductionStaffTaskResource, StaffTaskResource, ProductionOrganizationTaskResource, OrganizationTaskResource
+=======
+from production.api import InstallationResource, InstallationGenreResource, FilmResource, FilmGenreResource, PerformanceResource, EventResource, ExhibitionResource, ItineraryResource, ArtworkResource
+>>>>>>> display installation / film  genre
 from diffusion.api import PlaceResource
 from school.api import PromotionResource, StudentResource
 
@@ -44,6 +48,5 @@ urlpatterns = patterns('',
                            kwargs={"tastypie_api_module": "ifresnoy.urls.v1_api",
                                    "namespace": "ifresnoy_tastypie_swagger"}),
                        url(r'^admin/', include(admin.site.urls)) \
-
                        ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
