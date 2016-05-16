@@ -2,6 +2,7 @@
 from django.conf.urls import url
 from django.core.paginator import Paginator, InvalidPage
 
+
 from haystack.query import SearchQuerySet
 from tastypie import fields
 from tastypie.cache import SimpleCache
@@ -10,15 +11,32 @@ from tastypie.utils import trailing_slash
 
 from common.api import WebsiteResource, BTBeaconResource
 from assets.api import GalleryResource
-from people.api import ArtistResource, OrganizationResource, StaffResource
+from people.api import ArtistResource, OrganizationResource, StaffResource, UserResource
 from diffusion.api import PlaceResource
 
-from .models import Installation, Film, Performance, Event, Itinerary, Artwork, FilmGenre, StaffTask
+from .models import Installation, Film, Performance, Event, Itinerary, Artwork, FilmGenre, StaffTask, ProductionStaffTask
 
+
+
+class StaffTaskResource(ModelResource):
+    class Meta:
+        queryset = StaffTask.objects.all()
+        resource_name = "production/stafftask"
+
+
+
+class ProductionStaffTaskResource(ModelResource):
+    class Meta:
+        queryset = ProductionStaffTask.objects.all()
+        resource_name = "production/productionstafftask"
+
+
+    user = fields.ForeignKey(UserResource, 'user', full=True)
+    task = fields.ForeignKey(StaffTaskResource, 'task', full=True, null=True, full_list=True, full_detail=True )
 
 
 class ProductionResource(ModelResource):
-    collaborators = fields.ToManyField(StaffResource, 'collaborators', full=True)
+    collaborators = fields.ToManyField(ProductionStaffTaskResource, 'collaborators', full=True, full_detail=True, full_list=True)
     partners = fields.ToManyField(OrganizationResource, 'partners', full=True )
     websites = fields.ToManyField(WebsiteResource, 'websites', full=True)
 
@@ -155,12 +173,6 @@ class EventResource(ProductionResource):
     performances = fields.ToManyField(PerformanceResource, 'performances', full=True, full_list=False, full_detail=True)
 
     subevents = fields.ToManyField('production.api.EventResource', 'subevents')
-
-class StaffTaskResource(ProductionResource):
-    class Meta:
-        queryset = StaffTask.objects.all()
-        resource_name = 'production/stafftask'
-        fields = ['label']
 
 
 
