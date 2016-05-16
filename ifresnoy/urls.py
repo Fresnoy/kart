@@ -5,8 +5,8 @@ from django.contrib import admin
 admin.autodiscover()
 
 from tastypie.api import Api
-from people.api import ArtistResource, StaffResource
-from production.api import InstallationResource, InstallationGenreResource, FilmResource, FilmGenreResource, PerformanceResource, EventResource, ExhibitionResource, ItineraryResource, ArtworkResource
+from people.api import ArtistResource
+from production.api import InstallationResource, InstallationGenreResource, FilmResource, FilmGenreResource, PerformanceResource, EventResource, ExhibitionResource, ItineraryResource, ArtworkResource, StaffTaskResource
 from diffusion.api import PlaceResource
 from school.api import PromotionResource, StudentResource
 
@@ -21,7 +21,8 @@ v1_api.register(EventResource())
 v1_api.register(PromotionResource())
 v1_api.register(StudentResource())
 v1_api.register(ArtistResource())
-v1_api.register(StaffResource())
+# v1_api.register(StaffResource())
+v1_api.register(StaffTaskResource())
 v1_api.register(PlaceResource())
 v1_api.register(ExhibitionResource())
 v1_api.register(ItineraryResource())

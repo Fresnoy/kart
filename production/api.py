@@ -10,10 +10,12 @@ from tastypie.utils import trailing_slash
 
 from common.api import WebsiteResource, BTBeaconResource
 from assets.api import GalleryResource
-from people.api import ArtistResource, StaffResource, OrganizationResource
+from people.api import ArtistResource, OrganizationResource, StaffResource
 from diffusion.api import PlaceResource
 
-from .models import Installation, Film, Performance, Event, Itinerary, Artwork, FilmGenre
+from .models import Installation, Film, Performance, Event, Itinerary, Artwork, FilmGenre, StaffTask
+
+
 
 class ProductionResource(ModelResource):
     collaborators = fields.ToManyField(StaffResource, 'collaborators', full=True)
@@ -153,6 +155,13 @@ class EventResource(ProductionResource):
     performances = fields.ToManyField(PerformanceResource, 'performances', full=True, full_list=False, full_detail=True)
 
     subevents = fields.ToManyField('production.api.EventResource', 'subevents')
+
+class StaffTaskResource(ProductionResource):
+    class Meta:
+        queryset = StaffTask.objects.all()
+        resource_name = 'production/stafftask'
+        fields = ['label']
+
 
 
 class ItineraryResource(ModelResource):
