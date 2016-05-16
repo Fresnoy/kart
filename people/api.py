@@ -56,8 +56,6 @@ class StaffResource(ModelResource):
 
 
     user = fields.ForeignKey(UserResource, 'user', full=True)
-    task = fields.ForeignKey('production.api.StaffTask', 'task', full=True, null=True)
-
 
 
 class OrganizationResource(ModelResource):
