@@ -81,7 +81,7 @@ class ArtworkResource(AbstractArtworkResource):
     class Meta:
         queryset = Artwork.objects.all()
         resource_name = 'production/artwork'
-        filtering = {'authors': ALL_WITH_RELATIONS, 'events': ALL_WITH_RELATIONS, 'title': ALL}
+        filtering = {'authors': ALL_WITH_RELATIONS, 'events': ALL_WITH_RELATIONS, 'title': ALL, 'genres': ALL_WITH_RELATIONS}
         # cache = SimpleCache(timeout=10)
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
@@ -148,7 +148,7 @@ class InstallationResource(AbstractArtworkResource):
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
     events = fields.ToManyField('production.api.EventResource', 'events', full=False)
-    genres = fields.ToManyField(InstallationGenreResource, 'genres', full=True)
+    genres = fields.ToManyField(InstallationGenreResource, 'genres', full=True, full_detail=True, full_list=False)
 
 
 class FilmGenreResource(ModelResource):
@@ -161,11 +161,11 @@ class FilmResource(AbstractArtworkResource):
     class Meta:
         queryset = Film.objects.all()
         resource_name = 'production/film'
-        filtering = {'authors': ALL_WITH_RELATIONS, 'events': ALL_WITH_RELATIONS}
+        filtering = {'authors': ALL_WITH_RELATIONS, 'events': ALL_WITH_RELATIONS, 'genres': ALL_WITH_RELATIONS}
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
     events = fields.ToManyField('production.api.EventResource', 'events', full=False)
-    genres = fields.ToManyField(FilmGenreResource, 'genres', full=True)
+    genres = fields.ToManyField(FilmGenreResource, 'genres', full=True, full_detail=True, full_list=False)
 
 
 
@@ -173,7 +173,7 @@ class PerformanceResource(AbstractArtworkResource):
     class Meta:
         queryset = Performance.objects.all()
         resource_name = 'production/performance'
-        filtering = {'authors': ALL_WITH_RELATIONS, 'events': ALL_WITH_RELATIONS}
+        filtering = {'authors': ALL_WITH_RELATIONS, 'events': ALL_WITH_RELATIONS, 'genres': ALL_WITH_RELATIONS}
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
     events = fields.ToManyField('production.api.EventResource', 'events', full=False)
