@@ -14,7 +14,7 @@ from assets.api import GalleryResource
 from people.api import ArtistResource, OrganizationResource, StaffResource, UserResource
 from diffusion.api import PlaceResource
 
-from .models import Installation, Film, Performance, Event, Itinerary, Artwork, FilmGenre, StaffTask, ProductionStaffTask
+from .models import Installation, Film, Performance, Event, Itinerary, Artwork, FilmGenre, StaffTask, ProductionStaffTask, ProductionOrganizationTask, OrganizationTask
 
 
 
@@ -31,13 +31,30 @@ class ProductionStaffTaskResource(ModelResource):
         resource_name = "production/productionstafftask"
 
 
-    user = fields.ForeignKey(UserResource, 'user', full=True)
-    task = fields.ForeignKey(StaffTaskResource, 'task', full=True, null=True, full_list=True, full_detail=True )
+    staff = fields.ForeignKey(StaffResource, 'staff', full=True)
+    task = fields.ForeignKey(StaffTaskResource, 'task', full=True)
+
+
+class OrganizationTaskResource(ModelResource):
+    class Meta:
+        queryset = OrganizationTask.objects.all()
+        resource_name = "production/organisationtask"
+
+
+
+class ProductionOrganizationTaskResource(ModelResource):
+    class Meta:
+        queryset = ProductionOrganizationTask.objects.all()
+        resource_name = "production/productionorganizationtask"
+
+    organization = fields.ForeignKey(OrganizationResource, 'organization', full=True)
+    task = fields.ForeignKey(StaffTaskResource, 'task', full=True)
+
 
 
 class ProductionResource(ModelResource):
-    collaborators = fields.ToManyField(ProductionStaffTaskResource, 'collaborators', full=True, full_detail=True, full_list=True)
-    partners = fields.ToManyField(OrganizationResource, 'partners', full=True )
+    collaborators = fields.ToManyField(ProductionStaffTaskResource, 'collaborators')
+    partners = fields.ToManyField(ProductionOrganizationTaskResource, 'partners')
     websites = fields.ToManyField(WebsiteResource, 'websites', full=True)
 
 class AbstractArtworkResource(ProductionResource):
