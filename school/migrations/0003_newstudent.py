@@ -9,7 +9,7 @@ def forwards_func(apps, schema_editor):
     Student = apps.get_model('school', 'Student')
 
     for student in Student.objects.all():
-        ns = NewStudent(id=student.id)
+        ns = NewStudent()
         ns.number = student.number
         ns.promotion = student.promotion
         ns.graduate = student.graduate

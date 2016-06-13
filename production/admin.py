@@ -54,18 +54,25 @@ class ProductionParentAdmin(PolymorphicParentModelAdmin):
         models.TextField: {'widget': AdminPagedownWidget },
     }
 
+
+class ArtworkAdmin(admin.ModelAdmin):
+    list_display = ('title', 'subtitle')
+    search_fields = ['title']
+
+
 @admin.register(Installation)
-class InstallationAdmin(admin.ModelAdmin):
+class InstallationAdmin(ArtworkAdmin):
     base_model = Installation
 
+
 @admin.register(Film)
-class FilmAdmin(admin.ModelAdmin):
+class FilmAdmin(ArtworkAdmin):
     base_model = Film
 
-@admin.register(Performance)
-class PerformanceAdmin(admin.ModelAdmin):
-    base_model = Performance
 
+@admin.register(Performance)
+class PerformanceAdmin(ArtworkAdmin):
+    base_model = Performance
 
 
 @admin.register(Event)
