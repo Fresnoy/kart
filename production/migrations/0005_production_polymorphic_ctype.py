@@ -4,11 +4,18 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 
 def forwards_func(apps, schema_editor):
-    MyModel = apps.get_model('production', 'Production')
-    ContentType = apps.get_model('contenttypes', 'ContentType')
+    ProductionModel = apps.get_model('production', 'Production')
+    FilmModel = apps.get_model('production', 'Film')
+    InstallationModel = apps.get_model('production', 'Installation')
+    PerformanceModel = apps.get_model('production', 'Performance')
+    EventModel = apps.get_model('production', 'Event')
 
-    new_ct = ContentType.objects.get_for_model(MyModel)
-    MyModel.objects.filter(polymorphic_ctype__isnull=True).update(polymorphic_ctype=new_ct)
+    models = [FilmModel, InstallationModel, PerformanceModel, EventModel]
+
+    ContentType = apps.get_model('contenttypes', 'ContentType')
+    for model in models:
+        new_ct = ContentType.objects.get_for_model(model)
+        model.objects.filter(polymorphic_ctype__isnull=True).update(polymorphic_ctype=new_ct)
 
 def backwards_func(apps, schema_editor):
     pass

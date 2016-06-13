@@ -36,7 +36,7 @@ class InstallationChildAdmin(ArtworkChildAdmin):
     pass
 
 
-@admin.register(Production)
+# @admin.register(Production)
 class ProductionParentAdmin(PolymorphicParentModelAdmin):
     list_display = ('title', 'subtitle')
     search_fields = ['title']
@@ -57,6 +57,14 @@ class ProductionParentAdmin(PolymorphicParentModelAdmin):
 @admin.register(Installation)
 class InstallationAdmin(admin.ModelAdmin):
     base_model = Installation
+
+@admin.register(Film)
+class FilmAdmin(admin.ModelAdmin):
+    base_model = Film
+
+@admin.register(Performance)
+class PerformanceAdmin(admin.ModelAdmin):
+    base_model = Performance
 
 
 
