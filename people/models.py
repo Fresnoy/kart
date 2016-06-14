@@ -10,8 +10,19 @@ from common.models import Website
 from common.utils import make_filepath
 
 class FresnoyProfile(models.Model):
+
+    GENDER = (
+            ('m', 'Male'),
+            ('f', 'Female'),
+            ('t', 'Transgender'),
+            ('o', 'Other'),
+            ('n', 'Not Specified'),
+        )
+
+
     user = models.OneToOneField(User, related_name='profile')
     photo = models.ImageField(upload_to=make_filepath, blank=True, null=True)
+    gender = models.CharField(max_length=1, choices=GENDER, default='n')
 
     birthdate = models.DateField(null=True, blank=True)
     birthplace = models.CharField(max_length=255, null=True, blank=True)
