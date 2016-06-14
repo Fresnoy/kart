@@ -1,7 +1,11 @@
 from django.contrib.auth.models import User
 from django.db import models
 
+from sortedm2m.fields import SortedManyToManyField
+
 from people.models import Artist
+from assets.models import Gallery
+
 
 
 # Create your models here.
@@ -28,7 +32,7 @@ class Student(models.Model):
     promotion = models.ForeignKey(Promotion)
     graduate = models.BooleanField(default=False)
     user = models.OneToOneField(User)
-    artist = models.OneToOneField(Artist)
+    artist = models.OneToOneField(Artist, related_name='student_artist')
 
     def __unicode__(self):
         return "%s (%s)" % (self.user, self.number)
