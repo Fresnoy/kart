@@ -5,9 +5,12 @@ from django.db.models.signals import post_save
 
 from django_countries.fields import CountryField
 from polymorphic.models import PolymorphicModel
+from django_languages.fields import LanguageField
 
 from common.models import Website
 from common.utils import make_filepath
+
+
 
 class FresnoyProfile(models.Model):
 
@@ -36,7 +39,25 @@ class FresnoyProfile(models.Model):
     homeland_phone = models.CharField(max_length=50, blank=True)
     residence_phone = models.CharField(max_length=50, blank=True)
 
+    RELATIONSHIP = (
+        ("n","Not Specified"),
+        ("s","Single"),
+        ("e","Engaged"),
+        ("m","Married"),
+        ("d","Divorced"),
+        ("w","Widowed"),
+        ("c","Civil Union"),
+    )
+
+    social_insurance_number = models.CharField(max_length=50, blank=True)
+    family_status = models.CharField(max_length=1, choices=RELATIONSHIP, default='n')
+
+    mother_tongue = LanguageField(blank=True, null=True)
+    other_language = LanguageField(blank=True, null=True)
+
     cursus = models.TextField(blank=True)
+
+
 
 
 class Artist(models.Model):

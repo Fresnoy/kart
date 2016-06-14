@@ -6,6 +6,8 @@ from sortedm2m.fields import SortedManyToManyField
 from people.models import Artist
 from assets.models import Gallery
 
+from datetime import date
+
 
 
 # Create your models here.
@@ -38,13 +40,28 @@ class Student(models.Model):
         return "%s (%s)" % (self.user, self.number)
 
 
+def setApplicationNumber():
+    """
+        Application number = increment_num + year
+    """
+    year = date.today().year
+    i=0
+    number = "{} - {}".format(i,year)
+
+    while StudentApplication.objects.filter(application_number = number):
+        i+=1
+        number = "{} - {}".format(i,year)
+
+    return "{}".format(number)
+
+
 class StudentApplication(models.Model):
     """
     Fresnoy's School application procedure
     """
-    artist = models.OneToOneField(Artist)
+    artist = models.ForeignKey(Artist, related_name='application')
 
-    application_number = models.CharField(editable=False, max_length=50)
+    application_number = models.CharField(max_length=50, default=None, null=True, blank=True)
 
     first_time = models.BooleanField(default=True, help_text="If the first time the Artist's applying")
     last_application_year = models.PositiveSmallIntegerField(null=True, blank=True)
@@ -56,3 +73,12 @@ class StudentApplication(models.Model):
 
     administrative_galleries = SortedManyToManyField(Gallery, blank=True, related_name='certificates')
     artwork_galleries = SortedManyToManyField(Gallery, blank=True, related_name='artworks')
+
+    def save(self, *args, **kwargs):
+        if(not self.application_number):
+            self.application_number = setApplicationNumber();
+        super(StudentApplication, self).save(*args, **kwargs)
+
+
+    def __unicode__(self):
+        return "{} ({})".format(self.application_number, self.artist)
