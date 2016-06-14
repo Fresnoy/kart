@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils.translation import ugettext as _
 
 from sortedm2m.fields import SortedManyToManyField
 
@@ -34,41 +35,26 @@ class Student(models.Model):
     promotion = models.ForeignKey(Promotion)
     graduate = models.BooleanField(default=False)
     user = models.OneToOneField(User)
-    artist = models.OneToOneField(Artist, related_name='student_artist')
+    artist = models.OneToOneField(Artist, related_name='student')
 
     def __unicode__(self):
         return "%s (%s)" % (self.user, self.number)
-
-
-def setApplicationNumber():
-    """
-        Application number algorithm = increment_num + year
-    """
-    year = date.today().year
-    i=0
-    number = "{} - {}".format(i,year)
-
-    while StudentApplication.objects.filter(application_number = number):
-        i+=1
-        number = "{} - {}".format(i,year)
-
-    return "{}".format(number)
 
 
 class StudentApplication(models.Model):
     """
     Fresnoy's School application procedure
     """
-    artist = models.ForeignKey(Artist, related_name='application')
+    artist = models.ForeignKey(Artist, related_name='student_application')
 
-    application_number = models.CharField(max_length=50, default=None, null=True, blank=True)
+    application_number = models.CharField(max_length=8, default=None, blank=True)
 
     first_time = models.BooleanField(default=True, help_text="If the first time the Artist's applying")
     last_application_year = models.PositiveSmallIntegerField(null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
 
     remote_interview = models.BooleanField(default=False)
-    remote_interview_type = models.CharField(blank=True, max_length=50, help_text="Skype / Gtalk / FaceTime / AppearIn / Other")
+    remote_interview_type = models.CharField(blank=True, max_length=50, help_text=_("Skype / Gtalk / FaceTime / AppearIn / Other"))
     remote_interview_info = models.CharField(blank=True, max_length=50, help_text="ID / Number / ... ")
 
     administrative_galleries = SortedManyToManyField(Gallery, blank=True, related_name='certificates')
@@ -76,9 +62,19 @@ class StudentApplication(models.Model):
 
     selected_for_interview = models.BooleanField(default=False, help_text="Is the candidat selected for the Interview")
 
+    def setApplicationNumber(self):
+        """
+            Application number algorithm =   year + increment_num
+        """
+        year = date.today().year
+        count = StudentApplication.objects.filter(created_on__year=year).count()
+
+        return "{}-{:03d}".format(year,count+1)
+
+
     def save(self, *args, **kwargs):
-        if(not self.application_number):
-            self.application_number = setApplicationNumber();
+        if not self.application_number: # self.application_number == None - wrong condition
+            self.application_number = self.setApplicationNumber()
         super(StudentApplication, self).save(*args, **kwargs)
 
 
