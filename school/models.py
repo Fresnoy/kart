@@ -32,3 +32,23 @@ class Student(models.Model):
 
     def __unicode__(self):
         return "%s (%s)" % (self.user, self.number)
+
+
+class StudentApplication(models.Model):
+    """
+    Fresnoy's School application procedure
+    """
+    artist = models.OneToOneField(Artist)
+
+    application_number = models.CharField(editable=False, max_length=50)
+
+    first_time = models.BooleanField(default=True, help_text="If the first time the Artist's applying")
+    last_application_year = models.PositiveSmallIntegerField(null=True, blank=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    remote_interview = models.BooleanField(default=False)
+    remote_interview_type = models.CharField(blank=True, max_length=50, help_text="Skype / Gtalk / FaceTime / AppearIn / Other")
+    remote_interview_info = models.CharField(blank=True, max_length=50, help_text="ID / Number / ... ")
+
+    administrative_galleries = SortedManyToManyField(Gallery, blank=True, related_name='certificates')
+    artwork_galleries = SortedManyToManyField(Gallery, blank=True, related_name='artworks')
