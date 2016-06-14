@@ -42,7 +42,7 @@ class Student(models.Model):
 
 def setApplicationNumber():
     """
-        Application number = increment_num + year
+        Application number algorithm = increment_num + year
     """
     year = date.today().year
     i=0
@@ -73,6 +73,8 @@ class StudentApplication(models.Model):
 
     administrative_galleries = SortedManyToManyField(Gallery, blank=True, related_name='certificates')
     artwork_galleries = SortedManyToManyField(Gallery, blank=True, related_name='artworks')
+
+    selected_for_interview = models.BooleanField(default=False, help_text="Is the candidat selected for the Interview")
 
     def save(self, *args, **kwargs):
         if(not self.application_number):
