@@ -47,7 +47,7 @@ class StudentApplication(models.Model):
     """
     artist = models.ForeignKey(Artist, related_name='student_application')
 
-    application_number = models.CharField(max_length=8, default=None, blank=True)
+    current_year_application_count = models.CharField(max_length=8, default=None, blank=True, help_text=_("Auto generated field (current year - increment number)"))
 
     first_time = models.BooleanField(default=True, help_text="If the first time the Artist's applying")
     last_application_year = models.PositiveSmallIntegerField(null=True, blank=True)
@@ -63,9 +63,9 @@ class StudentApplication(models.Model):
 
     selected_for_interview = models.BooleanField(default=False, help_text="Is the candidat selected for the Interview")
 
-    def setApplicationNumber(self):
+    def _make_application_number(self):
         """
-            Application number algorithm =   year + increment_num
+            Application number algorithm = year + increment_num
         """
         year = date.today().year
         count = StudentApplication.objects.filter(created_on__year=year).count()
@@ -74,10 +74,10 @@ class StudentApplication(models.Model):
 
 
     def save(self, *args, **kwargs):
-        if not self.application_number: # self.application_number == None - wrong condition
-            self.application_number = self.setApplicationNumber()
+        if not self.current_year_application_count: # self.current_year_application_count == None - wrong condition
+            self.current_year_application_count = self._make_application_number()
         super(StudentApplication, self).save(*args, **kwargs)
 
 
     def __unicode__(self):
-        return "{} ({})".format(self.application_number, self.artist)
+        return "{} ({})".format(self.current_year_application_count, self.artist)
