@@ -3,7 +3,7 @@ from django.db import models
 
 from pagedown.widgets import AdminPagedownWidget
 
-from .models import Promotion, Student
+from .models import Promotion, Student, StudentApplication
 
 class StudentAdmin(admin.ModelAdmin):
     list_display = ('user', 'number', 'promotion', 'graduate')
@@ -14,4 +14,5 @@ class StudentAdmin(admin.ModelAdmin):
     }
 
 admin.site.register(Promotion)
+admin.site.register(StudentApplication)
 admin.site.register(Student, StudentAdmin)
