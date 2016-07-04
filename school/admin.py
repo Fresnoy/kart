@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 from django.contrib import admin
 from django.db import models
 
@@ -13,6 +14,17 @@ class StudentAdmin(admin.ModelAdmin):
         models.TextField: {'widget': AdminPagedownWidget },
     }
 
+class StudentApplicationAdmin(admin.ModelAdmin):
+
+    def _get_name(self,obj):
+        return obj.artist.user.get_full_name()
+
+    _get_name.short_description = "Nom"
+
+    list_display = ('_get_name','current_year_application_count','created_on','first_time')
+
+
+
 admin.site.register(Promotion)
-admin.site.register(StudentApplication)
+admin.site.register(StudentApplication,StudentApplicationAdmin)
 admin.site.register(Student, StudentAdmin)
