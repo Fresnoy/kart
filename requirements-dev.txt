@@ -1,6 +1,6 @@
 tox
 pytest
-pytest-flakes
+pytest-flake8
 pytest-django
 pytest-cov
 pytest-readme
