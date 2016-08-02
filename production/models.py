@@ -148,12 +148,15 @@ class InstallationGenre(models.Model):
     def __unicode__(self):
         return self.label
 
+
 class Installation(Artwork):
     technical_description = models.TextField(blank=True)
     genres = models.ManyToManyField(InstallationGenre)
 
+
 class Performance(Artwork):
     pass
+
 
 class Event(Production):
     TYPE_CHOICES = (
@@ -179,8 +182,10 @@ class Event(Production):
 
     subevents = models.ManyToManyField('self', blank=True)
 
+
 class Exhibition(Event):
     pass # TODO?
+
 
 class Itinerary(models.Model):
     class Meta:
@@ -198,6 +203,7 @@ class Itinerary(models.Model):
 
     def __unicode__(self):
         return self.label_fr
+
 
 class ItineraryArtwork(models.Model):
     class Meta:

@@ -2,7 +2,8 @@ from rest_framework import serializers
 
 from .models import (
     Film, FilmGenre, Installation,
-    Performance, InstallationGenre
+    Performance, InstallationGenre,
+    Event, Itinerary
 )
 
 
@@ -18,6 +19,12 @@ class FilmSerializer(serializers.HyperlinkedModelSerializer):
         exclude = ('polymorphic_ctype',)
 
 
+class EventSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Event
+        exclude = ('polymorphic_ctype',)
+
+
 class PerformanceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Performance
@@ -27,6 +34,11 @@ class PerformanceSerializer(serializers.HyperlinkedModelSerializer):
 class FilmGenreSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = FilmGenre
+
+
+class ItinerarySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Itinerary
 
 
 class InstallationGenreSerializer(serializers.HyperlinkedModelSerializer):
