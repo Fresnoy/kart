@@ -1,0 +1,7 @@
+tox
+pytest
+pytest-flakes
+pytest-django
+pytest-cov
+pytest-readme
+pytest-sugar
