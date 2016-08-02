@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'ifresnoy',
     'tastypie',
     'tastypie_swagger',
+    'rest_framework',
     'corsheaders',
     'common',
     'people',
@@ -99,6 +100,13 @@ APPEND_SLASH = False
 TASTYPIE_ALLOW_MISSING_SLASH = True
 TASTYPIE_DEFAULT_FORMATS = ['json']
 TASTYPIE_SWAGGER_API_MODULE = 'ifresnoy.urls.v1_api'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    )
+}
+
 
 # SEARCH SETTINGS
 ELASTICSEARCH_INDEX_SETTINGS = {

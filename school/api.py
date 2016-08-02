@@ -16,6 +16,7 @@ class PromotionResource(ModelResource):
         resource_name = 'school/promotion'
         ordering = ['starting_year']
 
+
 class StudentResource(ArtistResource):
     class Meta:
         queryset = Student.objects.all()
