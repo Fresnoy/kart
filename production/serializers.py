@@ -44,4 +44,3 @@ class ItinerarySerializer(serializers.HyperlinkedModelSerializer):
 class InstallationGenreSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = InstallationGenre
-

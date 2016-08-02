@@ -8,10 +8,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-import os
+DEBUG = True
 
-from site_settings import *
+from site_settings import *  # NOQA
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
@@ -116,12 +115,14 @@ ELASTICSEARCH_INDEX_SETTINGS = {
                 "ngram_analyzer": {
                     "type": "custom",
                     "tokenizer": "lowercase",
-                    "filter": ["standard", "asciifolding", "worddelimiter", "lowercase", "stop", "haystack_ngram"] # , "my_snow"]
+                    "filter": ["standard", "asciifolding", "worddelimiter",
+                               "lowercase", "stop", "haystack_ngram"]  # , "my_snow"]
                 },
                 "edgengram_analyzer": {
                     "type": "custom",
                     "tokenizer": "lowercase",
-                    "filter": ["standard", "asciifolding", "worddelimiter", "lowercase", "stop", "haystack_edgengram"] # , "my_snow"]
+                    "filter": ["standard", "asciifolding", "worddelimiter",
+                               "lowercase", "stop", "haystack_edgengram"]  # , "my_snow"]
                 }
             },
             "tokenizer": {

@@ -6,6 +6,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from school.models import Promotion
 
+
 class Command(BaseCommand):
     help = 'Import promotion from a CSV file'
 
@@ -13,33 +14,29 @@ class Command(BaseCommand):
         make_option(
             "-f",
             "--file",
-            dest = "filename",
-            help = "specify import file",
-            metavar = "FILE"
+            dest="filename",
+            help="specify import file",
+            metavar="FILE"
         ),
     )
 
-
     def handle(self, *args, **options):
         filepath = options['filename']
-
-        import codecs
 
         try:
             with open(filepath, 'r') as csvfile:
                 csv_file = csv.reader(csvfile, delimiter=',')
                 for row in csv_file:
-                    name = row[0].decode('utf-8').title() #
+                    name = row[0].decode('utf-8').title()
                     start_year = row[1].decode('utf-8')
-                    end_year = row[2].decode('utf-8').title() #
+                    end_year = row[2].decode('utf-8').title()
 
-                    promotion, created = Promotion.objects.get_or_create(name=name, starting_year=start_year, ending_year=end_year)
+                    promotion, created = Promotion.objects.get_or_create(name=name,
+                                                                         starting_year=start_year, ending_year=end_year)
                     if created:
                         print "%s created" % promotion
 
                     print promotion
-
-
 
         except Exception, e:
             raise CommandError('Error while parsing "%s" %s ' % (filepath, e))

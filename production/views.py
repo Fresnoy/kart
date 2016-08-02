@@ -43,4 +43,3 @@ class FilmGenreViewSet(viewsets.ModelViewSet):
 class InstallationGenreViewSet(viewsets.ModelViewSet):
     queryset = InstallationGenre.objects.all()
     serializer_class = InstallationGenreSerializer
-

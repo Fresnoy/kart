@@ -21,6 +21,7 @@ class Task(models.Model):
     def __unicode__(self):
         return self.label
 
+
 class StaffTask(Task):
     pass
 
@@ -54,7 +55,9 @@ class Production(PolymorphicModel):
     websites = models.ManyToManyField(Website, blank=True)
 
     collaborators = models.ManyToManyField(Staff, through=ProductionStaffTask, blank=True, related_name="%(class)s")
-    partners = models.ManyToManyField(Organization, through=ProductionOrganizationTask, blank=True, related_name="%(class)s")
+    partners = models.ManyToManyField(Organization,
+                                      through=ProductionOrganizationTask, blank=True,
+                                      related_name="%(class)s")
 
     description_short_fr = models.TextField(blank=True, null=True)
     description_short_en = models.TextField(blank=True, null=True)
@@ -93,6 +96,7 @@ class FilmGenre(models.Model):
 
     def __unicode__(self):
         return self.label
+
 
 class Film(Artwork):
     SHOOTING_FORMAT_CHOICES = (
@@ -142,6 +146,7 @@ class Film(Artwork):
     process = models.CharField(choices=PROCESS_CHOICES, max_length=10, blank=True)
     genres = models.ManyToManyField(FilmGenre)
 
+
 class InstallationGenre(models.Model):
     label = models.CharField(max_length=100)
 
@@ -184,7 +189,7 @@ class Event(Production):
 
 
 class Exhibition(Event):
-    pass # TODO?
+    pass  # TODO?
 
 
 class Itinerary(models.Model):

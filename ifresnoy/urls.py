@@ -2,24 +2,31 @@ from django.conf.urls import patterns, include, url
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-admin.autodiscover()
 
 from tastypie.api import Api
 from rest_framework import routers
 
 from people.api import ArtistResource, StaffResource
-from production.api import InstallationResource, FilmResource, PerformanceResource, EventResource, ExhibitionResource, ItineraryResource, ArtworkResource
+from production.api import (
+    InstallationResource, FilmResource,
+    PerformanceResource, EventResource, ExhibitionResource,
+    ItineraryResource, ArtworkResource
+)
 from diffusion.api import PlaceResource
 from school.api import PromotionResource, StudentResource
 
 from people.views import ArtistViewSet, UserViewSet, StaffViewSet, OrganizationViewSet
 from school.views import PromotionViewSet, StudentViewSet, StudentAutocompleteSearchViewSet
-from production.views import (FilmViewSet, InstallationViewSet,
-                              PerformanceViewSet, FilmGenreViewSet,
-                              InstallationGenreViewSet, EventViewSet,
-                              ItineraryViewSet)
+from production.views import (
+    FilmViewSet, InstallationViewSet,
+    PerformanceViewSet, FilmGenreViewSet,
+    InstallationGenreViewSet, EventViewSet,
+    ItineraryViewSet
+)
 from diffusion.views import PlaceViewSet
 
+
+admin.autodiscover()
 
 v1_api = Api(api_name='v1')
 v1_api.register(InstallationResource())
@@ -54,17 +61,17 @@ v2_api.register(r'diffusion/place', PlaceViewSet)
 
 
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'ifresnoy.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
-    (r'^v2/', include(v2_api.urls)),
-    (r'^', include(v1_api.urls)),
-    (r'^grappelli/', include('grappelli.urls')),
-    url('^markdown/', include( 'django_markdown.urls')),
-    url(r'v1/doc/',
-      include('tastypie_swagger.urls', namespace='ifresnoy_tastypie_swagger'),
-      kwargs={"tastypie_api_module":"ifresnoy.urls.v1_api", "namespace":"ifresnoy_tastypie_swagger"}
-    ),
-    url(r'^admin/', include(admin.site.urls)),
+                       # Examples:
+                       # url(r'^$', 'ifresnoy.views.home', name='home'),
+                       # url(r'^blog/', include('blog.urls')),
+                       (r'^v2/', include(v2_api.urls)),
+                       (r'^', include(v1_api.urls)),
+                       (r'^grappelli/', include('grappelli.urls')),
+                       url('^markdown/', include('django_markdown.urls')),
+                       url(r'v1/doc/',
+                           include('tastypie_swagger.urls', namespace='ifresnoy_tastypie_swagger'),
+                           kwargs={"tastypie_api_module": "ifresnoy.urls.v1_api",
+                                   "namespace": "ifresnoy_tastypie_swagger"}),
+                       url(r'^admin/', include(admin.site.urls)) \
 
-) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+                       ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
