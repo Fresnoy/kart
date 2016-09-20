@@ -34,6 +34,7 @@ INSTALLED_APPS = (
     'pagedown',
     'haystack',
     'elasticstack',
+    'polymorphic',
     'sortedm2m',
     'django_countries',
     'django_markdown',
