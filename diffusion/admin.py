@@ -5,14 +5,16 @@ from pagedown.widgets import AdminPagedownWidget
 
 from .models import Place, Award
 
+
 class AwardAdmin(admin.ModelAdmin):
     formfield_overrides = {
-        models.TextField: {'widget': AdminPagedownWidget },
+        models.TextField: {'widget': AdminPagedownWidget},
     }
+
 
 class PlaceAdmin(admin.ModelAdmin):
     formfield_overrides = {
-        models.TextField: {'widget': AdminPagedownWidget },
+        models.TextField: {'widget': AdminPagedownWidget},
     }
 
 

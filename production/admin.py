@@ -4,7 +4,10 @@ from django.db import models
 from pagedown.widgets import AdminPagedownWidget
 from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin
 
-from .models import Production, Artwork, FilmGenre, Film, InstallationGenre, Installation, Performance, StaffTask, OrganizationTask, Event, Itinerary
+from .models import (
+    Production, Artwork, FilmGenre, Film,
+    InstallationGenre, Installation, Performance,
+    StaffTask, OrganizationTask, Event, Itinerary)
 
 
 class CollaboratorsInline(admin.TabularInline):
@@ -19,6 +22,7 @@ class ProductionChildAdmin(PolymorphicChildModelAdmin):
     """ Base admin class for all child models """
     base_model = Production
 
+
 class ArtworkChildAdmin(ProductionChildAdmin):
     base_model = Artwork
     list_display = (ProductionChildAdmin.list_display + ('production_date',))
@@ -31,6 +35,7 @@ class FilmChildAdmin(ArtworkChildAdmin):
 
 class PerformanceChildAdmin(ArtworkChildAdmin):
     pass
+
 
 class InstallationChildAdmin(ArtworkChildAdmin):
     pass
@@ -49,9 +54,8 @@ class ProductionParentAdmin(PolymorphicParentModelAdmin):
         (Performance, PerformanceChildAdmin),
     )
 
-
     formfield_overrides = {
-        models.TextField: {'widget': AdminPagedownWidget },
+        models.TextField: {'widget': AdminPagedownWidget},
     }
 
 
@@ -89,7 +93,7 @@ class ItineraryAdmin(admin.ModelAdmin):
     inlines = (ItineraryArtworkInline,)
 
     formfield_overrides = {
-        models.TextField: {'widget': AdminPagedownWidget },
+        models.TextField: {'widget': AdminPagedownWidget},
     }
 
 
@@ -106,13 +110,12 @@ class InstallationGenreAdmin(admin.ModelAdmin):
 @admin.register(OrganizationTask)
 class OrganizationTaskAdmin(admin.ModelAdmin):
     formfield_overrides = {
-        models.TextField: {'widget': AdminPagedownWidget },
+        models.TextField: {'widget': AdminPagedownWidget},
     }
 
 
 @admin.register(StaffTask)
 class StaffTaskAdmin(admin.ModelAdmin):
     formfield_overrides = {
-        models.TextField: {'widget': AdminPagedownWidget },
+        models.TextField: {'widget': AdminPagedownWidget},
     }
-

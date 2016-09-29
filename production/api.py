@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import url
 from django.core.paginator import Paginator, InvalidPage
+from django.shortcuts import Http404
 
 
 from haystack.query import SearchQuerySet
 from tastypie import fields
-from tastypie.cache import SimpleCache
 from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
 from tastypie.utils import trailing_slash
 
@@ -52,10 +52,12 @@ class ProductionOrganizationTaskResource(ModelResource):
 
 
 
+
 class ProductionResource(ModelResource):
     collaborators = fields.ToManyField(ProductionStaffTaskResource, 'collaborators')
     partners = fields.ToManyField(ProductionOrganizationTaskResource, 'partners')
     websites = fields.ToManyField(WebsiteResource, 'websites', full=True)
+
 
 class AbstractArtworkResource(ProductionResource):
     """
@@ -100,10 +102,12 @@ class ArtworkResource(AbstractArtworkResource):
 
         return bundle
 
-
     def prepend_urls(self):
         return [
-            url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_search'), name="api_get_search"),
+            url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name,
+                                                       trailing_slash()),
+                self.wrap_view('get_search'),
+                name="api_get_search"),
         ]
 
     def get_search(self, request, **kwargs):
@@ -112,7 +116,9 @@ class ArtworkResource(AbstractArtworkResource):
         self.throttle_check(request)
 
         # Do the query.
-        sqs = SearchQuerySet().models(Film, Installation, Performance).load_all().autocomplete(content_auto=request.GET.get('q', ''))
+        sqs = SearchQuerySet().models(Film,
+                                      Installation,
+                                      Performance).load_all().autocomplete(content_auto=request.GET.get('q', ''))
         paginator = Paginator(sqs, 20)
 
         try:
@@ -169,6 +175,7 @@ class FilmResource(AbstractArtworkResource):
 
 
 
+
 class PerformanceResource(AbstractArtworkResource):
     class Meta:
         queryset = Performance.objects.all()
@@ -176,7 +183,9 @@ class PerformanceResource(AbstractArtworkResource):
         filtering = {'authors': ALL_WITH_RELATIONS, 'events': ALL_WITH_RELATIONS, 'genres': ALL_WITH_RELATIONS}
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
+
     events = fields.ToManyField('production.api.EventResource', 'events', full=False)
+
 
 class EventResource(ProductionResource):
     class Meta:
@@ -185,8 +194,11 @@ class EventResource(ProductionResource):
 
     place = fields.ForeignKey(PlaceResource, 'place', full=True)
 
-    installations = fields.ToManyField(InstallationResource, 'installations', full=True, full_list=False, full_detail=True)
+    installations = fields.ToManyField(InstallationResource, 'installations',
+                                       full=True, full_list=False, full_detail=True)
+
     films = fields.ToManyField(FilmResource, 'films', full=True, full_list=False, full_detail=True)
+
     performances = fields.ToManyField(PerformanceResource, 'performances', full=True, full_list=False, full_detail=True)
 
     subevents = fields.ToManyField('production.api.EventResource', 'subevents')
@@ -198,8 +210,11 @@ class ItineraryResource(ModelResource):
         queryset = Itinerary.objects.all()
         resource_name = 'production/itinerary'
 
-    artworks = fields.ToManyField(ArtworkResource, 'artworks', use_in=['detail'], full_detail=True, full_list=False, full=True, blank=True)
-    gallery = fields.ToManyField(GalleryResource, 'gallery', use_in=['detail'], full_detail=True, full=True, blank=True)
+    artworks = fields.ToManyField(ArtworkResource, 'artworks', use_in=['detail'],
+                                  full_detail=True, full_list=False, full=True, blank=True)
+
+    gallery = fields.ToManyField(GalleryResource, 'gallery', use_in=['detail'],
+                                 full_detail=True, full=True, blank=True)
 
 
 class ExhibitionResource(EventResource):

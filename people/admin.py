@@ -8,6 +8,7 @@ from pagedown.widgets import AdminPagedownWidget
 from .forms import UserCreateForm
 from .models import Artist, Staff, FresnoyProfile, Organization
 
+
 class ArtistAdmin(admin.ModelAdmin):
     list_display = ('firstname', 'lastname', 'nickname')
     filter_horizontal = ('websites',)
@@ -20,20 +21,22 @@ class ArtistAdmin(admin.ModelAdmin):
         return obj.user.last_name
 
     formfield_overrides = {
-        models.TextField: {'widget': AdminPagedownWidget },
+        models.TextField: {'widget': AdminPagedownWidget},
     }
+
 
 class FresnoyProfileInline(admin.StackedInline):
     model = FresnoyProfile
     max_num = 1
     can_delete = False
 
+
 class FresnoyProfileAdmin(UserAdmin):
     inlines = (FresnoyProfileInline,)
     list_display = ('username', 'first_name', 'last_name', 'email', 'is_staff')
     add_form = UserCreateForm
 
-    add_fieldsets = ((None, {'fields':('username','password1','password2','first_name','last_name','email'),}),)
+    add_fieldsets = ((None, {'fields': ('username', 'password1', 'password2', 'first_name', 'last_name', 'email')}),)
 
 admin.site.unregister(User)
 admin.site.register(User, FresnoyProfileAdmin)

@@ -16,8 +16,3 @@ class GalleryResource(ModelResource):
         resource_name = 'asset/gallery'
 
     media = fields.ToManyField(MediumResource, 'media', full=True)
-    
-
-
-
-        
