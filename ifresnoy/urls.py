@@ -12,7 +12,6 @@ from production.api import (
     PerformanceResource, EventResource, ExhibitionResource,
     ItineraryResource, ArtworkResource
 )
-
 from diffusion.api import PlaceResource
 from school.api import PromotionResource, StudentResource
 
@@ -30,20 +29,14 @@ from diffusion.views import PlaceViewSet
 admin.autodiscover()
 
 v1_api = Api(api_name='v1')
-v1_api.register(InstallationGenreResource())
 v1_api.register(InstallationResource())
 v1_api.register(FilmResource())
-v1_api.register(FilmGenreResource())
 v1_api.register(PerformanceResource())
 v1_api.register(EventResource())
 v1_api.register(PromotionResource())
 v1_api.register(StudentResource())
 v1_api.register(ArtistResource())
 v1_api.register(StaffResource())
-v1_api.register(ProductionStaffTaskResource())
-v1_api.register(StaffTaskResource())
-v1_api.register(OrganizationTaskResource())
-v1_api.register(ProductionOrganizationTaskResource())
 v1_api.register(PlaceResource())
 v1_api.register(ExhibitionResource())
 v1_api.register(ItineraryResource())
