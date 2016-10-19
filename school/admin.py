@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 from django.contrib import admin
 from django.db import models
 
@@ -14,7 +15,11 @@ class StudentAdmin(admin.ModelAdmin):
     }
 
 class StudentApplicationAdmin(admin.ModelAdmin):
-    list_display = ('artist', 'selected_for_interview', 'updated_on')
+    def _get_name(self,obj):
+        return obj.artist.user.get_full_name()
+    _get_name.short_description = "Nom"
+
+    list_display = ('_get_name','current_year_application_count','created_on','first_time')
 
 
 
