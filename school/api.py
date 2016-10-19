@@ -8,7 +8,7 @@ from tastypie.resources import ALL, ALL_WITH_RELATIONS
 from tastypie.utils import trailing_slash
 
 from people.api import ArtistResource
-from .models import Promotion, Student
+from .models import Promotion, Student, StudentApplication
 
 class PromotionResource(ModelResource):
     class Meta:
@@ -59,3 +59,12 @@ class StudentResource(ArtistResource):
 
         self.log_throttled_access(request)
         return self.create_response(request, object_list)
+
+
+class StudentApplicationResource(ModelResource):
+    class Meta:
+        queryset = StudentApplication.objects.all()
+        resource_name = 'school/application'
+        ordering = ['created_on']
+
+    artist = fields.ForeignKey(ArtistResource, 'artist')
