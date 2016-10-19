@@ -23,8 +23,8 @@ def output_excel(modeladmin, request, queryset):
 
 
     response = HttpResponse()
-    response['content_type'] = 'text/csv; '
-    response['mime_type'] = 'text/csv; '
+    response['content_type'] = 'text/csv;'
+    response['mime_type'] = 'text/csv;'
     response['Content-Disposition'] = 'attachment; filename="candidats_concours.csv"'
     response.write(u'\ufeff'.encode('utf8'))
 

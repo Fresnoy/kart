@@ -61,6 +61,7 @@ class StudentApplication(models.Model):
     administrative_galleries = SortedManyToManyField(Gallery, blank=True, related_name='certificates')
     artwork_galleries = SortedManyToManyField(Gallery, blank=True, related_name='artworks')
 
+    submitted = models.BooleanField(default=False)
     selected_for_interview = models.BooleanField(default=False, help_text="Is the candidat selected for the Interview")
 
     def _make_application_number(self):

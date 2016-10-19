@@ -26,6 +26,7 @@ class Migration(migrations.Migration):
                 ('remote_interview', models.BooleanField(default=False)),
                 ('remote_interview_type', models.CharField(help_text='Skype / Gtalk / FaceTime / AppearIn / Other', max_length=50, blank=True)),
                 ('remote_interview_info', models.CharField(help_text=b'ID / Number / ... ', max_length=50, blank=True)),
+                ('submitted', models.BooleanField(default=False)),
                 ('selected_for_interview', models.BooleanField(default=False, help_text=b'Is the candidat selected for the Interview')),
                 ('administrative_galleries', sortedm2m.fields.SortedManyToManyField(help_text=None, related_name='certificates', to='assets.Gallery', blank=True)),
                 ('artist', models.ForeignKey(related_name='student_application', to='people.Artist')),
