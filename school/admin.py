@@ -19,8 +19,6 @@ class StudentAdmin(admin.ModelAdmin):
 
 def output_excel(modeladmin, request, queryset):
     # do something
-    output_excel.short_description = "Sortie Excel"
-
 
     response = HttpResponse()
     response['content_type'] = 'text/csv;'
@@ -34,7 +32,11 @@ def output_excel(modeladmin, request, queryset):
 
     for obj in queryset:
         writer.writerow([obj.updated_on, obj.artist.user.last_name,  obj.artist.user.first_name, obj.current_year_application_count, '', '', '', obj.artist.user.email  ])
+
+
     return response
+    
+output_excel.short_description = "Sortie Excel"
 
 
 

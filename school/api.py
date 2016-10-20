@@ -10,6 +10,8 @@ from tastypie.utils import trailing_slash
 from people.api import ArtistResource
 from .models import Promotion, Student, StudentApplication
 
+from assets.api import GalleryResource
+
 class PromotionResource(ModelResource):
     class Meta:
         queryset = Promotion.objects.all()
@@ -68,3 +70,5 @@ class StudentApplicationResource(ModelResource):
         ordering = ['created_on']
 
     artist = fields.ForeignKey(ArtistResource, 'artist')
+    administrative_galleries = fields.ToManyField(GalleryResource, 'administrative_galleries', full=True)
+    artwork_galleries = fields.ToManyField(GalleryResource, 'artwork_galleries', full=True)
