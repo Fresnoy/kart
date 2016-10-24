@@ -5,9 +5,11 @@ from django.db import models
 from pagedown.widgets import AdminPagedownWidget
 
 from .models import Promotion, Student, StudentApplication
+<<<<<<< HEAD
 
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponseRedirect
+
 
 
 class StudentAdmin(admin.ModelAdmin):
@@ -17,6 +19,7 @@ class StudentAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.TextField: {'widget': AdminPagedownWidget },
     }
+
 
 def output_excel(modeladmin, request, queryset):
     # do something
@@ -38,7 +41,6 @@ class StudentApplicationAdmin(admin.ModelAdmin):
 
     _get_name.short_description = "Nom"
     list_display = ('_get_name','current_year_application_count','created_on','selected_for_interview')
-
 
 
 

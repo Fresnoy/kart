@@ -65,7 +65,6 @@ class Production(PolymorphicModel):
         return "{} ({})".format(self.title, self.id)
 
 
-
 class Artwork(Production):
     production_date = models.DateField()
 
