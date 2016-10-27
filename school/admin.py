@@ -5,7 +5,6 @@ from django.db import models
 from pagedown.widgets import AdminPagedownWidget
 
 from .models import Promotion, Student, StudentApplication
-<<<<<<< HEAD
 
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponseRedirect
@@ -19,9 +18,6 @@ class StudentAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.TextField: {'widget': AdminPagedownWidget },
     }
-
-output_excel.short_description = "Sortie Excel"
-
 
 
 class StudentApplicationAdmin(admin.ModelAdmin):
