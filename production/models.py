@@ -62,8 +62,7 @@ class Production(PolymorphicModel):
     description_en = models.TextField(blank=True, null=True)
 
     def __unicode__(self):
-        # return "Production %s" % self.id
-        return "%s - %s" % (self.title,self.id)
+        return "{} ({})".format(self.title, self.id)
 
 
 class Artwork(Production):
@@ -121,15 +120,14 @@ class Film(Artwork):
     )
 
     ASPECT_RATIO_CHOICES = (
-        ('1.33', "1.33"),
+        ('1.33', "1.33 (4/3)"),
         ('1.37', "1.37"),
         ('1.66', "1.66"),
-        ('1.77', "1.77"),
-        ('1.85', "1.85"),
-        ('1.89', "1.89"),
-        ('2.35', "2.35"),
-        ('4/3', "4/3"),
-        ('16/9', "16/9")
+        ('1.77', "1.77 (16/9)"),
+        ('1.85', "1.85 (Flat)"),
+        ('1.90', "1.90 (Full Container)"),
+        ('2.39', "2.39 (Scope)"),
+
     )
 
     PROCESS_CHOICES = (
