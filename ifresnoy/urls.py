@@ -32,16 +32,18 @@ v1_api.register(ItineraryResource())
 v1_api.register(ArtworkResource())
 
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'ifresnoy.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
-    (r'^', include(v1_api.urls)),
-    (r'^grappelli/', include('grappelli.urls')),
-    url('^markdown/', include( 'django_markdown.urls')),
-    url(r'v1/doc/',
-      include('tastypie_swagger.urls', namespace='ifresnoy_tastypie_swagger'),
-      kwargs={"tastypie_api_module":"ifresnoy.urls.v1_api", "namespace":"ifresnoy_tastypie_swagger"}
-    ),
-    url(r'^admin/', include(admin.site.urls)),
+                       # Examples:
+                       # url(r'^$', 'ifresnoy.views.home', name='home'),
+                       # url(r'^blog/', include('blog.urls')),
+                       (r'^v2/', include(v2_api.urls)),
+                       (r'^', include(v1_api.urls)),
+                       (r'^grappelli/', include('grappelli.urls')),
+                       url('^markdown/', include('django_markdown.urls')),
+                       url(r'v1/doc/',
+                           include('tastypie_swagger.urls', namespace='ifresnoy_tastypie_swagger'),
+                           kwargs={"tastypie_api_module": "ifresnoy.urls.v1_api",
+                                   "namespace": "ifresnoy_tastypie_swagger"}),
+                       url(r'^admin/', include(admin.site.urls)) \
 
-) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+                       ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
