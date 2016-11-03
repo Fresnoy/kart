@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
+from django.db import migrations, models
 import sortedm2m.fields
 
 
@@ -26,10 +26,18 @@ class Migration(migrations.Migration):
                 ('remote_interview', models.BooleanField(default=False)),
                 ('remote_interview_type', models.CharField(help_text='Skype / Gtalk / FaceTime / AppearIn / Other', max_length=50, blank=True)),
                 ('remote_interview_info', models.CharField(help_text=b'ID / Number / ... ', max_length=50, blank=True)),
-                ('selected_for_interview', models.BooleanField(default=False, help_text=b'Is the candidat selected for the Interview')),
-                ('administrative_galleries', sortedm2m.fields.SortedManyToManyField(help_text=None, related_name='certificates', to='assets.Gallery', blank=True)),
+                ('asynchronous_element', models.BooleanField(default=False, help_text=b'Element not sent by current form')),
+                ('asynchronous_element_description', models.TextField(help_text=b'What are these elements and how you send it', null=True, blank=True)),
+                ('asynchronous_element_received', models.BooleanField(default=False, help_text=b'Administration - Element have been received')),
+                ('remark', models.TextField(help_text=b"Free expression'", null=True, blank=True)),
+                ('application_completed', models.BooleanField(default=False, help_text=b"Candidature's validation")),
+                ('selected_for_interview', models.BooleanField(default=False, help_text=b'Administration - Is the candidat selected for the Interview')),
+                ('selected_for_petit_jury', models.BooleanField(default=False, help_text=b"Administration - Is the candidat selected for the 'Petit Jury'")),
+                ('selected_for_grand_jury', models.BooleanField(default=False, help_text=b"Administration - Is the candidat selected for the 'Grand Jury'")),
+                ('application_complete', models.BooleanField(default=False, help_text=b'Administration - Candidature is complete')),
+                ('administrative_galleries', sortedm2m.fields.SortedManyToManyField(help_text=None, related_name='student_application_administrative', to='assets.Gallery', blank=True)),
                 ('artist', models.ForeignKey(related_name='student_application', to='people.Artist')),
-                ('artwork_galleries', sortedm2m.fields.SortedManyToManyField(help_text=None, related_name='artworks', to='assets.Gallery', blank=True)),
+                ('artwork_galleries', sortedm2m.fields.SortedManyToManyField(help_text=None, related_name='student_application_artwork', to='assets.Gallery', blank=True)),
             ],
         ),
         migrations.AlterField(
