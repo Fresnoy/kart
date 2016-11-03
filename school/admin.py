@@ -23,8 +23,6 @@ class StudentApplicationAdmin(admin.ModelAdmin):
     list_display = ('artist', 'selected_for_interview', 'updated_on')
 
 
-
-
 admin.site.register(Promotion)
 admin.site.register(StudentApplication,StudentApplicationAdmin)
 admin.site.register(Student, StudentAdmin)
