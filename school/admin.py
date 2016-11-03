@@ -18,7 +18,6 @@ class StudentAdmin(admin.ModelAdmin):
         models.TextField: {'widget': AdminPagedownWidget },
     }
 
-
 def output_excel(modeladmin, request, queryset):
     # do something
     selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
@@ -27,7 +26,6 @@ def output_excel(modeladmin, request, queryset):
 
 
 output_excel.short_description = "Sortie Excel"
-
 
 
 class StudentApplicationAdmin(admin.ModelAdmin):

@@ -33,6 +33,21 @@ v1_api.register(ItineraryResource())
 v1_api.register(ArtworkResource())
 
 urlpatterns = patterns('',
+<<<<<<< HEAD
+=======
+    # Examples:
+    # url(r'^$', 'ifresnoy.views.home', name='home'),
+    # url(r'^blog/', include('blog.urls')),
+    (r'^', include(v1_api.urls)),
+    (r'^grappelli/', include('grappelli.urls')),
+    url('^markdown/', include( 'django_markdown.urls')),
+    url(r'v1/doc/',
+      include('tastypie_swagger.urls', namespace='ifresnoy_tastypie_swagger'),
+      kwargs={"tastypie_api_module":"ifresnoy.urls.v1_api", "namespace":"ifresnoy_tastypie_swagger"}
+    ),
+    url(r'^admin/', include(admin.site.urls)),
+    
+>>>>>>> 8dffe09ea37b97d6d4208bcd02399277376e78c9
 
                        # Examples:
                        # url(r'^$', 'ifresnoy.views.home', name='home'),
