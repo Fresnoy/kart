@@ -7,14 +7,23 @@ from tastypie.resources import ModelResource
 from tastypie.resources import ALL, ALL_WITH_RELATIONS
 from tastypie.utils import trailing_slash
 
-from people.api import ArtistResource
-from .models import Promotion, Student
+from people.api import ArtistResource, UserResource
+from .models import Promotion, Student, StudentApplication
 
 class PromotionResource(ModelResource):
     class Meta:
         queryset = Promotion.objects.all()
         resource_name = 'school/promotion'
         ordering = ['starting_year']
+
+
+class StudentApplicationResource(ModelResource):
+    class Meta:
+        queryset = StudentApplication.objects.all()
+        resource_name = 'school/application'
+
+    artist = fields.ForeignKey(ArtistResource, 'artist')
+
 
 class StudentResource(ArtistResource):
     class Meta:
