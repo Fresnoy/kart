@@ -63,6 +63,7 @@ class Production(PolymorphicModel):
 
     def __unicode__(self):
         return "{} ({})".format(self.title, self.id)
+    
 
 
 class Artwork(Production):
