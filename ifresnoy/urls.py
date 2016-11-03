@@ -35,7 +35,7 @@ urlpatterns = patterns('',
                        # Examples:
                        # url(r'^$', 'ifresnoy.views.home', name='home'),
                        # url(r'^blog/', include('blog.urls')),
-                       (r'^v2/', include(v2_api.urls)),
+                       #(r'^v2/', include(v2_api.urls)),
                        (r'^', include(v1_api.urls)),
                        (r'^grappelli/', include('grappelli.urls')),
                        url('^markdown/', include('django_markdown.urls')),
