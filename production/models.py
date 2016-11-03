@@ -62,12 +62,7 @@ class Production(PolymorphicModel):
     description_en = models.TextField(blank=True, null=True)
 
     def __unicode__(self):
-<<<<<<< f65142ea3d46f4824b90097c53fbd4cdeb1a5fe5
-        # return "Production %s" % self.id
-        return "%s - %s" % (self.title,self.id)
-=======
         return "{} ({})".format(self.title, self.id)
->>>>>>> pep8 correction
 
 
 class Artwork(Production):
