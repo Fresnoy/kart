@@ -7,7 +7,7 @@ from pagedown.widgets import AdminPagedownWidget
 from .models import Promotion, Student, StudentApplication
 
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'number', 'promotion', 'graduate')
+    list_display = ('artist', 'number', 'promotion', 'graduate')
     search_fields = ('number', 'user__first_name', 'user__last_name')
 
     formfield_overrides = {
@@ -20,8 +20,8 @@ class StudentApplicationAdmin(admin.ModelAdmin):
         return obj.artist.user.get_full_name()
 
     _get_name.short_description = "Nom"
+    list_display = ('artist', 'selected_for_interview', 'updated_on')
 
-    list_display = ('_get_name','current_year_application_count','created_on','first_time')
 
 
 
