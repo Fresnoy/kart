@@ -58,10 +58,24 @@ class StudentApplication(models.Model):
     remote_interview_type = models.CharField(blank=True, max_length=50, help_text=_("Skype / Gtalk / FaceTime / AppearIn / Other"))
     remote_interview_info = models.CharField(blank=True, max_length=50, help_text="ID / Number / ... ")
 
-    administrative_galleries = SortedManyToManyField(Gallery, blank=True, related_name='certificates')
-    artwork_galleries = SortedManyToManyField(Gallery, blank=True, related_name='artworks')
+    administrative_galleries = SortedManyToManyField(Gallery, blank=True, related_name='student_application_administrative')
+    artwork_galleries = SortedManyToManyField(Gallery, blank=True, related_name='student_application_artwork')
 
-    selected_for_interview = models.BooleanField(default=False, help_text="Is the candidat selected for the Interview")
+    asynchronous_element = models.BooleanField(default=False, help_text="Element not sent by current form")
+    asynchronous_element_description = models.TextField(blank=True, null=True, help_text="What are these elements and how you send it")
+    asynchronous_element_received = models.BooleanField(default=False, help_text="Administration - Element have been received")
+
+    remark = models.TextField(blank=True, null=True, help_text="Free expression'")
+    application_completed = models.BooleanField(default=False, help_text="Candidature's validation")
+
+    # Administration
+    selected_for_interview = models.BooleanField(default=False, help_text="Administration - Is the candidat selected for the Interview")
+    selected_for_petit_jury = models.BooleanField(default=False, help_text="Administration - Is the candidat selected for the 'Petit Jury'")
+    selected_for_grand_jury = models.BooleanField(default=False, help_text="Administration - Is the candidat selected for the 'Grand Jury'")
+
+
+    application_complete = models.BooleanField(default=False, help_text="Administration - Candidature is complete")
+
 
     def _make_application_number(self):
         """

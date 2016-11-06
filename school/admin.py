@@ -10,7 +10,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponseRedirect
 
 
-
 class StudentAdmin(admin.ModelAdmin):
     list_display = ('artist', 'number', 'promotion', 'graduate')
     search_fields = ('number', 'user__first_name', 'user__last_name')
@@ -18,6 +17,15 @@ class StudentAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.TextField: {'widget': AdminPagedownWidget },
     }
+
+def output_excel(modeladmin, request, queryset):
+    # do something
+    selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
+    ct = ContentType.objects.get_for_model(queryset.model)
+    return HttpResponseRedirect("/export/?ct=%s&ids=%s" % (ct.pk, ",".join(selected)))
+
+
+output_excel.short_description = "Sortie Excel"
 
 
 class StudentApplicationAdmin(admin.ModelAdmin):
