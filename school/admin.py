@@ -33,7 +33,7 @@ class StudentApplicationAdmin(admin.ModelAdmin):
         return obj.artist.user.get_full_name()
 
     _get_name.short_description = "Nom"
-    list_display = ('_get_name','current_year_application_count','created_on','selected_for_interview')
+    list_display = ('_get_name','current_year_application_count','created_on','selected_for_interview', 'asynchronous_element', 'application_complete', 'remark')
 
 admin.site.register(Promotion)
 admin.site.register(StudentApplication, StudentApplicationAdmin )
