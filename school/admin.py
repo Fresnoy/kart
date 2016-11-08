@@ -18,14 +18,6 @@ class StudentAdmin(admin.ModelAdmin):
     }
 
 
-def output_excel(modeladmin, request, queryset):
-    selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
-    ct = ContentType.objects.get_for_model(queryset.model)
-    return HttpResponseRedirect("/export/?ct=%s&ids=%s" % (ct.pk, ",".join(selected)))
-
-output_excel.short_description = "Sortie Excel"
-
-
 
 class StudentApplicationAdmin(admin.ModelAdmin):
 
@@ -35,6 +27,7 @@ class StudentApplicationAdmin(admin.ModelAdmin):
     _get_name.short_description = "Nom"
     list_display = ('_get_name','current_year_application_count','created_on','selected_for_interview', 'asynchronous_element', 'application_complete', 'remark')
 
+
 admin.site.register(Promotion)
-admin.site.register(StudentApplication, StudentApplicationAdmin )
+admin.site.register(StudentApplication, StudentApplicationAdmin)
 admin.site.register(Student, StudentAdmin)
