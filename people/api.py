@@ -6,6 +6,10 @@ from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
 from common.api import WebsiteResource
 
 from .models import Artist, Staff, Organization
+from production.models import Task, StaffTask, ProductionStaffTask
+
+
+
 
 class UserResource(ModelResource):
     class Meta:
@@ -44,10 +48,15 @@ class ArtistResource(ModelResource):
     user = fields.ForeignKey(UserResource, 'user', full=True)
     artworks = fields.ToManyField('production.api.ArtworkResource', 'artworks', full=False, null=True, use_in=['detail'])
 
+
 class StaffResource(ModelResource):
     class Meta:
         queryset = Staff.objects.all()
         resource_name = 'people/staff'
+
+
+    user = fields.ForeignKey(UserResource, 'user', full=True)
+
 
 class OrganizationResource(ModelResource):
     class Meta:

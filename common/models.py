@@ -11,7 +11,7 @@ class BTBeacon(models.Model):
     y = models.FloatField()
 
     def __unicode__(self):
-        return u"%s (%s)" % (self.label, self.uuid)
+        return "{0} ({1})".format(self.label, self.uuid)
 
 class Website(models.Model):
     LANGUAGES = (

@@ -2,16 +2,30 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.contrib.postgres.fields import ArrayField
 
 from django_countries.fields import CountryField
 from polymorphic.models import PolymorphicModel
+from django_languages.fields import LanguageField
 
 from common.models import Website
 from common.utils import make_filepath
 
+
+
 class FresnoyProfile(models.Model):
+
+    GENDER_CHOICES = (
+            ('M', 'Male'),
+            ('F', 'Female'),
+            ('T', 'Transgender'),
+            ('O', 'Other'),
+        )
+
+
     user = models.OneToOneField(User, related_name='profile')
     photo = models.ImageField(upload_to=make_filepath, blank=True, null=True)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=False)
 
     birthdate = models.DateField(null=True, blank=True)
     birthplace = models.CharField(max_length=255, null=True, blank=True)
@@ -24,6 +38,23 @@ class FresnoyProfile(models.Model):
 
     homeland_phone = models.CharField(max_length=50, blank=True)
     residence_phone = models.CharField(max_length=50, blank=True)
+
+    FAMILY_STATUS_CHOICES = (
+        ("S", "Single"),
+        ("E", "Engaged"),
+        ("M", "Married"),
+        ("D", "Divorced"),
+        ("W", "Widowed"),
+        ("C", "Civil Union"),
+    )
+
+    social_insurance_number = models.CharField(max_length=50, blank=True)
+    family_status = models.CharField(max_length=1,
+                                     choices=FAMILY_STATUS_CHOICES,
+                                     null=True, blank=True)
+
+    mother_tongue = LanguageField(blank=True, null=True)
+    other_language = LanguageField(blank=True, null=True)
 
     cursus = models.TextField(blank=True)
 
@@ -46,7 +77,7 @@ class Artist(models.Model):
     websites = models.ManyToManyField(Website, blank=True)
 
     def __unicode__(self):
-        return u"%s (%s)" % (self.user, self.nickname)
+        return "{0} ({1})" % (self.user, self.nickname)
 
 class Staff(models.Model):
     """
