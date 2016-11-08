@@ -37,7 +37,6 @@ class StudentApplicationAdmin(admin.ModelAdmin):
     list_display = ('_get_name','current_year_application_count','created_on','selected_for_interview')
 
 
-
 admin.site.register(Promotion)
 admin.site.register(StudentApplication, StudentApplicationAdmin )
 admin.site.register(Student, StudentAdmin)
