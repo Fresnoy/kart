@@ -80,4 +80,4 @@ class StudentApplication(models.Model):
 
 
     def __unicode__(self):
-        return "{} ({})".format(self.current_year_application_count, self.artist)
+        return "{0} ({1})".format(self.current_year_application_count, self.artist)
