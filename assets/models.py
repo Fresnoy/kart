@@ -12,7 +12,7 @@ class Gallery(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
-        return "{0} - {1}".format(self.label, self.description)
+        return u'{0} - {1}'.format(self.label, self.description)
 
     class Meta:
         verbose_name_plural = "galleries"

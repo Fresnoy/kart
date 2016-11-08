@@ -77,7 +77,7 @@ class Artist(models.Model):
     websites = models.ManyToManyField(Website, blank=True)
 
     def __unicode__(self):
-        return "{0} ({1})" % (self.user, self.nickname)
+        return u'{0} ({1})'.format(self.user, self.nickname)
 
 class Staff(models.Model):
     """
