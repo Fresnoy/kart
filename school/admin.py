@@ -17,6 +17,7 @@ class StudentAdmin(admin.ModelAdmin):
         models.TextField: {'widget': AdminPagedownWidget },
     }
 
+
 def output_excel(modeladmin, request, queryset):
     selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
     ct = ContentType.objects.get_for_model(queryset.model)
@@ -27,7 +28,6 @@ output_excel.short_description = "Sortie Excel"
 
 
 class StudentApplicationAdmin(admin.ModelAdmin):
-    actions = [output_excel]
 
     def _get_name(self,obj):
         return obj.artist.user.get_full_name()
