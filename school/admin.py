@@ -5,10 +5,10 @@ from django.db import models
 from pagedown.widgets import AdminPagedownWidget
 
 from .models import Promotion, Student, StudentApplication
+<<<<<<< eccf94e194af7b3b6290b2be777bfcd7836321f8
 
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponseRedirect
-
 
 class StudentAdmin(admin.ModelAdmin):
     list_display = ('artist', 'number', 'promotion', 'graduate')
