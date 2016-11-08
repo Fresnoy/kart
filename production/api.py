@@ -94,7 +94,7 @@ class ArtworkResource(AbstractArtworkResource):
                 res = res_type()
                 rr_bundle = res.build_bundle(obj=bundle.obj, request=bundle.request)
                 bundle.data = res.full_dehydrate(rr_bundle).data
-                bundle.data['type'] = u"%s" % res_type.Meta.queryset.model.__name__.lower()
+                bundle.data['type'] = "{0}".format(res_type.Meta.queryset.model.__name__.lower())
                 break
 
         return bundle
