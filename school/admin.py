@@ -15,6 +15,7 @@ class StudentAdmin(admin.ModelAdmin):
     }
 
 class StudentApplicationAdmin(admin.ModelAdmin):
+
     def _get_name(self,obj):
         return obj.artist.user.get_full_name()
 
