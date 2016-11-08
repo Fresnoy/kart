@@ -31,13 +31,13 @@ class OrganizationTask(Task):
 
 class ProductionStaffTask(models.Model):
     staff = models.ForeignKey(Staff)
-    production = models.ForeignKey('Production')
+    production = models.ForeignKey('Production', related_name="staff_tasks")
     task = models.ForeignKey(StaffTask)
 
 
 class ProductionOrganizationTask(models.Model):
     organization = models.ForeignKey(Organization)
-    production = models.ForeignKey('Production')
+    production = models.ForeignKey('Production', related_name="organization_tasks")
     task = models.ForeignKey(OrganizationTask)
 
 
@@ -121,15 +121,14 @@ class Film(Artwork):
     )
 
     ASPECT_RATIO_CHOICES = (
-        ('1.33', "1.33"),
+        ('1.33', "1.33 (4/3)"),
         ('1.37', "1.37"),
         ('1.66', "1.66"),
-        ('1.77', "1.77"),
-        ('1.85', "1.85"),
-        ('1.89', "1.89"),
-        ('2.35', "2.35"),
-        ('4/3', "4/3"),
-        ('16/9', "16/9")
+        ('1.77', "1.77 (16/9)"),
+        ('1.85', "1.85 (Flat)"),
+        ('1.90', "1.90 (Full Container)"),
+        ('2.39', "2.39 (Scope)"),
+
     )
 
     PROCESS_CHOICES = (
