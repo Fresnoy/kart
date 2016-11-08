@@ -12,7 +12,7 @@ from production.api import InstallationResource, InstallationGenreResource, Film
 from production.api import InstallationResource, InstallationGenreResource, FilmResource, FilmGenreResource, PerformanceResource, EventResource, ExhibitionResource, ItineraryResource, ArtworkResource
 >>>>>>> display installation / film  genre
 from diffusion.api import PlaceResource
-from school.api import PromotionResource, StudentResource
+from school.api import PromotionResource, StudentResource, StudentApplicationResource
 
 
 v1_api = Api(api_name='v1')
@@ -24,6 +24,7 @@ v1_api.register(PerformanceResource())
 v1_api.register(EventResource())
 v1_api.register(PromotionResource())
 v1_api.register(StudentResource())
+v1_api.register(StudentApplicationResource())
 v1_api.register(ArtistResource())
 v1_api.register(StaffResource())
 v1_api.register(ProductionStaffTaskResource())
