@@ -38,8 +38,6 @@ class StudentApplicationAdmin(admin.ModelAdmin):
 
 
 
-
-
 admin.site.register(Promotion)
 admin.site.register(StudentApplication, StudentApplicationAdmin )
 admin.site.register(Student, StudentAdmin)
