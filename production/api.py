@@ -52,8 +52,8 @@ class ProductionOrganizationTaskResource(ModelResource):
 
 
 class ProductionResource(ModelResource):
-    collaborators = fields.ToManyField(StaffResource, 'collaborators', full=True)
-    partners = fields.ToManyField(OrganizationResource, 'partners', full=True )
+    collaborators = fields.ToManyField(ProductionStaffTaskResource, 'collaborators')
+    partners = fields.ToManyField(ProductionOrganizationTaskResource, 'partners')
     websites = fields.ToManyField(WebsiteResource, 'websites', full=True)
 
 class AbstractArtworkResource(ProductionResource):
@@ -163,7 +163,7 @@ class FilmResource(AbstractArtworkResource):
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
     events = fields.ToManyField('production.api.EventResource', 'events', full=False)
-    genres = fields.ToManyField(FilmGenreResource, 'genres', full=True)
+    genres = fields.ToManyField(FilmGenreResource, 'genres', full=True, full_detail=True, full_list=False)
 
 
 class PerformanceResource(AbstractArtworkResource):

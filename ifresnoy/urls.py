@@ -8,7 +8,6 @@ from tastypie.api import Api
 from people.api import ArtistResource, StaffResource
 
 from production.api import InstallationResource, InstallationGenreResource, FilmResource, FilmGenreResource, PerformanceResource, EventResource, ExhibitionResource, ItineraryResource, ArtworkResource, ProductionStaffTaskResource, StaffTaskResource, ProductionOrganizationTaskResource, OrganizationTaskResource
-
 from diffusion.api import PlaceResource
 from school.api import PromotionResource, StudentResource, StudentApplicationResource
 
@@ -48,7 +47,4 @@ urlpatterns = patterns('',
                                    "namespace": "ifresnoy_tastypie_swagger"}),
                        url(r'^admin/', include(admin.site.urls)) \
                        ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
-
-
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
