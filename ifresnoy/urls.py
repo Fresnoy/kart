@@ -37,7 +37,6 @@ v1_api.register(ItineraryResource())
 v1_api.register(ArtworkResource())
 
 urlpatterns = patterns('',
-
                        # Examples:
                        # url(r'^$', 'ifresnoy.views.home', name='home'),
                        # url(r'^blog/', include('blog.urls')),
