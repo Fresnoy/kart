@@ -64,6 +64,7 @@ class Production(PolymorphicModel):
     def __unicode__(self):
         return "{0} ({1})".format(self.title, self.id)
 
+
 class Artwork(Production):
     production_date = models.DateField()
 
