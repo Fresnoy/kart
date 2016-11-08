@@ -8,13 +8,8 @@ import sortedm2m.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-<<<<<<< 3949bb3d95c6551f2edcbaee8063ea15351fe111
         ('assets', '0001_initial'),
         ('people', '0002_updatefresnoyprofile'),
-=======
-        ('people', '0001_initial'),
-        ('assets', '0001_initial'),
->>>>>>> Student Application model
         ('school', '0004_rename_newstudent_model'),
     ]
 
@@ -23,11 +18,7 @@ class Migration(migrations.Migration):
             name='StudentApplication',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-<<<<<<< 3949bb3d95c6551f2edcbaee8063ea15351fe111
                 ('current_year_application_count', models.CharField(default=None, help_text='Auto generated field (current year - increment number)', max_length=8, blank=True)),
-=======
-                ('application_number', models.CharField(default=None, max_length=8, blank=True)),
->>>>>>> Student Application model
                 ('first_time', models.BooleanField(default=True, help_text=b"If the first time the Artist's applying")),
                 ('last_application_year', models.PositiveSmallIntegerField(null=True, blank=True)),
                 ('created_on', models.DateTimeField(auto_now_add=True)),
