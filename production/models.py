@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
-from model_utils.managers import InheritanceManager
+from polymorphic.models import PolymorphicModel
 from sortedm2m.fields import SortedManyToManyField
 
 from assets.models import Gallery
@@ -24,20 +24,24 @@ class Task(models.Model):
 class StaffTask(Task):
     pass
 
+
 class OrganizationTask(Task):
     pass
+
 
 class ProductionStaffTask(models.Model):
     staff = models.ForeignKey(Staff)
     production = models.ForeignKey('Production')
     task = models.ForeignKey(StaffTask)
 
+
 class ProductionOrganizationTask(models.Model):
     organization = models.ForeignKey(Organization)
     production = models.ForeignKey('Production')
     task = models.ForeignKey(OrganizationTask)
 
-class Production(models.Model):
+
+class Production(PolymorphicModel):
     class Meta:
         ordering = ['title']
     title = models.CharField(max_length=255)
@@ -61,13 +65,6 @@ class Production(models.Model):
         return "Production %s" % self.id
 
 
-class SubclassesManager(InheritanceManager):
-    """
-    http://stackoverflow.com/a/20998123
-    """
-    def get_queryset(self):
-        return super(SubclassesManager, self).get_queryset().select_subclasses()
-
 class Artwork(Production):
     production_date = models.DateField()
 
@@ -90,7 +87,6 @@ class Artwork(Production):
 
     beacons = models.ManyToManyField(BTBeacon, related_name="%(class)ss", blank=True)
 
-    objects = SubclassesManager()
 
 class FilmGenre(models.Model):
     label = models.CharField(max_length=100)
@@ -211,12 +207,3 @@ class ItineraryArtwork(models.Model):
     itinerary = models.ForeignKey(Itinerary)
     artwork = models.ForeignKey(Artwork)
     order = models.PositiveIntegerField()
-
-from django.db.models.signals import post_delete
-from django.dispatch import receiver
-
-@receiver(post_delete, sender=Performance)
-@receiver(post_delete, sender=Film)
-@receiver(post_delete, sender=Installation)
-def delete_parent(sender, instance, using, **kwargs):
-    print("delete parent!")

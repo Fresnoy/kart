@@ -4,6 +4,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 
 from django_countries.fields import CountryField
+from polymorphic.models import PolymorphicModel
 
 from common.models import Website
 from common.utils import make_filepath

@@ -1,6 +1,8 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 from people.models import Artist
+
 
 # Create your models here.
 class Promotion(models.Model):
@@ -17,13 +19,16 @@ class Promotion(models.Model):
     def __unicode__(self):
         return u"%s (%s-%s)" % (self.name, self.starting_year, self.ending_year)
 
-class Student(Artist):
+
+class Student(models.Model):
     """
     An artist, part of a promotion, studying for at least 2 years.
     """
     number = models.CharField(max_length=50, null=True, blank=True)
-    promotion = models.ForeignKey(Promotion, related_name='students')
+    promotion = models.ForeignKey(Promotion)
     graduate = models.BooleanField(default=False)
+    user = models.OneToOneField(User)
+    artist = models.OneToOneField(Artist)
 
     def __unicode__(self):
-        return "%s (%s/%s)" % (self.user, self.nickname, self.number)
+        return "%s (%s)" % (self.user, self.number)
