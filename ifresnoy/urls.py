@@ -24,6 +24,8 @@ from production.views import (
     ItineraryViewSet
 )
 from diffusion.views import PlaceViewSet
+from common.views import BTBeaconViewSet, WebsiteViewSet
+from assets.views import GalleryViewSet, MediumViewSet
 
 
 admin.autodiscover()
@@ -58,6 +60,10 @@ v2_api.register(r'production/installation', InstallationViewSet)
 v2_api.register(r'production/installation/genre', InstallationGenreViewSet)
 v2_api.register(r'production/performance', PerformanceViewSet)
 v2_api.register(r'diffusion/place', PlaceViewSet)
+v2_api.register(r'common/beacon', BTBeaconViewSet)
+v2_api.register(r'common/website', WebsiteViewSet)
+v2_api.register(r'assets/gallery', GalleryViewSet)
+v2_api.register(r'assets/medium', MediumViewSet)
 
 
 urlpatterns = patterns('',
