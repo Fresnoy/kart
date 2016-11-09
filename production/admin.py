@@ -115,4 +115,3 @@ class StaffTaskAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.TextField: {'widget': AdminPagedownWidget },
     }
-
