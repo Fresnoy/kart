@@ -3,8 +3,32 @@ from rest_framework import serializers
 from .models import (
     Film, FilmGenre, Installation,
     Performance, InstallationGenre,
-    Event, Itinerary
+    Event, Itinerary,StaffTask, ProductionStaffTask, ProductionOrganizationTask
 )
+from people.models import Staff
+from people.serializers import StaffSerializer
+
+
+class StaffTaskSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = StaffTask
+
+
+class ProductionStaffTaskSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ProductionStaffTask
+        fields = ('staff','task')
+        #,'production','task'
+
+    staff = StaffSerializer(read_only=True)
+    task = StaffTaskSerializer(read_only=True)
+
+
+
+
+class PartnerSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ProductionOrganizationTask
 
 
 class InstallationSerializer(serializers.HyperlinkedModelSerializer):
@@ -18,6 +42,7 @@ class FilmSerializer(serializers.HyperlinkedModelSerializer):
         model = Film
         exclude = ('polymorphic_ctype',)
 
+    collaborators = ProductionStaffTaskSerializer(many=True, read_only=True)
 
 class EventSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

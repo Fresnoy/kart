@@ -21,7 +21,8 @@ from production.views import (
     FilmViewSet, InstallationViewSet,
     PerformanceViewSet, FilmGenreViewSet,
     InstallationGenreViewSet, EventViewSet,
-    ItineraryViewSet
+    ItineraryViewSet,
+    CollaboratorViewSet, PartnerViewSet
 )
 from diffusion.views import PlaceViewSet
 from common.views import BTBeaconViewSet, WebsiteViewSet
@@ -59,6 +60,8 @@ v2_api.register(r'production/film/genre', FilmGenreViewSet)
 v2_api.register(r'production/installation', InstallationViewSet)
 v2_api.register(r'production/installation/genre', InstallationGenreViewSet)
 v2_api.register(r'production/performance', PerformanceViewSet)
+v2_api.register(r'production/collaborator', CollaboratorViewSet)
+v2_api.register(r'production/partner', PartnerViewSet)
 v2_api.register(r'diffusion/place', PlaceViewSet)
 v2_api.register(r'common/beacon', BTBeaconViewSet)
 v2_api.register(r'common/website', WebsiteViewSet)
