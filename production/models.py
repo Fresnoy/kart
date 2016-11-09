@@ -31,13 +31,13 @@ class OrganizationTask(Task):
 
 class ProductionStaffTask(models.Model):
     staff = models.ForeignKey(Staff)
-    production = models.ForeignKey('Production')
+    production = models.ForeignKey('Production', related_name="staff_tasks")
     task = models.ForeignKey(StaffTask)
 
 
 class ProductionOrganizationTask(models.Model):
     organization = models.ForeignKey(Organization)
-    production = models.ForeignKey('Production')
+    production = models.ForeignKey('Production', related_name="organization_tasks")
     task = models.ForeignKey(OrganizationTask)
 
 
@@ -62,7 +62,7 @@ class Production(PolymorphicModel):
     description_en = models.TextField(blank=True, null=True)
 
     def __unicode__(self):
-        return "Production %s" % self.id
+        return "{0} ({1})".format(self.title, self.id)
 
 
 class Artwork(Production):

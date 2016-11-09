@@ -9,10 +9,10 @@ class Gallery(models.Model):
     label = models.CharField(max_length=255)
     description = models.TextField()
 
-    updated_on = models.DateTimeField(auto_now=True)    
+    updated_on = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
-        return u"%s - %s" % (self.label, self.description)
+        return u'{0} - {1}'.format(self.label, self.description)
 
     class Meta:
         verbose_name_plural = "galleries"
@@ -25,7 +25,7 @@ class Medium(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
 
     position = models.PositiveIntegerField(default=1)
-    
+
     label = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(null=True, blank=True)
     picture = models.ImageField(upload_to=make_filepath, null=True, blank=True)
@@ -34,10 +34,8 @@ class Medium(models.Model):
     gallery = models.ForeignKey(Gallery, related_name='media')
 
     def __unicode__(self):
-        return u"%s - %s" % (self.label, self.description)
+        return u"{0} - {1}".format(self.label, self.description)
 
     class Meta:
         verbose_name_plural = "media"
         ordering = ('position',)
-        
-

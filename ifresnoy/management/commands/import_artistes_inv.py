@@ -34,25 +34,25 @@ class Command(BaseCommand):
                 for row in csv_file:
                     last_name = row[0].decode('utf-8').strip().title() #
                     first_name = row[1].decode('utf-8').strip().title()
-                    username = slugify(u"%s%s" % (first_name[0], "".join(last_name.split())))
+                    username = slugify("{0}".format(first_name[0], "".join(last_name.split())))
                     start_year = int(row[2].decode('utf-8'))
                     end_year = int(row[3].decode('utf-8'))
 
-                    print u" * %s %s (username=%s)" % (first_name, last_name, username)
+                    print " * {0} {1} (username={2})".format(first_name, last_name, username)
 
                     user, created = User.objects.get_or_create(username=username, first_name=first_name, last_name=last_name)
                     if created:
-                        print "  `-- User %s created" % user
+                        print "  `-- User {0} created".format(user)
                     else:
-                        print "  `-- Found %s" % user
+                        print "  `-- Found {1}".format(user)
                     profile, created = FresnoyProfile.objects.get_or_create(user=user)
 
                     artist, created = Artist.objects.get_or_create(user=user)
                     if created:
-                        print " `-- Artist %s created" % artist
+                        print " `-- Artist {0} created".format(artist)
 
 
         except Exception, e:
-            raise CommandError('Error while parsing "%s" %s ' % (filepath, e))
+            raise CommandError('Error while parsing "{0}" {1} '.format(filepath, e))
 
-        self.stdout.write('Successfully imported csv file "%s"' % filepath)
+        self.stdout.write('Successfully imported csv file "{0}"'.format(filepat))
