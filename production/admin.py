@@ -62,7 +62,7 @@ class ProductionParentAdmin(PolymorphicParentModelAdmin):
 class ArtworkAdmin(admin.ModelAdmin):
     list_display = ('title', 'subtitle')
     search_fields = ['title']
-
+    inlines = (CollaboratorsInline, PartnersInline)
 
 @admin.register(Installation)
 class InstallationAdmin(ArtworkAdmin):
@@ -82,7 +82,7 @@ class PerformanceAdmin(ArtworkAdmin):
 @admin.register(Event)
 class EventAdmin(ProductionChildAdmin):
     list_display = (ProductionChildAdmin.list_display + ('starting_date', 'ending_date'))
-
+    inlines = (CollaboratorsInline, PartnersInline)
 
 class ItineraryArtworkInline(admin.TabularInline):
     model = Itinerary.artworks.through
