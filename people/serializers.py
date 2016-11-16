@@ -1,8 +1,12 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Artist, Staff, Organization
+from .models import Artist, Staff, Organization, FresnoyProfile
 
+
+class FresnoyProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FresnoyProfile
 
 class ArtistSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -13,7 +17,9 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ('first_name', 'last_name')
+        fields = ('first_name', 'last_name', 'email', 'profile')
+
+    profile = FresnoyProfileSerializer()
 
 
 class StaffSerializer(serializers.HyperlinkedModelSerializer):
