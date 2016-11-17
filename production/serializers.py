@@ -9,19 +9,19 @@ from people.models import Staff
 from people.serializers import StaffSerializer
 
 
-class StaffTaskSerializer(serializers.HyperlinkedModelSerializer):
+class StaffTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = StaffTask
 
 
-class ProductionStaffTaskSerializer(serializers.HyperlinkedModelSerializer):
+class ProductionStaffTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductionStaffTask
-        fields = ('staff','task')
+        fields = ('staff', 'task')
         #,'production','task'
 
-    staff = StaffSerializer(read_only=True)
-    task = StaffTaskSerializer(read_only=True)
+    staff = StaffSerializer()
+    task = StaffTaskSerializer(many=True, read_only=True)
 
 
 
@@ -42,7 +42,7 @@ class FilmSerializer(serializers.HyperlinkedModelSerializer):
         model = Film
         exclude = ('polymorphic_ctype',)
 
-    collaborators = ProductionStaffTaskSerializer(many=True, read_only=True)
+    collaborators = ProductionStaffTaskSerializer(read_only=True)
 
 class EventSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

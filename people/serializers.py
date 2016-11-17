@@ -25,7 +25,9 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class StaffSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Staff
+        #fields = ('staff',)
 
+    #user = FresnoyProfileSerializer()
 
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
