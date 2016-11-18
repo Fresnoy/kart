@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from drf_haystack.serializers import HaystackSerializer
 
-from .models import Promotion, Student
+from .models import Promotion, Student, StudentApplication
 from .search_indexes import StudentIndex
 
 
@@ -28,3 +28,7 @@ class StudentAutocompleteSerializer(HaystackSerializer):
         field_aliases = {
             "q": "autocomplete"
         }
+
+class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = StudentApplication
