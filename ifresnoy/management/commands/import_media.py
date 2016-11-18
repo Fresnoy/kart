@@ -1,20 +1,14 @@
 # -*- encoding: utf-8 -*-
 import os
-import csv
 from optparse import make_option
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.utils.text import slugify
 
 from django.core.files import File  # you need this somewhere
-from django.contrib.auth.models import User
 from assets.models import Medium
-from common.models import Website
-from people.models import FresnoyProfile, Artist
-from school.models import Student
-from people.models import Organization
-from production.models import Event, OrganizationTask, ProductionOrganizationTask
-from production.models import Film, Installation, Performance, Artwork
+from production.models import Event
+
 
 class Command(BaseCommand):
     help = 'Import pano media'
@@ -23,12 +17,11 @@ class Command(BaseCommand):
         make_option(
             "-d",
             "--dir",
-            dest = "dirname",
-            help = "specify import dir",
-            metavar = "DIR"
+            dest="dirname",
+            help="specify import dir",
+            metavar="DIR"
         ),
     )
-
 
     def handle(self, *args, **options):
         dirpath = options['dirname']
@@ -86,11 +79,11 @@ class Command(BaseCommand):
 
             artwork.save()
 
-
-
         for pano_no in xrange(6, 15):
             print "----------- PANORAMA %s" % pano_no
-            if pano_no == 10: continue
+            if pano_no == 10:
+                continue
+
             event = Event.objects.get(title="Panorama %d" % pano_no)
             # film
             for film in event.films.all():
