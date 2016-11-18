@@ -13,7 +13,7 @@ from production.api import (
     ItineraryResource, ArtworkResource
 )
 from diffusion.api import PlaceResource
-from school.api import PromotionResource, StudentResource
+from school.api import PromotionResource, StudentResource, StudentApplicationResource
 
 from people.views import ArtistViewSet, UserViewSet, StaffViewSet, OrganizationViewSet
 from school.views import PromotionViewSet, StudentViewSet, StudentAutocompleteSearchViewSet
@@ -38,6 +38,7 @@ v1_api.register(PerformanceResource())
 v1_api.register(EventResource())
 v1_api.register(PromotionResource())
 v1_api.register(StudentResource())
+v1_api.register(StudentApplicationResource())
 v1_api.register(ArtistResource())
 v1_api.register(StaffResource())
 v1_api.register(PlaceResource())
@@ -82,6 +83,6 @@ urlpatterns = patterns('',
                            kwargs={"tastypie_api_module": "ifresnoy.urls.v1_api",
                                    "namespace": "ifresnoy_tastypie_swagger"}),
                        url(r'^admin/', include(admin.site.urls)) \
-
                        ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

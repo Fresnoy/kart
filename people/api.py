@@ -60,8 +60,7 @@ class ArtistResource(ModelResource):
 class StaffResource(ModelResource):
     class Meta:
         queryset = Staff.objects.all()
-        resource_name = 'production/staff'
-
+        resource_name = 'people/staff'
 
     user = fields.ForeignKey(UserResource, 'user', full=True)
 

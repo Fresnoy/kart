@@ -51,8 +51,6 @@ class ProductionOrganizationTaskResource(ModelResource):
     task = fields.ForeignKey(StaffTaskResource, 'task', full=True)
 
 
-
-
 class ProductionResource(ModelResource):
     collaborators = fields.ToManyField(ProductionStaffTaskResource, 'collaborators')
     partners = fields.ToManyField(ProductionOrganizationTaskResource, 'partners')
@@ -97,7 +95,7 @@ class ArtworkResource(AbstractArtworkResource):
                 res = res_type()
                 rr_bundle = res.build_bundle(obj=bundle.obj, request=bundle.request)
                 bundle.data = res.full_dehydrate(rr_bundle).data
-                bundle.data['type'] = u"%s" % res_type.Meta.queryset.model.__name__.lower()
+                bundle.data['type'] = "{0}".format(res_type.Meta.queryset.model.__name__.lower())
                 break
 
         return bundle
@@ -154,8 +152,7 @@ class InstallationResource(AbstractArtworkResource):
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
     events = fields.ToManyField('production.api.EventResource', 'events', full=False)
-    genres = fields.ToManyField(InstallationGenreResource, 'genres', full=True, full_detail=True, full_list=False)
-
+    genres = fields.ToManyField(InstallationGenreResource, 'genres', full=True)
 
 class FilmGenreResource(ModelResource):
     class Meta:
@@ -172,8 +169,6 @@ class FilmResource(AbstractArtworkResource):
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
     events = fields.ToManyField('production.api.EventResource', 'events', full=False)
     genres = fields.ToManyField(FilmGenreResource, 'genres', full=True, full_detail=True, full_list=False)
-
-
 
 
 class PerformanceResource(AbstractArtworkResource):
