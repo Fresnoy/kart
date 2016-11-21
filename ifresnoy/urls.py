@@ -5,6 +5,7 @@ from django.contrib import admin
 
 from tastypie.api import Api
 from rest_framework import routers
+from rest_framework_jwt.views import obtain_jwt_token
 
 from people.api import ArtistResource, StaffResource
 from production.api import (
@@ -70,7 +71,8 @@ urlpatterns = patterns('',
                        # Examples:
                        # url(r'^$', 'ifresnoy.views.home', name='home'),
                        # url(r'^blog/', include('blog.urls')),
-                       (r'^v2/', include(v2_api.urls)),
+                       url(r'^v2/', include(v2_api.urls)),
+                       url(r'^v2/auth/', obtain_jwt_token),
                        (r'^', include(v1_api.urls)),
                        (r'^grappelli/', include('grappelli.urls')),
                        url('^markdown/', include('django_markdown.urls')),
