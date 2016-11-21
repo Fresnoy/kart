@@ -1,12 +1,11 @@
 from django.contrib.auth.models import User
 from django.db import models
-from django.dispatch import receiver
-from django.db.models.signals import post_save
 
 from django_countries.fields import CountryField
 
 from common.models import Website
 from common.utils import make_filepath
+
 
 class FresnoyProfile(models.Model):
     user = models.OneToOneField(User, related_name='profile')
@@ -47,6 +46,7 @@ class Artist(models.Model):
     def __unicode__(self):
         return u"%s (%s)" % (self.user, self.nickname)
 
+
 class Staff(models.Model):
     """
     Someone working at Le Fresnoy (insider) or for a production
@@ -56,6 +56,7 @@ class Staff(models.Model):
 
     def __unicode__(self):
         return self.user.username
+
 
 class Organization(models.Model):
     """
