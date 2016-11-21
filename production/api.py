@@ -11,11 +11,12 @@ from tastypie.utils import trailing_slash
 
 from common.api import WebsiteResource, BTBeaconResource
 from assets.api import GalleryResource
-from people.api import ArtistResource, OrganizationResource, StaffResource, UserResource
+from people.api import ArtistResource, OrganizationResource, StaffResource
 from diffusion.api import PlaceResource
 
-from .models import Installation, Film, Performance, Event, Itinerary, Artwork, FilmGenre, StaffTask, ProductionStaffTask, ProductionOrganizationTask, OrganizationTask
-
+from .models import Installation, Film, Performance, Event, Itinerary, Artwork
+from .models import ProductionOrganizationTask, OrganizationTask
+from .models import FilmGenre, StaffTask, ProductionStaffTask
 
 
 class StaffTaskResource(ModelResource):
@@ -24,12 +25,10 @@ class StaffTaskResource(ModelResource):
         resource_name = "production/stafftask"
 
 
-
 class ProductionStaffTaskResource(ModelResource):
     class Meta:
         queryset = ProductionStaffTask.objects.all()
         resource_name = "production/productionstafftask"
-
 
     staff = fields.ForeignKey(StaffResource, 'staff', full=True)
     task = fields.ForeignKey(StaffTaskResource, 'task', full=True)
@@ -41,7 +40,6 @@ class OrganizationTaskResource(ModelResource):
         resource_name = "production/organisationtask"
 
 
-
 class ProductionOrganizationTaskResource(ModelResource):
     class Meta:
         queryset = ProductionOrganizationTask.objects.all()
@@ -49,8 +47,6 @@ class ProductionOrganizationTaskResource(ModelResource):
 
     organization = fields.ForeignKey(OrganizationResource, 'organization', full=True)
     task = fields.ForeignKey(StaffTaskResource, 'task', full=True)
-
-
 
 
 class ProductionResource(ModelResource):
@@ -83,7 +79,12 @@ class ArtworkResource(AbstractArtworkResource):
     class Meta:
         queryset = Artwork.objects.all()
         resource_name = 'production/artwork'
-        filtering = {'authors': ALL_WITH_RELATIONS, 'events': ALL_WITH_RELATIONS, 'title': ALL, 'genres': ALL_WITH_RELATIONS}
+        filtering = {
+            'authors': ALL_WITH_RELATIONS,
+            'events': ALL_WITH_RELATIONS,
+            'title': ALL,
+            'genres': ALL_WITH_RELATIONS
+        }
         # cache = SimpleCache(timeout=10)
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
@@ -140,6 +141,7 @@ class ArtworkResource(AbstractArtworkResource):
         self.log_throttled_access(request)
         return self.create_response(request, object_list)
 
+
 class InstallationGenreResource(ModelResource):
     class Meta:
         queryset = FilmGenre.objects.all()
@@ -174,8 +176,6 @@ class FilmResource(AbstractArtworkResource):
     genres = fields.ToManyField(FilmGenreResource, 'genres', full=True, full_detail=True, full_list=False)
 
 
-
-
 class PerformanceResource(AbstractArtworkResource):
     class Meta:
         queryset = Performance.objects.all()
@@ -202,7 +202,6 @@ class EventResource(ProductionResource):
     performances = fields.ToManyField(PerformanceResource, 'performances', full=True, full_list=False, full_detail=True)
 
     subevents = fields.ToManyField('production.api.EventResource', 'subevents')
-
 
 
 class ItineraryResource(ModelResource):

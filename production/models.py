@@ -66,7 +66,7 @@ class Production(PolymorphicModel):
 
     def __unicode__(self):
         # return "Production %s" % self.id
-        return "%s - %s" % (self.title,self.id)
+        return "%s - %s" % (self.title, self.id)
 
 
 class Artwork(Production):

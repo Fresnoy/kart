@@ -64,6 +64,7 @@ class ArtworkAdmin(admin.ModelAdmin):
     search_fields = ['title']
     inlines = (CollaboratorsInline, PartnersInline)
 
+
 @admin.register(Installation)
 class InstallationAdmin(ArtworkAdmin):
     base_model = Installation
@@ -83,6 +84,7 @@ class PerformanceAdmin(ArtworkAdmin):
 class EventAdmin(ProductionChildAdmin):
     list_display = (ProductionChildAdmin.list_display + ('starting_date', 'ending_date'))
     inlines = (CollaboratorsInline, PartnersInline)
+
 
 class ItineraryArtworkInline(admin.TabularInline):
     model = Itinerary.artworks.through
