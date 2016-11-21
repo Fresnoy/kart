@@ -2,6 +2,7 @@
 from django.conf.urls import url
 from django.core.paginator import Paginator, InvalidPage
 
+
 from haystack.query import SearchQuerySet
 from tastypie import fields
 from tastypie.cache import SimpleCache
@@ -10,14 +11,33 @@ from tastypie.utils import trailing_slash
 
 from common.api import WebsiteResource, BTBeaconResource
 from assets.api import GalleryResource
-from people.api import ArtistResource, StaffResource, OrganizationResource
+from people.api import ArtistResource, OrganizationResource, StaffResource, UserResource
 from diffusion.api import PlaceResource
 
-from .models import Installation, Film, Performance, Event, Itinerary, Artwork
+from .models import Installation, Film, Performance, Event, Itinerary, Artwork, FilmGenre, StaffTask, ProductionStaffTask
+
+
+
+class StaffTaskResource(ModelResource):
+    class Meta:
+        queryset = StaffTask.objects.all()
+        resource_name = "production/stafftask"
+
+
+
+class ProductionStaffTaskResource(ModelResource):
+    class Meta:
+        queryset = ProductionStaffTask.objects.all()
+        resource_name = "production/productionstafftask"
+
+
+    user = fields.ForeignKey(UserResource, 'user', full=True)
+    task = fields.ForeignKey(StaffTaskResource, 'task', full=True, null=True, full_list=True, full_detail=True )
+
 
 class ProductionResource(ModelResource):
-    collaborators = fields.ToManyField(StaffResource, 'collaborators', full=True)
-    partners = fields.ToManyField(OrganizationResource, 'partners', full=True)
+    collaborators = fields.ToManyField(ProductionStaffTaskResource, 'collaborators', full=True, full_detail=True, full_list=True)
+    partners = fields.ToManyField(OrganizationResource, 'partners', full=True )
     websites = fields.ToManyField(WebsiteResource, 'websites', full=True)
 
 class AbstractArtworkResource(ProductionResource):
@@ -97,6 +117,11 @@ class ArtworkResource(AbstractArtworkResource):
         self.log_throttled_access(request)
         return self.create_response(request, object_list)
 
+class InstallationGenreResource(ModelResource):
+    class Meta:
+        queryset = FilmGenre.objects.all()
+        resource_name = 'production/installationgenre'
+
 
 class InstallationResource(AbstractArtworkResource):
     class Meta:
@@ -106,6 +131,13 @@ class InstallationResource(AbstractArtworkResource):
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
     events = fields.ToManyField('production.api.EventResource', 'events', full=False)
+    genres = fields.ToManyField(InstallationGenreResource, 'genres', full=True)
+
+
+class FilmGenreResource(ModelResource):
+    class Meta:
+        queryset = FilmGenre.objects.all()
+        resource_name = 'production/filmgenre'
 
 
 class FilmResource(AbstractArtworkResource):
@@ -116,6 +148,9 @@ class FilmResource(AbstractArtworkResource):
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
     events = fields.ToManyField('production.api.EventResource', 'events', full=False)
+    genres = fields.ToManyField(FilmGenreResource, 'genres', full=True)
+
+
 
 class PerformanceResource(AbstractArtworkResource):
     class Meta:
@@ -138,6 +173,7 @@ class EventResource(ProductionResource):
     performances = fields.ToManyField(PerformanceResource, 'performances', full=True, full_list=False, full_detail=True)
 
     subevents = fields.ToManyField('production.api.EventResource', 'subevents')
+
 
 
 class ItineraryResource(ModelResource):
