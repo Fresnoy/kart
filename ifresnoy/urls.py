@@ -50,7 +50,7 @@ v1_api.register(ExhibitionResource())
 v1_api.register(ItineraryResource())
 v1_api.register(ArtworkResource())
 
-v2_api = routers.DefaultRouter()
+v2_api = routers.DefaultRouter(trailing_slash=False)
 v2_api.register(r'people/user', UserViewSet)
 v2_api.register(r'people/artist', ArtistViewSet)
 v2_api.register(r'people/staff', StaffViewSet)

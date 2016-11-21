@@ -7,7 +7,8 @@ from .models import Artist, Staff, Organization, FresnoyProfile
 class FresnoyProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = FresnoyProfile
-        #exclude = ('user',)
+        #exclude = ('user')
+
 
 class ArtistSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
