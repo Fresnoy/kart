@@ -1,13 +1,19 @@
 from rest_framework import viewsets
 
-from .models import Artist, User, Staff, Organization
-from .serializers import (ArtistSerializer, UserSerializer, StaffSerializer,
-                          OrganizationSerializer)
-
+from .models import Artist, User, FresnoyProfile, Staff, Organization
+from .serializers import (
+    ArtistSerializer, UserSerializer, FresnoyProfileSerializer,
+    StaffSerializer, OrganizationSerializer
+)
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+class FresnoyProfileViewSet(viewsets.ModelViewSet):
+    queryset = FresnoyProfile.objects.all()
+    serializer_class = FresnoyProfileSerializer
 
 
 class ArtistViewSet(viewsets.ModelViewSet):

@@ -16,7 +16,10 @@ from production.api import (
 from diffusion.api import PlaceResource
 from school.api import PromotionResource, StudentResource, StudentApplicationResource
 
-from people.views import ArtistViewSet, UserViewSet, StaffViewSet, OrganizationViewSet
+from people.views import (
+    ArtistViewSet, UserViewSet, FresnoyProfileViewSet,
+    StaffViewSet, OrganizationViewSet
+)
 from school.views import (
     PromotionViewSet, StudentViewSet,
     StudentAutocompleteSearchViewSet, StudentApplicationViewSet
@@ -52,6 +55,7 @@ v1_api.register(ArtworkResource())
 
 v2_api = routers.DefaultRouter(trailing_slash=False)
 v2_api.register(r'people/user', UserViewSet)
+v2_api.register(r'people/userprofile', FresnoyProfileViewSet)
 v2_api.register(r'people/artist', ArtistViewSet)
 v2_api.register(r'people/staff', StaffViewSet)
 v2_api.register(r'people/organization', OrganizationViewSet)
