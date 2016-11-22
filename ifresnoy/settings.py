@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 DEBUG = True
 
 from site_settings import *  # NOQA
+import datetime
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
@@ -110,6 +111,11 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     ),
+}
+
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=2),
+    #'JWT_AUTH_HEADER_PREFIX': 'JWT',
 }
 
 
