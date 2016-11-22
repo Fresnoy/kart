@@ -1,7 +1,9 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from django_countries.serializer_fields import CountryField
 
 from .models import Artist, Staff, Organization, FresnoyProfile
+
 
 
 class FresnoyProfileSerializer(serializers.ModelSerializer):
@@ -9,6 +11,9 @@ class FresnoyProfileSerializer(serializers.ModelSerializer):
         model = FresnoyProfile
         #exclude = ('user')
 
+    birthplace_country = CountryField()
+    homeland_country = CountryField()
+    residence_country = CountryField()
 
 class ArtistSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
