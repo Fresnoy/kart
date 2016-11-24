@@ -158,6 +158,7 @@ class InstallationResource(AbstractArtworkResource):
     events = fields.ToManyField('production.api.EventResource', 'events', full=False)
     genres = fields.ToManyField(InstallationGenreResource, 'genres', full=True)
 
+
 class FilmGenreResource(ModelResource):
     class Meta:
         queryset = FilmGenre.objects.all()

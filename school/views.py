@@ -3,8 +3,9 @@ from drf_haystack.filters import HaystackAutocompleteFilter
 from drf_haystack.viewsets import HaystackViewSet
 
 from .models import Promotion, Student, StudentApplication
-from .serializers import (PromotionSerializer, StudentSerializer,
-                          StudentAutocompleteSerializer, StudentApplicationSerializer
+from .serializers import (
+                            PromotionSerializer, StudentSerializer,
+                            StudentAutocompleteSerializer, StudentApplicationSerializer
                           )
 
 
@@ -22,6 +23,7 @@ class StudentAutocompleteSearchViewSet(HaystackViewSet):
     index_models = [Student]
     serializer_class = StudentAutocompleteSerializer
     filter_backends = [HaystackAutocompleteFilter]
+
 
 class StudentApplicationViewSet(viewsets.ModelViewSet):
     queryset = StudentApplication.objects.all()

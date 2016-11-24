@@ -53,4 +53,4 @@ class Command(BaseCommand):
         except Exception, e:
             raise CommandError('Error while parsing "{0}" {1} '.format(filepath, e))
 
-        self.stdout.write('Successfully imported csv file "{0}"'.format(filepat))
+        self.stdout.write('Successfully imported csv file "{0}"'.format(filepath))

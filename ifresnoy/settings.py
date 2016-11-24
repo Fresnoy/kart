@@ -8,10 +8,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
-DEBUG = True
-
 from site_settings import *  # NOQA
 import datetime
+
+
+DEBUG = True
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
@@ -90,7 +92,6 @@ STATICFILES_FINDERS = (
 )
 
 
-
 # ADMIN CUSTOM
 GRAPPELLI_ADMIN_TITLE = 'iFresnoy'
 
@@ -115,7 +116,7 @@ REST_FRAMEWORK = {
 
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=2),
-    #'JWT_AUTH_HEADER_PREFIX': 'JWT',
+#    'JWT_AUTH_HEADER_PREFIX': 'JWT',
 }
 
 

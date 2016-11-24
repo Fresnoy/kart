@@ -6,6 +6,7 @@ from .serializers import (
     StaffSerializer, OrganizationSerializer
 )
 
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -14,7 +15,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class FresnoyProfileViewSet(viewsets.ModelViewSet):
     queryset = FresnoyProfile.objects.all()
     serializer_class = FresnoyProfileSerializer
-    
+
 
 class ArtistViewSet(viewsets.ModelViewSet):
     queryset = Artist.objects.all()

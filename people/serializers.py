@@ -5,16 +5,16 @@ from django_countries.serializer_fields import CountryField
 from .models import Artist, Staff, Organization, FresnoyProfile
 
 
-
 class FresnoyProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = FresnoyProfile
-        #exclude = ('user',)
+#        exclude = ('user',)
 
     id = serializers.ReadOnlyField()
     birthplace_country = CountryField(default="FR")
     homeland_country = CountryField(default="FR")
     residence_country = CountryField(default="FR")
+
 
 class ArtistSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -29,15 +29,13 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     profile = FresnoyProfileSerializer()
 
-    
-
 
 class StaffSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Staff
-        #fields = ('staff',)
+#        fields = ('staff',)
+#    user = FresnoyProfileSerializer()
 
-    #user = FresnoyProfileSerializer()
 
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

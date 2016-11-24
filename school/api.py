@@ -8,7 +8,7 @@ from tastypie.resources import ModelResource
 from tastypie.resources import ALL, ALL_WITH_RELATIONS
 from tastypie.utils import trailing_slash
 
-from people.api import ArtistResource, UserResource
+from people.api import ArtistResource
 from .models import Promotion, Student, StudentApplication
 
 from assets.api import GalleryResource

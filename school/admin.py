@@ -6,9 +6,6 @@ from pagedown.widgets import AdminPagedownWidget
 
 from .models import Promotion, Student, StudentApplication
 
-from django.contrib.contenttypes.models import ContentType
-from django.http import HttpResponseRedirect
-
 
 class StudentAdmin(admin.ModelAdmin):
     list_display = ('artist', 'number', 'promotion', 'graduate')
@@ -25,10 +22,12 @@ class StudentApplicationAdmin(admin.ModelAdmin):
         return obj.artist.user.get_full_name()
 
     _get_name.short_description = "Nom"
-    list_display = ('_get_name','current_year_application_count','created_on','selected_for_interview', 'asynchronous_element', 'application_complete', 'remark')
-
+    list_display = (
+        '_get_name','current_year_application_count','created_on', 'selected_for_interview',
+        'asynchronous_element', 'application_complete', 'remark',
+    )
 
 
 admin.site.register(Promotion)
-admin.site.register(StudentApplication, StudentApplicationAdmin )
+admin.site.register(StudentApplication, StudentApplicationAdmin)
 admin.site.register(Student, StudentAdmin)

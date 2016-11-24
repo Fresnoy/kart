@@ -29,6 +29,7 @@ class StudentAutocompleteSerializer(HaystackSerializer):
             "q": "autocomplete"
         }
 
+
 class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = StudentApplication
