@@ -6,14 +6,15 @@ from .models import Artist, Staff, Organization, FresnoyProfile
 
 
 
-class FresnoyProfileSerializer(serializers.HyperlinkedModelSerializer):
+class FresnoyProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = FresnoyProfile
+        #exclude = ('user',)
 
     id = serializers.ReadOnlyField()
-    birthplace_country = CountryField()
-    homeland_country = CountryField()
-    residence_country = CountryField()
+    birthplace_country = CountryField(default="FR")
+    homeland_country = CountryField(default="FR")
+    residence_country = CountryField(default="FR")
 
 class ArtistSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -24,10 +25,11 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'profile')
-        #fields = ('id','first_name', 'last_name', 'email')
+        fields = ('id', 'first_name', 'last_name', 'email', "profile")
 
-    #profile = FresnoyProfileSerializer()
+    profile = FresnoyProfileSerializer()
+
+    
 
 
 class StaffSerializer(serializers.HyperlinkedModelSerializer):

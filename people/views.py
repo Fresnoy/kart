@@ -14,7 +14,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class FresnoyProfileViewSet(viewsets.ModelViewSet):
     queryset = FresnoyProfile.objects.all()
     serializer_class = FresnoyProfileSerializer
-
+    
 
 class ArtistViewSet(viewsets.ModelViewSet):
     queryset = Artist.objects.all()
