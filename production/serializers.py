@@ -3,9 +3,8 @@ from rest_framework import serializers
 from .models import (
     Film, FilmGenre, Installation,
     Performance, InstallationGenre,
-    Event, Itinerary,StaffTask, ProductionStaffTask, ProductionOrganizationTask,
+    Event, Itinerary, StaffTask, ProductionStaffTask, ProductionOrganizationTask,
 )
-from people.models import Staff
 from people.serializers import StaffSerializer
 
 

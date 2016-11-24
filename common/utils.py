@@ -7,9 +7,9 @@ def make_filepath(instance, filename):
     accents and such).
     """
     new_filename = "{0}.{1}".format(
-                        User.objects.make_random_password(10),
-                        filename.split('.')[-1]
-                    )
+                                User.objects.make_random_password(10),
+                                filename.split('.')[-1],
+                            )
 
     return "{0}/{1}/{2}".format(
         instance.__class__._meta.app_label,

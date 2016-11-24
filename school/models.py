@@ -121,7 +121,6 @@ class StudentApplication(models.Model):
         help_text="Administration - Candidature is complete"
     )
 
-
     def _make_application_number(self):
         """
             Application number algorithm = year + increment_num
@@ -129,8 +128,7 @@ class StudentApplication(models.Model):
         year = date.today().year
         count = StudentApplication.objects.filter(created_on__year = year).count()
 
-        return '{0}-{1:03d}'.format(year, count + 1)
-
+        return '{0}-{1 :03d}'.format(year, count + 1)
 
     def save(self, *args, **kwargs):
 
@@ -138,7 +136,6 @@ class StudentApplication(models.Model):
             self.current_year_application_count = self._make_application_number()
 
         super(StudentApplication, self).save(*args, **kwargs)
-
 
     def __unicode__(self):
         return "{0} ({1})".format(self.current_year_application_count, self.artist)

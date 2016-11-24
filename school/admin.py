@@ -18,12 +18,12 @@ class StudentAdmin(admin.ModelAdmin):
 
 class StudentApplicationAdmin(admin.ModelAdmin):
 
-    def _get_name(self,obj):
+    def _get_name(self, obj):
         return obj.artist.user.get_full_name()
 
     _get_name.short_description = "Nom"
     list_display = (
-        '_get_name','current_year_application_count','created_on', 'selected_for_interview',
+        '_get_name', 'current_year_application_count', 'created_on', 'selected_for_interview',
         'asynchronous_element', 'application_complete', 'remark',
     )
 
