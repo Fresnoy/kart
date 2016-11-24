@@ -4,7 +4,8 @@ from drf_haystack.viewsets import HaystackViewSet
 
 from .models import Promotion, Student, StudentApplication
 from .serializers import (PromotionSerializer, StudentSerializer,
-                            StudentAutocompleteSerializer, StudentApplicationSerializer)
+                          StudentAutocompleteSerializer, StudentApplicationSerializer
+                          )
 
 
 class PromotionViewSet(viewsets.ModelViewSet):

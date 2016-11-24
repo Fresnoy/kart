@@ -8,7 +8,6 @@ from .serializers import (FilmSerializer, InstallationSerializer,
                           PerformanceSerializer, FilmGenreSerializer,
                           InstallationGenreSerializer, EventSerializer,
                           ItinerarySerializer, ProductionStaffTaskSerializer, PartnerSerializer
-
                           )
 
 
