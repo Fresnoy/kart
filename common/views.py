@@ -9,6 +9,7 @@ class BTBeaconViewSet(viewsets.ModelViewSet):
     queryset = BTBeacon.objects.all()
     serializer_class = BTBeaconSerializer
 
+
 class WebsiteViewSet(viewsets.ModelViewSet):
     queryset = Website.objects.all()
     serializer_class = WebsiteSerializer

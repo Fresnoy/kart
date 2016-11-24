@@ -1,15 +1,8 @@
 from django.contrib.auth.models import User
-
 from tastypie import fields
 from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
-
 from common.api import WebsiteResource
-
 from .models import Artist, Staff, Organization
-from production.models import Task, StaffTask, ProductionStaffTask
-
-
-
 
 
 class UserResource(ModelResource):
@@ -32,8 +25,8 @@ class UserResource(ModelResource):
 
         bundle.data['homeland_country'] = bundle.obj.profile.homeland_country
         bundle.data['birthplace_country'] = bundle.obj.profile.birthplace_country
-        #bundle.data['first_name'] = bundle.obj.user.first_name
-        #bundle.data['last_name'] = bundle.obj.user.last_name
+        # bundle.data['first_name'] = bundle.obj.user.first_name
+        # bundle.data['last_name'] = bundle.obj.user.last_name
 
         return bundle
 
@@ -56,14 +49,12 @@ class ArtistResource(ModelResource):
                                   full=False, null=True, use_in=['detail'])
 
 
-
 class StaffResource(ModelResource):
     class Meta:
         queryset = Staff.objects.all()
         resource_name = 'people/staff'
 
     user = fields.ForeignKey(UserResource, 'user', full=True)
-
 
 
 class OrganizationResource(ModelResource):
