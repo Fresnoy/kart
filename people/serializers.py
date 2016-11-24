@@ -10,7 +10,7 @@ class FresnoyProfileSerializer(serializers.ModelSerializer):
         model = FresnoyProfile
         exclude = ('user',)
 
-    id = serializers.ReadOnlyField()
+    #id = serializers.ReadOnlyField()
     birthplace_country = CountryField(default="FR")
     homeland_country = CountryField(default="FR")
     residence_country = CountryField(default="FR")
@@ -20,14 +20,19 @@ class FresnoyProfileSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'profile')
+        fields = ('id', 'url', 'username', 'first_name', 'last_name', 'email', 'profile')
 
     profile = FresnoyProfileSerializer(required=False)
 
     def create(self, validated_data):
         profile_data = validated_data.pop('profile')
         user = User.objects.create(**validated_data)
-        UserProfile.objects.create(**profile_data)
+
+        # set user in profile
+        profile_data["user"] = user
+
+        # save profile
+        FresnoyProfile.objects.create(**profile_data)
         return user
 
     def update(self, instance, validated_data):
