@@ -43,7 +43,7 @@ class Command(BaseCommand):
                     if created:
                         print "  `-- User {0} created".format(user)
                     else:
-                        print "  `-- Found {1}".format(user)
+                        print "  `-- Found {0}".format(user)
                     profile, created = FresnoyProfile.objects.get_or_create(user=user)
 
                     artist, created = Artist.objects.get_or_create(user=user)

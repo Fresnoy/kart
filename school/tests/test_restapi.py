@@ -39,11 +39,11 @@ class TestApplicationEndPoint(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
+
     def test_list_contain_user(self):
         """
         Test de la validité des informations
         """
-
         # TODO le test
 
         pass
