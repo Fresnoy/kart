@@ -42,7 +42,7 @@ class TestApplicationEndPoint(TestCase):
 
     def test_list_contain_user(self):
         """
-        Test de la validité des informations
+        informations tests
         """
         # TODO le test
 
