@@ -33,5 +33,3 @@ HAYSTACK_CONNECTIONS = {
         'INDEX_NAME': 'ifresnoy',
     },
 }
-
-

@@ -4,7 +4,10 @@ from django.db import models
 from pagedown.widgets import AdminPagedownWidget
 from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin
 
-from .models import Production, Artwork, FilmGenre, Film, InstallationGenre, Installation, Performance, StaffTask, OrganizationTask, Event, Itinerary
+from .models import (
+    Production, Artwork, FilmGenre, Film,
+    InstallationGenre, Installation, Performance,
+    StaffTask, OrganizationTask, Event, Itinerary)
 
 
 class CollaboratorsInline(admin.TabularInline):
@@ -19,6 +22,7 @@ class ProductionChildAdmin(PolymorphicChildModelAdmin):
     """ Base admin class for all child models """
     base_model = Production
 
+
 class ArtworkChildAdmin(ProductionChildAdmin):
     base_model = Artwork
     list_display = (ProductionChildAdmin.list_display + ('production_date',))
@@ -31,6 +35,7 @@ class FilmChildAdmin(ArtworkChildAdmin):
 
 class PerformanceChildAdmin(ArtworkChildAdmin):
     pass
+
 
 class InstallationChildAdmin(ArtworkChildAdmin):
     pass
@@ -49,15 +54,15 @@ class ProductionParentAdmin(PolymorphicParentModelAdmin):
         (Performance, PerformanceChildAdmin),
     )
 
-
     formfield_overrides = {
-        models.TextField: {'widget': AdminPagedownWidget },
+        models.TextField: {'widget': AdminPagedownWidget},
     }
 
 
 class ArtworkAdmin(admin.ModelAdmin):
     list_display = ('title', 'subtitle')
     search_fields = ['title']
+    inlines = (CollaboratorsInline, PartnersInline)
 
 
 @admin.register(Installation)
@@ -78,6 +83,7 @@ class PerformanceAdmin(ArtworkAdmin):
 @admin.register(Event)
 class EventAdmin(ProductionChildAdmin):
     list_display = (ProductionChildAdmin.list_display + ('starting_date', 'ending_date'))
+    inlines = (CollaboratorsInline, PartnersInline)
 
 
 class ItineraryArtworkInline(admin.TabularInline):
@@ -89,7 +95,7 @@ class ItineraryAdmin(admin.ModelAdmin):
     inlines = (ItineraryArtworkInline,)
 
     formfield_overrides = {
-        models.TextField: {'widget': AdminPagedownWidget },
+        models.TextField: {'widget': AdminPagedownWidget},
     }
 
 
@@ -106,13 +112,12 @@ class InstallationGenreAdmin(admin.ModelAdmin):
 @admin.register(OrganizationTask)
 class OrganizationTaskAdmin(admin.ModelAdmin):
     formfield_overrides = {
-        models.TextField: {'widget': AdminPagedownWidget },
+        models.TextField: {'widget': AdminPagedownWidget},
     }
 
 
 @admin.register(StaffTask)
 class StaffTaskAdmin(admin.ModelAdmin):
     formfield_overrides = {
-        models.TextField: {'widget': AdminPagedownWidget },
+        models.TextField: {'widget': AdminPagedownWidget},
     }
-

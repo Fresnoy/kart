@@ -21,6 +21,7 @@ class Task(models.Model):
     def __unicode__(self):
         return self.label
 
+
 class StaffTask(Task):
     pass
 
@@ -54,7 +55,9 @@ class Production(PolymorphicModel):
     websites = models.ManyToManyField(Website, blank=True)
 
     collaborators = models.ManyToManyField(Staff, through=ProductionStaffTask, blank=True, related_name="%(class)s")
-    partners = models.ManyToManyField(Organization, through=ProductionOrganizationTask, blank=True, related_name="%(class)s")
+    partners = models.ManyToManyField(Organization,
+                                      through=ProductionOrganizationTask, blank=True,
+                                      related_name="%(class)s")
 
     description_short_fr = models.TextField(blank=True, null=True)
     description_short_en = models.TextField(blank=True, null=True)
@@ -63,7 +66,7 @@ class Production(PolymorphicModel):
 
     def __unicode__(self):
         # return "Production %s" % self.id
-        return "%s - %s" % (self.title,self.id)
+        return "%s - %s" % (self.title, self.id)
 
 
 class Artwork(Production):
@@ -94,6 +97,7 @@ class FilmGenre(models.Model):
 
     def __unicode__(self):
         return self.label
+
 
 class Film(Artwork):
     SHOOTING_FORMAT_CHOICES = (
@@ -143,18 +147,22 @@ class Film(Artwork):
     process = models.CharField(choices=PROCESS_CHOICES, max_length=10, blank=True)
     genres = models.ManyToManyField(FilmGenre)
 
+
 class InstallationGenre(models.Model):
     label = models.CharField(max_length=100)
 
     def __unicode__(self):
         return self.label
 
+
 class Installation(Artwork):
     technical_description = models.TextField(blank=True)
     genres = models.ManyToManyField(InstallationGenre)
 
+
 class Performance(Artwork):
     pass
+
 
 class Event(Production):
     TYPE_CHOICES = (
@@ -180,8 +188,10 @@ class Event(Production):
 
     subevents = models.ManyToManyField('self', blank=True)
 
+
 class Exhibition(Event):
-    pass # TODO?
+    pass  # TODO?
+
 
 class Itinerary(models.Model):
     class Meta:
@@ -199,6 +209,7 @@ class Itinerary(models.Model):
 
     def __unicode__(self):
         return self.label_fr
+
 
 class ItineraryArtwork(models.Model):
     class Meta:

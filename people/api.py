@@ -1,19 +1,13 @@
 from django.contrib.auth.models import User
-
 from tastypie import fields
 from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
-
 from common.api import WebsiteResource
-
 from .models import Artist, Staff, Organization
-from production.models import Task, StaffTask, ProductionStaffTask
-
-
 
 
 class UserResource(ModelResource):
     class Meta:
-        queryset = User.objects.exclude(pk=-1) # Exclude anonymous user
+        queryset = User.objects.exclude(pk=-1)  # Exclude anonymous user
         detail_uri_name = 'username'
         resource_name = 'people/user'
         fields = ['username', 'first_name', 'last_name']
@@ -28,10 +22,12 @@ class UserResource(ModelResource):
         bundle.data['birthdate'] = bundle.obj.profile.birthdate
         bundle.data['birthplace'] = bundle.obj.profile.birthplace
         bundle.data['cursus'] = bundle.obj.profile.cursus
+
         bundle.data['homeland_country'] = bundle.obj.profile.homeland_country
         bundle.data['birthplace_country'] = bundle.obj.profile.birthplace_country
-        #bundle.data['first_name'] = bundle.obj.user.first_name
-        #bundle.data['last_name'] = bundle.obj.user.last_name
+        # bundle.data['first_name'] = bundle.obj.user.first_name
+        # bundle.data['last_name'] = bundle.obj.user.last_name
+
         return bundle
 
 
@@ -44,19 +40,19 @@ class ArtistResource(ModelResource):
             'resource_uri': ALL
         }
 
-        fields = ['id', 'nickname', 'bio_short_fr', 'bio_short_en', 'bio_fr', 'bio_en', 'twitter_account', 'facebook_profile']
+        fields = ['id', 'nickname', 'bio_short_fr', 'bio_short_en',
+                  'bio_fr', 'bio_en', 'twitter_account', 'facebook_profile']
 
     websites = fields.ToManyField(WebsiteResource, 'websites', full=True)
     user = fields.ForeignKey(UserResource, 'user', full=True)
-    artworks = fields.ToManyField('production.api.ArtworkResource', 'artworks', full=False, null=True, use_in=['detail'])
+    artworks = fields.ToManyField('production.api.ArtworkResource', 'artworks',
+                                  full=False, null=True, use_in=['detail'])
 
 
 class StaffResource(ModelResource):
     class Meta:
         queryset = Staff.objects.all()
         resource_name = 'production/staff'
-
-
     user = fields.ForeignKey(UserResource, 'user', full=True)
 
 
