@@ -7,6 +7,7 @@ from people.models import Artist
 
 from ..models import StudentApplication
 
+
 class TestApplicationEndPoint(TestCase):
     """
     Tests concernants le endpoint des Student Application
