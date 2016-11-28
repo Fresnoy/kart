@@ -4,6 +4,6 @@ db.sqlite3
 *#
 media/
 ifresnoy/site_settings.py
-.tox/
 .cache/
 .coverage
+.tox
