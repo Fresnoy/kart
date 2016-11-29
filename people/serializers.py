@@ -10,11 +10,10 @@ class FresnoyProfileSerializer(serializers.ModelSerializer):
         model = FresnoyProfile
         exclude = ('user',)
 
-    #id = serializers.ReadOnlyField()
+    id = serializers.ReadOnlyField()
     birthplace_country = CountryField(default="FR")
     homeland_country = CountryField(default="FR")
     residence_country = CountryField(default="FR")
-    #user = serializers(source="user")
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -48,7 +47,7 @@ class UserSerializer(serializers.ModelSerializer):
         if not instance.profile:
             FresnoyProfile.objects.create(user=instance, **profile_data)
 
-        #set Values for UserProfile
+        # set Values for UserProfile
         for item in profile_data:
             value = profile_data.get(item)
             setattr(instance.profile, item, value)
@@ -63,13 +62,12 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
         exclude = ('updated_on',)
 
 
-
-
 class StaffSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Staff
-#        fields = ('staff',)
-#    user = FresnoyProfileSerializer()
+        # fields = ('staff',)
+
+    # user = FresnoyProfileSerializer()
 
 
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
