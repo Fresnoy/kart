@@ -1,8 +1,21 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+
 from django_countries.serializer_fields import CountryField
 
 from .models import Artist, Staff, Organization, FresnoyProfile
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
+
+
+@receiver(post_save, sender=User)
+def create_valid_user_token(sender, instance=None, created=False, **kwargs):
+    print('create_valid_user_token')
+    if created:
+        # Token.objects.create(user=instance)
+        pass
 
 
 class FresnoyProfileSerializer(serializers.ModelSerializer):
@@ -11,9 +24,10 @@ class FresnoyProfileSerializer(serializers.ModelSerializer):
         exclude = ('user',)
 
     id = serializers.ReadOnlyField()
-    birthplace_country = CountryField(default="FR")
-    homeland_country = CountryField(default="FR")
-    residence_country = CountryField(default="FR")
+    birthplace_country = CountryField(default="")
+    # birthplace_country = CountryField(default="FR")
+    homeland_country = CountryField(default="")
+    residence_country = CountryField(default="")
 
 
 class UserSerializer(serializers.ModelSerializer):
