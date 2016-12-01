@@ -35,8 +35,6 @@ from diffusion.views import PlaceViewSet
 from common.views import BTBeaconViewSet, WebsiteViewSet
 from assets.views import GalleryViewSet, MediumViewSet
 
-from ifresnoy.site_settings import PASSWORD_TOKEN
-
 
 admin.autodiscover()
 
@@ -87,7 +85,7 @@ urlpatterns = patterns('',
                        # url(r'^blog/', include('blog.urls')),
                        url(r'^v2/', include(v2_api.urls)),
                        url(r'^v2/auth/', obtain_jwt_token),
-                       url(r'^v2/activate/%s/$' % PASSWORD_TOKEN, 'people.views.activate', name='user-activate'),
+                       url(r'^v2/activate/%s/$' % settings.PASSWORD_TOKEN, 'people.views.activate', name='user-activate'),
                        (r'^', include(v1_api.urls)),
                        (r'^grappelli/', include('grappelli.urls')),
                        url('^markdown/', include('django_markdown.urls')),
