@@ -1,7 +1,13 @@
+from signals import create_user_with_profile
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 from rest_framework import viewsets
-from rest_framework import permissions
+from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 
+from .permissions import IsStaffOrTargetUser
 from .models import Artist, User, FresnoyProfile, Staff, Organization
 from .serializers import (
     ArtistSerializer, UserSerializer, FresnoyProfileSerializer,
@@ -9,25 +15,23 @@ from .serializers import (
 )
 
 
-class IsStaffOrTargetUser(permissions.BasePermission):
-    def has_permission(self, request, view):
-        # allow user to list all users if logged in user is staff
-        return view.action == 'retrieve' or request.user.is_staff
-
-    def has_object_permission(self, request, view, obj):
-        # allow logged in user to view own details, allows staff to view all records
-        return request.user.is_staff or obj == request.user
-
-
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+    def create(self, request, *args, **kwargs):
+        created = super(UserViewSet, self).create(request, *args, **kwargs)
+
+        # created
+        if(request.user.is_anonymous()):
+            pass
+
+        return created
 
     def get_permissions(self):
         # allow non-authenticated user to create via POST
         return (AllowAny() if self.request.method == 'POST'
                 else IsStaffOrTargetUser()),
-
 
 
 class FresnoyProfileViewSet(viewsets.ModelViewSet):
