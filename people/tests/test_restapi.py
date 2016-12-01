@@ -24,7 +24,7 @@ class UserEndPoint(TestCase):
 
     def test_list(self):
         """
-        Test list of artist
+        Test list of user
         """
         url = reverse('user-list')
         self.response = self.client.get(url)

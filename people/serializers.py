@@ -26,15 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
     profile = FresnoyProfileSerializer(required=False)
 
     def create(self, validated_data):
-        profile_data = validated_data.pop('profile')
-        user = User.objects.create(**validated_data)
-
-        # set user in profile
-        profile_data["user"] = user
-
-        # save profile
-        FresnoyProfile.objects.create(**profile_data)
-        return user
+        return validated_data
 
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile')

@@ -3,6 +3,7 @@ from django.db import models
 
 from django_countries.fields import CountryField
 from django_languages.fields import LanguageField
+from django_languages.languages import LANGUAGES
 
 from common.models import Website
 from common.utils import make_filepath
@@ -19,16 +20,16 @@ class FresnoyProfile(models.Model):
 
     user = models.OneToOneField(User, related_name='profile')
     photo = models.ImageField(upload_to=make_filepath, blank=True, null=True)
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=False)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
 
     birthdate = models.DateField(null=True, blank=True)
     birthplace = models.CharField(max_length=255, null=True, blank=True)
-    birthplace_country = CountryField(null=True, blank=True)
+    birthplace_country = CountryField(null=True, default="")
 
     homeland_address = models.TextField(blank=True)
-    homeland_country = CountryField(blank=True)
+    homeland_country = CountryField(default="")
     residence_address = models.TextField(blank=True)
-    residence_country = CountryField(blank=True)
+    residence_country = CountryField(default="")
 
     homeland_phone = models.CharField(max_length=50, blank=True)
     residence_phone = models.CharField(max_length=50, blank=True)
@@ -48,9 +49,12 @@ class FresnoyProfile(models.Model):
                                      null=True, blank=True)
 
     mother_tongue = LanguageField(blank=True, null=True)
-    other_language = LanguageField(blank=True, null=True)
+    other_language = models.CharField(max_length=24,
+                                      choices=LANGUAGES,
+                                      null=True, blank=True)
 
     cursus = models.TextField(blank=True)
+    hash = models.CharField(max_length=150, default="")
 
 
 class Artist(models.Model):
