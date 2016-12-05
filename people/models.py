@@ -54,8 +54,7 @@ class FresnoyProfile(models.Model):
                                       null=True, blank=True)
 
     cursus = models.TextField(blank=True)
-    hash = models.CharField(max_length=150, default="")
-
+    
 
 class Artist(models.Model):
     class Meta:

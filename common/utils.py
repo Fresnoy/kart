@@ -21,7 +21,7 @@ def make_filepath(instance, filename):
     )
 
 
-def send_activation_email(user, password):
+def send_activation_email(request, user, password):
     # Create activation token URL
     uidb36 = int_to_base36(user.id)
     token = default_token_generator.make_token(user)
@@ -29,6 +29,8 @@ def send_activation_email(user, password):
         'uidb36': uidb36,
         'token': token,
     })
+
+    absolute_url = request.build_absolute_uri(url)
     # Send email
     message = "<html>\
                   <head></head>\
@@ -39,7 +41,7 @@ def send_activation_email(user, password):
                        Password: {1}\
                     </p>\
                   </body>\
-                </html>".format(url, password)
+                </html>".format(absolute_url, password)
 
     mail_sent = send_mail('Le Fresnoy - Email Activation',
                           message,

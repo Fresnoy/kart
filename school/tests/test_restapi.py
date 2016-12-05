@@ -28,39 +28,39 @@ class TestApplicationEndPoint(TestCase):
         self.application = StudentApplication(artist=self.artist)
         self.application.save()
 
-        self.response = None
-
     def tearDown(self):
-        self.response = None
+        pass
+
+    def _get_list(self):
+        url = reverse('studentapplication-list')
+        return self.client.get(url)
 
     def test_list(self):
         """
         Test list of applications
         """
-
-        url = reverse('studentapplication-list')
-        self.response = self.client.get(url)
-        self.assertEqual(self.response.status_code, 200)
+        response = self._get_list()
+        self.assertEqual(response.status_code, 200)
 
     def test_json_response(self):
         """
         Test JSON response
         """
-        self.test_list()
-        self.assertTrue(json.loads(self.response.content))
+        response = self._get_list()
+        self.assertTrue(json.loads(response.content))
 
     def test_first_app_default_value(self):
         """
         Test default value
         """
         url = reverse('studentapplication-detail', kwargs={'pk': 1})
-        self.response = self.client.get(url)
-        self.assertEqual(self.response.data['first_time'], True)
+        response = self.client.get(url)
+        self.assertEqual(response.data['first_time'], True)
 
     def test_list_contain_artist(self):
         """
         informations tests
         """
-        self.test_list()
+        response = self._get_list()
         urlartist = reverse('artist-detail', kwargs={'pk': 1})
-        self.assertContains(self.response, urlartist)
+        self.assertContains(response, urlartist)

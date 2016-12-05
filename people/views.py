@@ -5,12 +5,13 @@ from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.decorators import list_route
 
-from .permissions import IsStaffOrTargetUser
 from .models import Artist, User, FresnoyProfile, Staff, Organization
 from .serializers import (
-    ArtistSerializer, UserSerializer, FresnoyProfileSerializer,
-    StaffSerializer, OrganizationSerializer
+    ArtistSerializer, UserSerializer, UserRegisterSerializer,
+    FresnoyProfileSerializer, StaffSerializer,
+    OrganizationSerializer
 )
 from common.utils import send_activation_email
 
@@ -19,30 +20,26 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    def create(self, request, *args, **kwargs):
-        serializer = UserSerializer(data=request.data, context={'request': request})
+    @list_route(methods=['POST'], permission_classes=[AllowAny])
+    def register(self, request):
+        serializer = UserRegisterSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
-            profile_data = request.data.pop('profile')
-            user = User.objects.create(**request.data)
+            user = User(first_name=serializer.data.get('first_name'),
+                        last_name=serializer.data.get('last_name'),
+                        username=serializer.data.get('username'),
+                        email=serializer.data.get('email'))
             password = User.objects.make_random_password()
             user.set_password(password)
             user.save()
             # set user in profile
-            profile_data['user'] = user
+            FresnoyProfile.objects.create(user=user)
             # save profile
-            FresnoyProfile.objects.create(**profile_data)
-            if(request.user.is_anonymous()):
-                send_activation_email(user, password)
-
+            send_activation_email(request, user, password)
             return Response(serializer.validated_data)
-
         else:
             return Response(serializer.errors)
 
-    def get_permissions(self):
-        # allow non-authenticated user to create via POST
-        return (AllowAny() if self.request.method == 'POST'
-                else IsStaffOrTargetUser()),
+    
 
 
 def activate(request, uidb36, token):

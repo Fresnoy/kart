@@ -18,6 +18,16 @@ class FresnoyProfileSerializer(serializers.ModelSerializer):
     residence_country = CountryField(default="")
 
 
+class UserRegisterSerializer(serializers.Serializer):
+
+
+    username = serializers.CharField(max_length=30, min_length=4, required=True)
+    first_name = serializers.CharField(max_length=30, min_length=2, required=True)
+    last_name = serializers.CharField(max_length=30, min_length=2, required=True)
+    email = serializers.EmailField(max_length=30, min_length=2, required=True)
+
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
