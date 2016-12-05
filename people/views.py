@@ -33,6 +33,7 @@ class UserViewSet(viewsets.ModelViewSet):
                         email=serializer.data.get('email'))
             password = User.objects.make_random_password()
             user.set_password(password)
+            user.is_active = False
             user.save()
             profile = FresnoyProfile.objects.create(user=user)
             # assign permission
