@@ -54,7 +54,7 @@ class FresnoyProfile(models.Model):
                                       null=True, blank=True)
 
     cursus = models.TextField(blank=True)
-    
+
 
 class Artist(models.Model):
     class Meta:

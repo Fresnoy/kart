@@ -1,9 +1,9 @@
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.models import Group
 from django.utils.http import base36_to_int
 from django.http import HttpResponse
 
-from rest_framework import viewsets
-from rest_framework.permissions import AllowAny
+from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import list_route
 
@@ -21,8 +21,10 @@ from common.utils import send_activation_email
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
-    @list_route(methods=['POST'], permission_classes=[AllowAny])
+
+    @list_route(methods=['POST'], permission_classes=[permissions.AllowAny])
     def register(self, request):
         serializer = UserRegisterSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
@@ -36,16 +38,14 @@ class UserViewSet(viewsets.ModelViewSet):
             profile = FresnoyProfile.objects.create(user=user)
             # assign permission
             assign_perm('change_user', user, user)
-            assign_perm('create_artist', user)
-            assign_perm('create_studentapplication', user)
             assign_perm('change_fresnoyprofile', user, profile)
-
+            # assign group
+            group = Group.objects.get(name='School Application')
+            user.groups.add(group)
             send_activation_email(request, user, password)
             return Response(serializer.validated_data)
         else:
             return Response(serializer.errors)
-
-
 
 
 def activate(request, uidb36, token):
@@ -85,16 +85,20 @@ class FresnoyProfileViewSet(viewsets.ModelViewSet):
     serializer_class = FresnoyProfileSerializer
 
 
+
+
 class ArtistViewSet(viewsets.ModelViewSet):
     queryset = Artist.objects.all()
     serializer_class = ArtistSerializer
-
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 class StaffViewSet(viewsets.ModelViewSet):
     queryset = Staff.objects.all()
     serializer_class = StaffSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class OrganizationViewSet(viewsets.ModelViewSet):
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)

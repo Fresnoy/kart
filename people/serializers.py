@@ -6,6 +6,14 @@ from django_countries.serializer_fields import CountryField
 from .models import Artist, Staff, Organization, FresnoyProfile
 
 
+class PrivateField(serializers.ReadOnlyField):
+
+    def get_attribute(self, instance):
+        if self.context['request'].user.is_authenticated():
+            return super(PrivateField, self).get_attribute(instance)
+        return None
+
+
 class FresnoyProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = FresnoyProfile
@@ -16,6 +24,7 @@ class FresnoyProfileSerializer(serializers.ModelSerializer):
     # birthplace_country = CountryField(default="FR")
     homeland_country = CountryField(default="")
     residence_country = CountryField(default="")
+    social_insurance_number = PrivateField()
 
 
 class UserRegisterSerializer(serializers.Serializer):
