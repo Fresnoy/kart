@@ -7,11 +7,11 @@ from ..models import Artist
 
 
 class UserEndPoint(TestCase):
-    fixtures = ['groups.json']
-    
     """
     Tests concernants le endpoint des User
     """
+    fixtures = ['groups.json']
+
     def setUp(self):
         self.user = User()
         self.user.first_name = "Andrew"

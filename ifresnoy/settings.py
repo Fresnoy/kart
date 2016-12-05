@@ -68,8 +68,8 @@ MIDDLEWARE_CLASSES = (
 )
 
 AUTHENTICATION_BACKENDS = (
-   'django.contrib.auth.backends.ModelBackend',  # this is default
-   'guardian.backends.ObjectPermissionBackend',
+    'django.contrib.auth.backends.ModelBackend',  # this is default
+    'guardian.backends.ObjectPermissionBackend',
 )
 
 ROOT_URLCONF = 'ifresnoy.urls'

@@ -23,7 +23,6 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
-
     @list_route(methods=['POST'], permission_classes=[permissions.AllowAny])
     def register(self, request):
         serializer = UserRegisterSerializer(data=request.data, context={'request': request})
@@ -85,12 +84,11 @@ class FresnoyProfileViewSet(viewsets.ModelViewSet):
     serializer_class = FresnoyProfileSerializer
 
 
-
-
 class ArtistViewSet(viewsets.ModelViewSet):
     queryset = Artist.objects.all()
     serializer_class = ArtistSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
 
 class StaffViewSet(viewsets.ModelViewSet):
     queryset = Staff.objects.all()
