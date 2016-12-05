@@ -7,6 +7,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.decorators import list_route
 
+from guardian.shortcuts import assign_perm
+
 from .models import Artist, User, FresnoyProfile, Staff, Organization
 from .serializers import (
     ArtistSerializer, UserSerializer, UserRegisterSerializer,
@@ -31,15 +33,19 @@ class UserViewSet(viewsets.ModelViewSet):
             password = User.objects.make_random_password()
             user.set_password(password)
             user.save()
-            # set user in profile
-            FresnoyProfile.objects.create(user=user)
-            # save profile
+            profile = FresnoyProfile.objects.create(user=user)
+            # assign permission
+            assign_perm('change_user', user, user)
+            assign_perm('create_artist', user)
+            assign_perm('create_studentapplication', user)
+            assign_perm('change_fresnoyprofile', user, profile)
+
             send_activation_email(request, user, password)
             return Response(serializer.validated_data)
         else:
             return Response(serializer.errors)
 
-    
+
 
 
 def activate(request, uidb36, token):

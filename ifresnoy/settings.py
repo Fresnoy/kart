@@ -34,6 +34,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    'guardian',
     'pagedown',
     'haystack',
     'elasticstack',
@@ -64,6 +65,11 @@ MIDDLEWARE_CLASSES = (
 
     'corsheaders.middleware.CorsMiddleware',
 
+)
+
+AUTHENTICATION_BACKENDS = (
+   'django.contrib.auth.backends.ModelBackend', # this is default
+   'guardian.backends.ObjectPermissionBackend',
 )
 
 ROOT_URLCONF = 'ifresnoy.urls'
