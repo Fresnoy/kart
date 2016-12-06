@@ -1,9 +1,10 @@
+from django.core.urlresolvers import reverse
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import Group
 from django.utils.http import base36_to_int
 from django.http import HttpResponse
 
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import list_route
 
@@ -46,6 +47,15 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(serializer.validated_data)
         else:
             return Response(serializer.errors)
+
+    @list_route(methods=['POST'], permission_classes=[permissions.AllowAny])
+    def search(self, request):
+        try:
+            user = User.objects.get(username=request.data.get('username'))
+        except User.DoesNotExist:
+            return Response({'user': False}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'user': reverse('user-detail', kwargs={'pk': user.id})}, status=status.HTTP_200_OK)
 
 
 def activate(request, uidb36, token):

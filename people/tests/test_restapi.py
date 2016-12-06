@@ -48,6 +48,15 @@ class UserEndPoint(TestCase):
         assert user_on_base.pk > 0
         assert user_on_base.profile is not None
 
+    def test_user_exist(self):
+        """
+        Test user exist endpoint
+        """
+        url = reverse('user-search')
+        search = {'username': 'awarhol'}
+        response = self.client.post(url, search)
+        self.assertEqual(response.status_code, 200)
+
 
 class ArtistEndPoint(TestCase):
     """
