@@ -1,8 +1,17 @@
+import ifresnoy.settings as settings
+
 from django.core.urlresolvers import reverse
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash, authenticate, login
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import Group
+
+from django.shortcuts import render, redirect
+
 from django.utils.http import base36_to_int
 from django.http import HttpResponse
+from django.template.loader import render_to_string
 
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
@@ -16,7 +25,9 @@ from .serializers import (
     FresnoyProfileSerializer, StaffSerializer,
     OrganizationSerializer
 )
-from common.utils import send_activation_email
+from .utils import send_activation_email
+
+
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -28,10 +39,11 @@ class UserViewSet(viewsets.ModelViewSet):
     def register(self, request):
         serializer = UserRegisterSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
-            user = User(first_name=serializer.data.get('first_name'),
-                        last_name=serializer.data.get('last_name'),
-                        username=serializer.data.get('username'),
-                        email=serializer.data.get('email'))
+            # save user
+            user = User(first_name=request.data.get('first_name'),
+                        last_name=request.data.get('last_name'),
+                        username=request.data.get('username'),
+                        email=request.data.get('email'))
             password = User.objects.make_random_password()
             user.set_password(password)
             user.is_active = False
@@ -43,8 +55,8 @@ class UserViewSet(viewsets.ModelViewSet):
             # assign group
             group = Group.objects.get(name='School Application')
             user.groups.add(group)
-            send_activation_email(request, user, password)
-            return Response(serializer.validated_data)
+            send_activation_email(request, user)
+            return Response({'user': True}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(serializer.errors)
 
@@ -53,7 +65,7 @@ class UserViewSet(viewsets.ModelViewSet):
         try:
             user = User.objects.get(username=request.data.get('username'))
         except User.DoesNotExist:
-            return Response({'user': False}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'user': False}, status=status.HTTP_204_NO_CONTENT)
 
         return Response({'user': reverse('user-detail', kwargs={'pk': user.id})}, status=status.HTTP_200_OK)
 
@@ -61,33 +73,44 @@ class UserViewSet(viewsets.ModelViewSet):
 def activate(request, uidb36, token):
     """
     Check activation token for newly registered users. If successful,
-    mark as active and log them in. If not, show an error page.
-    Code borrowed from Django's auth reset mechanism.
+    mark as active and log them in. If not, show an error page
     """
     # Look up the user object
+    uid_int = base36_to_int(uidb36)
+
     try:
-        uid_int = base36_to_int(uidb36)
         user = User.objects.get(pk=uid_int)
-    except (ValueError, OverflowError):
+    except User.DoesNotExist:
         user = None
 
+
     if user is not None:
-
         # Is the token valid?
-        if default_token_generator.check_token(user, token):
 
+        if default_token_generator.check_token(user, token):
             # Activate the user
             user.is_active = True
             user.save()
+            user.backend = settings.AUTHENTICATION_BACKENDS
+            print("****")
+            print(request.user)
+            login(request, user)
 
+            print("request.user")
+            print(request.user.password)
             # Log in the user
             # user.backend = settings.AUTHENTICATION_BACKENDS[0]
-            # auth_login(request, user)
-
             # Redirect to URL specified in settings
-            return HttpResponse("OKVALIDE")
+            return redirect('user-new-password')
+            # return Response("ok")
 
-    return HttpResponse("Error")
+    activation_error_page = render_to_string('account/activation_error.html', {'id': uid_int})
+    return HttpResponse(activation_error_page)
+
+
+def new_password(request):
+    print(request.user)
+
 
 
 class FresnoyProfileViewSet(viewsets.ModelViewSet):

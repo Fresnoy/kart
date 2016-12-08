@@ -1,9 +1,4 @@
-from django.core.urlresolvers import reverse
-from django.core.mail import send_mail
-
 from django.contrib.auth.models import User
-from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import int_to_base36
 
 
 def make_filepath(instance, filename):
@@ -19,33 +14,3 @@ def make_filepath(instance, filename):
         instance.__class__.__name__.lower(),
         new_filename
     )
-
-
-def send_activation_email(request, user, password):
-    # Create activation token URL
-    uidb36 = int_to_base36(user.id)
-    token = default_token_generator.make_token(user)
-    url = reverse('user-activate', kwargs={
-        'uidb36': uidb36,
-        'token': token,
-    })
-
-    absolute_url = request.build_absolute_uri(url)
-    # Send email
-    message = "<html>\
-                  <head></head>\
-                  <body>\
-                    <p>Bonjour<br>\
-                       How are you?<br>\
-                       Here is the <a href='{0}'>activation link</a> you wanted.\
-                       Password: {1}\
-                    </p>\
-                  </body>\
-                </html>".format(absolute_url, password)
-
-    mail_sent = send_mail('Le Fresnoy - Email Activation',
-                          message,
-                          'pedagogie@lefresnoy.net',
-                          [user.email],
-                          fail_silently=False)
-    return mail_sent
