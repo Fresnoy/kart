@@ -1,14 +1,11 @@
 import ifresnoy.settings as settings
 
 from django.core.urlresolvers import reverse
-from django.contrib import messages
-from django.contrib.auth import update_session_auth_hash, authenticate, login
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import login
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import Group
 
-from django.shortcuts import render, redirect
-
+from django.shortcuts import redirect
 from django.utils.http import base36_to_int
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -26,8 +23,6 @@ from .serializers import (
     OrganizationSerializer
 )
 from .utils import send_activation_email
-
-
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -83,10 +78,8 @@ def activate(request, uidb36, token):
     except User.DoesNotExist:
         user = None
 
-
     if user is not None:
         # Is the token valid?
-
         if default_token_generator.check_token(user, token):
             # Activate the user
             user.is_active = True
@@ -110,7 +103,7 @@ def activate(request, uidb36, token):
 
 def new_password(request):
     print(request.user)
-
+    return HttpResponse("TODO")
 
 
 class FresnoyProfileViewSet(viewsets.ModelViewSet):

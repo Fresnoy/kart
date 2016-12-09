@@ -40,7 +40,7 @@ class UserEndPoint(TestCase):
         url = reverse('user-register')
         user_registration = {'username': 'roro', 'first_name': 'Romain', 'last_name': 'Lefranc', 'email': 'ska@ree.fr'}
         response = self.client.post(url, user_registration)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 204)
         user_on_base = User.objects.get(email=user_registration.get('email'),
                                         first_name=user_registration.get('first_name'),
                                         last_name=user_registration.get('last_name'),
