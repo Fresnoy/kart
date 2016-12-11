@@ -80,14 +80,16 @@ v2_api.register(r'assets/medium', MediumViewSet)
 
 
 urlpatterns = patterns('',
-                       # Examples:
-                       # url(r'^$', 'ifresnoy.views.home', name='home'),
-                       # url(r'^blog/', include('blog.urls')),
                        url(r'^v2/', include(v2_api.urls)),
                        url(r'^v2/auth/', obtain_jwt_token),
+                       # django user registration
                        url(r'^account/activate/%s/$' % settings.PASSWORD_TOKEN,
                            'people.views.activate', name='user-activate'),
-                       url(r'^account/password/new/$', 'people.views.new_password', name='user-new-password'),
+                       # password reset
+                       url(r'^account/password/reset/confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$',
+                           'people.views.reset_confirm', name='password-reset-confirm'),
+                       url(r'^account/password/reset/$', 'people.views.reset', name='password-reset'),
+                       # api v1
                        (r'^', include(v1_api.urls)),
                        (r'^grappelli/', include('grappelli.urls')),
                        url('^markdown/', include('django_markdown.urls')),

@@ -1,11 +1,8 @@
-import ifresnoy.settings as settings
-
 from django.core.urlresolvers import reverse
-from django.contrib.auth import login
-from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import Group
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.views import password_reset, password_reset_confirm
 
-from django.shortcuts import redirect
 from django.utils.http import base36_to_int
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -39,8 +36,6 @@ class UserViewSet(viewsets.ModelViewSet):
                         last_name=request.data.get('last_name'),
                         username=request.data.get('username'),
                         email=request.data.get('email'))
-            password = User.objects.make_random_password()
-            user.set_password(password)
             user.is_active = False
             user.save()
             profile = FresnoyProfile.objects.create(user=user)
@@ -79,31 +74,47 @@ def activate(request, uidb36, token):
         user = None
 
     if user is not None:
+
+        change_password_link = reverse('password-reset')
         # Is the token valid?
         if default_token_generator.check_token(user, token):
             # Activate the user
             user.is_active = True
+            password = User.objects.make_random_password()
+            user.set_password(password)
             user.save()
-            user.backend = settings.AUTHENTICATION_BACKENDS
-            print("****")
-            print(request.user)
-            login(request, user)
+            activation_ok_show_password_page = render_to_string('account/activation_ok_show_password.html', {
+                                                                'id': uid_int,
+                                                                'password': password,
+                                                                'link_change_password': change_password_link})
+            return HttpResponse(activation_ok_show_password_page)
+        else:
+            # activation deja faite
+            activation_already_ok = render_to_string('account/activation_already_ok.html', {
+                                                     'username': user.username,
+                                                     'email': user.email,
+                                                     'link_change_password': change_password_link})
+            return HttpResponse(activation_already_ok)
 
-            print("request.user")
-            print(request.user.password)
-            # Log in the user
-            # user.backend = settings.AUTHENTICATION_BACKENDS[0]
-            # Redirect to URL specified in settings
-            return redirect('user-new-password')
-            # return Response("ok")
-
+    # pas le bon token
     activation_error_page = render_to_string('account/activation_error.html', {'id': uid_int})
     return HttpResponse(activation_error_page)
 
 
-def new_password(request):
-    print(request.user)
-    return HttpResponse("TODO")
+def reset_confirm(request, uidb64=None, token=None):
+    return password_reset_confirm(request,
+                                  template_name='account/password_reset_confirm.html',
+                                  uidb64=uidb64,
+                                  token=token,
+                                  post_reset_redirect=reverse('admin:login'))
+
+
+def reset(request):
+    return password_reset(request,
+                          template_name='account/password_reset_form.html',
+                          email_template_name='emails/password_reset_email.html',
+                          subject_template_name='emails/password_reset_subject.txt',
+                          post_reset_redirect=reverse('admin:login'))
 
 
 class FresnoyProfileViewSet(viewsets.ModelViewSet):
