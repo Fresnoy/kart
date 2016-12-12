@@ -83,12 +83,8 @@ urlpatterns = patterns('',
                        url(r'^v2/', include(v2_api.urls)),
                        url(r'^v2/auth/', obtain_jwt_token),
                        # django user registration
-                       url(r'^account/activate/%s/$' % settings.PASSWORD_TOKEN,
-                           'people.views.activate', name='user-activate'),
-                       # password reset
-                       url(r'^account/password/reset/confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$',
-                           'people.views.reset_confirm', name='password-reset-confirm'),
-                       url(r'^account/password/reset/$', 'people.views.reset', name='password-reset'),
+                       url(r'^v2/rest-auth/', include('rest_auth.urls')),
+                       url(r'^v2/rest-auth/registration/', include('rest_auth.registration.urls')), 
                        # api v1
                        (r'^', include(v1_api.urls)),
                        (r'^grappelli/', include('grappelli.urls')),

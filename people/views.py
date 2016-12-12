@@ -101,22 +101,6 @@ def activate(request, uidb36, token):
     return HttpResponse(activation_error_page)
 
 
-def reset_confirm(request, uidb64=None, token=None):
-    return password_reset_confirm(request,
-                                  template_name='account/password_reset_confirm.html',
-                                  uidb64=uidb64,
-                                  token=token,
-                                  post_reset_redirect=reverse('admin:login'))
-
-
-def reset(request):
-    return password_reset(request,
-                          template_name='account/password_reset_form.html',
-                          email_template_name='emails/password_reset_email.html',
-                          subject_template_name='emails/password_reset_subject.txt',
-                          post_reset_redirect=reverse('admin:login'))
-
-
 class FresnoyProfileViewSet(viewsets.ModelViewSet):
     queryset = FresnoyProfile.objects.all()
     serializer_class = FresnoyProfileSerializer

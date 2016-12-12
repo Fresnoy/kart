@@ -10,10 +10,12 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 from site_settings import *  # NOQA
 import datetime
+import os
 
 
 DEBUG = True
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
@@ -26,19 +28,20 @@ PASSWORD_TOKEN = r'(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-
 # Application definition
 
 INSTALLED_APPS = (
-    'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'django_extensions',
     'guardian',
     'pagedown',
     'haystack',
     'elasticstack',
     'polymorphic',
+    'grappelli',
     'sortedm2m',
     'django_countries',
     'django_markdown',
@@ -46,6 +49,14 @@ INSTALLED_APPS = (
     'tastypie',
     'tastypie_swagger',
     'rest_framework',
+    'rest_framework.authtoken',
+    'rest_auth',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.twitter',
     'corsheaders',
     'common',
     'people',
@@ -67,6 +78,34 @@ MIDDLEWARE_CLASSES = (
 
 )
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+            os.path.join(BASE_DIR, 'people', 'templates')
+        ],
+        
+        'OPTIONS': {
+            'context_processors': [
+                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
+                # list if you haven't customized them:
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+            ],
+            'loaders': [
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader'
+            ],
+        },
+    },
+]
+
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  # this is default
     'guardian.backends.ObjectPermissionBackend',
@@ -81,6 +120,8 @@ WSGI_APPLICATION = 'ifresnoy.wsgi.application'
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
 LANGUAGE_CODE = 'fr-FR'
+
+SITE_ID = 1
 
 TIME_ZONE = 'Europe/Paris'
 
@@ -124,6 +165,7 @@ REST_FRAMEWORK = {
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=2),
 }
+REST_USE_JWT = True
 
 
 # SEARCH SETTINGS
