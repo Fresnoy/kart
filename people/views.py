@@ -7,7 +7,7 @@ from django.utils.http import base36_to_int
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions, status, filters
 from rest_framework.response import Response
 from rest_framework.decorators import list_route
 
@@ -26,6 +26,8 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('=username', '=email')
 
     @list_route(methods=['POST'], permission_classes=[permissions.AllowAny])
     def register(self, request):
