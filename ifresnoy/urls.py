@@ -2,6 +2,7 @@ from django.conf.urls import patterns, include, url
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.views.generic import TemplateView
 
 from tastypie.api import Api
 from rest_framework import routers
@@ -82,9 +83,13 @@ v2_api.register(r'assets/medium', MediumViewSet)
 urlpatterns = patterns('',
                        url(r'^v2/', include(v2_api.urls)),
                        url(r'^v2/auth/', obtain_jwt_token),
+                       url(r'^account/activate/%s/$' % settings.PASSWORD_TOKEN,
+                           'people.views.activate', name='user-activate'),
                        # django user registration
                        url(r'^v2/rest-auth/', include('rest_auth.urls')),
-                       url(r'^v2/rest-auth/registration/', include('rest_auth.registration.urls')), 
+                       url(r'^v2/rest-auth/registration/', include('rest_auth.registration.urls')),
+
+
                        # api v1
                        (r'^', include(v1_api.urls)),
                        (r'^grappelli/', include('grappelli.urls')),

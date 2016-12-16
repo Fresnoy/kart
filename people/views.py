@@ -1,15 +1,17 @@
 from django.core.urlresolvers import reverse
+from django.views.generic.base import TemplateResponseMixin, View, TemplateView
 from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import password_reset, password_reset_confirm
 
 from django.utils.http import base36_to_int
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template.loader import render_to_string
 
 from rest_framework import viewsets, permissions, status, filters
 from rest_framework.response import Response
 from rest_framework.decorators import list_route
+from rest_framework_jwt.settings import api_settings
 
 from guardian.shortcuts import assign_perm
 
@@ -20,6 +22,7 @@ from .serializers import (
     OrganizationSerializer
 )
 from .utils import send_activation_email
+from ifresnoy import settings
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -47,8 +50,10 @@ class UserViewSet(viewsets.ModelViewSet):
             # assign group
             group = Group.objects.get(name='School Application')
             user.groups.add(group)
+            # send activation email
             send_activation_email(request, user)
-            return Response({'user': True}, status=status.HTTP_204_NO_CONTENT)
+
+            return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(serializer.errors)
 
@@ -77,7 +82,20 @@ def activate(request, uidb36, token):
 
     if user is not None:
 
-        change_password_link = reverse('password-reset')
+        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+
+        custom_infos = user
+
+        payload = jwt_payload_handler(custom_infos)
+        front_token = jwt_encode_handler(payload)
+        route = "candidature.step1"
+
+        # reverse('password-reset')
+        change_password_link = "{0}/{1}/{2}".format(settings.authfront_change_password_url, front_token, route)
+
+        print(change_password_link)
+
         # Is the token valid?
         if default_token_generator.check_token(user, token):
             # Activate the user
@@ -85,13 +103,12 @@ def activate(request, uidb36, token):
             password = User.objects.make_random_password()
             user.set_password(password)
             user.save()
-            activation_ok_show_password_page = render_to_string('account/activation_ok_show_password.html', {
-                                                                'id': uid_int,
-                                                                'password': password,
-                                                                'link_change_password': change_password_link})
-            return HttpResponse(activation_ok_show_password_page)
+
+            return HttpResponseRedirect(change_password_link)
+
+
         else:
-            # activation deja faite
+            # activation already ok
             activation_already_ok = render_to_string('account/activation_already_ok.html', {
                                                      'username': user.username,
                                                      'email': user.email,
@@ -101,6 +118,9 @@ def activate(request, uidb36, token):
     # pas le bon token
     activation_error_page = render_to_string('account/activation_error.html', {'id': uid_int})
     return HttpResponse(activation_error_page)
+
+
+
 
 
 class FresnoyProfileViewSet(viewsets.ModelViewSet):

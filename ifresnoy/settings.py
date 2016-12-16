@@ -25,10 +25,13 @@ SECRET_KEY = '$17%$7@*^nmx&(mb)5=o9v9if&_%s67-*^-skk!iaef3%16*12'
 
 PASSWORD_TOKEN = r'(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})'
 
+# front
+authfront_reset_password_url = "http://localhost:3333/#/account/reset-password"
+authfront_change_password_url = "http://localhost:3333/#/account/change-password"
+
 # Application definition
 
 INSTALLED_APPS = (
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -42,6 +45,7 @@ INSTALLED_APPS = (
     'elasticstack',
     'polymorphic',
     'grappelli',
+    'django.contrib.admin',
     'sortedm2m',
     'django_countries',
     'django_markdown',
@@ -85,7 +89,7 @@ TEMPLATES = [
             os.path.join(BASE_DIR, 'templates'),
             os.path.join(BASE_DIR, 'people', 'templates')
         ],
-        
+
         'OPTIONS': {
             'context_processors': [
                 # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this

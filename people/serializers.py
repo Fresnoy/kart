@@ -6,12 +6,20 @@ from django_countries.serializer_fields import CountryField
 from .models import Artist, Staff, Organization, FresnoyProfile
 
 
-class PrivateField(serializers.ReadOnlyField):
+class PrivateStringField(serializers.StringRelatedField):
 
     def get_attribute(self, instance):
         if self.context['request'].user.is_authenticated():
-            return super(PrivateField, self).get_attribute(instance)
+            return super(PrivateStringField, self).get_attribute(instance)
         return None
+
+    def to_internal_value(self, data):
+        # for write functionality
+        # check if data is valid and if not raise ValidationError
+        if self.context['request'].user.is_authenticated():
+            return data
+        return None
+
 
 
 class FresnoyProfileSerializer(serializers.ModelSerializer):
@@ -24,7 +32,7 @@ class FresnoyProfileSerializer(serializers.ModelSerializer):
     # birthplace_country = CountryField(default="FR")
     homeland_country = CountryField(default="")
     residence_country = CountryField(default="")
-    social_insurance_number = PrivateField()
+    social_insurance_number = PrivateStringField()
 
 
 class UserRegisterSerializer(serializers.Serializer):
@@ -46,6 +54,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile')
+        print("update")
+        print(profile_data)
 
         # Update User data
         instance.username = validated_data.get('username', instance.username)
@@ -57,12 +67,17 @@ class UserSerializer(serializers.ModelSerializer):
         if not instance.profile:
             FresnoyProfile.objects.create(user=instance, **profile_data)
 
+
         # set Values for UserProfile
         for item in profile_data:
             value = profile_data.get(item)
+            print(item)
+            print(value)
             setattr(instance.profile, item, value)
 
+        instance.profile.save()
         instance.save()
+
         return instance
 
 
