@@ -54,8 +54,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile')
-        print("update")
-        print(profile_data)
 
         # Update User data
         instance.username = validated_data.get('username', instance.username)
@@ -71,8 +69,6 @@ class UserSerializer(serializers.ModelSerializer):
         # set Values for UserProfile
         for item in profile_data:
             value = profile_data.get(item)
-            print(item)
-            print(value)
             setattr(instance.profile, item, value)
 
         instance.profile.save()

@@ -26,8 +26,8 @@ SECRET_KEY = '$17%$7@*^nmx&(mb)5=o9v9if&_%s67-*^-skk!iaef3%16*12'
 PASSWORD_TOKEN = r'(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})'
 
 # front
-authfront_reset_password_url = "http://localhost:3333/#/account/reset-password"
-authfront_change_password_url = "http://localhost:3333/#/account/change-password"
+authfront_reset_password_url = "http://localhost:3333/#/candidature/account/reset-password"
+authfront_change_password_url = "http://localhost:3333/#/candidature/account/change-password"
 
 # Application definition
 
