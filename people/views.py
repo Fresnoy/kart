@@ -1,8 +1,6 @@
 from django.core.urlresolvers import reverse
-from django.views.generic.base import TemplateResponseMixin, View, TemplateView
 from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.auth.views import password_reset, password_reset_confirm
 
 from django.utils.http import base36_to_int
 from django.http import HttpResponse, HttpResponseRedirect
@@ -106,7 +104,6 @@ def activate(request, uidb36, token):
 
             return HttpResponseRedirect(change_password_link)
 
-
         else:
             # activation already ok
             activation_already_ok = render_to_string('account/activation_already_ok.html', {
@@ -118,9 +115,6 @@ def activate(request, uidb36, token):
     # pas le bon token
     activation_error_page = render_to_string('account/activation_error.html', {'id': uid_int})
     return HttpResponse(activation_error_page)
-
-
-
 
 
 class FresnoyProfileViewSet(viewsets.ModelViewSet):

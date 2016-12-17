@@ -21,7 +21,6 @@ class PrivateStringField(serializers.StringRelatedField):
         return None
 
 
-
 class FresnoyProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = FresnoyProfile
@@ -64,7 +63,6 @@ class UserSerializer(serializers.ModelSerializer):
         # Update UserProfile data
         if not instance.profile:
             FresnoyProfile.objects.create(user=instance, **profile_data)
-
 
         # set Values for UserProfile
         for item in profile_data:
