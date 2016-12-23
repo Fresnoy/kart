@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from drf_haystack.serializers import HaystackSerializer
+from rest_framework import permissions
 
 from .models import Promotion, Student, StudentApplication
 from .search_indexes import StudentIndex

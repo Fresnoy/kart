@@ -30,4 +30,14 @@ class StudentAutocompleteSearchViewSet(HaystackViewSet):
 class StudentApplicationViewSet(viewsets.ModelViewSet):
     queryset = StudentApplication.objects.all()
     serializer_class = StudentApplicationSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the purchases
+        for the currently authenticated user.
+        """
+        user = self.request.user
+        if user.is_staff:
+            return StudentApplication.objects.all()
+
+        return StudentApplication.objects.filter(artist__user=user.id)

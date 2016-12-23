@@ -75,6 +75,7 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
 
+
 class ArtistSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Artist

@@ -1,3 +1,4 @@
+import urllib2, requests
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
@@ -55,14 +56,6 @@ class UserViewSet(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors)
 
-    @list_route(methods=['POST'], permission_classes=[permissions.AllowAny])
-    def search(self, request):
-        try:
-            user = User.objects.get(username=request.data.get('username'))
-        except User.DoesNotExist:
-            return Response({'user': False}, status=status.HTTP_204_NO_CONTENT)
-
-        return Response({'user': reverse('user-detail', kwargs={'pk': user.id})}, status=status.HTTP_200_OK)
 
 
 def activate(request, uidb36, token):
@@ -87,7 +80,7 @@ def activate(request, uidb36, token):
 
         payload = jwt_payload_handler(custom_infos)
         front_token = jwt_encode_handler(payload)
-        route = "candidature.resume"
+        route = "candidature"
 
         # reverse('password-reset')
         change_password_link = "{0}/{1}/{2}".format(settings.authfront_change_password_url, front_token, route)
