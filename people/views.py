@@ -1,5 +1,3 @@
-import urllib2, requests
-from django.core.urlresolvers import reverse
 from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
 
@@ -14,7 +12,9 @@ from rest_framework_jwt.settings import api_settings
 
 from guardian.shortcuts import assign_perm
 
-from .models import Artist, User, FresnoyProfile, Staff, Organization
+from .models import (
+    Artist, User, FresnoyProfile, Staff, Organization
+)
 from .serializers import (
     ArtistSerializer, UserSerializer, UserRegisterSerializer,
     FresnoyProfileSerializer, StaffSerializer,
@@ -52,10 +52,9 @@ class UserViewSet(viewsets.ModelViewSet):
             # send activation email
             send_activation_email(request, user)
 
-            return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
+            return Response(user.id, status=status.HTTP_202_ACCEPTED)
         else:
-            return Response(serializer.errors)
-
+            return Response(serializer.errors, status=status.HTTP_403_FORBIDDEN)
 
 
 def activate(request, uidb36, token):
@@ -65,7 +64,6 @@ def activate(request, uidb36, token):
     """
     # Look up the user object
     uid_int = base36_to_int(uidb36)
-
     try:
         user = User.objects.get(pk=uid_int)
     except User.DoesNotExist:
@@ -82,10 +80,7 @@ def activate(request, uidb36, token):
         front_token = jwt_encode_handler(payload)
         route = "candidature"
 
-        # reverse('password-reset')
         change_password_link = "{0}/{1}/{2}".format(settings.authfront_change_password_url, front_token, route)
-
-        print(change_password_link)
 
         # Is the token valid?
         if default_token_generator.check_token(user, token):
