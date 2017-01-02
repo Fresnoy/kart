@@ -1,4 +1,5 @@
 import json
+import time
 
 from django.contrib.auth.models import User
 
@@ -59,8 +60,29 @@ class TestApplicationEndPoint(TestCase):
 
     def test_list_contain_artist(self):
         """
-        informations tests
+        Informations tests
         """
         response = self._get_list()
         urlartist = reverse('artist-detail', kwargs={'pk': 1})
         self.assertContains(response, urlartist)
+
+    def test_student_app_sorted_by_date(self):
+        """
+        Test app order
+        """
+        self.user = User()
+        self.user.first_name = "Chet"
+        self.user.last_name = "Backer"
+        self.user.username = "cbacker"
+        self.user.save()
+
+        self.artist = Artist(user=self.user, nickname="Chet Baker")
+        self.artist.save()
+
+        self.application = StudentApplication(artist=self.artist)
+        time.sleep(0.1)
+        self.application.save()
+
+        url = reverse('studentapplication-list')
+        response = self.client.get(url)
+        self.assertLess(response.data[0]["created_on"], response.data[1]["created_on"])

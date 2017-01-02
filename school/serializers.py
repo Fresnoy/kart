@@ -39,7 +39,7 @@ class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
                   'asynchronous_element_received', 'remark', 'application_completed', 'selected_for_interview',
                   'selected_for_petit_jury', 'selected_for_grand_jury', 'application_complete', 'artist',
                   'administrative_galleries', 'artwork_galleries')
-
+    """
     def update(self, instance, validated_data):
 
         for item in validated_data:
@@ -51,3 +51,4 @@ class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
             setattr(instance, item, value)
         instance.save()
         return instance
+    """
