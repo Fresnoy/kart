@@ -1,1 +1,5 @@
-{{url}}
+Bonjour
+  Vous êtes sur le point de créer un compte sur notre base de donnée, veuillez
+  suivre ce lien : {{url}} pour modifier votre mot de passe et pouvoir ainsi continuer la procédure d'inscription.
+  En cas de problèmes pour vous inscrire, veuillez nous contacter au plus vite en répondant à ce message.<br/>
+  L'équipe du Fresnoy
