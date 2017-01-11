@@ -33,22 +33,25 @@ class StudentAutocompleteSerializer(HaystackSerializer):
 class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = StudentApplication
-        fields = ('id', 'url', 'current_year_application_count', 'first_time', 'last_application_year',
-                  'created_on', 'updated_on', 'remote_interview', 'remote_interview_type',
-                  'remote_interview_info', 'asynchronous_element', 'asynchronous_element_description',
-                  'asynchronous_element_received', 'remark', 'application_completed', 'selected_for_interview',
-                  'selected_for_petit_jury', 'selected_for_grand_jury', 'application_complete', 'artist',
-                  'administrative_galleries', 'artwork_galleries')
-    """
-    def update(self, instance, validated_data):
-
-        for item in validated_data:
-            if item is "administrative_galleries":
-                for gallery in item:
-                    instance.administrative_galleries.add(gallery)
-
-            value = validated_data.get(item)
-            setattr(instance, item, value)
-        instance.save()
-        return instance
-    """
+        fields = ('id',
+                  'url',
+                  'artist',
+                  'current_year_application_count',
+                  'first_time',
+                  'last_application_year',
+                  'remote_interview',
+                  'remote_interview_type',
+                  'remote_interview_info',
+                  'administrative_galleries',
+                  'artwork_galleries',
+                  'asynchronous_element',
+                  'asynchronous_element_description',
+                  'asynchronous_element_received',
+                  'remark',
+                  'application_completed',
+                  'application_complete',
+                  'selected_for_grand_jury',
+                  'selected_for_interview',
+                  'selected_for_petit_jury',
+                  'created_on',
+                  'updated_on',)

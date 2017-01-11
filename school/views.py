@@ -1,6 +1,6 @@
 from datetime import date
 
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, filters
 from drf_haystack.filters import HaystackAutocompleteFilter
 from drf_haystack.viewsets import HaystackViewSet
 
@@ -10,6 +10,10 @@ from .models import Promotion, Student, StudentApplication
 from .serializers import (PromotionSerializer, StudentSerializer,
                           StudentAutocompleteSerializer, StudentApplicationSerializer
                           )
+
+from .utils import (send_candidature_completed_email_to_user,
+                    send_candidature_completed_email_to_admin
+                    )
 
 
 class PromotionViewSet(viewsets.ModelViewSet):
@@ -35,6 +39,8 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
     queryset = StudentApplication.objects.all()
     serializer_class = StudentApplicationSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('artist__user__username',)
 
     def get_queryset(self):
         """
@@ -69,3 +75,13 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                 student_application.save()
 
             return StudentApplication.objects.filter(artist__user=user.id)
+
+    def update(self, request, *args, **kwargs):
+
+        if(request.data.get('application_completed')):
+            user = self.request.user
+            application_id = self.get_object().id
+            send_candidature_completed_email_to_user(request, user)
+            send_candidature_completed_email_to_admin(request, user, application_id)
+
+        return super(self.__class__, self).update(request, *args, **kwargs)

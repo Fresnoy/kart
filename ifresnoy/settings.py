@@ -29,6 +29,8 @@ PASSWORD_TOKEN = r'(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-
 authfront_reset_password_url = "http://localhost:3333/#/candidature/account/reset-password"
 authfront_change_password_url = "http://localhost:3333/#/candidature/account/change-password"
 
+front_candidatures_url = "http://localhost:3333/#/applications/"
+
 site_name = "Kartel"
 # Application definition
 
