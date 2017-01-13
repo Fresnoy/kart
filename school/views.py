@@ -80,8 +80,8 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
 
         if(request.data.get('application_completed')):
             user = self.request.user
-            application_id = self.get_object().id
-            send_candidature_completed_email_to_user(request, user)
-            send_candidature_completed_email_to_admin(request, user, application_id)
+            application = self.get_object()
+            send_candidature_completed_email_to_user(request, user, application)
+            send_candidature_completed_email_to_admin(request, user, application)
 
         return super(self.__class__, self).update(request, *args, **kwargs)

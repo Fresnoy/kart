@@ -1,2 +1,2 @@
 Bonjour,
-  une nouvelle candidature a été postée {{url}}
+  une nouvelle candidature a été postée {{url}} - {{application.current_year_application_count}}
