@@ -32,6 +32,7 @@ class StudentResource(ArtistResource):
         fields = ['id', 'number', 'promotion', 'graduate', 'user', 'artist']
 
     promotion = fields.ForeignKey(PromotionResource, 'promotion')
+    artist = fields.ForeignKey(ArtistResource, 'artist', full=True)
 
     def prepend_urls(self):
         return [
