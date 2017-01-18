@@ -29,7 +29,7 @@ class StudentResource(ArtistResource):
             'user': ALL_WITH_RELATIONS,
             'promotion': ALL,
         }
-        fields = ['id','number','promotion','graduate','user','artist']
+        fields = ['id', 'number', 'promotion', 'graduate', 'user', 'artist']
 
     promotion = fields.ForeignKey(PromotionResource, 'promotion')
 
