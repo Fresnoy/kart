@@ -31,6 +31,7 @@ class Medium(models.Model):
     description = models.TextField(null=True, blank=True)
     picture = models.ImageField(upload_to=make_filepath, null=True, blank=True)
     medium_url = models.URLField(null=True, blank=True)
+    file = models.FileField(upload_to=make_filepath, null=True, blank=True)
 
     gallery = models.ForeignKey(Gallery, related_name='media')
 
