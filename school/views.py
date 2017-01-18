@@ -50,7 +50,8 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         """
         user = self.request.user
 
-        if user.is_staff or not user.is_authenticated():
+        if user.is_staff:
+            # or not user.is_authenticated() WHY ???
             return StudentApplication.objects.all()
         else:
 
