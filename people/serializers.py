@@ -13,7 +13,7 @@ class PrivateStringField(serializers.Field):
 
     def get_attribute(self, instance):
         if self.context['request'].user.is_authenticated():
-            return instance.social_insurance_number
+            return super(PrivateStringField, self).get_attribute(instance)
         return None
 
     def to_internal_value(self, data):
@@ -35,6 +35,8 @@ class FresnoyProfileSerializer(serializers.ModelSerializer):
     homeland_country = CountryField(default="")
     residence_country = CountryField(default="")
     social_insurance_number = PrivateStringField()
+    residence_phone = PrivateStringField()
+    homeland_phone = PrivateStringField()
 
 
 class UserRegisterSerializer(serializers.Serializer):
