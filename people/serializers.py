@@ -27,16 +27,35 @@ class PrivateStringField(serializers.Field):
 class FresnoyProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = FresnoyProfile
-        exclude = ('user',)
+        # exclude = ('user',)
+        fields = [
+            "id",
+            "photo",
+            "gender",
+            "cursus",
+            "birthdate",
+            "birthplace",
+            "birthplace_country",
+            "mother_tongue",
+            "other_language",
+            "homeland_country",
+            "homeland_address",
+            "homeland_phone",
+            "residence_phone",
+            "residence_country",
+            "residence_address",
+            "social_insurance_number",
+            "family_status",
+        ]
 
     id = serializers.ReadOnlyField()
     birthplace_country = CountryField(default="")
-    # birthplace_country = CountryField(default="FR")
+    homeland_phone = PrivateStringField()
     homeland_country = CountryField(default="")
-    residence_country = CountryField(default="")
     social_insurance_number = PrivateStringField()
     residence_phone = PrivateStringField()
-    homeland_phone = PrivateStringField()
+    residence_country = CountryField(default="")
+
 
 
 class UserRegisterSerializer(serializers.Serializer):
