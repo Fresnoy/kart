@@ -28,7 +28,7 @@ class FresnoyProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = FresnoyProfile
         # exclude = ('user',)
-        fields = [
+        fields = (
             "id",
             "photo",
             "gender",
@@ -46,7 +46,7 @@ class FresnoyProfileSerializer(serializers.ModelSerializer):
             "residence_address",
             "social_insurance_number",
             "family_status",
-        ]
+        )
 
     id = serializers.ReadOnlyField()
     birthplace_country = CountryField(default="")
