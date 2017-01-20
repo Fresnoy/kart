@@ -87,7 +87,9 @@ urlpatterns = patterns('',
                        # django user registration
                        url(r'^v2/rest-auth/', include('rest_auth.urls')),
                        url(r'^v2/rest-auth/registration/', include('rest_auth.registration.urls')),
-
+                       # vimeo
+                       url(r'^v2/assets/vimeo/upload',
+                           'assets.views.vimeoUpload', name='vimeo-upload'),
 
                        # api v1
                        (r'^', include(v1_api.urls)),
