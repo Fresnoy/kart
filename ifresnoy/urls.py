@@ -88,8 +88,8 @@ urlpatterns = patterns('',
                        url(r'^v2/rest-auth/', include('rest_auth.urls')),
                        url(r'^v2/rest-auth/registration/', include('rest_auth.registration.urls')),
                        # vimeo
-                       url(r'^v2/assets/vimeo/upload',
-                           'assets.views.vimeoUpload', name='vimeo-upload'),
+                       url(r'^v2/assets/vimeo/upload/token',
+                           'assets.views.vimeo_get_upload_token', name='vimeo-upload-token'),
 
                        # api v1
                        (r'^', include(v1_api.urls)),

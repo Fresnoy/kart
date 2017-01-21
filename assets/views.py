@@ -1,6 +1,10 @@
-from rest_framework import viewsets, permissions
-from django.http import HttpResponse, HttpResponseRedirect
+import vimeo
+import json
 
+from django.http import HttpResponse, HttpResponseRedirect
+from django.conf import settings
+
+from rest_framework import viewsets, permissions
 from rest_framework_jwt.settings import api_settings
 
 from .models import Gallery, Medium
@@ -21,8 +25,9 @@ class MediumViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
-def vimeoUpload(request):
-    print("vimeoUpload")
+def vimeo_get_upload_token(request):
+
+    # make sur user is auth
     if(request.META.get('HTTP_AUTHORIZATION')):
         token = request.META['HTTP_AUTHORIZATION'].split(' ')[1]
         jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
@@ -35,6 +40,6 @@ def vimeoUpload(request):
             user = None
 
         if(user):
-            return HttpResponse(user)
+            return HttpResponse(json.dumps(settings.VIMEO_AUTH))
 
     return HttpResponse("Not Authenticated")
