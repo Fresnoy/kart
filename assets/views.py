@@ -1,7 +1,6 @@
-import vimeo
 import json
 
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.conf import settings
 
 from rest_framework import viewsets, permissions
