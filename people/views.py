@@ -90,6 +90,8 @@ def activate(request, uidb36, token):
             user.set_password(password)
             user.save()
 
+            send_account_information_email(user)
+
             return HttpResponseRedirect(change_password_link)
 
         else:

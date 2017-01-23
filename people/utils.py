@@ -27,3 +27,19 @@ def send_activation_email(request, user):
                           html_message=msg_html,
                           )
     return mail_sent
+
+def send_account_information_email(request, user):
+
+    reset_password_url = settings.authfront_reset_password_url
+
+    # Send email
+    msg_plain = render_to_string('emails/account_infos.txt', {'user': user, 'reset_password_url': reset_password_url})
+    msg_html = render_to_string('emails/account_infos.html', {'user': user, 'reset_password_url': reset_password_url})
+
+    mail_sent = send_mail('Le Fresnoy - Activation du compte',
+                          msg_plain,
+                          'poleweb@lefresnoy.net',
+                          [user.email],
+                          html_message=msg_html,
+                          )
+    return mail_sent
