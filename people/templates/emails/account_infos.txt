@@ -1,0 +1,10 @@
+  Bonjour,
+  Voici un récapitulatif de vos données de connection
+      Nom : {{user.first_name}}
+      Prénom : {{user.last_name}}
+      Nom d'utilisateur : {{user.username}}
+      Email : {{user.email}}
+
+      Vous pouvez changer votre mot de passe en utilisant ce lien {{reset_password_url}}
+
+      L'équipe du Fresnoy
