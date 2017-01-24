@@ -20,7 +20,7 @@ from .serializers import (
     FresnoyProfileSerializer, StaffSerializer,
     OrganizationSerializer
 )
-from .utils import send_activation_email
+from .utils import send_activation_email, send_account_information_email
 from ifresnoy import settings
 
 

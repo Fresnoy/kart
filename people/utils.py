@@ -5,6 +5,8 @@ from django.template.loader import render_to_string
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import int_to_base36
 
+from ifresnoy import settings
+
 
 def send_activation_email(request, user):
 
@@ -28,7 +30,7 @@ def send_activation_email(request, user):
                           )
     return mail_sent
 
-def send_account_information_email(request, user):
+def send_account_information_email(user):
 
     reset_password_url = settings.authfront_reset_password_url
 
