@@ -30,6 +30,7 @@ def send_activation_email(request, user):
                           )
     return mail_sent
 
+
 def send_account_information_email(user):
 
     reset_password_url = settings.authfront_reset_password_url
