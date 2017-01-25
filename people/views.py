@@ -56,6 +56,22 @@ class UserViewSet(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors, status=status.HTTP_403_FORBIDDEN)
 
+    @list_route(methods=['POST'], permission_classes=[permissions.AllowAny])
+    def resend_activation_email(self, request):
+        serializer = UserRegisterSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            user = User.objects.get(username=request.data.get('username'))
+            if not user.is_active:
+                user.email = request.data.get('email')
+                user.save()
+                send_activation_email(request, user)
+
+                return Response(user.id, status=status.HTTP_202_ACCEPTED)
+            else:
+                return Response(user.id, status=status.HTTP_403_FORBIDDEN)
+
+        return Response(serializer.errors, status=status.HTTP_403_FORBIDDEN)
+
 
 def activate(request, uidb36, token):
     """
