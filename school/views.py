@@ -1,6 +1,7 @@
 from datetime import date
 
 from rest_framework import viewsets, permissions, filters
+
 from drf_haystack.filters import HaystackAutocompleteFilter
 from drf_haystack.viewsets import HaystackViewSet
 
@@ -50,11 +51,12 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         """
         user = self.request.user
 
+        if not user.is_authenticated():
+            return list()
         if user.is_staff:
             # or not user.is_authenticated() WHY ???
             return StudentApplication.objects.all()
         else:
-
             current_year = date.today().year
             # is an current inscription
             current_year_application = StudentApplication.objects.filter(
