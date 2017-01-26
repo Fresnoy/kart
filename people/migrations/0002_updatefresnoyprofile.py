@@ -30,6 +30,11 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='fresnoyprofile',
+            name='nationality',
+            field=models.CharField(max_length=24, null=True, blank=True),
+        ),
+        migrations.AddField(
+            model_name='fresnoyprofile',
             name='other_language',
             field=models.CharField(max_length=24, null=True, blank=True),
         ),

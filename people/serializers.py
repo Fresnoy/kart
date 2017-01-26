@@ -33,6 +33,7 @@ class FresnoyProfileSerializer(serializers.ModelSerializer):
             "photo",
             "gender",
             "cursus",
+            "nationality",
             "birthdate",
             "birthplace",
             "birthplace_country",

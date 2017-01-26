@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('people', '0002_updatefresnoyprofile'),
-        ('assets', '0001_initial'),
+        ('assets', '0002_medium_file'),
         ('school', '0004_rename_newstudent_model'),
     ]
 
