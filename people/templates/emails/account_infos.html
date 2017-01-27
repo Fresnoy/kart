@@ -1,45 +1,33 @@
 <html>
-  <body>
     <head>
-      <title>Kart - Email confirmation</title>
-      <style type="text/css">
-          body {
-            color: black;
-            background-color: #333;
-          }
-          .page {
-            max-width: 960px;
-            width:100%;
-            background-color: white;
-            margin: 50px 0px;
-            padding: 50px;
-          }
-      </style>
+      <title>Kart - Account information</title>
     </head>
-    <div class="page">
-      <div class="logo">
-        <img src="http://www.lefresnoy.net/sites/prod/themes/babylon/images/logos/logo-fresnoy.png" />
-      </div>
-      <p>
-        Bonjour,
-      </p>
-      <p>
-        Un récapitulatif de vos données de connection
-      </p>
-      <ul>
-        <li>Nom : {{user.first_name}}</li>
-        <li>Prénom : {{user.last_name}}</li>
-        <li>Nom d'utilisateur : {{user.username}}</li>
-        <li>Email : {{user.email}}</li>
-      </ul>
-    <p>
-      Vous pouvez changer votre mot de passe en utilisant <a href="{{reset_password_url}}">ce lien </a>
-    </p>
-    <p>
+    <body style="color: black; background-color: #333;" bgcolor="#333">
+    <div class="page" style="max-width: 960px; width: 100%; background-color: white; margin: 50px 0px; padding: 50px;">
+          <div class="logo">
+            <img src="http://www.lefresnoy.net/sites/prod/themes/babylon/images/logos/logo-fresnoy.png" />
+          </div>
 
-      L'équipe du Fresnoy
-    </p>
+          <p>
+            Bonjour,
+          </p>
+          <p>
+            Un récapitulatif de vos données de connection
+          </p>
+          <ul>
+            <li>Nom : {{user.first_name}}</li>
+            <li>Prénom : {{user.last_name}}</li>
+            <li>Nom d'utilisateur : {{user.username}}</li>
+            <li>Email : {{user.email}}</li>
+          </ul>
+          <p>
+            Vous pouvez changer votre mot de passe en utilisant <a href="{{reset_password_url}}">ce lien </a>
+          </p>
+          <p>
+
+            L'équipe du Fresnoy
+          </p>
 
     </div>
-  <body>
+    </body>
 </html>
