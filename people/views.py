@@ -67,9 +67,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 send_activation_email(request, user)
                 return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
             else:
-                errors = {
-                            'user': ['user is active'],
-                        }
+                errors = {'user': ['user is active']}
                 return Response(errors, status=status.HTTP_403_FORBIDDEN)
 
         return Response(serializer.errors, status=status.HTTP_403_FORBIDDEN)

@@ -1,13 +1,12 @@
+from datetime import date
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import ugettext as _
 
-from sortedm2m.fields import SortedManyToManyField
-
+from common.utils import make_filepath
 from people.models import Artist
 from assets.models import Gallery
-
-from datetime import date
 
 
 class Promotion(models.Model):
@@ -51,15 +50,25 @@ class StudentApplication(models.Model):
         blank=True,
         help_text=_("Auto generated field (current year - increment number)")
     )
-
+    identity_card = models.FileField(
+        upload_to=make_filepath,
+        null=True,
+        blank=True,
+        help_text="Identity justificative"
+    )
+    # First Candidature
     first_time = models.BooleanField(
         default=True,
         help_text="If the first time the Artist's applying"
     )
-    last_application_year = models.PositiveSmallIntegerField(null=True, blank=True)
+    last_application_year = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True
+    )
+    # Dates of creation
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
-
+    # Interview type
     remote_interview = models.BooleanField(default=False)
     remote_interview_type = models.CharField(
         blank=True,
@@ -71,51 +80,79 @@ class StudentApplication(models.Model):
         max_length=50,
         help_text="ID / Number / ... "
     )
-    administrative_galleries = SortedManyToManyField(
+    # Degree
+    master_degree = models.BooleanField(
+        default=False,
+        help_text="Obtained a Master  Degree"
+    )
+    cursus_justifications = models.ForeignKey(
         Gallery,
         blank=True,
-        related_name='student_application_administrative'
+        null=True,
+        related_name='student_application_cursus_justification',
+        help_text='Gallery of justificaitons'
     )
-    artwork_galleries = SortedManyToManyField(
-        Gallery,
+    # first and second year project
+    considered_project_1 = models.FileField(
+        upload_to=make_filepath,
+        null=True,
         blank=True,
-        related_name='student_application_artwork'
+        help_text="Considered project first year"
     )
-
-    asynchronous_element = models.BooleanField(
+    artistic_referencies_project_1 = models.TextField(
+        null=True,
+        blank=True,
+        help_text="Artistic references for the first year's project"
+    )
+    considered_project_2 = models.FileField(
+        upload_to=make_filepath,
+        null=True,
+        blank=True,
+        help_text="Considered project second year"
+    )
+    artistic_referencies_project_2 = models.TextField(
+        null=True,
+        blank=True,
+        help_text="Artistic references for second first year's project"
+    )
+    # Video
+    presentation_video = models.URLField(
+        null=True,
+        blank=True,
+        help_text="Url presentation video Link"
+    )
+    # Physical content
+    physical_content = models.BooleanField(
         default=False,
         help_text="Element not sent by current form"
     )
-    asynchronous_element_description = models.TextField(
+    physical_content_description = models.TextField(
         blank=True,
         null=True,
         help_text="What are these elements and how you send it"
     )
-    asynchronous_element_received = models.BooleanField(
+    physical_content_received = models.BooleanField(
         default=False,
         help_text="Administration - Element have been received"
     )
-
     remark = models.TextField(blank=True, null=True, help_text="Free expression'")
     application_completed = models.BooleanField(
         default=False,
         help_text="Candidature's validation"
     )
-
     # Administration
     selected_for_interview = models.BooleanField(
         default=False,
         help_text="Administration - Is the candidat selected for the Interview"
     )
-    selected_for_petit_jury = models.BooleanField(
+    selected = models.BooleanField(
         default=False,
-        help_text="Administration - Is the candidat selected for the 'Petit Jury'"
+        help_text="Administration - Is the candidat selected"
     )
-    selected_for_grand_jury = models.BooleanField(
+    wait_listed = models.BooleanField(
         default=False,
-        help_text="Administration - Is the candidat selected for the 'Grand Jury'"
+        help_text="Administration - Is the candidat wait listed"
     )
-
     application_complete = models.BooleanField(
         default=False,
         help_text="Administration - Candidature is complete"

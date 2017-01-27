@@ -50,7 +50,6 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         otherwise Staff get all Users applications
         """
         user = self.request.user
-
         if not user.is_authenticated():
             return list()
         if user.is_staff:
