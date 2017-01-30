@@ -94,7 +94,7 @@ def activate(request, uidb36, token):
 
         payload = jwt_payload_handler(custom_infos)
         front_token = jwt_encode_handler(payload)
-        route = "candidature"
+        route = "candidature.account.login"
 
         change_password_link = "{0}/{1}/{2}".format(settings.authfront_change_password_url, front_token, route)
 
