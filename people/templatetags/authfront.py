@@ -25,7 +25,7 @@ def authfront_reset_password_link(token, email):
 
         payload = jwt_payload_handler(custom_infos)
         front_token = jwt_encode_handler(payload)
-        route = "candidature"
+        route = "candidature.account.login"
 
         # reverse('password-reset')
         url = "{0}/{1}/{2}".format(settings.authfront_reset_password_url, front_token, route)

@@ -92,6 +92,18 @@ class StudentApplication(models.Model):
         related_name='student_application_cursus_justification',
         help_text='Gallery of justificaitons'
     )
+    curriculum_vitae = models.FileField(
+        upload_to=make_filepath,
+        null=True,
+        blank=True,
+        help_text="BIO CV"
+    )
+    justification_letter = models.FileField(
+        upload_to=make_filepath,
+        null=True,
+        blank=True,
+        help_text="Justification / Motivation"
+    )
     # first and second year project
     considered_project_1 = models.FileField(
         upload_to=make_filepath,

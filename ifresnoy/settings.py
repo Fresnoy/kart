@@ -27,7 +27,7 @@ PASSWORD_TOKEN = r'(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-
 
 # front
 authfront_reset_password_url = "http://localhost:3333/#/candidature/account/reset-password"
-authfront_change_password_url = "http://localhost:3333/#/candidature/account/change-password"
+authfront_init_password_url = "http://localhost:3333/#/candidature/account/init-password"
 
 front_candidatures_url = "http://localhost:3333/#/candidatures/"
 

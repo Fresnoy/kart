@@ -28,6 +28,8 @@ class Migration(migrations.Migration):
                 ('remote_interview_type', models.CharField(help_text='Skype / Gtalk / FaceTime / AppearIn / Other', max_length=50, blank=True)),
                 ('remote_interview_info', models.CharField(help_text=b'ID / Number / ... ', max_length=50, blank=True)),
                 ('master_degree', models.BooleanField(default=False, help_text=b'Obtained a Master  Degree')),
+                ('curriculum_vitae', models.FileField(help_text=b'BIO CV', null=True, upload_to=common.utils.make_filepath, blank=True)),
+                ('justification_letter', models.FileField(help_text=b'Justification / Motivation', null=True, upload_to=common.utils.make_filepath, blank=True)),
                 ('considered_project_1', models.FileField(help_text=b'Considered project first year', null=True, upload_to=common.utils.make_filepath, blank=True)),
                 ('artistic_referencies_project_1', models.TextField(help_text=b"Artistic references for the first year's project", null=True, blank=True)),
                 ('considered_project_2', models.FileField(help_text=b'Considered project second year', null=True, upload_to=common.utils.make_filepath, blank=True)),

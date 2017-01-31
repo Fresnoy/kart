@@ -45,6 +45,8 @@ class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
                   'remote_interview_info',
                   'master_degree',
                   'cursus_justifications',
+                  'curriculum_vitae',
+                  'justification_letter',
                   'considered_project_1',
                   'artistic_referencies_project_1',
                   'considered_project_2',
