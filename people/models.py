@@ -27,25 +27,19 @@ class FresnoyProfile(models.Model):
     birthplace_country = CountryField(null=True, default="")
 
     homeland_address = models.TextField(blank=True)
+    homeland_zipcode = models.CharField(max_length=10, blank=True)
+    homeland_town = models.CharField(max_length=50, blank=True)
     homeland_country = CountryField(default="")
     residence_address = models.TextField(blank=True)
+    residence_zipcode = models.CharField(max_length=10, blank=True)
+    residence_town = models.CharField(max_length=50, blank=True)
     residence_country = CountryField(default="")
 
     homeland_phone = models.CharField(max_length=50, blank=True)
     residence_phone = models.CharField(max_length=50, blank=True)
 
-    FAMILY_STATUS_CHOICES = (
-        ("S", "Single"),
-        ("E", "Engaged"),
-        ("M", "Married"),
-        ("D", "Divorced"),
-        ("W", "Widowed"),
-        ("C", "Civil Union"),
-    )
-
     social_insurance_number = models.CharField(max_length=50, blank=True)
-    family_status = models.CharField(max_length=1,
-                                     choices=FAMILY_STATUS_CHOICES,
+    family_status = models.CharField(max_length=50,
                                      null=True, blank=True)
 
     mother_tongue = LanguageField(blank=True, null=True)
