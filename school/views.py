@@ -83,18 +83,15 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         user = self.request.user
+        # candidate can't update candidature when she's expired, admin every can !
         candidature_hasexpired = candidature_expiration_date < datetime.datetime.now()
-
-        print("candidature_isexpirated")
-        print(candidature_hasexpired)
         if candidature_hasexpired and not user.is_staff:
             errors = {'candidature': 'expired'}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
-
+        # send email when candidature is complete
         if(request.data.get('application_completed')):
-
             application = self.get_object()
             send_candidature_completed_email_to_user(request, user, application)
             send_candidature_completed_email_to_admin(request, user, application)
-
+        # basic update
         return super(self.__class__, self).update(request, *args, **kwargs)
