@@ -11,7 +11,7 @@ def make_filepath(instance, filename):
 
     carry_on = True
     while carry_on:
-        new_filename = "{0}.{1}".format(User.objects.make_random_password(48),
+        new_filename = "{0}.{1}".format(User.objects.make_random_password(10),
                                         filename.split('.')[-1])
         path = "{0}/{1}/{2}".format(
             instance.__class__._meta.app_label,
