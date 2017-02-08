@@ -1,9 +1,12 @@
-from datetime import date
+import datetime
 
-from rest_framework import viewsets, permissions, filters
+from rest_framework import viewsets, permissions, filters, status
+from rest_framework.response import Response
 
 from drf_haystack.filters import HaystackAutocompleteFilter
 from drf_haystack.viewsets import HaystackViewSet
+
+from ifresnoy.settings import candidature_expiration_date
 
 from people.models import Artist
 
@@ -56,7 +59,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
             # or not user.is_authenticated() WHY ???
             return StudentApplication.objects.all()
         else:
-            current_year = date.today().year
+            current_year = datetime.date.today().year
             # is an current inscription
             current_year_application = StudentApplication.objects.filter(
                 artist__user=user.id,
@@ -79,9 +82,17 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
             return StudentApplication.objects.filter(artist__user=user.id)
 
     def update(self, request, *args, **kwargs):
+        user = self.request.user
+        candidature_hasexpired = candidature_expiration_date < datetime.datetime.now()
+
+        print("candidature_isexpirated")
+        print(candidature_hasexpired)
+        if candidature_hasexpired and not user.is_staff:
+            errors = {'candidature': 'expired'}
+            return Response(errors, status=status.HTTP_403_FORBIDDEN)
 
         if(request.data.get('application_completed')):
-            user = self.request.user
+
             application = self.get_object()
             send_candidature_completed_email_to_user(request, user, application)
             send_candidature_completed_email_to_admin(request, user, application)

@@ -31,6 +31,9 @@ authfront_init_password_url = "http://localhost:3333/#/candidature/account/init-
 
 front_candidatures_url = "http://localhost:3333/#/candidatures/"
 
+# candidature expriration
+candidature_expiration_date = datetime.datetime(2017, 4, 28, 23, 59, 59)
+
 site_name = "Kartel"
 # Application definition
 
