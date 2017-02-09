@@ -1,6 +1,6 @@
 # import json
 # import time
-
+# from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
 from django.test import TestCase
@@ -21,7 +21,9 @@ class TestApplicationEndPoint(TestCase):
         self.user.first_name = "Andrew"
         self.user.last_name = "Warhola"
         self.user.username = "awarhol"
+        self.user.password = "xxx"
         self.user.save()
+        # save generate token
 
         self.artist = Artist(user=self.user, nickname="Andy Warhol")
         self.artist.save()
@@ -36,16 +38,32 @@ class TestApplicationEndPoint(TestCase):
         url = reverse('studentapplication-list')
         return self.client.get(url)
 
-    # List display now only on user Authenticated
-    # TODO Need to know how authentify user in pytest
-    #
+    # Must have an login token : client.get(url_for('ping'), headers=[('X-Something', '42')])
+    # Read the doc : http://pytest-flask.readthedocs.io/en/latest/features.html
     # def test_list(self):
     #     """
-    #     Test list of applications
+    #     Test list of applications without authentification
     #     """
     #     response = self._get_list()
     #     self.assertEqual(response.status_code, 200)
     #
+    # def test_list_auth(self):
+    #     """
+    #     Test list of applications with authentification
+    #     """
+    #     user = authenticate(username=self.user.username, password=self.user.password)
+    #     response = self._get_list()
+    #     self.assertEqual(response.status_code, 200)
+    #
+    # def test_list_items_auth(self):
+    #     """
+    #     Test numbers of applications with authentification
+    #     """
+    #     user = authenticate(username=self.user.username, password=self.user.password)
+    #     response = self._get_list()
+    #     data = json.loads(response.content)
+    #     self.assertEqual(len(data), 1)
+
     # def test_json_response(self):
     #     """
     #     Test JSON response
