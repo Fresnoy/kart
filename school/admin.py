@@ -4,7 +4,7 @@ from django.db import models
 
 from pagedown.widgets import AdminPagedownWidget
 
-from .models import Promotion, Student, StudentApplication
+from .models import Promotion, Student, StudentApplication, StudentApplicationSetup
 
 
 class StudentAdmin(admin.ModelAdmin):
@@ -33,6 +33,18 @@ class StudentApplicationAdmin(admin.ModelAdmin):
     )
 
 
+class StudentApplicationSetupAdmin(admin.ModelAdmin):
+
+    def _get_name(self, obj):
+        return obj.artist.user.get_full_name()
+
+    list_display = (
+        'name',
+        'is_current_setup',
+    )
+
+
 admin.site.register(Promotion)
 admin.site.register(StudentApplication, StudentApplicationAdmin)
+admin.site.register(StudentApplicationSetup, StudentApplicationSetupAdmin)
 admin.site.register(Student, StudentAdmin)

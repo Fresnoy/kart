@@ -26,13 +26,15 @@ SECRET_KEY = '$17%$7@*^nmx&(mb)5=o9v9if&_%s67-*^-skk!iaef3%16*12'
 PASSWORD_TOKEN = r'(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})'
 
 # front
-authfront_reset_password_url = "http://localhost:3333/#/candidature/account/reset-password"
-authfront_init_password_url = "http://localhost:3333/#/candidature/account/init-password"
+# authfront_reset_password_url = "http://localhost:3333/#/candidature/account/reset-password"
+# authfront_init_password_url = "http://localhost:3333/#/candidature/account/init-password"
+# authfront_recover_password_url = "http://localhost:3333/#/candidature/account/passworg-forgot"
+# authfront_authentification_url = "http://localhost:3333/#/candidature/account/login"
 
-front_candidatures_url = "http://localhost:3333/#/candidatures/"
+# front_candidatures_url = "http://localhost:3333/#/candidatures/"
 
 # candidature expriration
-candidature_expiration_date = datetime.datetime(2017, 4, 28, 23, 59, 59)
+# candidature_expiration_date = datetime.datetime(2017, 4, 28, 23, 59, 59)
 
 site_name = "Kartel"
 # Application definition
@@ -131,7 +133,7 @@ WSGI_APPLICATION = 'ifresnoy.wsgi.application'
 
 LANGUAGE_CODE = 'fr-FR'
 
-SITE_ID = 1
+SITE_ID = 2
 
 TIME_ZONE = 'Europe/Paris'
 

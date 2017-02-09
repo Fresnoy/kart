@@ -2,14 +2,16 @@ from django import template
 
 from rest_framework_jwt.settings import api_settings
 
-from ifresnoy import settings
 from ..models import User
+
+from school.models import StudentApplicationSetup
 
 register = template.Library()
 
 
 @register.simple_tag
 def authfront_reset_password_link(token, email):
+    setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
     url = ""
 
     try:
@@ -28,6 +30,6 @@ def authfront_reset_password_link(token, email):
         route = "candidature.account.login"
 
         # reverse('password-reset')
-        url = "{0}/{1}/{2}".format(settings.authfront_reset_password_url, front_token, route)
+        url = "{0}/{1}/{2}".format(setup.reset_password_url, front_token, route)
 
     return url

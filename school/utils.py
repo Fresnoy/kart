@@ -1,7 +1,7 @@
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
-from ifresnoy.settings import front_candidatures_url
+from school.models import StudentApplicationSetup
 
 
 def send_candidature_completed_email_to_user(request, user, application):
@@ -29,7 +29,9 @@ def send_candidature_completed_email_to_user(request, user, application):
 
 def send_candidature_completed_email_to_admin(request, user, application):
 
-    url = u'{0}{1}'.format(front_candidatures_url, application.id)
+    setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
+
+    url = u'{0}{1}'.format(setup.candidatures_url, application.id)
     # Send email
     msg_plain = render_to_string(
         'emails/send_candidature_completed_to_admin.txt',

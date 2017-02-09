@@ -38,6 +38,32 @@ class Student(models.Model):
         return "{0} ({1})".format(self.user, self.number)
 
 
+class StudentApplicationSetup(models.Model):
+    """
+    Setup Student Apllication
+    """
+    name = models.CharField(max_length=25, null=True, blank=True)
+    # Promo
+    promotion = models.ForeignKey(Promotion, null=False, blank=False)
+    # date
+    candidature_date_start = models.DateField(null=False, blank=False)
+    candidature_date_end = models.DateField(null=False, blank=False)
+    # front
+    candidatures_url = models.URLField(null=False, blank=False, help_text="Front : Url list of candidatures")
+    reset_password_url = models.URLField(null=False, blank=False, help_text="Front : Url reset password")
+    recover_password_url = models.URLField(null=False, blank=False, help_text="Front : Url recover password")
+    authentification_url = models.URLField(null=False, blank=False, help_text="Front : Url authentification")
+    # vimeo
+    video_service_name = models.CharField(max_length=25, null=True, blank=True, help_text="video service name")
+    video_service_url = models.URLField(null=False, blank=False, help_text="service URL")
+    video_service_token = models.CharField(max_length=25, null=True, blank=True, help_text="Video service token")
+    # vimeo
+    is_current_setup = models.BooleanField(
+        default=True,
+        help_text="This configuration is actived"
+    )
+
+
 class StudentApplication(models.Model):
     """
     Fresnoy's School application procedure
@@ -50,6 +76,7 @@ class StudentApplication(models.Model):
         blank=True,
         help_text=_("Auto generated field (current year - increment number)")
     )
+
     identity_card = models.FileField(
         upload_to=make_filepath,
         null=True,

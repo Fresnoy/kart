@@ -6,11 +6,9 @@ from rest_framework.response import Response
 from drf_haystack.filters import HaystackAutocompleteFilter
 from drf_haystack.viewsets import HaystackViewSet
 
-from ifresnoy.settings import candidature_expiration_date
-
 from people.models import Artist
 
-from .models import Promotion, Student, StudentApplication
+from .models import Promotion, Student, StudentApplication, StudentApplicationSetup
 from .serializers import (PromotionSerializer, StudentSerializer,
                           StudentAutocompleteSerializer, StudentApplicationSerializer
                           )
@@ -84,6 +82,10 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         user = self.request.user
         # candidate can't update candidature when she's expired, admin every can !
+        candidature_expiration_date = datetime.datetime.combine(
+            StudentApplicationSetup.objects.filter(is_current_setup=True).first().candidature_date_end,
+            datetime.datetime.min.time()
+        )
         candidature_hasexpired = candidature_expiration_date < datetime.datetime.now()
         if candidature_hasexpired and not user.is_staff:
             errors = {'candidature': 'expired'}

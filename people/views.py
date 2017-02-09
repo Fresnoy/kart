@@ -12,6 +12,8 @@ from rest_framework_jwt.settings import api_settings
 
 from guardian.shortcuts import assign_perm
 
+from school.models import StudentApplicationSetup
+
 from .models import (
     Artist, User, FresnoyProfile, Staff, Organization
 )
@@ -21,7 +23,6 @@ from .serializers import (
     OrganizationSerializer
 )
 from .utils import send_activation_email, send_account_information_email
-from ifresnoy import settings
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -87,6 +88,8 @@ def activate(request, uidb36, token):
 
     if user is not None:
 
+        setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
+
         jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
         jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
@@ -96,7 +99,7 @@ def activate(request, uidb36, token):
         front_token = jwt_encode_handler(payload)
         route = "candidature.account.login"
 
-        change_password_link = "{0}/{1}/{2}".format(settings.authfront_init_password_url, front_token, route)
+        change_password_link = "{0}/{1}/{2}".format(setup.reset_password_url, front_token, route)
 
         # Is the token valid?
         if default_token_generator.check_token(user, token):

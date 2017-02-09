@@ -5,7 +5,7 @@ from django.template.loader import render_to_string
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import int_to_base36
 
-from ifresnoy import settings
+from school.models import StudentApplicationSetup
 
 
 def send_activation_email(request, user):
@@ -33,12 +33,22 @@ def send_activation_email(request, user):
 
 def send_account_information_email(user):
 
-    reset_password_url = settings.authfront_reset_password_url
+    setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
+
+    recover_password_url = setup.recover_password_url
+    authentification_url = setup.authentification_url
 
     # Send email
-    msg_plain = render_to_string('emails/account_infos.txt', {'user': user, 'reset_password_url': reset_password_url})
-    msg_html = render_to_string('emails/account_infos.html', {'user': user, 'reset_password_url': reset_password_url})
-
+    msg_plain = render_to_string('emails/account_infos.txt', {
+                                 'user': user,
+                                 'recover_password_url': recover_password_url,
+                                 'authentification_url': authentification_url
+                                 })
+    msg_html = render_to_string('emails/account_infos.html', {
+                                'user': user,
+                                'recover_password_url': recover_password_url,
+                                'authentification_url': authentification_url
+                                })
     mail_sent = send_mail('Le Fresnoy - Activation du compte',
                           msg_plain,
                           'poleweb@lefresnoy.net',
