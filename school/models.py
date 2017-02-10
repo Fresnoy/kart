@@ -56,7 +56,7 @@ class StudentApplicationSetup(models.Model):
     # vimeo
     video_service_name = models.CharField(max_length=25, null=True, blank=True, help_text="video service name")
     video_service_url = models.URLField(null=False, blank=False, help_text="service URL")
-    video_service_token = models.CharField(max_length=25, null=True, blank=True, help_text="Video service token")
+    video_service_token = models.CharField(max_length=128, null=True, blank=True, help_text="Video service token")
     # vimeo
     is_current_setup = models.BooleanField(
         default=True,
