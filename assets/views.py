@@ -1,13 +1,13 @@
 import json
 
 from django.http import HttpResponse
-from django.conf import settings
 
 from rest_framework import viewsets, permissions
 from rest_framework_jwt.settings import api_settings
 
 from .models import Gallery, Medium
 from people.models import User
+from school.models import StudentApplicationSetup
 
 from .serializers import GallerySerializer, MediumSerializer
 
@@ -39,6 +39,13 @@ def vimeo_get_upload_token(request):
             user = None
 
         if(user):
-            return HttpResponse(json.dumps(settings.VIMEO_AUTH))
+            setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
+            vimeo = {
+                'name': setup.video_service_name,
+                'url': setup.video_service_url,
+                'token': setup.video_service_token
+            }
+
+            return HttpResponse(json.dumps(vimeo))
 
     return HttpResponse("Not Authenticated")

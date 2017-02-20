@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('authentification_url', models.URLField(help_text=b'Front : Url authentification')),
                 ('video_service_name', models.CharField(help_text=b'video service name', max_length=25, null=True, blank=True)),
                 ('video_service_url', models.URLField(help_text=b'service URL')),
-                ('video_service_token', models.CharField(help_text=b'Video service token', max_length=25, null=True, blank=True)),
+                ('video_service_token', models.CharField(help_text=b'Video service token', max_length=128, null=True, blank=True)),
                 ('is_current_setup', models.BooleanField(default=True, help_text=b'This configuration is actived')),
                 ('promotion', models.ForeignKey(to='school.Promotion')),
             ],
