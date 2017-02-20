@@ -52,7 +52,6 @@ class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
                   'considered_project_2',
                   'artistic_referencies_project_2',
                   'presentation_video',
-                  'presentation_video_medium',
                   'physical_content',
                   'physical_content_description',
                   'physical_content_received',
