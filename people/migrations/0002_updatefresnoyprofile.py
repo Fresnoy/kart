@@ -16,12 +16,22 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='fresnoyprofile',
             name='family_status',
-            field=models.CharField(blank=True, max_length=1, null=True, choices=[(b'S', b'Single'), (b'E', b'Engaged'), (b'M', b'Married'), (b'D', b'Divorced'), (b'W', b'Widowed'), (b'C', b'Civil Union')]),
+            field=models.CharField(max_length=50, null=True, blank=True),
         ),
         migrations.AddField(
             model_name='fresnoyprofile',
             name='gender',
             field=models.CharField(blank=True, max_length=1, null=True, choices=[(b'M', b'Male'), (b'F', b'Female'), (b'T', b'Transgender'), (b'O', b'Other')]),
+        ),
+        migrations.AddField(
+            model_name='fresnoyprofile',
+            name='homeland_town',
+            field=models.CharField(max_length=50, blank=True),
+        ),
+        migrations.AddField(
+            model_name='fresnoyprofile',
+            name='homeland_zipcode',
+            field=models.CharField(max_length=10, blank=True),
         ),
         migrations.AddField(
             model_name='fresnoyprofile',
@@ -37,6 +47,16 @@ class Migration(migrations.Migration):
             model_name='fresnoyprofile',
             name='other_language',
             field=models.CharField(max_length=24, null=True, blank=True),
+        ),
+        migrations.AddField(
+            model_name='fresnoyprofile',
+            name='residence_town',
+            field=models.CharField(max_length=50, blank=True),
+        ),
+        migrations.AddField(
+            model_name='fresnoyprofile',
+            name='residence_zipcode',
+            field=models.CharField(max_length=10, blank=True),
         ),
         migrations.AddField(
             model_name='fresnoyprofile',

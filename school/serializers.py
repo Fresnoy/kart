@@ -44,6 +44,7 @@ class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
                   'remote_interview_type',
                   'remote_interview_info',
                   'master_degree',
+                  'experience_justification',
                   'cursus_justifications',
                   'curriculum_vitae',
                   'justification_letter',

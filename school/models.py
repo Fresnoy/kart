@@ -107,11 +107,18 @@ class StudentApplication(models.Model):
         max_length=50,
         help_text="ID / Number / ... "
     )
-    # Degree
-    master_degree = models.BooleanField(
-        default=False,
+    # Master Degree
+    master_degree = models.NullBooleanField(
+        default=None,
         help_text="Obtained a Master  Degree"
     )
+    experience_justification = models.FileField(
+        upload_to=make_filepath,
+        null=True,
+        blank=True,
+        help_text="If no master Degree, experience letter"
+    )
+    # Cursus
     cursus_justifications = models.ForeignKey(
         Gallery,
         blank=True,
