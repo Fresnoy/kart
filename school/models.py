@@ -85,7 +85,7 @@ class StudentApplication(models.Model):
     )
     # First Candidature
     first_time = models.BooleanField(
-        default=True,
+        default=False,
         help_text="If the first time the Artist's applying"
     )
     last_application_year = models.PositiveSmallIntegerField(
@@ -166,6 +166,11 @@ class StudentApplication(models.Model):
         null=True,
         blank=True,
         help_text="Url presentation video Link"
+    )
+    presentation_video_details = models.TextField(
+        null=True,
+        blank=True,
+        help_text="Details for the video"
     )
     # Physical content
     physical_content = models.BooleanField(
