@@ -88,9 +88,10 @@ class StudentApplication(models.Model):
         default=False,
         help_text="If the first time the Artist's applying"
     )
-    last_application_year = models.PositiveSmallIntegerField(
-        null=True,
-        blank=True
+    last_applications_years = models.CharField(
+        blank=True,
+        max_length=50,
+        help_text=_("Already candidate")
     )
     # Dates of creation
     created_on = models.DateTimeField(auto_now_add=True)

@@ -39,7 +39,7 @@ class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
                   'current_year_application_count',
                   'identity_card',
                   'first_time',
-                  'last_application_year',
+                  'last_applications_years',
                   'remote_interview',
                   'remote_interview_type',
                   'remote_interview_info',

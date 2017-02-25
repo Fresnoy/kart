@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('current_year_application_count', models.CharField(default=None, help_text='Auto generated field (current year - increment number)', max_length=8, blank=True)),
                 ('identity_card', models.FileField(help_text=b'Identity justificative', null=True, upload_to=common.utils.make_filepath, blank=True)),
                 ('first_time', models.BooleanField(default=False, help_text=b"If the first time the Artist's applying")),
-                ('last_application_year', models.PositiveSmallIntegerField(null=True, blank=True)),
+                ('last_applications_years', models.CharField(help_text='Already candidate', max_length=50, blank=True)),
                 ('created_on', models.DateTimeField(auto_now_add=True)),
                 ('updated_on', models.DateTimeField(auto_now=True)),
                 ('remote_interview', models.BooleanField(default=False)),
