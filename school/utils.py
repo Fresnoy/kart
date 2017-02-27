@@ -20,7 +20,7 @@ def send_candidature_completed_email_to_user(request, user, application):
     )
     mail_sent = send_mail('Le Fresnoy - Candidature completed',
                           msg_plain,
-                          'pedagogie@lefresnoy.net',
+                          'selection@lefresnoy.net',
                           [user.email],
                           html_message=msg_html,
                           )
@@ -52,7 +52,7 @@ def send_candidature_completed_email_to_admin(request, user, application):
     mail_sent = send_mail('Le Fresnoy - Candidature completed',
                           msg_plain,
                           user.email,
-                          ['pedagogie@lefresnoy.net'],
+                          ['selection@lefresnoy.net'],
                           html_message=msg_html,
                           )
 
