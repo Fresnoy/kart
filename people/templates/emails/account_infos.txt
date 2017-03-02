@@ -1,7 +1,7 @@
   Bonjour,
   Voici un récapitulatif de vos données de connection
-      Nom : {{user.first_name}}
-      Prénom : {{user.last_name}}
+      Nom : {{user.last_name}}
+      Prénom : {{user.first_name}}
       Nom d'utilisateur : {{user.username}}
       Email : {{user.email}}
 
