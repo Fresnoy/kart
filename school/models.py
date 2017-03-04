@@ -146,10 +146,11 @@ class StudentApplication(models.Model):
         blank=True,
         help_text="Considered project first year"
     )
-    artistic_referencies_project_1 = models.TextField(
+    artistic_referencies_project_1 = models.FileField(
+        upload_to=make_filepath,
         null=True,
         blank=True,
-        help_text="Artistic references for the first year's project"
+        help_text="Artistic references for first first year's project"
     )
     considered_project_2 = models.FileField(
         upload_to=make_filepath,
@@ -157,7 +158,8 @@ class StudentApplication(models.Model):
         blank=True,
         help_text="Considered project second year"
     )
-    artistic_referencies_project_2 = models.TextField(
+    artistic_referencies_project_2 = models.FileField(
+        upload_to=make_filepath,
         null=True,
         blank=True,
         help_text="Artistic references for second first year's project"

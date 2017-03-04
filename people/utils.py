@@ -24,7 +24,7 @@ def send_activation_email(request, user):
 
     mail_sent = send_mail('Le Fresnoy - Activation du compte',
                           msg_plain,
-                          'pedagogie@lefresnoy.net',
+                          'selection@lefresnoy.net',
                           [user.email],
                           html_message=msg_html,
                           )
@@ -51,7 +51,7 @@ def send_account_information_email(user):
                                 })
     mail_sent = send_mail('Le Fresnoy - Activation du compte',
                           msg_plain,
-                          'poleweb@lefresnoy.net',
+                          'selection@lefresnoy.net',
                           [user.email],
                           html_message=msg_html,
                           )
