@@ -72,9 +72,10 @@ class UserRegisterSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'url', 'username', 'first_name', 'last_name', 'email', 'profile')
+        fields = ('id', 'is_superuser', 'url', 'username', 'first_name', 'last_name', 'email', 'profile')
 
     profile = FresnoyProfileSerializer(required=False)
+    is_superuser = PrivateStringField()
 
     def create(self, validated_data):
         return validated_data
