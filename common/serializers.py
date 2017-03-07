@@ -20,4 +20,4 @@ class WebsiteSerializer(serializers.HyperlinkedModelSerializer):
             "language",
         )
     url = serializers.HyperlinkedIdentityField(view_name="website-detail")
-    link = serializers.URLField(source='url')  
+    link = serializers.URLField(source='url')
