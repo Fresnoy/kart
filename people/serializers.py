@@ -107,7 +107,19 @@ class UserSerializer(serializers.ModelSerializer):
 class ArtistSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Artist
-        exclude = ('updated_on',)
+        fields = (
+            'id',
+            'url',
+            'nickname',
+            'bio_short_fr',
+            'bio_short_en',
+            'bio_fr',
+            'bio_en',
+            'twitter_account',
+            'facebook_profile',
+            'user',
+            'websites',
+        )
 
 
 class StaffSerializer(serializers.HyperlinkedModelSerializer):
