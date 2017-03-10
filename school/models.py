@@ -219,7 +219,7 @@ class StudentApplication(models.Model):
         year = date.today().year
         count = StudentApplication.objects.filter(created_on__year=year).count()
 
-        return '{0}-{1:03d}'.format(year, count + 1)
+        return '{0}-{1:03d}'.format(year, count + 103)
 
     def save(self, *args, **kwargs):
 
