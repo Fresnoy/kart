@@ -13,7 +13,7 @@ class Gallery(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
-        return u"%s - %s" % (self.label, self.description)
+        return u'{0} - {1}'.format(self.label, self.description)
 
     class Meta:
         verbose_name_plural = "galleries"
@@ -31,11 +31,12 @@ class Medium(models.Model):
     description = models.TextField(null=True, blank=True)
     picture = models.ImageField(upload_to=make_filepath, null=True, blank=True)
     medium_url = models.URLField(null=True, blank=True)
+    file = models.FileField(upload_to=make_filepath, null=True, blank=True)
 
     gallery = models.ForeignKey(Gallery, related_name='media')
 
     def __unicode__(self):
-        return u"%s - %s" % (self.label, self.description)
+        return u"{0} - {1}".format(self.label, self.description)
 
     class Meta:
         verbose_name_plural = "media"

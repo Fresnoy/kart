@@ -2,12 +2,13 @@ from rest_framework import viewsets
 
 from .models import (Film, Installation, Performance,
                      FilmGenre, InstallationGenre, Event,
-                     Itinerary)
+                     Itinerary, ProductionStaffTask, ProductionOrganizationTask)
 
 from .serializers import (FilmSerializer, InstallationSerializer,
                           PerformanceSerializer, FilmGenreSerializer,
                           InstallationGenreSerializer, EventSerializer,
-                          ItinerarySerializer)
+                          ItinerarySerializer, ProductionStaffTaskSerializer, PartnerSerializer
+                          )
 
 
 class FilmViewSet(viewsets.ModelViewSet):
@@ -43,3 +44,13 @@ class FilmGenreViewSet(viewsets.ModelViewSet):
 class InstallationGenreViewSet(viewsets.ModelViewSet):
     queryset = InstallationGenre.objects.all()
     serializer_class = InstallationGenreSerializer
+
+
+class CollaboratorViewSet(viewsets.ModelViewSet):
+    queryset = ProductionStaffTask.objects.all()
+    serializer_class = ProductionStaffTaskSerializer
+
+
+class PartnerViewSet(viewsets.ModelViewSet):
+    queryset = ProductionOrganizationTask.objects.all()
+    serializer_class = PartnerSerializer

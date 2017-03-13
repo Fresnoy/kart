@@ -1,13 +1,14 @@
+# -*- encoding: utf-8 -*-
 from django.contrib import admin
 from django.db import models
 
 from pagedown.widgets import AdminPagedownWidget
 
-from .models import Promotion, Student
+from .models import Promotion, Student, StudentApplication, StudentApplicationSetup
 
 
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'number', 'promotion', 'graduate')
+    list_display = ('artist', 'number', 'promotion', 'graduate')
     search_fields = ('number', 'user__first_name', 'user__last_name')
 
     formfield_overrides = {
@@ -15,5 +16,35 @@ class StudentAdmin(admin.ModelAdmin):
     }
 
 
+class StudentApplicationAdmin(admin.ModelAdmin):
+
+    def _get_name(self, obj):
+        return obj.artist.user.get_full_name()
+
+    _get_name.short_description = "Nom"
+    list_display = (
+        'current_year_application_count',
+        '_get_name',
+        'selected_for_interview',
+        'physical_content',
+        'remark',
+        'created_on',
+        'application_complete',
+    )
+
+
+class StudentApplicationSetupAdmin(admin.ModelAdmin):
+
+    def _get_name(self, obj):
+        return obj.artist.user.get_full_name()
+
+    list_display = (
+        'name',
+        'is_current_setup',
+    )
+
+
 admin.site.register(Promotion)
+admin.site.register(StudentApplication, StudentApplicationAdmin)
+admin.site.register(StudentApplicationSetup, StudentApplicationSetupAdmin)
 admin.site.register(Student, StudentAdmin)

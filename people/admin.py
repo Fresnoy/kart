@@ -4,12 +4,13 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from pagedown.widgets import AdminPagedownWidget
+from guardian.admin import GuardedModelAdmin
 
 from .forms import UserCreateForm
 from .models import Artist, Staff, FresnoyProfile, Organization
 
 
-class ArtistAdmin(admin.ModelAdmin):
+class ArtistAdmin(GuardedModelAdmin):
     list_display = ('firstname', 'lastname', 'nickname')
     filter_horizontal = ('websites',)
     search_fields = ['user__first_name', 'user__last_name']

@@ -2,26 +2,48 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from django_countries.fields import CountryField
+from django_languages.fields import LanguageField
 
 from common.models import Website
 from common.utils import make_filepath
 
 
 class FresnoyProfile(models.Model):
+
+    GENDER_CHOICES = (
+        ('M', 'Male'),
+        ('F', 'Female'),
+        ('T', 'Transgender'),
+        ('O', 'Other'),
+    )
+
     user = models.OneToOneField(User, related_name='profile')
     photo = models.ImageField(upload_to=make_filepath, blank=True, null=True)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
 
+    nationality = models.CharField(max_length=24, null=True, blank=True)
     birthdate = models.DateField(null=True, blank=True)
     birthplace = models.CharField(max_length=255, null=True, blank=True)
-    birthplace_country = CountryField(null=True, blank=True)
+    birthplace_country = CountryField(null=True, default="")
 
     homeland_address = models.TextField(blank=True)
-    homeland_country = CountryField(blank=True)
+    homeland_zipcode = models.CharField(max_length=10, blank=True)
+    homeland_town = models.CharField(max_length=50, blank=True)
+    homeland_country = CountryField(default="")
     residence_address = models.TextField(blank=True)
-    residence_country = CountryField(blank=True)
+    residence_zipcode = models.CharField(max_length=10, blank=True)
+    residence_town = models.CharField(max_length=50, blank=True)
+    residence_country = CountryField(default="")
 
     homeland_phone = models.CharField(max_length=50, blank=True)
     residence_phone = models.CharField(max_length=50, blank=True)
+
+    social_insurance_number = models.CharField(max_length=50, blank=True)
+    family_status = models.CharField(max_length=50,
+                                     null=True, blank=True)
+
+    mother_tongue = LanguageField(blank=True, null=True)
+    other_language = models.CharField(max_length=24, null=True, blank=True)
 
     cursus = models.TextField(blank=True)
 
@@ -44,7 +66,7 @@ class Artist(models.Model):
     websites = models.ManyToManyField(Website, blank=True)
 
     def __unicode__(self):
-        return u"%s (%s)" % (self.user, self.nickname)
+        return u'{0} ({1})'.format(self.user, self.nickname)
 
 
 class Staff(models.Model):
