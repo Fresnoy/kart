@@ -1,0 +1,25 @@
+<html>
+    <head>
+      <title>Kart - Nouvelle Candidature</title>
+    </head>
+    <body style="color: black; background-color: #333;" bgcolor="#333">
+    <div class="page" style="max-width: 960px; width: 100%; background-color: white; margin: 50px 0px; padding: 50px;">
+        <img src="http://www.lefresnoy.net/sites/prod/themes/babylon/images/logos/logo-fresnoy.png" />
+
+
+
+      <p>Bonjour</p>
+      <p> Une nouvelle candidature : {{application.current_year_application_count}} a été envoyée de la part de
+        {{user.first_name}} {{user.last_name}} : {{user.email}}
+      <p>
+      <p>Pour la consulter, veuillez suivre ce lien:
+        <br/>
+        <a href="{{url}}" >{{url}}</a>
+      </p>
+      <p>
+        Merci
+      </p>
+
+</div>
+</body>
+</html>
