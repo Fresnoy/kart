@@ -11,3 +11,13 @@ class BTBeaconSerializer(serializers.HyperlinkedModelSerializer):
 class WebsiteSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Website
+        fields = (
+            "id",
+            "url",
+            "link",
+            "title_fr",
+            "title_en",
+            "language",
+        )
+    url = serializers.HyperlinkedIdentityField(view_name="website-detail")
+    link = serializers.URLField(source='url')

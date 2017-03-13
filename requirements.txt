@@ -1,12 +1,17 @@
 Django==1.8.2
 Pillow==2.8.2
 django-cors-headers==1.1.0
-django-countries==3.3
+django-countries==4.0
 django-extensions==1.5.5
 django-grappelli==2.7.1
 -e git+https://github.com/django-tastypie/django-tastypie#egg=django-tastypie
-django-tastypie-swagger==0.1.2
 djangorestframework==3.4.1
+django-tastypie-swagger==0.1.2
+django-languages==0.1
+djangorestframework-jwt==1.8.0
+django-rest-auth[with_social]==0.8.2
+django-filter==1.0.1
+django-guardian==1.4.6
 django-model-utils==2.2
 django-markdown==0.8.4
 django-uuidfield==0.5

@@ -6,6 +6,18 @@ from .models import Gallery, Medium
 class MediumSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Medium
+        fields = (
+            'id',
+            'position',
+            'label',
+            'description',
+            'picture',
+            'medium_url',
+            'file',
+            'url',
+            'gallery',
+            'updated_on',
+        )
 
 
 class GallerySerializer(serializers.HyperlinkedModelSerializer):
@@ -18,4 +30,4 @@ class GallerySerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Gallery
-        fields = ('label', 'description', 'media', )
+        fields = ('id', 'url', 'label', 'description', 'media', )

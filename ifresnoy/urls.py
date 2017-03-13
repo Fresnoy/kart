@@ -14,15 +14,22 @@ from production.api import (
     ItineraryResource, ArtworkResource
 )
 from diffusion.api import PlaceResource
-from school.api import PromotionResource, StudentResource
+from school.api import PromotionResource, StudentResource, StudentApplicationResource
 
-from people.views import ArtistViewSet, UserViewSet, StaffViewSet, OrganizationViewSet
-from school.views import PromotionViewSet, StudentViewSet, StudentAutocompleteSearchViewSet
+from people.views import (
+    ArtistViewSet, UserViewSet, FresnoyProfileViewSet,
+    StaffViewSet, OrganizationViewSet
+)
+from school.views import (
+    PromotionViewSet, StudentViewSet,
+    StudentAutocompleteSearchViewSet, StudentApplicationViewSet
+)
 from production.views import (
     FilmViewSet, InstallationViewSet,
     PerformanceViewSet, FilmGenreViewSet,
     InstallationGenreViewSet, EventViewSet,
-    ItineraryViewSet
+    ItineraryViewSet,
+    CollaboratorViewSet, PartnerViewSet
 )
 from diffusion.views import PlaceViewSet
 from common.views import BTBeaconViewSet, WebsiteViewSet
@@ -38,6 +45,7 @@ v1_api.register(PerformanceResource())
 v1_api.register(EventResource())
 v1_api.register(PromotionResource())
 v1_api.register(StudentResource())
+v1_api.register(StudentApplicationResource())
 v1_api.register(ArtistResource())
 v1_api.register(StaffResource())
 v1_api.register(PlaceResource())
@@ -45,13 +53,15 @@ v1_api.register(ExhibitionResource())
 v1_api.register(ItineraryResource())
 v1_api.register(ArtworkResource())
 
-v2_api = routers.DefaultRouter()
+v2_api = routers.DefaultRouter(trailing_slash=False)
 v2_api.register(r'people/user', UserViewSet)
+v2_api.register(r'people/userprofile', FresnoyProfileViewSet)
 v2_api.register(r'people/artist', ArtistViewSet)
 v2_api.register(r'people/staff', StaffViewSet)
 v2_api.register(r'people/organization', OrganizationViewSet)
 v2_api.register(r'school/promotion', PromotionViewSet)
 v2_api.register(r'school/student', StudentViewSet)
+v2_api.register(r'school/student-application', StudentApplicationViewSet)
 v2_api.register(r'school/student/search', StudentAutocompleteSearchViewSet, base_name="school-student-search")
 v2_api.register(r'production/film', FilmViewSet)
 v2_api.register(r'production/event', EventViewSet)
@@ -60,6 +70,8 @@ v2_api.register(r'production/film/genre', FilmGenreViewSet)
 v2_api.register(r'production/installation', InstallationViewSet)
 v2_api.register(r'production/installation/genre', InstallationGenreViewSet)
 v2_api.register(r'production/performance', PerformanceViewSet)
+v2_api.register(r'production/collaborator', CollaboratorViewSet)
+v2_api.register(r'production/partner', PartnerViewSet)
 v2_api.register(r'diffusion/place', PlaceViewSet)
 v2_api.register(r'common/beacon', BTBeaconViewSet)
 v2_api.register(r'common/website', WebsiteViewSet)
@@ -68,11 +80,18 @@ v2_api.register(r'assets/medium', MediumViewSet)
 
 
 urlpatterns = patterns('',
-                       # Examples:
-                       # url(r'^$', 'ifresnoy.views.home', name='home'),
-                       # url(r'^blog/', include('blog.urls')),
                        url(r'^v2/', include(v2_api.urls)),
                        url(r'^v2/auth/', obtain_jwt_token),
+                       url(r'^account/activate/%s/$' % settings.PASSWORD_TOKEN,
+                           'people.views.activate', name='user-activate'),
+                       # django user registration
+                       url(r'^v2/rest-auth/', include('rest_auth.urls')),
+                       url(r'^v2/rest-auth/registration/', include('rest_auth.registration.urls')),
+                       # vimeo
+                       url(r'^v2/assets/vimeo/upload/token',
+                           'assets.views.vimeo_get_upload_token', name='vimeo-upload-token'),
+
+                       # api v1
                        (r'^', include(v1_api.urls)),
                        (r'^grappelli/', include('grappelli.urls')),
                        url('^markdown/', include('django_markdown.urls')),
@@ -81,5 +100,5 @@ urlpatterns = patterns('',
                            kwargs={"tastypie_api_module": "ifresnoy.urls.v1_api",
                                    "namespace": "ifresnoy_tastypie_swagger"}),
                        url(r'^admin/', include(admin.site.urls)) \
-
                        ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
