@@ -81,7 +81,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         user = self.request.user
-        # candidate can't update candidature when she's expired, admin every can !
+        # candidate can't update candidature when she's expired, admin can !
         candidature_expiration_date = datetime.datetime.combine(
             StudentApplicationSetup.objects.filter(is_current_setup=True).first().candidature_date_end,
             datetime.datetime.min.time()
@@ -90,6 +90,18 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         if candidature_hasexpired and not user.is_staff:
             errors = {'candidature': 'expired'}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
+
+        if (not user.is_staff and
+                (request.data.get('application_complete')
+                    or request.data.get('selected_for_interview')
+                    or request.data.get('selected')
+                    or request.data.get('wait_listed')
+                    or request.data.get('application_complete')
+                    or request.data.get('physical_content_received')
+                )):
+                errors = {'Error': 'Field permission denied'}
+                return Response(errors, status=status.HTTP_403_FORBIDDEN)
+
         # send email when candidature is complete
         if(request.data.get('application_completed')):
             application = self.get_object()
