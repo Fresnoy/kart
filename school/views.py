@@ -91,16 +91,17 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
             errors = {'candidature': 'expired'}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
         # Only admin user can update selection's fields
-        if (not user.is_staff and
-                (request.data.get('application_complete')
-                    or request.data.get('selected_for_interview')
-                    or request.data.get('selected')
-                    or request.data.get('wait_listed')
-                    or request.data.get('application_complete')
-                    or request.data.get('physical_content_received')
-                )):
-                errors = {'Error': 'Field permission denied'}
-                return Response(errors, status=status.HTTP_403_FORBIDDEN)
+        if (
+            not user.is_staff and (
+                request.data.get('application_complete') or
+                request.data.get('selected_for_interview') or
+                request.data.get('selected') or
+                request.data.get('wait_listed') or
+                request.data.get('application_complete') or
+                request.data.get('physical_content_received'))
+        ):
+            errors = {'Error': 'Field permission denied'}
+            return Response(errors, status=status.HTTP_403_FORBIDDEN)
 
         # send email when candidature is complete
         if(request.data.get('application_completed')):
