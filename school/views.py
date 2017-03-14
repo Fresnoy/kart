@@ -90,7 +90,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         if candidature_hasexpired and not user.is_staff:
             errors = {'candidature': 'expired'}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
-
+        # Only admin user can update selection's fields
         if (not user.is_staff and
                 (request.data.get('application_complete')
                     or request.data.get('selected_for_interview')
