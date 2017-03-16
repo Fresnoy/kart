@@ -35,7 +35,7 @@ class Student(models.Model):
     artist = models.OneToOneField(Artist, related_name='student')
 
     def __unicode__(self):
-        return "{0} ({1})".format(self.user, self.number)
+        return u'{0} ({1})'.format(self.user, self.number)
 
 
 class StudentApplicationSetup(models.Model):
@@ -229,4 +229,4 @@ class StudentApplication(models.Model):
         super(StudentApplication, self).save(*args, **kwargs)
 
     def __unicode__(self):
-        return "{0} ({1})".format(self.current_year_application_count, self.artist)
+        return u"{0} ({1})".format(self.current_year_application_count, self.artist)

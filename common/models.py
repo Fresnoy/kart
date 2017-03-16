@@ -12,7 +12,7 @@ class BTBeacon(models.Model):
     y = models.FloatField()
 
     def __unicode__(self):
-        return "{0} ({1})".format(self.label, self.uuid)
+        return u'{0} ({1})'.format(self.label, self.uuid)
 
 
 class Website(models.Model):

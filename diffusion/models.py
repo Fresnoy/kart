@@ -13,7 +13,7 @@ class Place(models.Model):
     organization = models.ForeignKey(Organization, related_name='places')
 
     def __unicode__(self):
-        return "{0} ({1})" % (self.name, self.organization)
+        return u'{0} ({1})' % (self.name, self.organization)
 
 
 class Award(models.Model):
