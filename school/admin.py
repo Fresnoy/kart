@@ -25,11 +25,12 @@ class StudentApplicationAdmin(admin.ModelAdmin):
     list_display = (
         'current_year_application_count',
         '_get_name',
+        'application_completed',
+        'application_complete',
         'selected_for_interview',
         'physical_content',
         'remark',
         'created_on',
-        'application_complete',
     )
 
 
