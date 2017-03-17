@@ -16,6 +16,7 @@ class Place(models.Model):
         return u'{0} ({1})'.format(self.name, self.organization)
 
 
+
 class Award(models.Model):
     """
     Awards given to artworks & such.
