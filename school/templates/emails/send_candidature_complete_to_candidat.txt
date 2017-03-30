@@ -1,0 +1,2 @@
+Bonjour,
+  {{application.current_year_application_count}}
