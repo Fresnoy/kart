@@ -57,3 +57,35 @@ def send_candidature_completed_email_to_admin(request, user, application):
                           )
 
     return mail_sent
+
+
+def send_candidature_complete_email_to_candidat(request, candidat, application):
+
+    setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
+
+    url = u'{0}{1}'.format(setup.candidatures_url, application.id)
+    # Send email
+    msg_plain = render_to_string(
+        'emails/send_candidature_complete_to_candidat.txt',
+        {
+            'user': candidat,
+            'url': url,
+            'application': application
+        }
+    )
+    msg_html = render_to_string(
+        'emails/send_candidature_complete_to_candidat.html',
+        {
+            'user': candidat,
+            'url': url,
+            'application': application
+        }
+    )
+    mail_sent = send_mail('Le Fresnoy - Candidature complete',
+                          msg_plain,
+                          'selection@lefresnoy.net',
+                          [candidat.email],
+                          html_message=msg_html,
+                          )
+
+    return mail_sent
