@@ -63,10 +63,10 @@ class FresnoyProfileSerializer(serializers.ModelSerializer):
 
 
 class UserRegisterSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=30, min_length=4, required=True)
-    first_name = serializers.CharField(max_length=30, min_length=2, required=True)
-    last_name = serializers.CharField(max_length=30, min_length=2, required=True)
-    email = serializers.EmailField(max_length=30, min_length=2, required=True)
+    username = serializers.CharField(max_length=150, min_length=4, required=True)
+    first_name = serializers.CharField(max_length=150, min_length=2, required=True)
+    last_name = serializers.CharField(max_length=150, min_length=2, required=True)
+    email = serializers.EmailField(max_length=254, min_length=2, required=True)
 
 
 class UserSerializer(serializers.ModelSerializer):
