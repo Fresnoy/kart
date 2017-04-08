@@ -42,8 +42,15 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
     queryset = StudentApplication.objects.all()
     serializer_class = StudentApplicationSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    filter_backends = (filters.SearchFilter,)
+    filter_backends = (filters.SearchFilter, filters.DjangoFilterBackend,)
     search_fields = ('artist__user__username',)
+    filter_fields = ('application_completed',
+                     'application_complete',
+                     'selected_for_interview',
+                     'physical_content',
+                     'physical_content_received',
+                     'selected',
+                     'wait_listed',)
 
     def get_queryset(self):
         """
@@ -53,7 +60,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         """
         user = self.request.user
         if not user.is_authenticated():
-            return list()
+            return StudentApplication.objects.none()
         if user.is_staff:
             # or not user.is_authenticated() WHY ???
             return StudentApplication.objects.all()
