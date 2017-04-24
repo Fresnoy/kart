@@ -42,7 +42,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
     queryset = StudentApplication.objects.all()
     serializer_class = StudentApplicationSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    filter_backends = (filters.SearchFilter, filters.DjangoFilterBackend,)
+    filter_backends = (filters.SearchFilter, filters.DjangoFilterBackend, filters.OrderingFilter,)
     search_fields = ('artist__user__username',)
     filter_fields = ('application_completed',
                      'application_complete',
@@ -51,6 +51,9 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                      'physical_content_received',
                      'selected',
                      'wait_listed',)
+    ordering_fields = ('id',
+                       'artist__user__last_name',
+                       'artist__user__profile__nationality',)
 
     def get_queryset(self):
         """
