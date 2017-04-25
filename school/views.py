@@ -68,6 +68,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
             # or not user.is_authenticated() WHY ???
             return StudentApplication.objects.all()
         else:
+            # get or create an application
             current_year = datetime.date.today().year
             # is an current inscription
             current_year_application = StudentApplication.objects.filter(
@@ -78,7 +79,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                 # take the artist
                 user_artist = Artist.objects.filter(user=user.id)
                 if not user_artist:
-                    # if not, ceate it
+                    # if not, create it
                     user_artist = Artist(user=user)
                     user_artist.save()
                 else:
@@ -90,15 +91,18 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
 
             return StudentApplication.objects.filter(artist__user=user.id)
 
+    def list(self, request, *args, **kwargs):
+        user = self.request.user
+        if not user.is_staff and self.candidature_hasexpired():
+            errors = {'candidature': 'expired'}
+            return Response(errors, status=status.HTTP_403_FORBIDDEN)
+
+        return super(self.__class__, self).list(request, *args, **kwargs)
+
     def update(self, request, *args, **kwargs):
         user = self.request.user
         # candidate can't update candidature when she's expired, admin can !
-        candidature_expiration_date = datetime.datetime.combine(
-            StudentApplicationSetup.objects.filter(is_current_setup=True).first().candidature_date_end,
-            datetime.datetime.min.time()
-        )
-        candidature_hasexpired = candidature_expiration_date < datetime.datetime.now()
-        if candidature_hasexpired and not user.is_staff:
+        if self.candidature_hasexpired() and not user.is_staff:
             errors = {'candidature': 'expired'}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
         # Only admin user can update selection's fields
@@ -127,3 +131,10 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
             send_candidature_complete_email_to_candidat(request, candidat, application)
         # basic update
         return super(self.__class__, self).update(request, *args, **kwargs)
+
+    def candidature_hasexpired(self):
+        candidature_expiration_date = datetime.datetime.combine(
+            StudentApplicationSetup.objects.filter(is_current_setup=True).first().candidature_date_end,
+            datetime.datetime.min.time()
+        )
+        return candidature_expiration_date < datetime.datetime.now()
