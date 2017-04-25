@@ -123,7 +123,7 @@ WSGI_APPLICATION = 'ifresnoy.wsgi.application'
 
 LANGUAGE_CODE = 'fr-FR'
 
-SITE_ID = 1
+SITE_ID = 2
 
 TIME_ZONE = 'Europe/Paris'
 
