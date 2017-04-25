@@ -18,7 +18,7 @@ def send_candidature_completed_email_to_user(request, user, application):
             'application': application
         }
     )
-    mail_sent = send_mail('Le Fresnoy - Candidature completed',
+    mail_sent = send_mail('Le Fresnoy - Confirmation d\'inscription / Application confirmed',
                           msg_plain,
                           'selection@lefresnoy.net',
                           [user.email],
