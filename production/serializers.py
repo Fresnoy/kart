@@ -6,8 +6,7 @@ from .models import (
     Event, Itinerary, StaffTask, OrganizationTask,
     ProductionStaffTask, ProductionOrganizationTask,
 )
-from people.serializers import StaffSerializer, OrganizationSerializer
-
+from people.serializers import StaffSerializer
 
 
 class OrganizationTaskSerializer(serializers.HyperlinkedModelSerializer):
