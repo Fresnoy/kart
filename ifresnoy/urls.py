@@ -29,7 +29,7 @@ from production.views import (
     PerformanceViewSet, FilmGenreViewSet,
     InstallationGenreViewSet, EventViewSet,
     ItineraryViewSet,
-    CollaboratorViewSet, PartnerViewSet
+    CollaboratorViewSet, PartnerViewSet, OrganizationTaskViewSet
 )
 from diffusion.views import PlaceViewSet
 from common.views import BTBeaconViewSet, WebsiteViewSet
@@ -59,6 +59,7 @@ v2_api.register(r'people/userprofile', FresnoyProfileViewSet)
 v2_api.register(r'people/artist', ArtistViewSet)
 v2_api.register(r'people/staff', StaffViewSet)
 v2_api.register(r'people/organization', OrganizationViewSet)
+v2_api.register(r'people/organization-staff', OrganizationTaskViewSet)
 v2_api.register(r'school/promotion', PromotionViewSet)
 v2_api.register(r'school/student', StudentViewSet)
 v2_api.register(r'school/student-application', StudentApplicationViewSet)
