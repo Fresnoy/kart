@@ -2,12 +2,14 @@ from rest_framework import viewsets
 
 from .models import (Film, Installation, Performance,
                      FilmGenre, InstallationGenre, Event,
-                     Itinerary, ProductionStaffTask, ProductionOrganizationTask)
+                     Itinerary, ProductionStaffTask, ProductionOrganizationTask,
+                     OrganizationTask)
 
 from .serializers import (FilmSerializer, InstallationSerializer,
                           PerformanceSerializer, FilmGenreSerializer,
                           InstallationGenreSerializer, EventSerializer,
-                          ItinerarySerializer, ProductionStaffTaskSerializer, PartnerSerializer
+                          ItinerarySerializer, ProductionStaffTaskSerializer,
+                          PartnerSerializer, OrganizationTaskSerializer
                           )
 
 
@@ -54,3 +56,8 @@ class CollaboratorViewSet(viewsets.ModelViewSet):
 class PartnerViewSet(viewsets.ModelViewSet):
     queryset = ProductionOrganizationTask.objects.all()
     serializer_class = PartnerSerializer
+
+
+class OrganizationTaskViewSet(viewsets.ModelViewSet):
+    queryset = OrganizationTask.objects.all()
+    serializer_class = OrganizationTaskSerializer

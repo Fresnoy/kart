@@ -7,11 +7,11 @@ from tastypie.api import Api
 from rest_framework import routers
 from rest_framework_jwt.views import obtain_jwt_token
 
-from people.api import ArtistResource, StaffResource
+from people.api import ArtistResource, StaffResource, OrganizationResource
 from production.api import (
     InstallationResource, FilmResource,
     PerformanceResource, EventResource, ExhibitionResource,
-    ItineraryResource, ArtworkResource
+    ItineraryResource, ArtworkResource, StaffTaskResource
 )
 from diffusion.api import PlaceResource
 from school.api import PromotionResource, StudentResource, StudentApplicationResource
@@ -29,7 +29,7 @@ from production.views import (
     PerformanceViewSet, FilmGenreViewSet,
     InstallationGenreViewSet, EventViewSet,
     ItineraryViewSet,
-    CollaboratorViewSet, PartnerViewSet
+    CollaboratorViewSet, PartnerViewSet, OrganizationTaskViewSet
 )
 from diffusion.views import PlaceViewSet
 from common.views import BTBeaconViewSet, WebsiteViewSet
@@ -43,6 +43,8 @@ v1_api.register(InstallationResource())
 v1_api.register(FilmResource())
 v1_api.register(PerformanceResource())
 v1_api.register(EventResource())
+v1_api.register(OrganizationResource())
+v1_api.register(StaffTaskResource())
 v1_api.register(PromotionResource())
 v1_api.register(StudentResource())
 v1_api.register(StudentApplicationResource())
@@ -59,6 +61,7 @@ v2_api.register(r'people/userprofile', FresnoyProfileViewSet)
 v2_api.register(r'people/artist', ArtistViewSet)
 v2_api.register(r'people/staff', StaffViewSet)
 v2_api.register(r'people/organization', OrganizationViewSet)
+v2_api.register(r'people/organization-staff', OrganizationTaskViewSet)
 v2_api.register(r'school/promotion', PromotionViewSet)
 v2_api.register(r'school/student', StudentViewSet)
 v2_api.register(r'school/student-application', StudentApplicationViewSet)
