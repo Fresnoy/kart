@@ -19,13 +19,13 @@ class StaffTaskSerializer(serializers.ModelSerializer):
         model = StaffTask
 
 
-class ProductionStaffTaskSerializer(serializers.ModelSerializer):
+class ProductionStaffTaskSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ProductionStaffTask
         fields = ('staff', 'task')
 
-    staff = StaffSerializer()
-    task = StaffTaskSerializer(many=True, read_only=True)
+    # staff = StaffSerializer()
+    task = StaffTaskSerializer()
 
 
 class PartnerSerializer(serializers.HyperlinkedModelSerializer):
@@ -45,7 +45,7 @@ class FilmSerializer(serializers.HyperlinkedModelSerializer):
         model = Film
         exclude = ('polymorphic_ctype',)
 
-    collaborators = ProductionStaffTaskSerializer(read_only=True)
+    collaborators = ProductionStaffTaskSerializer(source='staff_tasks', many=True)
 
 
 class EventSerializer(serializers.HyperlinkedModelSerializer):
