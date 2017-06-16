@@ -125,9 +125,9 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
 class StaffSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Staff
-        # fields = ('staff',)
+        fields = ('user',)
 
-    # user = FresnoyProfileSerializer()
+    user = serializers.HyperlinkedRelatedField(view_name='user-detail', read_only=True)
 
 
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):

@@ -50,7 +50,7 @@ class ProductionOrganizationTaskResource(ModelResource):
 
 
 class ProductionResource(ModelResource):
-    collaborators = fields.ToManyField(ProductionStaffTaskResource, 'collaborators')
+    collaborators = fields.ToManyField(ProductionStaffTaskResource, 'staff_tasks', full=True)
     partners = fields.ToManyField(ProductionOrganizationTaskResource, 'organization_tasks', full=True)
     websites = fields.ToManyField(WebsiteResource, 'websites', full=True)
 
