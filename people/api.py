@@ -55,6 +55,7 @@ class StaffResource(ModelResource):
     class Meta:
         queryset = Staff.objects.all()
         resource_name = 'people/staff'
+        fields = ('user',)
 
     user = fields.ForeignKey(UserResource, 'user', full=True)
 
