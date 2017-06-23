@@ -41,7 +41,7 @@ class FresnoyProfileAdmin(UserAdmin):
 
 
 class OrganizationAdmin(GuardedModelAdmin):
-    list_display = ('name', )
+    list_display = ('name',)
     ordering = ('name',)
 
 
