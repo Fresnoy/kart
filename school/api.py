@@ -25,6 +25,7 @@ class StudentResource(ArtistResource):
     class Meta:
         queryset = Student.objects.all()
         resource_name = 'school/student'
+        ordering = ['user', ]
         filtering = {
             'artist': ALL_WITH_RELATIONS,
             'user': ALL_WITH_RELATIONS,

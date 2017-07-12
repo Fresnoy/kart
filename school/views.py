@@ -29,6 +29,12 @@ class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    filter_backends = (filters.SearchFilter, filters.DjangoFilterBackend, filters.OrderingFilter,)
+    search_fields = ('user__username',)
+    ordering_fields = ('user__last_name',)
+    filter_fields = ('artist',
+                     'user',
+                     'promotion',)
 
 
 class StudentAutocompleteSearchViewSet(HaystackViewSet):
