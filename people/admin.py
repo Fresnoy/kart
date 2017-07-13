@@ -40,8 +40,13 @@ class FresnoyProfileAdmin(UserAdmin):
     add_fieldsets = ((None, {'fields': ('username', 'password1', 'password2', 'first_name', 'last_name', 'email'), }), )
 
 
+class OrganizationAdmin(GuardedModelAdmin):
+    list_display = ('name',)
+    ordering = ('name',)
+
+
 admin.site.unregister(User)
 admin.site.register(User, FresnoyProfileAdmin)
 admin.site.register(Artist, ArtistAdmin)
 admin.site.register(Staff)
-admin.site.register(Organization)
+admin.site.register(Organization, OrganizationAdmin)
