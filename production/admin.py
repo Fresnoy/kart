@@ -114,6 +114,7 @@ class OrganizationTaskAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.TextField: {'widget': AdminPagedownWidget},
     }
+    ordering = ('label',)
 
 
 @admin.register(StaffTask)
@@ -121,3 +122,4 @@ class StaffTaskAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.TextField: {'widget': AdminPagedownWidget},
     }
+    ordering = ('label',)
