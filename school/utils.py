@@ -63,7 +63,7 @@ def send_candidature_complete_email_to_candidat(request, candidat, application):
 
     setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
 
-    url = u'{0}{1}'.format(setup.candidatures_url, application.id)
+    url = u'{0}/{1}'.format(setup.candidatures_url, application.id)
     # Send email
     msg_plain = render_to_string(
         'emails/send_candidature_complete_to_candidat.txt',
