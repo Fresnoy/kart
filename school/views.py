@@ -52,10 +52,10 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
     search_fields = ('artist__user__username',)
     filter_fields = ('application_completed',
                      'application_complete',
-                     'selected_for_interview', 'remote_interview',
+                     'selected_for_interview', 'remote_interview', 'wait_listed_for_interview'
                      'physical_content',
                      'physical_content_received',
-                     'selected',
+                     'selected', 'unselected',
                      'wait_listed',)
     ordering_fields = ('id',
                        'artist__user__last_name',

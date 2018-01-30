@@ -5,6 +5,25 @@ from .models import Promotion, Student, StudentApplication
 from .search_indexes import StudentIndex
 
 
+class PrivateTextArea(serializers.TextField):
+
+    def to_representation(self, obj):
+        return obj
+
+    def get_attribute(self, instance):
+        if self.context['request'].user.is_staff():
+            return super(PrivateTextArea, self).get_attribute(instance)
+        return None
+
+    def to_internal_value(self, data):
+        # for write functionality
+        # check if data is valid and if not raise ValidationError
+        if self.context['request'].user.is_staff():
+            return data
+        return ""
+
+
+
 class StudentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Student
@@ -60,8 +79,13 @@ class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
                   'remark',
                   'application_completed',
                   'application_complete',
+                  'wait_listed_for_interview',
                   'selected_for_interview',
                   'selected',
+                  'unselected',
                   'wait_listed',
+                  'observation',
                   'created_on',
                   'updated_on',)
+
+    observation = PrivateTextArea()

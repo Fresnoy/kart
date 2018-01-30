@@ -139,6 +139,18 @@ class StudentApplication(models.Model):
         blank=True,
         help_text="Justification / Motivation"
     )
+    reference_letter = models.FileField(
+        upload_to=make_filepath,
+        null=True,
+        blank=True,
+        help_text="Reference / Recommendation letter"
+    )
+    free_document = models.FileField(
+        upload_to=make_filepath,
+        null=True,
+        blank=True,
+        help_text="Free document"
+    )
     # first and second year project
     considered_project_1 = models.FileField(
         upload_to=make_filepath,
@@ -195,18 +207,29 @@ class StudentApplication(models.Model):
         help_text="Candidature's validation"
     )
     # Administration
+    observation = models.TextField(blank=True, null=True, help_text="Administration - Comments on the application'")
+
     selected_for_interview = models.BooleanField(
         default=False,
         help_text="Administration - Is the candidat selected for the Interview"
+    )
+    wait_listed_for_interview = models.BooleanField(
+        default=False,
+        help_text="Administration - Is the candidat wait listed for the Interview"
     )
     selected = models.BooleanField(
         default=False,
         help_text="Administration - Is the candidat selected"
     )
+    unselected = models.BooleanField(
+        default=False,
+        help_text="Administration - Is the candidat not choosen by the Jury"
+    )
     wait_listed = models.BooleanField(
         default=False,
         help_text="Administration - Is the candidat wait listed"
     )
+
     application_complete = models.BooleanField(
         default=False,
         help_text="Administration - Candidature is complete"
