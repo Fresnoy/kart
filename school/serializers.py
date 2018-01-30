@@ -5,14 +5,14 @@ from .models import Promotion, Student, StudentApplication
 from .search_indexes import StudentIndex
 
 
-class PrivateTextArea(serializers.TextField):
+class StaffField(serializers.Field):
 
     def to_representation(self, obj):
         return obj
 
     def get_attribute(self, instance):
-        if self.context['request'].user.is_staff():
-            return super(PrivateTextArea, self).get_attribute(instance)
+        if self.context['request'].user.is_staff:
+            return super(StaffField, self).get_attribute(instance)
         return None
 
     def to_internal_value(self, data):
@@ -88,4 +88,4 @@ class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
                   'created_on',
                   'updated_on',)
 
-    observation = PrivateTextArea()
+    observation = StaffField()

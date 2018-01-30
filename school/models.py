@@ -207,7 +207,7 @@ class StudentApplication(models.Model):
         help_text="Candidature's validation"
     )
     # Administration
-    observation = models.TextField(blank=True, null=True, help_text="Administration - Comments on the application'")
+    observation = models.TextField(blank=True, null=True, help_text="Administration - Comments on the application")
 
     selected_for_interview = models.BooleanField(
         default=False,
