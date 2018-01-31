@@ -1,2 +1,17 @@
 Bonjour,
-  Vous avez complété votre Candidature numéro : {{application.current_year_application_count}} , nous vous contacterons au début du mois de mai
+Vous avez finalisé votre candidature (numéro {{application.current_year_application_count}}), nous allons
+procéder à sa vérification et vous adresser une confirmation prochainement.
+
+Bien cordialement,
+
+L'équipe du Fresnoy
+
+______
+
+Bonjour,
+You have completed your application (number  {{application.current_year_application_count}}), and you will
+receive a confirmation message soon, once we have checked it.
+
+Kind regards,
+
+The team at Le Fresnoy

@@ -1,5 +1,21 @@
-Bonjour
-  Vous êtes sur le point de créer un compte sur notre base de donnée, veuillez
-  suivre ce lien : {{url}} pour modifier votre mot de passe et pouvoir ainsi continuer la procédure d'inscription.
-  En cas de problèmes pour vous inscrire, veuillez vous pouvez nous contacter au plus vite en répondant à ce message.
-  L'équipe du Fresnoy
+Bonjour,
+
+Vous êtes sur le point de créer un compte sur notre base de données, veuillez
+suivre ce lien : {{url}} pour créer votre mot de passe et pouvoir ainsi continuer la procédure d'inscription.
+En cas de problèmes pour vous inscrire, vous pouvez nous contacter en répondant à ce message.
+
+Bien cordialement,
+
+L'équipe du Fresnoy
+
+______
+
+Bonjour,
+
+You are about to create an account on our database.
+Please click on this link : {{url}} to create your password and continue your enrolment process.
+If you have a problem with this, you can contact us by answering this message.
+
+Kind regards,
+
+The team at Le Fresnoy
