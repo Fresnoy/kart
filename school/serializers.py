@@ -23,7 +23,6 @@ class StaffField(serializers.Field):
         return ""
 
 
-
 class StudentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Student
