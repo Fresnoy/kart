@@ -8,7 +8,7 @@ L'équipe du Fresnoy
 
 ______
 
-Bonjour,
+Hello,
 You have completed your application (number  {{application.current_year_application_count}}), and you will
 receive a confirmation message soon, once we have checked it.
 

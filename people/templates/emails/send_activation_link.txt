@@ -10,7 +10,7 @@ L'équipe du Fresnoy
 
 ______
 
-Bonjour,
+Hello,
 
 You are about to create an account on our database.
 Please click on this link : {{url}} to create your password and continue your enrolment process.
