@@ -75,6 +75,7 @@ class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
                   'physical_content',
                   'physical_content_description',
                   'physical_content_received',
+                  'free_document',
                   'remark',
                   'application_completed',
                   'application_complete',
