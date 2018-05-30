@@ -115,7 +115,7 @@ class Command(BaseCommand):
                     # Lookup Panorama and link it
                     try:
                         pano = Event.objects.get(title="Panorama %s" % pano_num)
-                    except:
+                    except Exception:
                         raise Exception("Error: Panorama %s not found, create it!" % pano_num)
 
                     if genre == "installation":
