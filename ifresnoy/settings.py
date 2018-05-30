@@ -47,6 +47,8 @@ INSTALLED_APPS = (
     'sortedm2m',
     'django_countries',
     'django_markdown',
+    'django_cleanup',
+    'django_unused_media',
     'ifresnoy',
     'tastypie',
     'tastypie_swagger',

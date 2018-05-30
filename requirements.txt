@@ -1,4 +1,5 @@
 Django==1.8.2
+django-allauth==0.32.0
 Pillow==2.8.2
 django-cors-headers==1.1.0
 django-countries==4.0
@@ -13,6 +14,8 @@ django-rest-auth[with_social]==0.8.2
 django-filter==1.0.1
 django-guardian==1.4.6
 django-model-utils==2.2
+django-cleanup==2.1.0
+django-unused-media==0.1.11
 django-markdown==0.8.4
 django-uuidfield==0.5
 django-sortedm2m==0.10.0
