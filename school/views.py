@@ -110,8 +110,12 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                 # create application
                 student_application = StudentApplication(artist=user_artist)
                 student_application.save()
-
-            return StudentApplication.objects.filter(artist__user=user.id)
+                errors = {'candidature': 'you are not able to create another candidature this session'}
+                return Response(status=status.HTTP_201_CREATED)
+            else:
+                # user can't create two application for this year
+                errors = {'candidature': 'you are not able to create another candidature this session'}
+                return Response(errors, status=status.HTTP_409_CONFLICT)
         else:
             errors = {'candidature': 'forbidden'}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
