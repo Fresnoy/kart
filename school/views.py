@@ -10,7 +10,8 @@ from people.models import Artist
 
 from .models import Promotion, Student, StudentApplication, StudentApplicationSetup
 from .serializers import (PromotionSerializer, StudentSerializer,
-                          StudentAutocompleteSerializer, StudentApplicationSerializer
+                          StudentAutocompleteSerializer,
+                          PublicStudentApplicationSerializer, StudentApplicationSerializer,
                           )
 
 from .utils import (send_candidature_completed_email_to_user,
@@ -46,7 +47,7 @@ class StudentAutocompleteSearchViewSet(HaystackViewSet):
 
 class StudentApplicationViewSet(viewsets.ModelViewSet):
     queryset = StudentApplication.objects.all()
-    serializer_class = StudentApplicationSerializer
+    # serializer_class = StudentApplicationSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = (filters.SearchFilter, filters.DjangoFilterBackend, filters.OrderingFilter,)
     search_fields = ('artist__user__username', 'created_on')
@@ -61,19 +62,34 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                        'artist__user__last_name',
                        'artist__user__profile__nationality',)
 
+    def get_serializer_class(self, *args, **kwargs):
+        """
+        This
+        """
+        if (
+            self.request.user.is_staff or
+            StudentApplication.objects.filter(artist__user=self.request.user.id)
+           ):
+            return StudentApplicationSerializer
+        return PublicStudentApplicationSerializer
+
     def get_queryset(self):
         """
-        This view should return a list of all the purchases and create
-        an application and Artist when User is not staff
-        otherwise Staff get all Users applications
+        This query give all Application'user
+        for Staff Anonymous User and gave all application for the others
         """
         user = self.request.user
-        if not user.is_authenticated():
-            return StudentApplication.objects.none()
-        if user.is_staff:
-            # or not user.is_authenticated() WHY ???
-            return StudentApplication.objects.all()
+        if StudentApplication.objects.filter(artist__user=user.id):
+            return StudentApplication.objects.filter(artist__user=user.id)
         else:
+            return StudentApplication.objects.all()
+
+    def create(self, request):
+        """
+        This view create an application AND Artist for auth user
+        """
+        user = self.request.user
+        if user.is_authenticated():
             # get or create an application
             current_year = datetime.date.today().year
             # is an current inscription
@@ -96,16 +112,14 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                 student_application.save()
 
             return StudentApplication.objects.filter(artist__user=user.id)
-
-    def list(self, request, *args, **kwargs):
-        user = self.request.user
-        if not user.is_staff and self.candidature_hasexpired():
-            errors = {'candidature': 'expired'}
+        else:
+            errors = {'candidature': 'forbidden'}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
 
-        return super(self.__class__, self).list(request, *args, **kwargs)
-
     def update(self, request, *args, **kwargs):
+        """
+        This view update an application before expiration date - staff can pass through
+        """
         user = self.request.user
         # candidate can't update candidature when she's expired, admin can !
         if self.candidature_hasexpired() and not user.is_staff:
