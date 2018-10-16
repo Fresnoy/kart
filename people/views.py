@@ -18,7 +18,7 @@ from .models import (
     Artist, User, FresnoyProfile, Staff, Organization
 )
 from .serializers import (
-    ArtistSerializer, UserSerializer, UserRegisterSerializer,
+    ArtistSerializer, UserSerializer, PublicUserSerializer, UserRegisterSerializer,
     FresnoyProfileSerializer, StaffSerializer,
     OrganizationSerializer
 )
@@ -27,10 +27,18 @@ from .utils import send_activation_email, send_account_information_email
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    # serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=username', '=email')
+
+    def get_serializer_class(self, *args, **kwargs):
+        if (
+            self.request.user.is_staff or
+            self.kwargs and self.request.user.pk == int(self.kwargs['pk'])
+           ):
+            return UserSerializer
+        return PublicUserSerializer
 
     @list_route(methods=['POST'], permission_classes=[permissions.AllowAny])
     def register(self, request):
