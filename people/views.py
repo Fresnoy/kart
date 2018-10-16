@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import list_route
 from rest_framework_jwt.settings import api_settings
 
-from guardian.shortcuts import assign_perm, get_perms
+from guardian.shortcuts import assign_perm
 
 from school.models import StudentApplicationSetup
 
