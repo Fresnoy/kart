@@ -79,7 +79,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         for Staff Anonymous User and gave all application for the others
         """
         user = self.request.user
-        if StudentApplication.objects.filter(artist__user=user.id):
+        if user.is_authenticated() and not user.is_staff:
             return StudentApplication.objects.filter(artist__user=user.id)
         else:
             return StudentApplication.objects.all()
