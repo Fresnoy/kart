@@ -7,6 +7,7 @@ from tastypie import fields
 from tastypie.resources import ModelResource
 from tastypie.resources import ALL, ALL_WITH_RELATIONS
 from tastypie.utils import trailing_slash
+from tastypie.authorization import DjangoAuthorization
 
 from people.api import ArtistResource
 from .models import Promotion, Student, StudentApplication
@@ -78,7 +79,9 @@ class StudentApplicationResource(ModelResource):
         queryset = StudentApplication.objects.all()
         resource_name = 'school/application'
         ordering = ['created_on']
+        # no authorization for Anonymous user
+        authorization = DjangoAuthorization()
 
     artist = fields.ForeignKey(ArtistResource, 'artist')
-    administrative_galleries = fields.ToManyField(GalleryResource, 'administrative_galleries', full=True)
-    artwork_galleries = fields.ToManyField(GalleryResource, 'artwork_galleries', full=True)
+    administrative_galleries = fields.ToManyField(GalleryResource, 'administrative_galleries', full=True, null=True)
+    artwork_galleries = fields.ToManyField(GalleryResource, 'artwork_galleries', full=True, null=True)
