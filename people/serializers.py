@@ -6,24 +6,6 @@ from django_countries.serializer_fields import CountryField
 from .models import Artist, Staff, Organization, FresnoyProfile
 
 
-class PrivateStringField(serializers.Field):
-
-    def to_representation(self, obj):
-        return obj
-
-    def get_attribute(self, instance):
-        if self.context['request'].user.is_authenticated():
-            return super(PrivateStringField, self).get_attribute(instance)
-        return None
-
-    def to_internal_value(self, data):
-        # for write functionality
-        # check if data is valid and if not raise ValidationError
-        if self.context['request'].user.is_authenticated():
-            return data
-        return ""
-
-
 class FresnoyProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = FresnoyProfile
@@ -55,10 +37,7 @@ class FresnoyProfileSerializer(serializers.ModelSerializer):
 
     id = serializers.ReadOnlyField()
     birthplace_country = CountryField(default="")
-    homeland_phone = PrivateStringField()
     homeland_country = CountryField(default="")
-    social_insurance_number = PrivateStringField()
-    residence_phone = PrivateStringField()
     residence_country = CountryField(default="")
 
 
@@ -75,7 +54,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'is_superuser', 'url', 'username', 'first_name', 'last_name', 'email', 'profile')
 
     profile = FresnoyProfileSerializer(required=False)
-    is_superuser = PrivateStringField()
 
     def create(self, validated_data):
         return validated_data
@@ -102,6 +80,12 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+class PublicUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'url', 'username', 'first_name', 'last_name')
 
 
 class ArtistSerializer(serializers.HyperlinkedModelSerializer):

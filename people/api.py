@@ -11,7 +11,6 @@ class UserResource(ModelResource):
         detail_uri_name = 'username'
         resource_name = 'people/user'
         fields = ['username', 'first_name', 'last_name', 'id']
-
         filtering = {
             'first_name': ALL,
             'last_name': ALL
