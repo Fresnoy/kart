@@ -2,6 +2,7 @@ import json
 # import time
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
+from rest_framework import status
 
 from django.test import TestCase
 from django.core.urlresolvers import reverse
@@ -30,9 +31,6 @@ class TestApplicationEndPoint(TestCase):
         self.artist = Artist(user=self.user, nickname="Andy Warhol")
         self.artist.save()
 
-        self.application = StudentApplication(artist=self.artist)
-        self.application.save()
-
     def tearDown(self):
         pass
 
@@ -48,23 +46,44 @@ class TestApplicationEndPoint(TestCase):
         """
         Test list of applications without authentification
         """
+        # set up a candidature
+        application = StudentApplication(artist=self.artist)
+        application.save()
+
         self.token = ""
         response = self._get_list()
         candidatures = json.loads(response.content)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(candidatures)
         self.assertEqual(len(candidatures), 1)
+        # info is NOT accessible when anonymous user
         self.assertRaises(KeyError, lambda: candidatures[0]['current_year_application_count'])
 
     def test_list_auth(self):
         """
         Test list of applications with authentification
         """
+        # set up a candidature
+        application = StudentApplication(artist=self.artist)
+        application.save()
+
         self.client_auth.force_authenticate(user=self.user)
         response = self._get_list_auth()
         candidature = json.loads(response.content)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # info is accessible when user is auth
         assert candidature[0]['current_year_application_count'] is not None
+
+    def test_create_student_application(self):
+        """
+        Test creating an studentapplication
+        """
+        self.client_auth.force_authenticate(user=self.user)
+        studentapplication_url = reverse('studentapplication-list')
+        response = self.client_auth.post(studentapplication_url)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(StudentApplication.objects.count(), 1)
+        self.assertEqual(StudentApplication.objects.last().artist.user.first_name, self.user.first_name)
 
     # def test_list_items_auth(self):
     #     """

@@ -240,9 +240,15 @@ class StudentApplication(models.Model):
             Application number algorithm = year + increment_num
         """
         year = date.today().year
-        count = StudentApplication.objects.filter(created_on__year=year).count()
+        carry_on = True
+        default_number = 103
+        inc = 0
+        while carry_on:
+            inc += 1
+            application_number = '{0}-{1:03d}'.format(year, default_number + inc)
+            carry_on = StudentApplication.objects.filter(current_year_application_count=application_number).exists()
 
-        return '{0}-{1:03d}'.format(year, count + 103)
+        return application_number
 
     def save(self, *args, **kwargs):
 
