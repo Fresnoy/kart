@@ -109,9 +109,12 @@ class StudentApplication(models.Model):
         help_text="ID / Number / ... "
     )
     # Master Degree
-    master_degree = models.NullBooleanField(
-        default=None,
-        help_text="Obtained a Master  Degree"
+    master_degree = models.CharField(
+        max_length=1,
+        choices=(('Y', 'Yes'),('N', 'No'),('P', 'Pending'),),
+        null=True,
+        blank=True,
+        help_text="Obtained a Master Degree"
     )
     experience_justification = models.FileField(
         upload_to=make_filepath,
@@ -151,6 +154,16 @@ class StudentApplication(models.Model):
         blank=True,
         help_text="Free document"
     )
+    # candidature duo
+    binomial_application = models.BooleanField(
+        default=False,
+        help_text="Candidature with another artist"
+    )
+    binomial_application_with_name = models.CharField(
+        blank=True,
+        max_length=50,
+        help_text="Name of the binominal artist's candidate with"
+    )
     # first and second year project
     considered_project_1 = models.FileField(
         upload_to=make_filepath,
@@ -176,6 +189,10 @@ class StudentApplication(models.Model):
         blank=True,
         help_text="Artistic references for second first year's project"
     )
+    doctorate_interest = models.BooleanField(
+        default=False,
+        help_text="Interest in the doctorate"
+    )
     # Video
     presentation_video = models.URLField(
         null=True,
@@ -187,19 +204,10 @@ class StudentApplication(models.Model):
         blank=True,
         help_text="Details for the video"
     )
-    # Physical content
-    physical_content = models.BooleanField(
-        default=False,
-        help_text="Element not sent by current form"
-    )
-    physical_content_description = models.TextField(
+    presentation_video_password = models.CharField(
         blank=True,
-        null=True,
-        help_text="What are these elements and how you send it"
-    )
-    physical_content_received = models.BooleanField(
-        default=False,
-        help_text="Administration - Element have been received"
+        max_length=50,
+        help_text=_("Password for the video")
     )
     remark = models.TextField(blank=True, null=True, help_text="Free expression'")
     application_completed = models.BooleanField(
@@ -212,6 +220,11 @@ class StudentApplication(models.Model):
     selected_for_interview = models.BooleanField(
         default=False,
         help_text="Administration - Is the candidat selected for the Interview"
+    )
+    date_for_interview = models.DateField(
+        null=True,
+        blank=True,
+        help_text="Administration - Date for interview"
     )
     wait_listed_for_interview = models.BooleanField(
         default=False,
@@ -229,11 +242,11 @@ class StudentApplication(models.Model):
         default=False,
         help_text="Administration - Is the candidat wait listed"
     )
-
     application_complete = models.BooleanField(
         default=False,
         help_text="Administration - Candidature is complete"
     )
+
 
     def _make_application_number(self):
         """
