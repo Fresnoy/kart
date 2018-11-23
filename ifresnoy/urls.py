@@ -22,7 +22,7 @@ from people.views import (
 )
 from school.views import (
     PromotionViewSet, StudentViewSet,
-    StudentAutocompleteSearchViewSet, StudentApplicationViewSet
+    StudentAutocompleteSearchViewSet, StudentApplicationViewSet, StudentApplicationSetupViewSet
 )
 from production.views import (
     FilmViewSet, InstallationViewSet,
@@ -65,6 +65,7 @@ v2_api.register(r'people/organization-staff', OrganizationTaskViewSet)
 v2_api.register(r'school/promotion', PromotionViewSet)
 v2_api.register(r'school/student', StudentViewSet)
 v2_api.register(r'school/student-application', StudentApplicationViewSet)
+v2_api.register(r'school/student-application-setup', StudentApplicationSetupViewSet)
 v2_api.register(r'school/student/search', StudentAutocompleteSearchViewSet, base_name="school-student-search")
 v2_api.register(r'production/film', FilmViewSet)
 v2_api.register(r'production/event', EventViewSet)

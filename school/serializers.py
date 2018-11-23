@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from drf_haystack.serializers import HaystackSerializer
 
-from .models import Promotion, Student, StudentApplication
+from .models import Promotion, Student, StudentApplication, StudentApplicationSetup
 from .search_indexes import StudentIndex
 
 
@@ -35,6 +35,7 @@ class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
         model = StudentApplication
         fields = ('id',
                   'url',
+                  'campain',
                   'artist',
                   'current_year_application_count',
                   'identity_card',
@@ -49,7 +50,7 @@ class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
                   'curriculum_vitae',
                   'justification_letter',
                   'binomial_application',
-                  'binomial_application_with_name',
+                  'binomial_application_with',
                   'considered_project_1',
                   'artistic_referencies_project_1',
                   'considered_project_2',
@@ -64,7 +65,7 @@ class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
                   'application_complete',
                   'wait_listed_for_interview',
                   'selected_for_interview',
-                  'date_for_interview',
+                  'interview_date',
                   'selected',
                   'unselected',
                   'wait_listed',
@@ -78,3 +79,25 @@ class PublicStudentApplicationSerializer(serializers.HyperlinkedModelSerializer)
         model = StudentApplication
         fields = ('id',
                   'url',)
+
+
+class StudentApplicationSetupSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = StudentApplicationSetup
+        fields = ('id',
+                  'url',
+                  'promotion',
+                  'candidature_date_start',
+                  'candidature_date_end',
+                  'interviews_publish_date',
+                  'selected_publish_date',
+                  'interviews_start_date',
+                  'interviews_end_date',
+                  'applications',)
+
+    # applications = StudentApplicationSerializer(source='student_application', many=True)
+    applications = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='studentapplication-detail'
+    )
