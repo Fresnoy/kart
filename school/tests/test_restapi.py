@@ -1,4 +1,5 @@
 import json
+import datetime
 # import time
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
@@ -9,7 +10,7 @@ from django.core.urlresolvers import reverse
 
 from people.models import Artist
 
-from school.models import StudentApplication
+from school.models import StudentApplication, StudentApplicationSetup, Promotion
 
 
 class TestApplicationEndPoint(TestCase):
@@ -85,55 +86,28 @@ class TestApplicationEndPoint(TestCase):
         self.assertEqual(StudentApplication.objects.count(), 1)
         self.assertEqual(StudentApplication.objects.last().artist.user.first_name, self.user.first_name)
 
-    # def test_list_items_auth(self):
-    #     """
-    #     Test numbers of applications with authentification
-    #     """
-    #     user = authenticate(username=self.user.username, password=self.user.password)
-    #     response = self._get_list()
-    #     data = json.loads(response.content)
-    #     self.assertEqual(len(data), 1)
-
-    # def test_json_response(self):
-    #     """
-    #     Test JSON response
-    #     """
-    #     response = self._get_list()
-    #     self.assertTrue(json.loads(response.content))
-    #
-    # def test_first_app_default_value(self):
-    #     """
-    #     Test default value
-    #     """
-    #     url = reverse('studentapplication-detail', kwargs={'pk': 1})
-    #     response = self.client.get(url)
-    #     self.assertEqual(response.data['first_time'], True)
-    #
-    # def test_list_contain_artist(self):
-    #     """
-    #     Informations tests
-    #     """
-    #     response = self._get_list()
-    #     urlartist = reverse('artist-detail', kwargs={'pk': 1})
-    #     self.assertContains(response, urlartist)
-    #
-    # def test_student_app_sorted_by_date(self):
-    #     """
-    #     Test app order
-    #     """
-    #     self.user = User()
-    #     self.user.first_name = "Chet"
-    #     self.user.last_name = "Backer"
-    #     self.user.username = "cbacker"
-    #     self.user.save()
-    #
-    #     self.artist = Artist(user=self.user, nickname="Chet Baker")
-    #     self.artist.save()
-    #
-    #     self.application = StudentApplication(artist=self.artist)
-    #     time.sleep(0.1)
-    #     self.application.save()
-    #
-    #     url = reverse('studentapplication-list')
-    #     response = self.client.get(url)
-    #     self.assertLess(response.data[0]["created_on"], response.data[1]["created_on"])
+    def test_update_student_application(self):
+        """
+        Test creating an studentapplication
+        """
+        # set up a campain
+        promotion = Promotion(starting_year=2000, ending_year=2001)
+        promotion.save()
+        campain = StudentApplicationSetup(candidature_date_start=datetime.date.today(),
+                                          candidature_date_end=datetime.date.today() + datetime.timedelta(days=1),
+                                          promotion=promotion,
+                                          is_current_setup=True,)
+        campain.save()
+        # add a candidature
+        application = StudentApplication(artist=self.artist, campain=campain)
+        application.save()
+        self.client_auth.force_authenticate(user=self.user)
+        studentapplication_url = reverse('studentapplication-detail', kwargs={'pk': application.pk})
+        # update an info
+        response = self.client_auth.patch(studentapplication_url,
+                                          data={'remote_interview': 'true'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # update more than one info
+        response = self.client_auth.patch(studentapplication_url,
+                                          data={'remote_interview': 'true', 'remote_interview_type': 'Skype'})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
