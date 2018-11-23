@@ -57,9 +57,9 @@ class Command(BaseCommand):
         list_delete = []
 
         print(u"Liste des informations qui vont être supprimées : ".encode('utf-8'))
-        print(u"/!\ Supression complète de {} profiles".format(sa_expired.count()))
-        print(u"/!\ Supression des informations de {} anciennes candidatures".format(sa_olds.count()))
-        print(u"/!\ Supression des informations critiques de {} candidatures".format(sa_all.count()))
+        print(u"/!\\ Supression complète de {} profiles".format(sa_expired.count()))
+        print(u"/!\\ Supression des informations de {} anciennes candidatures".format(sa_olds.count()))
+        print(u"/!\\ Supression des informations critiques de {} candidatures".format(sa_all.count()))
         # pause to read uplines
         raw_input('[Press any key to continue]')
         # ALL candidatures : delete critical infos
