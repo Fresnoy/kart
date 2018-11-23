@@ -12,6 +12,7 @@ from .models import Promotion, Student, StudentApplication, StudentApplicationSe
 from .serializers import (PromotionSerializer, StudentSerializer,
                           StudentAutocompleteSerializer,
                           PublicStudentApplicationSerializer, StudentApplicationSerializer,
+                          StudentApplicationSetupSerializer
                           )
 
 from .utils import (send_candidature_completed_email_to_user,
@@ -45,14 +46,22 @@ class StudentAutocompleteSearchViewSet(HaystackViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
+class StudentApplicationSetupViewSet(viewsets.ModelViewSet):
+    # queryset = StudentApplicationSetup.objects.filter(is_current_setup=True)
+    queryset = StudentApplicationSetup.objects.all()
+    serializer_class = StudentApplicationSetupSerializer
+    permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('is_current_setup',)
+
+
 class StudentApplicationViewSet(viewsets.ModelViewSet):
     queryset = StudentApplication.objects.all()
     # serializer_class = StudentApplicationSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    filter_backends = (filters.SearchFilter, filters.DjangoFilterBackend, filters.OrderingFilter,)
+    filter_backends = (filters.SearchFilter, filters.DjangoFilterBackend, filters.OrderingFilter)
     search_fields = ('=artist__user__username')
     filter_fields = ('application_completed',
-                     'created_on',
                      'application_complete',
                      'selected_for_interview', 'remote_interview', 'wait_listed_for_interview',
                      'selected', 'unselected',
@@ -63,7 +72,8 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self, *args, **kwargs):
         """
-        This
+        This switch serializers
+        From Staff (and StudentApplication owner) to private and Other to public
         """
         if (
             self.request.user.is_staff or
@@ -88,13 +98,17 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         This view create an application AND Artist for auth user
         """
         user = self.request.user
+        # first of all test current campain
+        if self.candidature_hasexpired() and not user.is_staff:
+            errors = {'candidature': 'expired'}
+            return Response(errors, status=status.HTTP_403_FORBIDDEN)
+        campain = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
+        # user muse be auth
         if user.is_authenticated():
-            # get or create an application
-            current_year = datetime.date.today().year
             # is an current inscription
             current_year_application = StudentApplication.objects.filter(
                 artist__user=user.id,
-                created_on__year=current_year
+                campain=campain
             )
             if not current_year_application:
                 # take the artist
@@ -107,7 +121,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                     # take the first one
                     user_artist = user_artist[0]
                 # create application
-                student_application = StudentApplication(artist=user_artist)
+                student_application = StudentApplication(artist=user_artist, campain=campain)
                 student_application.save()
                 return Response(status=status.HTTP_201_CREATED)
             else:
@@ -123,6 +137,10 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         This view update an application before expiration date - staff can pass through
         """
         user = self.request.user
+        # Must update one info at once
+        if len(request.data) > 1:
+            errors = {'Error': 'Must update one info at once'}
+            return Response(errors, status=status.HTTP_403_FORBIDDEN)
         # candidate can't update candidature when she's expired, admin can !
         if self.candidature_hasexpired() and not user.is_staff:
             errors = {'candidature': 'expired'}
@@ -135,7 +153,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                 request.data.get('selected') or
                 request.data.get('wait_listed') or
                 request.data.get('application_complete') or
-                request.data.get('physical_content_received'))
+                request.data.get('campain'))
         ):
             errors = {'Error': 'Field permission denied'}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
@@ -155,6 +173,10 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         return super(self.__class__, self).update(request, *args, **kwargs)
 
     def candidature_hasexpired(self):
+        # test is there is a campain
+        if not StudentApplicationSetup.objects.filter(is_current_setup=True).exists():
+            return False
+        # current campain is on dates
         candidature_expiration_date = datetime.datetime.combine(
             StudentApplicationSetup.objects.filter(is_current_setup=True).first().candidature_date_end,
             datetime.datetime.min.time()
