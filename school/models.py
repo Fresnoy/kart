@@ -48,11 +48,17 @@ class StudentApplicationSetup(models.Model):
     # date
     candidature_date_start = models.DateField(null=False, blank=False)
     candidature_date_end = models.DateField(null=False, blank=False)
+    # Publications's date
+    interviews_publish_date = models.DateField(null=True, blank=False, help_text="Interviews web publish")
+    selected_publish_date = models.DateField(null=True, blank=False, help_text="Final selection web publish")
     # front
     candidatures_url = models.URLField(null=False, blank=False, help_text="Front : Url list of candidatures")
     reset_password_url = models.URLField(null=False, blank=False, help_text="Front : Url reset password")
     recover_password_url = models.URLField(null=False, blank=False, help_text="Front : Url recover password")
     authentification_url = models.URLField(null=False, blank=False, help_text="Front : Url authentification")
+    # front text
+    interviews_start_date = models.DateField(null=True, blank=False, help_text="Front : interviews start date")
+    interviews_end_date = models.DateField(null=True, blank=False, help_text="Front : interviews end date")
     # vimeo
     video_service_name = models.CharField(max_length=25, null=True, blank=True, help_text="video service name")
     video_service_url = models.URLField(null=False, blank=False, help_text="service URL")
@@ -63,12 +69,16 @@ class StudentApplicationSetup(models.Model):
         help_text="This configuration is actived"
     )
 
+    def __unicode__(self):
+        return u'{0} ({1})'.format(self.name, self.promotion.name)
+
 
 class StudentApplication(models.Model):
     """
     Fresnoy's School application procedure
     """
     artist = models.ForeignKey(Artist, related_name='student_application')
+    campain = models.ForeignKey(StudentApplicationSetup, blank=True, null=True, related_name='applications')
 
     current_year_application_count = models.CharField(
         max_length=8,
@@ -111,7 +121,7 @@ class StudentApplication(models.Model):
     # Master Degree
     master_degree = models.CharField(
         max_length=1,
-        choices=(('Y', 'Yes'),('N', 'No'),('P', 'Pending'),),
+        choices=(('Y', 'Yes'), ('N', 'No'), ('P', 'Pending'),),
         null=True,
         blank=True,
         help_text="Obtained a Master Degree"
@@ -159,7 +169,7 @@ class StudentApplication(models.Model):
         default=False,
         help_text="Candidature with another artist"
     )
-    binomial_application_with_name = models.CharField(
+    binomial_application_with = models.CharField(
         blank=True,
         max_length=50,
         help_text="Name of the binominal artist's candidate with"
@@ -221,7 +231,7 @@ class StudentApplication(models.Model):
         default=False,
         help_text="Administration - Is the candidat selected for the Interview"
     )
-    date_for_interview = models.DateField(
+    interview_date = models.DateField(
         null=True,
         blank=True,
         help_text="Administration - Date for interview"
@@ -246,7 +256,6 @@ class StudentApplication(models.Model):
         default=False,
         help_text="Administration - Candidature is complete"
     )
-
 
     def _make_application_number(self):
         """
