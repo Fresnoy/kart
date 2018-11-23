@@ -23,7 +23,8 @@ class Command(BaseCommand):
         # keep user's selected infos (when user postulate more than one time)
         sa_keep_user = StudentApplication.objects.filter(
                         Q(selected=True) |
-                        Q(wait_listed=True)
+                        Q(wait_listed=True) |
+                        Q(artist__user__is_staff=True)
                        ).values_list("artist__user")
         # take olds application : last year exclude selected
         sa_olds = StudentApplication.objects.filter(
@@ -55,10 +56,10 @@ class Command(BaseCommand):
         # set list of delete info
         list_delete = []
 
-        print(u"Liste des informations qui vont être supprimées : ")
+        print(u"Liste des informations qui vont être supprimées : ".encode('utf-8'))
         print(u"/!\ Supression complète de {} profiles".format(sa_expired.count()))
         print(u"/!\ Supression des informations de {} anciennes candidatures".format(sa_olds.count()))
-        print(u"/!\ Supression des informations critiques de  {} candidatures".format(sa_all.count()))
+        print(u"/!\ Supression des informations critiques de {} candidatures".format(sa_all.count()))
         # pause to read uplines
         raw_input('[Press any key to continue]')
         # ALL candidatures : delete critical infos
