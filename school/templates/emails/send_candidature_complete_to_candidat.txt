@@ -5,8 +5,8 @@ Fresnoy - Studio national des arts contemporains et vous en remercions.
 
 Votre dossier a été vérifié par le département pédagogique qui le déclare complet.
 
-Si vous êtes présélectionné(e), vous recevrez un email de convocation à l’oral qui se déroulera entre
-le lundi 25 et le vendredi 29 juin 2018 à Tourcoing
+Si vous êtes présélectionné(e), vous recevrez un email de convocation à l’oral qui se déroulera
+{{interviews_dates.fr}} à Tourcoing
 (ou une convocation pour un entretien par Skype si vous habitez hors du continent européen
 et si vous en avez fait la demande lors de votre inscription).
 
@@ -22,8 +22,8 @@ We have received your application for the Le Fresnoy – Studio national des art
 
 Your application has been checked and found complete by the teaching department.
 
-If you are shortlisted, you will receive an email asking you to attend the interviews held
-from Monday 25 to Friday 29 June 2018 in Tourcoing
+If you are shortlisted, you will receive an email asking you to attend the interviews
+{{interviews_dates.en}} in Tourcoing
 (or for a Skype interview if you live outside Europe and requested this method in your application).
 
 Kind regards,

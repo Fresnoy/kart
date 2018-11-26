@@ -1,3 +1,4 @@
+import locale
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
@@ -59,10 +60,26 @@ def send_candidature_completed_email_to_admin(request, user, application):
     return mail_sent
 
 
+def setLocale(str):
+    # windows translation
+    dict = {'fr_FR.utf8': 'french', 'en_US.utf8': 'english'}
+    try:
+        locale.setlocale(locale.LC_ALL, str)
+    except Exception:
+        locale.setlocale(locale.LC_ALL, dict[str])
+
+
 def send_candidature_complete_email_to_candidat(request, candidat, application):
-
     setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
-
+    # set locale interviews date
+    interviews_dates = {'fr': '', "en": ''}
+    setLocale('fr_FR.utf8')
+    interviews_dates['fr'] = u"du {0} au {1}".format(setup.interviews_start_date.strftime("%A %d %B"),
+                                                     setup.interviews_end_date.strftime("%A %d %B %Y"))
+    setLocale('en_US.utf8')
+    interviews_dates['en'] = u"from {0} to {1}".format(setup.interviews_start_date.strftime("%A %d %B"),
+                                                       setup.interviews_end_date.strftime("%A %d %B %Y"))
+    setLocale('fr_FR.utf8')
     url = u'{0}{1}'.format(setup.candidatures_url, application.id)
     # Send email
     msg_plain = render_to_string(
@@ -70,7 +87,8 @@ def send_candidature_complete_email_to_candidat(request, candidat, application):
         {
             'user': candidat,
             'url': url,
-            'application': application
+            'application': application,
+            'interviews_dates': interviews_dates,
         }
     )
     msg_html = render_to_string(
@@ -78,7 +96,8 @@ def send_candidature_complete_email_to_candidat(request, candidat, application):
         {
             'user': candidat,
             'url': url,
-            'application': application
+            'application': application,
+            'interviews_dates': interviews_dates,
         }
     )
     mail_sent = send_mail('Le Fresnoy - Candidature complete',

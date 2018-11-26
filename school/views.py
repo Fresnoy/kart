@@ -138,7 +138,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         """
         user = self.request.user
         # Must update one info at once
-        if len(request.data) > 1:
+        if len(request.data) > 1 and not user.is_staff:
             errors = {'Error': 'Must update one info at once'}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
         # candidate can't update candidature when she's expired, admin can !
