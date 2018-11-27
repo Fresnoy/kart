@@ -87,6 +87,7 @@ class StudentApplicationSetupSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id',
                   'url',
                   'promotion',
+                  'birthdate_max',
                   'candidature_date_start',
                   'candidature_date_end',
                   'interviews_publish_date',

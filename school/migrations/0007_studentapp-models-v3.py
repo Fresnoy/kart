@@ -55,6 +55,11 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='studentapplicationsetup',
+            name='birthdate_max',
+            field=models.DateField(help_text=b'Maximum date of birth to apply', null=True, blank=True),
+        ),
+        migrations.AddField(
+            model_name='studentapplicationsetup',
             name='interviews_end_date',
             field=models.DateField(help_text=b'Front : interviews end date', null=True),
         ),

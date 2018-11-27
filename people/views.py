@@ -147,6 +147,10 @@ def verif_user_by_property(array, property):
 @api_view(['GET', 'POST', ])
 @permission_classes((permissions.IsAuthenticated,))
 def send_custom_emails(request, format=None):
+    """
+        Send emails with custom params :
+            from, to, bcc, subject, message
+    """
     user = request.user
     if(user.is_staff):
         items_need_list = ('from', 'to', 'bcc', 'subject', 'message',)

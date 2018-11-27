@@ -40,7 +40,7 @@ class Student(models.Model):
 
 class StudentApplicationSetup(models.Model):
     """
-    Setup Student Apllication
+    Setup Student Application
     """
     name = models.CharField(max_length=25, null=True, blank=True)
     # Promo
@@ -59,6 +59,7 @@ class StudentApplicationSetup(models.Model):
     # front text
     interviews_start_date = models.DateField(null=True, blank=False, help_text="Front : interviews start date")
     interviews_end_date = models.DateField(null=True, blank=False, help_text="Front : interviews end date")
+    birthdate_max = models.DateField(null=True, blank=True, help_text="Maximum date of birth to apply")
     # vimeo
     video_service_name = models.CharField(max_length=25, null=True, blank=True, help_text="video service name")
     video_service_url = models.URLField(null=False, blank=False, help_text="service URL")
@@ -68,6 +69,21 @@ class StudentApplicationSetup(models.Model):
         default=True,
         help_text="This configuration is actived"
     )
+
+    def _make_default_birthdate_max(self):
+        """
+            31 december currentyear - 36
+        """
+        max_age = 36
+        current_year = date.today().year
+        return date(current_year-max_age, 12, 31)
+
+    def save(self, *args, **kwargs):
+
+        if not self.birthdate_max:
+            self.birthdate_max = self._make_default_birthdate_max()
+
+        super(StudentApplicationSetup, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return u'{0} ({1})'.format(self.name, self.promotion.name)
