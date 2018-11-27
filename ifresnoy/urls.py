@@ -94,6 +94,9 @@ urlpatterns = patterns('',
                        # vimeo
                        url(r'^v2/assets/vimeo/upload/token',
                            'assets.views.vimeo_get_upload_token', name='vimeo-upload-token'),
+                       # send emails
+                       url(r'^v2/people/send-emails',
+                           'people.views.send_custom_emails', name='send-emails'),
 
                        # api v1
                        (r'^', include(v1_api.urls)),
