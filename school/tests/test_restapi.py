@@ -111,3 +111,54 @@ class TestApplicationEndPoint(TestCase):
         response = self.client_auth.patch(studentapplication_url,
                                           data={'remote_interview': 'true', 'remote_interview_type': 'Skype'})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class TestApplicationSetupEndPoint(TestCase):
+    """
+    Tests concernants le endpoint des Student Application Setups
+    """
+    def setUp(self):
+        promotion = Promotion(starting_year=2000, ending_year=2001)
+        promotion.save()
+        campain = StudentApplicationSetup(candidature_date_start=datetime.date.today() - datetime.timedelta(days=1),
+                                          candidature_date_end=datetime.date.today() + datetime.timedelta(days=1),
+                                          promotion=promotion,
+                                          is_current_setup=True,)
+        campain.save()
+
+        campain = StudentApplicationSetup(candidature_date_start=datetime.date.today() - datetime.timedelta(days=2),
+                                          candidature_date_end=datetime.date.today() - datetime.timedelta(days=1),
+                                          promotion=promotion,
+                                          is_current_setup=False,)
+        campain.save()
+
+    def tearDown(self):
+        pass
+
+    def _get_list(self):
+        url = reverse('studentapplicationsetup-list')
+        return self.client.get(url)
+
+    def _get_current_campain(self):
+        url = reverse('studentapplicationsetup-list')
+        return self.client.get("{}?is_current_setup=2".format(url))
+
+    def test_list(self):
+        """
+        Test list of applications without authentification
+        """
+        response = self._get_list()
+        campain = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(campain), 2)
+
+    def test_campain_open(self):
+        """
+        Test list of applications without authentification
+        """
+        response = self._get_current_campain()
+        campain = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(campain), 1)
+        # info is True
+        self.assertTrue(campain[0]['candidature_open'])

@@ -3,6 +3,7 @@ from drf_haystack.serializers import HaystackSerializer
 
 from .models import Promotion, Student, StudentApplication, StudentApplicationSetup
 from .search_indexes import StudentIndex
+from .utils import candidature_close
 
 
 class StudentSerializer(serializers.HyperlinkedModelSerializer):
@@ -90,10 +91,12 @@ class StudentApplicationSetupSerializer(serializers.HyperlinkedModelSerializer):
                   'birthdate_max',
                   'candidature_date_start',
                   'candidature_date_end',
+                  'candidature_open',
                   'interviews_publish_date',
                   'selected_publish_date',
                   'interviews_start_date',
                   'interviews_end_date',
+                  'is_current_setup',
                   'applications',)
 
     # applications = StudentApplicationSerializer(source='student_application', many=True)
@@ -102,3 +105,7 @@ class StudentApplicationSetupSerializer(serializers.HyperlinkedModelSerializer):
         read_only=True,
         view_name='studentapplication-detail'
     )
+    candidature_open = serializers.SerializerMethodField()
+
+    def get_candidature_open(self, obj):
+        return not candidature_close(obj)

@@ -1,5 +1,3 @@
-import datetime
-
 from rest_framework import viewsets, permissions, filters, status
 from rest_framework.response import Response
 
@@ -17,7 +15,8 @@ from .serializers import (PromotionSerializer, StudentSerializer,
 
 from .utils import (send_candidature_completed_email_to_user,
                     send_candidature_completed_email_to_admin,
-                    send_candidature_complete_email_to_candidat
+                    send_candidature_complete_email_to_candidat,
+                    candidature_close,
                     )
 
 
@@ -99,7 +98,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         """
         user = self.request.user
         # first of all test current campain
-        if self.candidature_hasexpired() and not user.is_staff:
+        if candidature_close() and not user.is_staff:
             errors = {'candidature': 'expired'}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
         campain = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
@@ -142,7 +141,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
             errors = {'Error': 'Must update one info at once'}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
         # candidate can't update candidature when she's expired, admin can !
-        if self.candidature_hasexpired() and not user.is_staff:
+        if candidature_close() and not user.is_staff:
             errors = {'candidature': 'expired'}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
         # Only admin user can update selection's fields
@@ -171,14 +170,3 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
             send_candidature_complete_email_to_candidat(request, candidat, application)
         # basic update
         return super(self.__class__, self).update(request, *args, **kwargs)
-
-    def candidature_hasexpired(self):
-        # test is there is a campain
-        if not StudentApplicationSetup.objects.filter(is_current_setup=True).exists():
-            return False
-        # current campain is on dates
-        candidature_expiration_date = datetime.datetime.combine(
-            StudentApplicationSetup.objects.filter(is_current_setup=True).first().candidature_date_end,
-            datetime.datetime.min.time()
-        )
-        return candidature_expiration_date < datetime.datetime.now()

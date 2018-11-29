@@ -1,4 +1,5 @@
 import locale
+import datetime
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
@@ -108,3 +109,28 @@ def send_candidature_complete_email_to_candidat(request, candidat, application):
                           )
 
     return mail_sent
+
+
+def candidature_close(campain=None):
+    """
+    Test if a candidature is closed
+    """
+    # Try to get current campain
+    if not campain:
+        campain = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
+    if not campain:
+        return False
+    # current campain is on dates
+    candidature_expiration_date = datetime.datetime.combine(
+        campain.candidature_date_end,
+        datetime.datetime.min.time()
+    )
+    candidature_start_date = datetime.datetime.combine(
+        campain.candidature_date_start,
+        datetime.datetime.min.time()
+    )
+    if (datetime.datetime.now() < candidature_start_date or
+            datetime.datetime.now() > candidature_expiration_date):
+        return True
+
+    return False
