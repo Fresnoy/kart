@@ -46,8 +46,8 @@ class StudentApplicationSetup(models.Model):
     # Promo
     promotion = models.ForeignKey(Promotion, null=False, blank=False)
     # date
-    candidature_date_start = models.DateField(null=False, blank=False)
-    candidature_date_end = models.DateField(null=False, blank=False)
+    candidature_date_start = models.DateTimeField(null=False, blank=False)
+    candidature_date_end = models.DateTimeField(null=False, blank=False)
     # Publications's date
     interviews_publish_date = models.DateField(null=True, blank=False, help_text="Interviews web publish")
     selected_publish_date = models.DateField(null=True, blank=False, help_text="Final selection web publish")

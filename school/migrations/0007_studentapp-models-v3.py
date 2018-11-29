@@ -83,4 +83,14 @@ class Migration(migrations.Migration):
             name='master_degree',
             field=models.CharField(blank=True, max_length=1, null=True, help_text=b'Obtained a Master Degree', choices=[(b'Y', b'Yes'), (b'N', b'No'), (b'P', b'Pending')]),
         ),
+        migrations.AlterField(
+            model_name='studentapplicationsetup',
+            name='candidature_date_end',
+            field=models.DateTimeField(),
+        ),
+        migrations.AlterField(
+            model_name='studentapplicationsetup',
+            name='candidature_date_start',
+            field=models.DateTimeField(),
+        ),
     ]

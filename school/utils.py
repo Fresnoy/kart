@@ -1,5 +1,6 @@
 import locale
 import datetime
+from django.utils import timezone
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
@@ -120,17 +121,10 @@ def candidature_close(campain=None):
         campain = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
     if not campain:
         return False
-    # current campain is on dates
-    candidature_expiration_date = datetime.datetime.combine(
-        campain.candidature_date_end,
-        datetime.datetime.min.time()
-    )
-    candidature_start_date = datetime.datetime.combine(
-        campain.candidature_date_start,
-        datetime.datetime.min.time()
-    )
-    if (datetime.datetime.now() < candidature_start_date or
-            datetime.datetime.now() > candidature_expiration_date):
+
+    now = timezone.localtime(timezone.now())
+    if (now < campain.candidature_date_start or
+            now > campain.candidature_date_end):
         return True
 
     return False

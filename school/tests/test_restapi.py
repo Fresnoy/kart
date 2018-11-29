@@ -93,8 +93,8 @@ class TestApplicationEndPoint(TestCase):
         # set up a campain
         promotion = Promotion(starting_year=2000, ending_year=2001)
         promotion.save()
-        campain = StudentApplicationSetup(candidature_date_start=datetime.date.today(),
-                                          candidature_date_end=datetime.date.today() + datetime.timedelta(days=1),
+        campain = StudentApplicationSetup(candidature_date_start=datetime.datetime.now(),
+                                          candidature_date_end=datetime.datetime.now() + datetime.timedelta(days=1),
                                           promotion=promotion,
                                           is_current_setup=True,)
         campain.save()
@@ -120,14 +120,14 @@ class TestApplicationSetupEndPoint(TestCase):
     def setUp(self):
         promotion = Promotion(starting_year=2000, ending_year=2001)
         promotion.save()
-        campain = StudentApplicationSetup(candidature_date_start=datetime.date.today() - datetime.timedelta(days=1),
-                                          candidature_date_end=datetime.date.today() + datetime.timedelta(days=1),
+        campain = StudentApplicationSetup(candidature_date_start=datetime.datetime.now() - datetime.timedelta(days=1),
+                                          candidature_date_end=datetime.datetime.now() + datetime.timedelta(days=1),
                                           promotion=promotion,
                                           is_current_setup=True,)
         campain.save()
 
-        campain = StudentApplicationSetup(candidature_date_start=datetime.date.today() - datetime.timedelta(days=2),
-                                          candidature_date_end=datetime.date.today() - datetime.timedelta(days=1),
+        campain = StudentApplicationSetup(candidature_date_start=datetime.datetime.now() - datetime.timedelta(days=2),
+                                          candidature_date_end=datetime.datetime.now() - datetime.timedelta(days=1),
                                           promotion=promotion,
                                           is_current_setup=False,)
         campain.save()
