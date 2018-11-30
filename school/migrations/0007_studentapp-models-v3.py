@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='studentapplicationsetup',
-            name='birthdate_max',
+            name='date_of_birth_max',
             field=models.DateField(help_text=b'Maximum date of birth to apply', null=True, blank=True),
         ),
         migrations.AddField(
@@ -66,7 +66,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='studentapplicationsetup',
             name='interviews_publish_date',
-            field=models.DateField(help_text=b'Interviews web publish', null=True),
+            field=models.DateTimeField(help_text=b'Interviews web publish', null=True),
         ),
         migrations.AddField(
             model_name='studentapplicationsetup',
@@ -76,7 +76,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='studentapplicationsetup',
             name='selected_publish_date',
-            field=models.DateField(help_text=b'Final selection web publish', null=True),
+            field=models.DateTimeField(help_text=b'Final selection web publish', null=True),
         ),
         migrations.AlterField(
             model_name='studentapplication',

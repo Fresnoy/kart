@@ -48,18 +48,18 @@ class StudentApplicationSetup(models.Model):
     # date
     candidature_date_start = models.DateTimeField(null=False, blank=False)
     candidature_date_end = models.DateTimeField(null=False, blank=False)
+    # front text
+    interviews_start_date = models.DateField(null=True, blank=False, help_text="Front : interviews start date")
+    interviews_end_date = models.DateField(null=True, blank=False, help_text="Front : interviews end date")
+    date_of_birth_max = models.DateField(null=True, blank=True, help_text="Maximum date of birth to apply")
     # Publications's date
-    interviews_publish_date = models.DateField(null=True, blank=False, help_text="Interviews web publish")
-    selected_publish_date = models.DateField(null=True, blank=False, help_text="Final selection web publish")
-    # front
+    interviews_publish_date = models.DateTimeField(null=True, blank=False, help_text="Interviews web publish")
+    selected_publish_date = models.DateTimeField(null=True, blank=False, help_text="Final selection web publish")
+    # front auth
     candidatures_url = models.URLField(null=False, blank=False, help_text="Front : Url list of candidatures")
     reset_password_url = models.URLField(null=False, blank=False, help_text="Front : Url reset password")
     recover_password_url = models.URLField(null=False, blank=False, help_text="Front : Url recover password")
     authentification_url = models.URLField(null=False, blank=False, help_text="Front : Url authentification")
-    # front text
-    interviews_start_date = models.DateField(null=True, blank=False, help_text="Front : interviews start date")
-    interviews_end_date = models.DateField(null=True, blank=False, help_text="Front : interviews end date")
-    birthdate_max = models.DateField(null=True, blank=True, help_text="Maximum date of birth to apply")
     # vimeo
     video_service_name = models.CharField(max_length=25, null=True, blank=True, help_text="video service name")
     video_service_url = models.URLField(null=False, blank=False, help_text="service URL")
@@ -80,8 +80,8 @@ class StudentApplicationSetup(models.Model):
 
     def save(self, *args, **kwargs):
 
-        if not self.birthdate_max:
-            self.birthdate_max = self._make_default_birthdate_max()
+        if not self.date_of_birth_max:
+            self.date_of_birth_max = self._make_default_birthdate_max()
 
         super(StudentApplicationSetup, self).save(*args, **kwargs)
 
