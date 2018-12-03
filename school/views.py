@@ -59,11 +59,12 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
     # serializer_class = StudentApplicationSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = (filters.SearchFilter, filters.DjangoFilterBackend, filters.OrderingFilter)
-    search_fields = ('=artist__user__username')
+    search_fields = ('=artist__user__username',)
     filter_fields = ('application_completed',
                      'application_complete',
                      'selected_for_interview', 'remote_interview', 'wait_listed_for_interview',
                      'selected', 'unselected',
+                     'campain__is_current_setup',
                      'wait_listed',)
     ordering_fields = ('id',
                        'artist__user__last_name',
