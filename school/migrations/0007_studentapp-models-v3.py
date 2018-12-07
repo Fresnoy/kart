@@ -4,6 +4,25 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 
 
+def forwards_func(apps, schema_editor):
+    StudentApplication = apps.get_model('school', 'StudentApplication')
+    for sa in StudentApplication.objects.all():
+        if sa.master_degree is True:
+            sa.master_degree="Y"
+        else:
+            sa.master_degree="N"
+        sa.save()
+
+def backwards_func(apps, schema_editor):
+    StudentApplication = apps.get_model('school', 'StudentApplication')
+    for sa in StudentApplication.objects.all():
+        if (sa.master_degree == "Y" or sa.master_degree == "P"):
+            sa.master_degree=True
+        else:
+            sa.master_degree=False
+        sa.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -93,4 +112,6 @@ class Migration(migrations.Migration):
             name='candidature_date_start',
             field=models.DateTimeField(),
         ),
+        migrations.RunPython(forwards_func, backwards_func),
+
     ]
