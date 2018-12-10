@@ -103,4 +103,8 @@ class Migration(migrations.Migration):
             name='candidature_date_start',
             field=models.DateTimeField(),
         ),
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2293976a0b8e910b9db75c463c71f4edc55c1aa0
     ]
