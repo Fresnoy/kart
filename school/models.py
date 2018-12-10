@@ -136,7 +136,7 @@ class StudentApplication(models.Model):
     )
     # Master Degree
     master_degree = models.CharField(
-        max_length=1,
+        max_length=10,
         choices=(('Y', 'Yes'), ('N', 'No'), ('P', 'Pending'),),
         null=True,
         blank=True,

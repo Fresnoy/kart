@@ -4,6 +4,15 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 
 
+def forwards_func(apps, schema_editor):
+    # don't know how to do to keep infos
+    pass
+
+def backwards_func(apps, schema_editor):
+    # don't know how to do to keep infos
+    pass
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -81,8 +90,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='studentapplication',
             name='master_degree',
-            field=models.CharField(blank=True, max_length=1, null=True, help_text=b'Obtained a Master Degree', choices=[(b'Y', b'Yes'), (b'N', b'No'), (b'P', b'Pending')]),
+            field=models.CharField(blank=True, max_length=10, null=True, help_text=b'Obtained a Master Degree', choices=[(b'Y', b'Yes'), (b'N', b'No'), (b'P', b'Pending')]),
         ),
+        migrations.RunPython(forwards_func, backwards_func),
         migrations.AlterField(
             model_name='studentapplicationsetup',
             name='candidature_date_end',
@@ -93,5 +103,4 @@ class Migration(migrations.Migration):
             name='candidature_date_start',
             field=models.DateTimeField(),
         ),
-
     ]
