@@ -3,7 +3,7 @@
 db.sqlite3
 *#
 media/
-ifresnoy/site_settings.py
+kart/site_settings.py
 .cache/
 .coverage
 .tox

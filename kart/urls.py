@@ -103,9 +103,9 @@ urlpatterns = patterns('',
                        (r'^grappelli/', include('grappelli.urls')),
                        url('^markdown/', include('django_markdown.urls')),
                        url(r'v1/doc/',
-                           include('tastypie_swagger.urls', namespace='ifresnoy_tastypie_swagger'),
-                           kwargs={"tastypie_api_module": "ifresnoy.urls.v1_api",
-                                   "namespace": "ifresnoy_tastypie_swagger"}),
+                           include('tastypie_swagger.urls', namespace='kart_tastypie_swagger'),
+                           kwargs={"tastypie_api_module": "kart.urls.v1_api",
+                                   "namespace": "kart_tastypie_swagger"}),
                        url(r'^admin/', include(admin.site.urls)) \
                        ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
