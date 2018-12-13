@@ -7,3 +7,4 @@ kart/settings.py
 .cache/
 .coverage
 .tox
+littlechick_db
