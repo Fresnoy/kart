@@ -51,7 +51,7 @@ def send_account_information_email(user):
                                 'recover_password_url': recover_password_url,
                                 'authentification_url': authentification_url
                                 })
-    mail_sent = send_mail('Résume de vos informations d\'idendification',
+    mail_sent = send_mail('Résumé de votre compte / Account information',
                           msg_plain,
                           'selection@lefresnoy.net',
                           [user.email],
