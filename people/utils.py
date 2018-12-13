@@ -23,7 +23,7 @@ def send_activation_email(request, user):
     msg_plain = render_to_string('emails/send_activation_link.txt', {'url': absolute_url})
     msg_html = render_to_string('emails/send_activation_link.html', {'url': absolute_url})
 
-    mail_sent = send_mail('Le Fresnoy - Activation du compte',
+    mail_sent = send_mail('Confirmation votre inscription',
                           msg_plain,
                           'selection@lefresnoy.net',
                           [user.email],
@@ -50,7 +50,7 @@ def send_account_information_email(user):
                                 'recover_password_url': recover_password_url,
                                 'authentification_url': authentification_url
                                 })
-    mail_sent = send_mail('Le Fresnoy - Activation du compte',
+    mail_sent = send_mail('Résumé de vos informations d\'idendification',
                           msg_plain,
                           'selection@lefresnoy.net',
                           [user.email],

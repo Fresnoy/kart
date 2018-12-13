@@ -20,7 +20,7 @@ def send_candidature_completed_email_to_user(request, user, application):
             'application': application
         }
     )
-    mail_sent = send_mail('Le Fresnoy - Confirmation d\'inscription / Application confirmed',
+    mail_sent = send_mail('Réception de votre candidature / Application Received',
                           msg_plain,
                           'selection@lefresnoy.net',
                           [user.email],
@@ -51,7 +51,7 @@ def send_candidature_completed_email_to_admin(request, user, application):
             'application': application
         }
     )
-    mail_sent = send_mail('Le Fresnoy - Candidature completed',
+    mail_sent = send_mail('Envoie d\'une candidature',
                           msg_plain,
                           user.email,
                           ['selection@lefresnoy.net'],
@@ -101,7 +101,7 @@ def send_candidature_complete_email_to_candidat(request, candidat, application):
             'interviews_dates': interviews_dates,
         }
     )
-    mail_sent = send_mail('Le Fresnoy - Candidature complete',
+    mail_sent = send_mail('Votre candidature est complète / Candidature is complete',
                           msg_plain,
                           'selection@lefresnoy.net',
                           [candidat.email],
