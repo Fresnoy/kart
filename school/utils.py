@@ -36,7 +36,6 @@ def send_candidature_completed_email_to_admin(request, user, application):
 
     url = u'{0}{1}'.format(setup.candidatures_url, application.id)
     # Send email
-    print(url)
     msg_plain = render_to_string(
         'emails/send_candidature_completed_to_admin.txt',
         {
@@ -45,8 +44,6 @@ def send_candidature_completed_email_to_admin(request, user, application):
             'application': application
         }
     )
-    print("msg_plain")
-    print(msg_plain)
     msg_html = render_to_string(
         'emails/send_candidature_completed_to_admin.html',
         {
@@ -57,7 +54,7 @@ def send_candidature_completed_email_to_admin(request, user, application):
     )
     mail_sent = send_mail('Envoie d\'une candidature',
                           msg_plain,
-                         'selection@lefresnoy.net',
+                          'selection@lefresnoy.net',
                           ['selection@lefresnoy.net'],
                           html_message=msg_html,
                           )
