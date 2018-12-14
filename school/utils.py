@@ -54,7 +54,7 @@ def send_candidature_completed_email_to_admin(request, user, application):
     )
     mail_sent = send_mail('Envoie d\'une candidature',
                           msg_plain,
-                          user.email,
+                         'selection@lefresnoy.net',
                           ['selection@lefresnoy.net'],
                           html_message=msg_html,
                           )
