@@ -23,14 +23,12 @@ class StudentApplicationAdmin(admin.ModelAdmin):
 
     _get_name.short_description = "Nom"
     list_display = (
-        'current_year_application_count',
+        'campain',
         '_get_name',
-        'application_completed',
-        'application_complete',
+        'current_year_application_count',
         'selected_for_interview',
-        'physical_content',
+        'selected',
         'remark',
-        'created_on',
     )
 
 

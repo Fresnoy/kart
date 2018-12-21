@@ -1,7 +1,7 @@
 import os
 import datetime
 from django.contrib.auth.models import User
-from ifresnoy import settings
+from kart import settings
 
 
 def make_filepath(instance, filename, prefix_folder=None):
