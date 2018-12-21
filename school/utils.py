@@ -77,10 +77,12 @@ def send_candidature_complete_email_to_candidat(request, candidat, application):
     interviews_dates = {'fr': '', "en": ''}
     setLocale('fr_FR.utf8')
     interviews_dates['fr'] = "du {0} au {1}".format(setup.interviews_start_date.strftime("%A %d %B"),
-                                                     setup.interviews_end_date.strftime("%A %d %B %Y"))
+                                                    setup.interviews_end_date.strftime("%A %d %B %Y")
+                                                    )
     setLocale('en_US.utf8')
     interviews_dates['en'] = "from {0} to {1}".format(setup.interviews_start_date.strftime("%A %d %B"),
-                                                       setup.interviews_end_date.strftime("%A %d %B %Y"))
+                                                      setup.interviews_end_date.strftime("%A %d %B %Y")
+                                                      )
     setLocale('fr_FR.utf8')
     url = u'{0}{1}'.format(setup.candidatures_url, application.id)
     # Send email
