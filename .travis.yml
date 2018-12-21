@@ -5,5 +5,5 @@ install:
   - pip install tox==2.4.1
   - pip install tox-travis==0.6
 script:
-  - cp ifresnoy/site_settings.py.dev ifresnoy/site_settings.py
+  - cp kart/site_settings.py.dev kart/site_settings.py
   - tox

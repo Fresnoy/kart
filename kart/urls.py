@@ -22,7 +22,7 @@ from people.views import (
 )
 from school.views import (
     PromotionViewSet, StudentViewSet,
-    StudentAutocompleteSearchViewSet, StudentApplicationViewSet
+    StudentAutocompleteSearchViewSet, StudentApplicationViewSet, StudentApplicationSetupViewSet
 )
 from production.views import (
     FilmViewSet, InstallationViewSet,
@@ -65,6 +65,7 @@ v2_api.register(r'people/organization-staff', OrganizationTaskViewSet)
 v2_api.register(r'school/promotion', PromotionViewSet)
 v2_api.register(r'school/student', StudentViewSet)
 v2_api.register(r'school/student-application', StudentApplicationViewSet)
+v2_api.register(r'school/student-application-setup', StudentApplicationSetupViewSet)
 v2_api.register(r'school/student/search', StudentAutocompleteSearchViewSet, base_name="school-student-search")
 v2_api.register(r'production/film', FilmViewSet)
 v2_api.register(r'production/event', EventViewSet)
@@ -93,15 +94,18 @@ urlpatterns = patterns('',
                        # vimeo
                        url(r'^v2/assets/vimeo/upload/token',
                            'assets.views.vimeo_get_upload_token', name='vimeo-upload-token'),
+                       # send emails
+                       url(r'^v2/people/send-emails',
+                           'people.views.send_custom_emails', name='send-emails'),
 
                        # api v1
                        (r'^', include(v1_api.urls)),
                        (r'^grappelli/', include('grappelli.urls')),
                        url('^markdown/', include('django_markdown.urls')),
                        url(r'v1/doc/',
-                           include('tastypie_swagger.urls', namespace='ifresnoy_tastypie_swagger'),
-                           kwargs={"tastypie_api_module": "ifresnoy.urls.v1_api",
-                                   "namespace": "ifresnoy_tastypie_swagger"}),
+                           include('tastypie_swagger.urls', namespace='kart_tastypie_swagger'),
+                           kwargs={"tastypie_api_module": "kart.urls.v1_api",
+                                   "namespace": "kart_tastypie_swagger"}),
                        url(r'^admin/', include(admin.site.urls)) \
                        ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

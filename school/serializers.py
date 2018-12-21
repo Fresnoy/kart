@@ -1,8 +1,9 @@
 from rest_framework import serializers
 from drf_haystack.serializers import HaystackSerializer
 
-from .models import Promotion, Student, StudentApplication
+from .models import Promotion, Student, StudentApplication, StudentApplicationSetup
 from .search_indexes import StudentIndex
+from .utils import candidature_close
 
 
 class StudentSerializer(serializers.HyperlinkedModelSerializer):
@@ -35,6 +36,7 @@ class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
         model = StudentApplication
         fields = ('id',
                   'url',
+                  'campain',
                   'artist',
                   'current_year_application_count',
                   'identity_card',
@@ -48,21 +50,23 @@ class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
                   'cursus_justifications',
                   'curriculum_vitae',
                   'justification_letter',
+                  'binomial_application',
+                  'binomial_application_with',
                   'considered_project_1',
                   'artistic_referencies_project_1',
                   'considered_project_2',
                   'artistic_referencies_project_2',
+                  'doctorate_interest',
                   'presentation_video',
                   'presentation_video_details',
-                  'physical_content',
-                  'physical_content_description',
-                  'physical_content_received',
+                  'presentation_video_password',
                   'free_document',
                   'remark',
                   'application_completed',
                   'application_complete',
                   'wait_listed_for_interview',
                   'selected_for_interview',
+                  'interview_date',
                   'selected',
                   'unselected',
                   'wait_listed',
@@ -76,3 +80,32 @@ class PublicStudentApplicationSerializer(serializers.HyperlinkedModelSerializer)
         model = StudentApplication
         fields = ('id',
                   'url',)
+
+
+class StudentApplicationSetupSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = StudentApplicationSetup
+        fields = ('id',
+                  'url',
+                  'promotion',
+                  'date_of_birth_max',
+                  'candidature_date_start',
+                  'candidature_date_end',
+                  'candidature_open',
+                  'interviews_publish_date',
+                  'selected_publish_date',
+                  'interviews_start_date',
+                  'interviews_end_date',
+                  'is_current_setup',
+                  'applications',)
+
+    # applications = StudentApplicationSerializer(source='student_application', many=True)
+    applications = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='studentapplication-detail'
+    )
+    candidature_open = serializers.SerializerMethodField()
+
+    def get_candidature_open(self, obj):
+        return not candidature_close(obj)

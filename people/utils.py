@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
-from django.core.mail import send_mail
 from django.template.loader import render_to_string
+
+from django.core.mail import send_mail
 
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import int_to_base36
@@ -22,7 +24,7 @@ def send_activation_email(request, user):
     msg_plain = render_to_string('emails/send_activation_link.txt', {'url': absolute_url})
     msg_html = render_to_string('emails/send_activation_link.html', {'url': absolute_url})
 
-    mail_sent = send_mail('Le Fresnoy - Activation du compte',
+    mail_sent = send_mail('Confirmation de votre inscription',
                           msg_plain,
                           'selection@lefresnoy.net',
                           [user.email],
@@ -49,7 +51,7 @@ def send_account_information_email(user):
                                 'recover_password_url': recover_password_url,
                                 'authentification_url': authentification_url
                                 })
-    mail_sent = send_mail('Le Fresnoy - Activation du compte',
+    mail_sent = send_mail('Résumé de votre compte / Account information',
                           msg_plain,
                           'selection@lefresnoy.net',
                           [user.email],

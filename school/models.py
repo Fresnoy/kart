@@ -40,15 +40,22 @@ class Student(models.Model):
 
 class StudentApplicationSetup(models.Model):
     """
-    Setup Student Apllication
+    Setup Student Application
     """
     name = models.CharField(max_length=25, null=True, blank=True)
     # Promo
     promotion = models.ForeignKey(Promotion, null=False, blank=False)
     # date
-    candidature_date_start = models.DateField(null=False, blank=False)
-    candidature_date_end = models.DateField(null=False, blank=False)
-    # front
+    candidature_date_start = models.DateTimeField(null=False, blank=False)
+    candidature_date_end = models.DateTimeField(null=False, blank=False)
+    # front text
+    interviews_start_date = models.DateField(null=True, blank=False, help_text="Front : interviews start date")
+    interviews_end_date = models.DateField(null=True, blank=False, help_text="Front : interviews end date")
+    date_of_birth_max = models.DateField(null=True, blank=True, help_text="Maximum date of birth to apply")
+    # Publications's date
+    interviews_publish_date = models.DateTimeField(null=True, blank=False, help_text="Interviews web publish")
+    selected_publish_date = models.DateTimeField(null=True, blank=False, help_text="Final selection web publish")
+    # front auth
     candidatures_url = models.URLField(null=False, blank=False, help_text="Front : Url list of candidatures")
     reset_password_url = models.URLField(null=False, blank=False, help_text="Front : Url reset password")
     recover_password_url = models.URLField(null=False, blank=False, help_text="Front : Url recover password")
@@ -63,12 +70,31 @@ class StudentApplicationSetup(models.Model):
         help_text="This configuration is actived"
     )
 
+    def _make_default_birthdate_max(self):
+        """
+            31 december currentyear - 36
+        """
+        max_age = 36
+        current_year = date.today().year
+        return date(current_year-max_age, 12, 31)
+
+    def save(self, *args, **kwargs):
+
+        if not self.date_of_birth_max:
+            self.date_of_birth_max = self._make_default_birthdate_max()
+
+        super(StudentApplicationSetup, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        return u'{0} ({1})'.format(self.name, self.promotion.name)
+
 
 class StudentApplication(models.Model):
     """
     Fresnoy's School application procedure
     """
     artist = models.ForeignKey(Artist, related_name='student_application')
+    campain = models.ForeignKey(StudentApplicationSetup, blank=True, null=True, related_name='applications')
 
     current_year_application_count = models.CharField(
         max_length=8,
@@ -109,9 +135,12 @@ class StudentApplication(models.Model):
         help_text="ID / Number / ... "
     )
     # Master Degree
-    master_degree = models.NullBooleanField(
-        default=None,
-        help_text="Obtained a Master  Degree"
+    master_degree = models.CharField(
+        max_length=10,
+        choices=(('Y', 'Yes'), ('N', 'No'), ('P', 'Pending'),),
+        null=True,
+        blank=True,
+        help_text="Obtained a Master Degree"
     )
     experience_justification = models.FileField(
         upload_to=make_filepath,
@@ -151,6 +180,16 @@ class StudentApplication(models.Model):
         blank=True,
         help_text="Free document"
     )
+    # candidature duo
+    binomial_application = models.BooleanField(
+        default=False,
+        help_text="Candidature with another artist"
+    )
+    binomial_application_with = models.CharField(
+        blank=True,
+        max_length=50,
+        help_text="Name of the binominal artist's candidate with"
+    )
     # first and second year project
     considered_project_1 = models.FileField(
         upload_to=make_filepath,
@@ -176,6 +215,10 @@ class StudentApplication(models.Model):
         blank=True,
         help_text="Artistic references for second first year's project"
     )
+    doctorate_interest = models.BooleanField(
+        default=False,
+        help_text="Interest in the doctorate"
+    )
     # Video
     presentation_video = models.URLField(
         null=True,
@@ -187,19 +230,10 @@ class StudentApplication(models.Model):
         blank=True,
         help_text="Details for the video"
     )
-    # Physical content
-    physical_content = models.BooleanField(
-        default=False,
-        help_text="Element not sent by current form"
-    )
-    physical_content_description = models.TextField(
+    presentation_video_password = models.CharField(
         blank=True,
-        null=True,
-        help_text="What are these elements and how you send it"
-    )
-    physical_content_received = models.BooleanField(
-        default=False,
-        help_text="Administration - Element have been received"
+        max_length=50,
+        help_text=_("Password for the video")
     )
     remark = models.TextField(blank=True, null=True, help_text="Free expression'")
     application_completed = models.BooleanField(
@@ -212,6 +246,11 @@ class StudentApplication(models.Model):
     selected_for_interview = models.BooleanField(
         default=False,
         help_text="Administration - Is the candidat selected for the Interview"
+    )
+    interview_date = models.DateField(
+        null=True,
+        blank=True,
+        help_text="Administration - Date for interview"
     )
     wait_listed_for_interview = models.BooleanField(
         default=False,
@@ -229,7 +268,6 @@ class StudentApplication(models.Model):
         default=False,
         help_text="Administration - Is the candidat wait listed"
     )
-
     application_complete = models.BooleanField(
         default=False,
         help_text="Administration - Candidature is complete"
@@ -240,9 +278,15 @@ class StudentApplication(models.Model):
             Application number algorithm = year + increment_num
         """
         year = date.today().year
-        count = StudentApplication.objects.filter(created_on__year=year).count()
+        carry_on = True
+        default_number = 103
+        inc = 0
+        while carry_on:
+            inc += 1
+            application_number = '{0}-{1:03d}'.format(year, default_number + inc)
+            carry_on = StudentApplication.objects.filter(current_year_application_count=application_number).exists()
 
-        return '{0}-{1:03d}'.format(year, count + 103)
+        return application_number
 
     def save(self, *args, **kwargs):
 

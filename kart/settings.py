@@ -1,5 +1,5 @@
 """
-Django settings for ifresnoy project.
+Django settings for Kart project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.6/topics/settings/
@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 from site_settings import *  # NOQA
 import datetime
 import os
-
 
 DEBUG = True
 
@@ -49,7 +48,7 @@ INSTALLED_APPS = (
     'django_markdown',
     'django_cleanup',
     'django_unused_media',
-    'ifresnoy',
+    'kart',
     'tastypie',
     'tastypie_swagger',
     'rest_framework',
@@ -115,9 +114,9 @@ AUTHENTICATION_BACKENDS = (
     'guardian.backends.ObjectPermissionBackend',
 )
 
-ROOT_URLCONF = 'ifresnoy.urls'
+ROOT_URLCONF = 'kart.urls'
 
-WSGI_APPLICATION = 'ifresnoy.wsgi.application'
+WSGI_APPLICATION = 'kart.wsgi.application'
 
 
 # Internationalization
@@ -145,7 +144,7 @@ STATICFILES_FINDERS = (
 
 
 # ADMIN CUSTOM
-GRAPPELLI_ADMIN_TITLE = 'iFresnoy'
+GRAPPELLI_ADMIN_TITLE = 'Kart'
 
 # TASTYPIE/API
 CORS_ORIGIN_ALLOW_ALL = True
@@ -153,7 +152,7 @@ TASTYPIE_FULL_DEBUG = DEBUG
 APPEND_SLASH = False
 TASTYPIE_ALLOW_MISSING_SLASH = True
 TASTYPIE_DEFAULT_FORMATS = ['json']
-TASTYPIE_SWAGGER_API_MODULE = 'ifresnoy.urls.v1_api'
+TASTYPIE_SWAGGER_API_MODULE = 'kart.urls.v1_api'
 
 
 REST_FRAMEWORK = {
