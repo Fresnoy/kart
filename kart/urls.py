@@ -106,6 +106,9 @@ urlpatterns = patterns('',
                            include('tastypie_swagger.urls', namespace='kart_tastypie_swagger'),
                            kwargs={"tastypie_api_module": "kart.urls.v1_api",
                                    "namespace": "kart_tastypie_swagger"}),
+                       url(r'^static/(?P<path>.*)$',
+                           'django.views.static.serve',
+                           {'document_root': settings.STATIC_ROOT}),
                        url(r'^admin/', include(admin.site.urls)) \
                        ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

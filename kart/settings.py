@@ -8,13 +8,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
-from site_settings import *  # NOQA
+from site_settings import * # NOQA
+from site_settings import DEBUG as DEBUG, BASE_DIR as BASE_DIR
 import datetime
 import os
-
-DEBUG = True
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
