@@ -70,13 +70,9 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=['POST'], permission_classes=[permissions.AllowAny])
     def resend_activation_email(self, request):
-        print("resend_activation_email")
         serializer = UserRegisterSerializer(data=request.data, context={'request': request})
-        print(serializer.is_valid())
-        print(request.data)
         if serializer.is_valid():
             user = User.objects.get(username=request.data.get('username'))
-            print(user)
             if not user.is_active:
                 user.email = request.data.get('email')
                 user.save()

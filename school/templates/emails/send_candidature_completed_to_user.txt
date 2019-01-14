@@ -6,7 +6,7 @@ Bien cordialement,
 
 L'équipe du Fresnoy
 
-______
+== English version below ==
 
 Hello,
 You have completed your application (number  {{application.current_year_application_count}}), and you will
