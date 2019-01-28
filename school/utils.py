@@ -52,7 +52,7 @@ def send_candidature_completed_email_to_admin(request, user, application):
             'application': application
         }
     )
-    mail_sent = send_mail('Envoie d\'une candidature',
+    mail_sent = send_mail('Envoi d\'une candidature',
                           msg_plain,
                           'selection@lefresnoy.net',
                           ['selection@lefresnoy.net'],
