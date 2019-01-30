@@ -10,9 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
-
-from site_settings import *  # NOQA
 import os
+import kart.site_settings  # NOQA
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -27,6 +26,16 @@ SECRET_KEY = '@_#wer-r9+a4lvjc7&r93wq*=df1_x#ecs^^t%35lf@f9cb*i('
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+7
+
 
 
 # Application definition
