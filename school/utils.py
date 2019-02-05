@@ -114,19 +114,19 @@ def send_candidature_complete_email_to_candidat(request, candidat, application):
     return mail_sent
 
 
-def candidature_close(campain=None):
+def candidature_close(campaign=None):
     """
     Test if a candidature is closed
     """
-    # Try to get current campain
-    if not campain:
-        campain = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
-    if not campain:
+    # Try to get current campaign
+    if not campaign:
+        campaign = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
+    if not campaign:
         return False
 
     now = timezone.localtime(timezone.now())
-    if (now < campain.candidature_date_start or
-            now > campain.candidature_date_end):
+    if (now < campaign.candidature_date_start or
+            now > campaign.candidature_date_end):
         return True
 
     return False
