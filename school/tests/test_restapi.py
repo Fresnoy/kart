@@ -95,9 +95,9 @@ class TestApplicationEndPoint(TestCase):
         promotion = Promotion(starting_year=2000, ending_year=2001)
         promotion.save()
         campaign = StudentApplicationSetup(candidature_date_start=timezone.now(),
-                                          candidature_date_end=timezone.now() + datetime.timedelta(days=1),
-                                          promotion=promotion,
-                                          is_current_setup=True,)
+                                           candidature_date_end=timezone.now() + datetime.timedelta(days=1),
+                                           promotion=promotion,
+                                           is_current_setup=True,)
         campaign.save()
         # add a candidature
         application = StudentApplication(artist=self.artist, campaign=campaign)
@@ -122,15 +122,15 @@ class TestApplicationSetupEndPoint(TestCase):
         promotion = Promotion(starting_year=2000, ending_year=2001)
         promotion.save()
         campaign = StudentApplicationSetup(candidature_date_start=timezone.now() - datetime.timedelta(days=1),
-                                          candidature_date_end=timezone.now() + datetime.timedelta(days=1),
-                                          promotion=promotion,
-                                          is_current_setup=True,)
+                                           candidature_date_end=timezone.now() + datetime.timedelta(days=1),
+                                           promotion=promotion,
+                                           is_current_setup=True,)
         campaign.save()
 
         campaign = StudentApplicationSetup(candidature_date_start=timezone.now() - datetime.timedelta(days=2),
-                                          candidature_date_end=timezone.now() - datetime.timedelta(days=1),
-                                          promotion=promotion,
-                                          is_current_setup=False,)
+                                           candidature_date_end=timezone.now() - datetime.timedelta(days=1),
+                                           promotion=promotion,
+                                           is_current_setup=False,)
         campaign.save()
 
     def tearDown(self):
