@@ -114,6 +114,47 @@ def send_candidature_complete_email_to_candidat(request, candidat, application):
     return mail_sent
 
 
+def send_interview_selection_email_to_candidat(request, candidat, application):
+    setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
+    # set locale interviews date
+    interview_date = {'fr': '', "en": ''}
+    setLocale('fr_FR.utf8')
+
+    interview_date['fr'] = 'Le {0} à {1}'.format(application.interview_date.strftime("%A %d %B %Y"),
+                                                 application.interview_date.strftime("%Hh%M")
+                                                 )
+
+    setLocale('en_US.utf8')
+    interview_date['en'] = "{0}".format(setup.interviews_start_date.strftime("%A %d %B %Y at %H.%M %p"))
+
+
+    # Send email
+    msg_plain = render_to_string(
+        'emails/send_interview_selection_to_user.txt',
+        {
+            'user': candidat,
+            'application': application,
+            'interview_date': interview_date,
+        }
+    )
+    msg_html = render_to_string(
+        'emails/send_interview_selection_to_user.html',
+        {
+            'user': candidat,
+            'application': application,
+            'interview_date': interview_date,
+        }
+    )
+    mail_sent = send_mail('Le Fresnoy présélection / preselection',
+                          msg_plain,
+                          'selection@lefresnoy.net',
+                          [candidat.email],
+                          html_message=msg_html,
+                          )
+
+    return mail_sent
+
+
 def candidature_close(campaign=None):
     """
     Test if a candidature is closed

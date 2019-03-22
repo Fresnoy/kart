@@ -16,6 +16,7 @@ from .serializers import (PromotionSerializer, StudentSerializer,
 from .utils import (send_candidature_completed_email_to_user,
                     send_candidature_completed_email_to_admin,
                     send_candidature_complete_email_to_candidat,
+                    send_interview_selection_email_to_candidat,
                     candidature_close,
                     )
 
@@ -158,16 +159,23 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
             errors = {'Error': 'Field permission denied'}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
 
-        # send email when candidature to admin and USER (who click) is completed
+        # send email to admin and USER (who click) is completed
         if(request.data.get('application_completed')):
             application = self.get_object()
             send_candidature_completed_email_to_user(request, user, application)
             send_candidature_completed_email_to_admin(request, user, application)
 
-        # send email when to candidat when candidature is complete
+        # send email to candidat when candidature is complete (admin valid infos)
         if(request.data.get('application_complete')):
             application = self.get_object()
             candidat = application.artist.user
             send_candidature_complete_email_to_candidat(request, candidat, application)
+
+        # send email to candidat when is select
+        if(request.data.get('selected_for_interview')):
+            application = self.get_object()
+            candidat = application.artist.user
+            send_interview_selection_email_to_candidat(request, candidat, application)
+
         # basic update
         return super(self.__class__, self).update(request, *args, **kwargs)
