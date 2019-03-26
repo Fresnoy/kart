@@ -130,7 +130,7 @@ def send_interview_selection_email_to_candidat(request, candidat, application):
     )
     setLocale('en_US.utf8')
     interview_date['en'] = "{0}".format(
-        interview_date_paris.strftime("%A %d %B %Y at %H.%M %p")
+        interview_date_paris.strftime("%A %d %B %Y at %I.%M %p")
     )
     # Send email
     msg_plain = render_to_string(
