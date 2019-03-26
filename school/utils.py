@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import locale
+import pytz
 from django.utils import timezone
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -116,18 +117,20 @@ def send_candidature_complete_email_to_candidat(request, candidat, application):
 
 
 def send_interview_selection_email_to_candidat(request, candidat, application):
-    setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
-    # set locale interviews date
+    # set var for email template
     interview_date = {'fr': '', "en": ''}
+    # set locale interviews date
     # having name of day/month in rigth language
     setLocale('fr_FR.utf8')
+    # get PARIS's time (non UTC)
+    interview_date_paris = application.interview_date.astimezone(pytz.utc).astimezone(pytz.timezone("Europe/Paris"))
     interview_date['fr'] = 'Le {0} à {1}'.format(
-        application.interview_date.strftime("%A %d %B %Y"),
-        application.interview_date.strftime("%Hh%M")
+        interview_date_paris.strftime("%A %d %B %Y"),
+        interview_date_paris.strftime("%Hh%M")
     )
     setLocale('en_US.utf8')
     interview_date['en'] = "{0}".format(
-        setup.interviews_start_date.strftime("%A %d %B %Y at %H.%M %p")
+        interview_date_paris.strftime("%A %d %B %Y at %H.%M %p")
     )
     # Send email
     msg_plain = render_to_string(
