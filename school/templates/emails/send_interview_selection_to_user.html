@@ -5,8 +5,7 @@
     <body style="color: black; background-color: #31bdf0;" bgcolor="#31bdf0">
       <div class="page" style="max-width: 960px; width: 80%; background-color: white; margin: 5% 5%; padding: 5% 5%;">
         <img style="width:100%" src="https://app.lefresnoy.net/candidatures/assets/logo-fresnoy.png">
-
-        <p>Bonjour,</p>
+        <p>Bonjour {{user.first_name}} {{user.last_name}},</p>
         <p>Nous avons le plaisir de vous annoncer que votre candidature au concours d’entrée du Fresnoy a retenu
           l’attention de notre jury de présélection.</p>
         <p>Vous êtes donc invité(e) à vous présenter au Fresnoy pour être auditionné(e), pour l’admission définitive,
@@ -26,7 +25,7 @@
           François Bonenfant et Eric Prigent<br/>
           Coordinateurs pédagogiques - Le Fresnoy</p>
 
-          <p>Nous vous remercions de vous présenter avec ce courrier et une pièce d’identité
+          <p>Nous vous remercions de vous présenter avec ce courriel et une pièce d’identité
             à l’adresse suivante :<br/>
             Le Fresnoy, Studio national  - 22, rue du Fresnoy 59202 Tourcoing
             (entrée par l’accueil angle Boulevard Descat).</p>
@@ -60,7 +59,7 @@
             <hr/>
             <p style="text-align:center;">English version below</p>
             <hr/>
-            <p>Hello,</p>
+            <p>Hello {{user.first_name}} {{user.last_name}},</p>
 
             <p>We are pleased to inform you that your application for Le Fresnoy has been pre-selected
                by our admissions jury.</p>
@@ -85,7 +84,7 @@
 
 
 
-            <p>Please bring this letter and your identification to the following address:<br/>
+            <p>Please bring this email and your identification to the following address:<br/>
             Le Fresnoy, Studio National  - 22, rue du Fresnoy 59202 Tourcoing
             (entrance on the corner with Boulevard Constantin Descat).</p>
 

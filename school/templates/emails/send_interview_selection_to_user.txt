@@ -1,4 +1,4 @@
-Bonjour,
+Bonjour {{user.first_name}} {{user.last_name}},
 Nous avons le plaisir de vous annoncer que votre candidature au concours d’entrée du Fresnoy a retenu
 l’attention de notre jury de présélection.
 Vous êtes donc invité(e) à vous présenter au Fresnoy pour être auditionné(e), pour l’admission définitive,
@@ -17,7 +17,7 @@ Cordiales salutations,
 François Bonenfant et Eric Prigent
 Coordinateurs pédagogiques - Le Fresnoy
 
-Nous vous remercions de vous présenter avec ce courrier et une pièce d’identité
+Nous vous remercions de vous présenter avec ce courriel et une pièce d’identité
 à l’adresse suivante :
 Le Fresnoy, Studio national  - 22, rue du Fresnoy 59202 Tourcoing
 (entrée par l’accueil angle Boulevard Descat).
@@ -49,7 +49,7 @@ Le Fresnoy, Studio national des arts contemporains -
 
 == English version below ==
 
-Hello,
+Hello {{user.first_name}} {{user.last_name}},
 
 We are pleased to inform you that your application for Le Fresnoy has been pre-selected
    by our admissions jury.
@@ -74,7 +74,7 @@ Teaching coordinators - Le Fresnoy
 
 
 
-Please bring this letter and your identification to the following address:
+Please bring this email and your identification to the following address:
 Le Fresnoy, Studio National  - 22, rue du Fresnoy 59202 Tourcoing
 (entrance on the corner with Boulevard Constantin Descat).
 
