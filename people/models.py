@@ -8,6 +8,7 @@ from languages.fields import LanguageField
 
 class FresnoyProfile(models.Model):
 
+
     GENDER_CHOICES = (
         ('M', 'Male'),
         ('F', 'Female'),
@@ -16,7 +17,7 @@ class FresnoyProfile(models.Model):
     )
 
     user = models.OneToOneField(User, related_name='profile',on_delete=models.CASCADE)
-    # photo = models.ImageField(upload_to=make_filepath, blank=True, null=True)
+    photo = models.ImageField(upload_to=make_filepath, blank=True, null=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
 
     nationality = models.CharField(max_length=24, null=True, blank=True)
