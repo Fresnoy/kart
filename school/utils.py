@@ -122,13 +122,16 @@ def send_interview_selection_email_to_candidat(request, candidat, application):
     # set locale interviews date
     # having name of day/month in rigth language
     setLocale('fr_FR.utf8')
-    # get PARIS's time (non UTC)
-    interview_date_paris = application.interview_date.astimezone(pytz.utc).astimezone(pytz.timezone("Europe/Paris"))
+    # convert utc to PARIS's time
+    tz = pytz.timezone("Europe/Paris")
+    interview_date_paris = application.interview_date.astimezone(tz)
+    # get French string date : lundi 01 juillet 2019 à 13h30
     interview_date['fr'] = 'Le {0} à {1}'.format(
         interview_date_paris.strftime("%A %d %B %Y"),
         interview_date_paris.strftime("%Hh%M")
     )
     setLocale('en_US.utf8')
+    # get English string date : monday 01 july 2019 à 01h30 PM
     interview_date['en'] = "{0}".format(
         interview_date_paris.strftime("%A %d %B %Y at %I.%M %p")
     )
@@ -137,7 +140,6 @@ def send_interview_selection_email_to_candidat(request, candidat, application):
         'emails/send_interview_selection_to_user.txt',
         {
             'user': candidat,
-            'application': application,
             'interview_date': interview_date,
         }
     )
@@ -145,7 +147,6 @@ def send_interview_selection_email_to_candidat(request, candidat, application):
         'emails/send_interview_selection_to_user.html',
         {
             'user': candidat,
-            'application': application,
             'interview_date': interview_date,
         }
     )
