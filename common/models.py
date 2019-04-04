@@ -15,5 +15,5 @@ class Website(models.Model):
     language = models.CharField(choices=LANGUAGES, max_length=2)
     url = models.URLField()
 
-    def __unicode__(self):
-        return self.title_fr
+    def __str__(self):
+        return "{}... - {}".format(self.title_fr[10],url[40])
