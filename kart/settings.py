@@ -41,6 +41,7 @@ DATABASES = {
 # Application definition
 
 INSTALLED_APPS = [
+    'common.apps.CommonConfig',
     'people.apps.PeopleConfig',
     'django.contrib.admin',
     'django.contrib.auth',
