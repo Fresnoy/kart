@@ -7,6 +7,8 @@ from languages.fields import LanguageField
 
 from common.utils import make_filepath
 
+from common.models import Website
+
 class FresnoyProfile(models.Model):
 
 
@@ -67,10 +69,10 @@ class Artist(models.Model):
 
     twitter_account = models.CharField(max_length=100, blank=True)
     facebook_profile = models.URLField(blank=True)
-    # websites = models.ManyToManyField(Website, blank=True)
+    websites = models.ManyToManyField(Website, blank=True)
 
     def __str__(self):
-        return '{0} ({1})'.format(self.user, self.nickname)
+        return '{0} ({1})'.format(self.nickname)
 
 class Staff(models.Model):
     """
