@@ -71,8 +71,11 @@ class Artist(models.Model):
     facebook_profile = models.URLField(blank=True)
     websites = models.ManyToManyField(Website, blank=True)
 
+    def get_displayName(self):
+        return self.nickname if self.nickname  else "{} {}".format(self.user.first_name, self.user.last_name)
+
     def __str__(self):
-        return '{0} ({1})'.format(self.nickname)
+        return '{}'.format(self.get_displayName())
 
 class Staff(models.Model):
     """
