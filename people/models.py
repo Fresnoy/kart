@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django_countries.fields import CountryField
 from languages.fields import LanguageField
 
+from common.utils import make_filepath
 
 class FresnoyProfile(models.Model):
 
@@ -17,7 +18,7 @@ class FresnoyProfile(models.Model):
     )
 
     user = models.OneToOneField(User, related_name='profile',on_delete=models.CASCADE)
-    # photo = models.ImageField(upload_to=make_filepath, blank=True, null=True)
+    photo = models.ImageField(upload_to=make_filepath, blank=True, null=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
 
     nationality = models.CharField(max_length=24, null=True, blank=True)
@@ -88,7 +89,7 @@ class Organization(models.Model):
     """
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    # picture = models.ImageField(upload_to=make_filepath, blank=True)
+    picture = models.ImageField(upload_to=make_filepath, blank=True)
     updated_on = models.DateTimeField(auto_now=True)
 
     def __str__(self):
