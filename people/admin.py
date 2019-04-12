@@ -8,9 +8,6 @@ from people.models import Artist, FresnoyProfile
 
 
 
-class FresnoyProfileInline(admin.StackedInline):
-    model = FresnoyProfile
-
 
 class ArtistAdmin(admin.ModelAdmin):
     """ Admin model for Artist.
@@ -30,7 +27,14 @@ class ArtistAdmin(admin.ModelAdmin):
         return obj.user.last_name
 
 
+class FresnoyProfileInline(admin.StackedInline):
+    """StackedInline admin for FresnoyProfile.
+    """
+    model = FresnoyProfile
+
 class FresnoyProfileAdmin(UserAdmin):
+    """ Admin for Use and additionnal profile fields.
+    """
     inlines = (FresnoyProfileInline,)
     list_display = ('username','first_name', 'last_name', 'email', 'is_staff')
     add_form = UserCreateForm
