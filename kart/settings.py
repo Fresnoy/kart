@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'languages',
     'django_extensions',
+    'graphene_django',
 ]
 
 MIDDLEWARE = [
@@ -122,3 +123,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+
+
+# graphql integration
+GRAPHENE = {
+    'SCHEMA': 'kart.schema.schema',
+}
