@@ -16,4 +16,7 @@ class Website(models.Model):
     url = models.URLField()
 
     def __str__(self):
-        return "{}... - {}".format(self.title_fr[10],url[40])
+        """Return the litterate form of a website.
+        Example : Le site du Fresn(...) - http://www.lefresnoy.net
+        """
+        return "{}(...) - {}".format(self.title_fr[10],url[40])

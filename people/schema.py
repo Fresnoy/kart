@@ -1,7 +1,9 @@
 import graphene
 from graphene_django import DjangoObjectType
+from graphql import GraphQLError
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 
 from .models import Artist
 
@@ -18,29 +20,51 @@ class UserInput(graphene.InputObjectType):
     username = graphene.String(required=True)
     password = graphene.String(required=True)
     email = graphene.String(required=True)
-    # first_name = graphene.String()
-    # last_name = graphene.String()
+
 
 class CreateUser(graphene.Mutation):
-
-    user = graphene.Field(UserType)
-    ok = graphene.Boolean()
-
     class Arguments:
-        username = graphene.String(required=True)
-        password = graphene.String(required=True)
-        email = graphene.String(required=True)
+        input = UserInput(required=True)
+
+    ok = graphene.Boolean()
+    user = graphene.Field(UserType)
 
     @staticmethod
-    def mutate(self, info, username, password, email):
-        user = get_user_model()(
-            username=username,
-            email=email,
-        )
-        user.set_password(password)
-        user.save()
+    def mutate(self, info, input=None):
+        ok = False
+        # Username validation
+        if ' ' in input.username:
+            raise GraphQLError('No space allowed in username')
+        # Check if username not already taken
+        if not User.objects.filter(username=input.username).exists():
+            user_instance = User.objects.create_user(username=input.username, email=input.email, password=input.password)
+            ok = True
+            return CreateUser(ok=True, user=user_instance)
+        raise GraphQLError('Username already exists.')
 
-        return CreateUser(ok=True, user=user)
+
+
+class UpdateUser(graphene.Mutation):
+    class Arguments:
+        id = graphene.Int(required=True)
+        input = UserInput(required=True)
+
+    ok = graphene.Boolean()
+    user = get_user_model()
+
+    @staticmethod
+    def mutate(root, info, id, input=None):
+        ok = False
+        user_instance = User.objects.get(pk=id)
+        print(">>>>>>>>>>>>>>>>>>>>>>>> id : ",id)
+        if user_instance:
+            ok = True
+            user_instance.usernamne = input.username
+            user_instance.email = input.email
+            user_instance.set_password(input.password)
+            user_instance.save()
+            return UpdateUser(ok=ok, user=user_instance)
+        return UpdateUser(ok=ok, user=None)
 
 
 ########################## Artist
@@ -55,6 +79,7 @@ class ArtistType(DjangoObjectType):
         return self.get_displayName()
 
 
+
 class ArtistInput(graphene.InputObjectType):
     user = graphene.List(UserInput)
     nickname = graphene.String()
@@ -65,18 +90,6 @@ class ArtistInput(graphene.InputObjectType):
     updated_on = graphene.types.datetime.DateTime
     twitter_account = graphene.String()
     facebook_profile = graphene.String()
-
-
-
-class Query(graphene.ObjectType):
-    users = graphene.List(UserType)
-    artists = graphene.List(ArtistType)
-
-    def resolve_users(self, info, **kwargs):
-        return get_user_model().objects.all()
-
-    def resolve_artists(self, info, **kwargs):
-        return Artist.objects.all()
 
 
 class CreateArtist(graphene.Mutation):
@@ -110,6 +123,36 @@ class CreateArtist(graphene.Mutation):
 
         return CreateArtist(ok=ok, artist=artist)
 
+
+
+class Query(graphene.ObjectType):
+    user = graphene.Field(UserType, id=graphene.Int())
+    users = graphene.List(UserType)
+    artist = graphene.Field(ArtistType, id=graphene.Int())
+    artists = graphene.List(ArtistType)
+
+    def resolve_users(self, info, **kwargs):
+        return get_user_model().objects.all()
+
+    def resolve_user(self, info, **kwargs):
+        id = kwargs.get('id')
+        if id is not None:
+            return User.objects.get(pk=id)
+        return None
+
+    def resolve_artists(self, info, **kwargs):
+        return Artist.objects.all()
+
+    def resolve_artist(self, info, **kwargs):
+        id = kwargs.get('id')
+        if id is not None:
+            return Artist.objects.get(pk=id)
+        return None
+
+
+
+
 class Mutation(graphene.ObjectType):
-    create_artist = CreateArtist.Field()
     create_user = CreateUser.Field()
+    update_user = UpdateUser.Field()
+    create_artist = CreateArtist.Field()
