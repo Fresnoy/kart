@@ -12,8 +12,6 @@ from people.models import Artist, Staff, Organization
 
 
 class Task(models.Model):
-    class Meta:
-        abstract = True
 
     label = models.CharField(max_length=255)
     description = models.TextField()
@@ -164,13 +162,17 @@ class Performance(Artwork):
 
 
 class Event(Production):
+    main_event = models.BooleanField(default=False)
+
     TYPE_CHOICES = (
+        ('FEST', 'Festival'),
+        ('COMP', 'Competition'),
         ('PROJ', 'Projection'),
         ('EXHIB', 'Exhibition'),
         ('VARN', 'Varnishing'),
         ('PARTY', 'Party'),
         ('WORKSHOP', 'Workshop'),
-        ('EVENING', 'Evening')
+        ('EVENING', 'Evening'),
     )
 
     type = models.CharField(max_length=10, choices=TYPE_CHOICES)
@@ -184,8 +186,8 @@ class Event(Production):
     installations = models.ManyToManyField(Installation, blank=True, related_name='events')
     films = models.ManyToManyField(Film, blank=True, related_name='events')
     performances = models.ManyToManyField(Performance, blank=True, related_name='events')
-
-    subevents = models.ManyToManyField('self', blank=True)
+    # subevent can't be main event
+    subevents = models.ManyToManyField('self', limit_choices_to={'main_event':False}, blank=True)
 
 
 class Exhibition(Event):

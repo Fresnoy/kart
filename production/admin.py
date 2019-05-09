@@ -7,7 +7,7 @@ from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModel
 from .models import (
     Production, Artwork, FilmGenre, Film,
     InstallationGenre, Installation, Performance,
-    StaffTask, OrganizationTask, Event, Itinerary)
+    Task, StaffTask, OrganizationTask, Event, Itinerary)
 
 
 class CollaboratorsInline(admin.TabularInline):
@@ -108,6 +108,7 @@ class FilmGenreAdmin(admin.ModelAdmin):
 class InstallationGenreAdmin(admin.ModelAdmin):
     pass
 
+@admin.register(Task)
 
 @admin.register(OrganizationTask)
 class OrganizationTaskAdmin(admin.ModelAdmin):

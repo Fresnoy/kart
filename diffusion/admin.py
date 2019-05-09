@@ -3,7 +3,7 @@ from django.db import models
 
 from pagedown.widgets import AdminPagedownWidget
 
-from .models import Place, Award
+from .models import Place, Award, Price
 
 
 class AwardAdmin(admin.ModelAdmin):
@@ -18,5 +18,12 @@ class PlaceAdmin(admin.ModelAdmin):
     }
 
 
+class PriceAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': AdminPagedownWidget},
+    }
+
+
 admin.site.register(Place, PlaceAdmin)
 admin.site.register(Award, AwardAdmin)
+admin.site.register(Price, PriceAdmin)
