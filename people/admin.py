@@ -45,6 +45,12 @@ class OrganizationAdmin(GuardedModelAdmin):
     ordering = ('name',)
 
 
+def user_unicode(self):
+    return u'{0} {1}'.format(self.last_name, self.first_name)
+
+
+User.__unicode__ = user_unicode
+
 admin.site.unregister(User)
 admin.site.register(User, FresnoyProfileAdmin)
 admin.site.register(Artist, ArtistAdmin)

@@ -1,11 +1,11 @@
 from rest_framework import viewsets, permissions
 
-from .models import (Film, Installation, Performance,
+from .models import (Artwork, Film, Installation, Performance,
                      FilmGenre, InstallationGenre, Event,
                      Itinerary, ProductionStaffTask, ProductionOrganizationTask,
                      OrganizationTask)
 
-from .serializers import (FilmSerializer, InstallationSerializer,
+from .serializers import (ArtworkPolymorphicSerializer, InstallationSerializer,
                           PerformanceSerializer, FilmGenreSerializer,
                           InstallationGenreSerializer, EventSerializer,
                           ItinerarySerializer, ProductionStaffTaskSerializer,
@@ -13,9 +13,15 @@ from .serializers import (FilmSerializer, InstallationSerializer,
                           )
 
 
+class ArtworkViewSet(viewsets.ModelViewSet):
+    queryset = Artwork.objects.all()
+    serializer_class = ArtworkPolymorphicSerializer
+    permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
+
+
 class FilmViewSet(viewsets.ModelViewSet):
     queryset = Film.objects.all()
-    serializer_class = FilmSerializer
+    serializer_class = ArtworkPolymorphicSerializer
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
 
 

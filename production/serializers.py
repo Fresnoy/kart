@@ -1,10 +1,12 @@
 from rest_framework import serializers
+from rest_polymorphic.serializers import PolymorphicSerializer
 
 from .models import (
     Film, FilmGenre, Installation,
     Performance, InstallationGenre,
     Event, Itinerary, StaffTask, OrganizationTask,
     ProductionStaffTask, ProductionOrganizationTask,
+    Artwork
 )
 from people.serializers import StaffSerializer
 
@@ -35,6 +37,17 @@ class PartnerSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('organization', 'task')
 
 
+class ArtworkSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Artwork
+
+    diffusions = serializers.HyperlinkedRelatedField(source='events',
+                                                     read_only=True,
+                                                     view_name='event-detail',
+                                                     many=True)
+    rewards = serializers.HyperlinkedRelatedField(view_name='reward-detail', read_only=True, many=True)
+
+
 class InstallationSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Installation
@@ -42,6 +55,11 @@ class InstallationSerializer(serializers.HyperlinkedModelSerializer):
 
     collaborators = ProductionStaffTaskSerializer(source='staff_tasks', many=True)
     partners = PartnerSerializer(source='organization_tasks', many=True)
+    diffusions = serializers.HyperlinkedRelatedField(source='events',
+                                                     read_only=True,
+                                                     view_name='event-detail',
+                                                     many=True)
+    rewards = serializers.HyperlinkedRelatedField(view_name='reward-detail', read_only=True, many=True)
 
 
 class FilmSerializer(serializers.HyperlinkedModelSerializer):
@@ -51,6 +69,11 @@ class FilmSerializer(serializers.HyperlinkedModelSerializer):
 
     collaborators = ProductionStaffTaskSerializer(source='staff_tasks', many=True)
     partners = PartnerSerializer(source='organization_tasks', many=True)
+    diffusions = serializers.HyperlinkedRelatedField(source='events',
+                                                     read_only=True,
+                                                     view_name='event-detail',
+                                                     many=True)
+    rewards = serializers.HyperlinkedRelatedField(view_name='reward-detail', read_only=True, many=True)
 
 
 class EventSerializer(serializers.HyperlinkedModelSerializer):
@@ -68,6 +91,21 @@ class PerformanceSerializer(serializers.HyperlinkedModelSerializer):
 
     collaborators = ProductionStaffTaskSerializer(source='staff_tasks', many=True)
     partners = PartnerSerializer(source='organization_tasks', many=True)
+    diffusions = serializers.HyperlinkedRelatedField(source='events',
+                                                     read_only=True,
+                                                     view_name='event-detail',
+                                                     many=True)
+    rewards = serializers.HyperlinkedRelatedField(view_name='reward-detail', read_only=True, many=True)
+
+
+class ArtworkPolymorphicSerializer(PolymorphicSerializer):
+    resource_type_field_name = 'type'
+    model_serializer_mapping = {
+        Artwork: ArtworkSerializer,
+        Film: FilmSerializer,
+        Installation: InstallationSerializer,
+        Performance: PerformanceSerializer
+    }
 
 
 class FilmGenreSerializer(serializers.HyperlinkedModelSerializer):

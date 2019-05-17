@@ -7,7 +7,7 @@ from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModel
 from .models import (
     Production, Artwork, FilmGenre, Film,
     InstallationGenre, Installation, Performance,
-    Task, StaffTask, OrganizationTask, Event, Itinerary)
+    StaffTask, OrganizationTask, Event, Itinerary)
 
 
 class CollaboratorsInline(admin.TabularInline):
@@ -43,7 +43,7 @@ class InstallationChildAdmin(ArtworkChildAdmin):
 
 # @admin.register(Production)
 class ProductionParentAdmin(PolymorphicParentModelAdmin):
-    list_display = ('title', 'subtitle')
+    list_display = ('title', 'subtitle',)
     search_fields = ['title']
     inlines = (CollaboratorsInline, PartnersInline)
 
@@ -60,9 +60,21 @@ class ProductionParentAdmin(PolymorphicParentModelAdmin):
 
 
 class ArtworkAdmin(admin.ModelAdmin):
-    list_display = ('title', 'subtitle')
-    search_fields = ['title']
+    list_display = ('title', 'get_authors', 'get_diffusions', 'get_awards')
+    search_fields = ['title', ]
     inlines = (CollaboratorsInline, PartnersInline)
+
+    def get_authors(self, obj):
+        return ", ".join([author.__unicode__() for author in obj.authors.all()])
+    get_authors.short_description = "Artist(s)"
+
+    def get_diffusions(self, obj):
+        return ", ".join([event.__unicode__() for event in obj.events.all()])
+    get_diffusions.short_description = "Diffusion(s)"
+
+    def get_awards(self, obj):
+        return ", ".join([reward.__unicode__() for reward in obj.rewards.all()])
+    get_awards.short_description = "Award(s)"
 
 
 @admin.register(Installation)
@@ -82,7 +94,8 @@ class PerformanceAdmin(ArtworkAdmin):
 
 @admin.register(Event)
 class EventAdmin(ProductionChildAdmin):
-    list_display = (ProductionChildAdmin.list_display + ('starting_date', 'ending_date'))
+    list_display = (ProductionChildAdmin.list_display + ('starting_date', 'type',))
+    search_fields = ['title']
     inlines = (CollaboratorsInline, PartnersInline)
 
 
@@ -108,7 +121,6 @@ class FilmGenreAdmin(admin.ModelAdmin):
 class InstallationGenreAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(Task)
 
 @admin.register(OrganizationTask)
 class OrganizationTaskAdmin(admin.ModelAdmin):

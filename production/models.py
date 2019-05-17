@@ -12,6 +12,8 @@ from people.models import Artist, Staff, Organization
 
 
 class Task(models.Model):
+    class Meta:
+        abstract = True
 
     label = models.CharField(max_length=255)
     description = models.TextField()
@@ -33,6 +35,9 @@ class ProductionStaffTask(models.Model):
     production = models.ForeignKey('Production', related_name="staff_tasks")
     task = models.ForeignKey(StaffTask)
 
+    def __unicode__(self):
+        return u'{0} ({1})'.format(self.task.label, self.production.title)
+
 
 class ProductionOrganizationTask(models.Model):
     organization = models.ForeignKey(Organization)
@@ -49,7 +54,7 @@ class Production(PolymorphicModel):
 
     updated_on = models.DateTimeField(auto_now=True)
 
-    picture = models.ImageField(upload_to=make_filepath)
+    picture = models.ImageField(upload_to=make_filepath, blank=True)
     websites = models.ManyToManyField(Website, blank=True)
 
     collaborators = models.ManyToManyField(Staff, through=ProductionStaffTask, blank=True, related_name="%(class)s")
@@ -63,7 +68,7 @@ class Production(PolymorphicModel):
     description_en = models.TextField(blank=True, null=True)
 
     def __unicode__(self):
-        return u'{0} ({1})'.format(self.title, self.id)
+        return u'{0}'.format(self.title)
 
 
 class Artwork(Production):
@@ -87,6 +92,10 @@ class Artwork(Production):
     authors = models.ManyToManyField(Artist, related_name="%(class)ss")
 
     beacons = models.ManyToManyField(BTBeacon, related_name="%(class)ss", blank=True)
+
+    def __unicode__(self):
+        authors = ", ".join([author.__unicode__() for author in self.authors.all()])
+        return u'{0} ({1}) de {2}'.format(self.title, self.production_date.year, authors)
 
 
 class FilmGenre(models.Model):
@@ -142,7 +151,8 @@ class Film(Artwork):
     shooting_format = models.CharField(choices=SHOOTING_FORMAT_CHOICES, max_length=10, blank=True)
     aspect_ratio = models.CharField(choices=ASPECT_RATIO_CHOICES, max_length=10, blank=True)
     process = models.CharField(choices=PROCESS_CHOICES, max_length=10, blank=True)
-    genres = models.ManyToManyField(FilmGenre)
+    genres = models.ManyToManyField(FilmGenre, blank=True)
+    shooting_place = models.ManyToManyField(Place, blank=True)
 
 
 class InstallationGenre(models.Model):
@@ -178,7 +188,7 @@ class Event(Production):
     type = models.CharField(max_length=10, choices=TYPE_CHOICES)
 
     starting_date = models.DateTimeField()
-    ending_date = models.DateTimeField()
+    ending_date = models.DateTimeField(blank=True,)
 
     place = models.ForeignKey(Place)
 
@@ -187,7 +197,7 @@ class Event(Production):
     films = models.ManyToManyField(Film, blank=True, related_name='events')
     performances = models.ManyToManyField(Performance, blank=True, related_name='events')
     # subevent can't be main event
-    subevents = models.ManyToManyField('self', limit_choices_to={'main_event':False}, blank=True)
+    subevents = models.ManyToManyField('self', limit_choices_to={'main_event': False}, blank=True)
 
 
 class Exhibition(Event):

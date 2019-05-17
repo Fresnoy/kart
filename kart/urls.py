@@ -25,13 +25,13 @@ from school.views import (
     StudentAutocompleteSearchViewSet, StudentApplicationViewSet, StudentApplicationSetupViewSet
 )
 from production.views import (
-    FilmViewSet, InstallationViewSet,
+    ArtworkViewSet, FilmViewSet, InstallationViewSet,
     PerformanceViewSet, FilmGenreViewSet,
     InstallationGenreViewSet, EventViewSet,
     ItineraryViewSet,
     CollaboratorViewSet, PartnerViewSet, OrganizationTaskViewSet
 )
-from diffusion.views import PlaceViewSet
+from diffusion.views import PlaceViewSet, AwardViewSet, RewardViewSet
 from common.views import BTBeaconViewSet, WebsiteViewSet
 from assets.views import GalleryViewSet, MediumViewSet
 
@@ -67,6 +67,7 @@ v2_api.register(r'school/student', StudentViewSet)
 v2_api.register(r'school/student-application', StudentApplicationViewSet)
 v2_api.register(r'school/student-application-setup', StudentApplicationSetupViewSet)
 v2_api.register(r'school/student/search', StudentAutocompleteSearchViewSet, base_name="school-student-search")
+v2_api.register(r'production/artwork', ArtworkViewSet)
 v2_api.register(r'production/film', FilmViewSet)
 v2_api.register(r'production/event', EventViewSet)
 v2_api.register(r'production/itinerary', ItineraryViewSet)
@@ -77,6 +78,8 @@ v2_api.register(r'production/performance', PerformanceViewSet)
 v2_api.register(r'production/collaborator', CollaboratorViewSet)
 v2_api.register(r'production/partner', PartnerViewSet)
 v2_api.register(r'diffusion/place', PlaceViewSet)
+v2_api.register(r'diffusion/award', AwardViewSet)
+v2_api.register(r'diffusion/reward', RewardViewSet)
 v2_api.register(r'common/beacon', BTBeaconViewSet)
 v2_api.register(r'common/website', WebsiteViewSet)
 v2_api.register(r'assets/gallery', GalleryViewSet)

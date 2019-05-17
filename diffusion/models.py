@@ -2,7 +2,7 @@ from django.db.models import Q
 from django.db import models
 from django_countries.fields import CountryField
 
-from people.models import User, Artist, Organization
+from people.models import User, Organization
 
 
 class Place(models.Model):
@@ -10,7 +10,7 @@ class Place(models.Model):
     Some place belonging to an organization
     """
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(null=True)
 
     address = models.CharField(max_length=255, null=True)
     zipcode = models.CharField(max_length=10, blank=True, help_text="Code postal / Zipcode")
@@ -23,24 +23,32 @@ class Place(models.Model):
     organization = models.ForeignKey(Organization, blank=True, null=True, related_name='places')
 
     def __unicode__(self):
-        return u'{0} ({1})'.format(self.name, self.organization)
+        extra_info = self.organization if self.organization else self.country
+        return u'{0} ({1})'.format(self.name, extra_info)
 
 
-class Price(models.Model):
+class Award(models.Model):
     """
-    Price from main event
+    Award from main event
     """
     TYPE_CHOICES = (
         ('ARTWORK', 'Artwork'),
         ('ARTIST', 'Artist'),
     )
 
-    label = models.CharField(max_length=255)
-    description = models.TextField()
+    label = models.CharField(max_length=255, null=True)
+    description = models.TextField(null=True)
 
-    event = models.ForeignKey('production.Event', limit_choices_to=Q(main_event=True), related_name='price')
-    type = models.CharField(max_length=10, choices=TYPE_CHOICES)
-    task =  models.ForeignKey('production.Task', blank=True, null=True, related_name='price')
+    event = models.ForeignKey('production.Event',
+                              null=True,
+                              limit_choices_to=Q(main_event=True),
+                              help_text="Main Event",
+                              related_name='award')
+    type = models.CharField(max_length=10, null=True, choices=TYPE_CHOICES)
+    task = models.ForeignKey('production.StaffTask', blank=True, null=True, related_name='award')
+
+    def __unicode__(self):
+        return u'{0} ({2}, cat. {1})'.format(self.label, self.task, self.event)
 
 
 class Diffusion(models.Model):
@@ -50,19 +58,23 @@ class Diffusion(models.Model):
     pass
 
 
-class Award(models.Model):
+class Reward(models.Model):
     """
     Awards given to artworks & such.
     """
-    price_label = models.CharField(max_length=255, blank=False, null=True)
-    price_description = models.TextField(blank=True)
-    mention_label = models.CharField(max_length=255, blank=True)
-    mention_description = models.TextField(blank=True)
-    artwork = models.ForeignKey('production.Artwork', blank=True, null=True, related_name='award')
-    artist = models.ManyToManyField(Artist, blank=True, related_name='award')
-    event = models.ForeignKey('production.Event', blank=True, null=True, related_name='award')
+    # price_label = models.CharField(max_length=255, blank=False, null=True)
+    # price_description = models.TextField(blank=True)
+    # mention_label = models.CharField(max_length=255, blank=True)
+    # mention_description = models.TextField(blank=True)
+    # artist = models.ManyToManyField(Artist, blank=True, related_name='award')
+    award = models.ForeignKey(Award, related_name='reward')
+    artwork = models.ForeignKey('production.Artwork', related_name='rewards')
+    event = models.ForeignKey('production.Event', limit_choices_to=Q(main_event=False), related_name='reward')
     giver = models.ForeignKey(User, blank=True, null=True, help_text="Who hands the prize")
-    sponsor = models.ForeignKey(Organization, null=True, blank=True, related_name='award')
-    date = models.DateTimeField(null=True)
+    sponsor = models.ForeignKey(Organization, null=True, blank=True, related_name='reward')
+    date = models.DateField(null=True)
     amount = models.CharField(max_length=255, blank=True, help_text="money, visibility, currency free")
     note = models.TextField(blank=True, help_text="Free note")
+
+    def __unicode__(self):
+        return u'{0} pour {1}'.format(self.award, self.artwork)
