@@ -27,13 +27,15 @@ class Place(models.Model):
         return u'{0} ({1})'.format(self.name, extra_info)
 
 
-class Award(models.Model):
+class MetaAward(models.Model):
     """
     Award from main event
     """
     TYPE_CHOICES = (
-        ('ARTWORK', 'Artwork'),
-        ('ARTIST', 'Artist'),
+        ('INDIVIDUAL', 'Individual'),
+        ('GROUP', 'Group'),
+        ('CAREER', 'Career'),
+        ('OTHER', 'Other'),
     )
 
     label = models.CharField(max_length=255, null=True)
@@ -43,12 +45,35 @@ class Award(models.Model):
                               null=True,
                               limit_choices_to=Q(main_event=True),
                               help_text="Main Event",
-                              related_name='award')
+                              related_name='meta_award')
     type = models.CharField(max_length=10, null=True, choices=TYPE_CHOICES)
-    task = models.ForeignKey('production.StaffTask', blank=True, null=True, related_name='award')
+    task = models.ForeignKey('production.StaffTask', blank=True, null=True, related_name='meta_award')
 
     def __unicode__(self):
         return u'{0} ({2}, cat. {1})'.format(self.label, self.task, self.event)
+
+
+class Award(models.Model):
+    """
+    Awards given to artworks & such.
+    """
+    award = models.ForeignKey(MetaAward, related_name='award')
+    artwork = models.ManyToManyField('production.Artwork', blank=True, related_name='award')
+    artist = models.ManyToManyField(User,
+                                    limit_choices_to=Q(artist__isnull=False) | Q(staff__isnull=False),
+                                    blank=True,
+                                    related_name='award',
+                                    help_text="Staff or Artist")
+    event = models.ForeignKey('production.Event', null=True, limit_choices_to=Q(main_event=False), related_name='award')
+    ex_aequo = models.BooleanField(default=False)
+    giver = models.ForeignKey(User, blank=True, null=True, help_text="Who hands the arward", related_name='reward')
+    sponsor = models.ForeignKey(Organization, null=True, blank=True, related_name='award')
+    date = models.DateField(null=True)
+    amount = models.CharField(max_length=255, blank=True, help_text="money, visibility, currency free")
+    note = models.TextField(blank=True, help_text="Free note")
+
+    def __unicode__(self):
+        return u'{0} pour {1}'.format(self.award, self.artwork)
 
 
 class Diffusion(models.Model):
@@ -56,25 +81,3 @@ class Diffusion(models.Model):
     # Event not main_event
     # premiere (mondiale, international, ville)
     pass
-
-
-class Reward(models.Model):
-    """
-    Awards given to artworks & such.
-    """
-    # price_label = models.CharField(max_length=255, blank=False, null=True)
-    # price_description = models.TextField(blank=True)
-    # mention_label = models.CharField(max_length=255, blank=True)
-    # mention_description = models.TextField(blank=True)
-    # artist = models.ManyToManyField(Artist, blank=True, related_name='award')
-    award = models.ForeignKey(Award, related_name='reward')
-    artwork = models.ForeignKey('production.Artwork', related_name='rewards')
-    event = models.ForeignKey('production.Event', limit_choices_to=Q(main_event=False), related_name='reward')
-    giver = models.ForeignKey(User, blank=True, null=True, help_text="Who hands the prize")
-    sponsor = models.ForeignKey(Organization, null=True, blank=True, related_name='reward')
-    date = models.DateField(null=True)
-    amount = models.CharField(max_length=255, blank=True, help_text="money, visibility, currency free")
-    note = models.TextField(blank=True, help_text="Free note")
-
-    def __unicode__(self):
-        return u'{0} pour {1}'.format(self.award, self.artwork)
