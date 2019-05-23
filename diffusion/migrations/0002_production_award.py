@@ -23,44 +23,70 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Reward',
+            name='MetaAward',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('date', models.DateField(null=True)),
-                ('amount', models.CharField(help_text=b'money, visibility, currency free', max_length=255, blank=True)),
-                ('note', models.TextField(help_text=b'Free note', blank=True)),
-                ('artwork', models.ForeignKey(related_name='rewards', to='production.Artwork')),
+                ('label', models.CharField(max_length=255, null=True)),
+                ('description', models.TextField(null=True)),
+                ('type', models.CharField(max_length=10, null=True, choices=[(b'INDIVIDUAL', b'Individual'), (b'GROUP', b'Group'), (b'CAREER', b'Career'), (b'OTHER', b'Other')])),
+                ('event', models.ForeignKey(related_name='meta_award', to='production.Event', help_text=b'Main Event', null=True)),
+                ('task', models.ForeignKey(related_name='meta_award', blank=True, to='production.StaffTask', null=True)),
             ],
         ),
         migrations.AddField(
             model_name='award',
-            name='description',
-            field=models.TextField(null=True),
+            name='amount',
+            field=models.CharField(help_text=b'money, visibility, currency free', max_length=255, blank=True),
+        ),
+        migrations.AddField(
+            model_name='award',
+            name='artist',
+            field=models.ManyToManyField(help_text=b'Staff or Artist', related_name='award', to=settings.AUTH_USER_MODEL, blank=True),
+        ),
+        migrations.AddField(
+            model_name='award',
+            name='artwork',
+            field=models.ManyToManyField(related_name='award', to='production.Artwork', blank=True),
+        ),
+        migrations.AddField(
+            model_name='award',
+            name='date',
+            field=models.DateField(null=True),
         ),
         migrations.AddField(
             model_name='award',
             name='event',
-            field=models.ForeignKey(related_name='award', to='production.Event', help_text=b'Main Event', null=True),
+            field=models.ForeignKey(related_name='award', to='production.Event', null=True),
         ),
         migrations.AddField(
             model_name='award',
-            name='label',
-            field=models.CharField(max_length=255, null=True),
+            name='ex_aequo',
+            field=models.BooleanField(default=False),
         ),
         migrations.AddField(
             model_name='award',
-            name='task',
-            field=models.ForeignKey(related_name='award', blank=True, to='production.StaffTask', null=True),
+            name='giver',
+            field=models.ForeignKey(related_name='give_award', blank=True, to=settings.AUTH_USER_MODEL, help_text=b'Who hands the arward', null=True),
         ),
         migrations.AddField(
             model_name='award',
-            name='type',
-            field=models.CharField(max_length=10, null=True, choices=[(b'ARTWORK', b'Artwork'), (b'ARTIST', b'Artist')]),
+            name='note',
+            field=models.TextField(help_text=b'Free note', blank=True),
+        ),
+        migrations.AddField(
+            model_name='award',
+            name='sponsor',
+            field=models.ForeignKey(related_name='award', blank=True, to='people.Organization', null=True),
         ),
         migrations.AddField(
             model_name='place',
             name='address',
             field=models.CharField(max_length=255, null=True),
+        ),
+        migrations.AddField(
+            model_name='place',
+            name='city',
+            field=models.CharField(max_length=50, blank=True),
         ),
         migrations.AddField(
             model_name='place',
@@ -79,11 +105,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='place',
-            name='town',
-            field=models.CharField(max_length=50, blank=True),
-        ),
-        migrations.AddField(
-            model_name='place',
             name='zipcode',
             field=models.CharField(help_text=b'Code postal / Zipcode', max_length=10, blank=True),
         ),
@@ -98,23 +119,8 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(related_name='places', blank=True, to='people.Organization', null=True),
         ),
         migrations.AddField(
-            model_name='reward',
-            name='award',
-            field=models.ForeignKey(related_name='reward', to='diffusion.Award'),
-        ),
-        migrations.AddField(
-            model_name='reward',
-            name='event',
-            field=models.ForeignKey(related_name='reward', to='production.Event'),
-        ),
-        migrations.AddField(
-            model_name='reward',
-            name='giver',
-            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, help_text=b'Who hands the prize', null=True),
-        ),
-        migrations.AddField(
-            model_name='reward',
-            name='sponsor',
-            field=models.ForeignKey(related_name='reward', blank=True, to='people.Organization', null=True),
+            model_name='award',
+            name='meta_award',
+            field=models.ForeignKey(related_name='award', to='diffusion.MetaAward', null=True),
         ),
     ]

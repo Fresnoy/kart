@@ -1,8 +1,8 @@
 from rest_framework import viewsets, permissions
 
-from .models import Place, Award, Reward
+from .models import Place, Award, MetaAward
 
-from .serializers import PlaceSerializer, AwardSerializer, RewardSerializer
+from .serializers import PlaceSerializer, AwardSerializer, MetaAwardSerializer
 
 
 class PlaceViewSet(viewsets.ModelViewSet):
@@ -17,7 +17,7 @@ class AwardViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
-class RewardViewSet(viewsets.ModelViewSet):
-    queryset = Reward.objects.all()
-    serializer_class = RewardSerializer
+class MetaAwardViewSet(viewsets.ModelViewSet):
+    queryset = MetaAward.objects.all()
+    serializer_class = MetaAwardSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)

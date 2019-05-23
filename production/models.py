@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.db.models import Q
 
 from polymorphic.models import PolymorphicModel
 from sortedm2m.fields import SortedManyToManyField
@@ -172,7 +173,7 @@ class Performance(Artwork):
 
 
 class Event(Production):
-    main_event = models.BooleanField(default=False)
+    main_event = models.BooleanField(default=False, help_text="Meta Event")
 
     TYPE_CHOICES = (
         ('FEST', 'Festival'),
@@ -188,7 +189,7 @@ class Event(Production):
     type = models.CharField(max_length=10, choices=TYPE_CHOICES)
 
     starting_date = models.DateTimeField()
-    ending_date = models.DateTimeField(blank=True,)
+    ending_date = models.DateTimeField(blank=True, null=True)
 
     place = models.ForeignKey(Place)
 
@@ -197,7 +198,22 @@ class Event(Production):
     films = models.ManyToManyField(Film, blank=True, related_name='events')
     performances = models.ManyToManyField(Performance, blank=True, related_name='events')
     # subevent can't be main event
-    subevents = models.ManyToManyField('self', limit_choices_to={'main_event': False}, blank=True)
+    subevents = models.ManyToManyField('Event',
+                                       limit_choices_to=Q(main_event=False),
+                                       blank=True,
+                                       related_name='parent_event')
+
+    def __unicode__(self):
+        parent = self
+        while parent.parent_event.exists():
+            parent = parent.parent_event.first()
+            # prevent infinite loop
+            if parent.parent_event.all().filter(id=self.id).exists():
+                break
+
+        if self is parent:
+            return u'{0}'.format(self.title)
+        return u'{0} ({1})'.format(self.title, parent.title)
 
 
 class Exhibition(Event):

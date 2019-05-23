@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django_countries.serializers import CountryFieldMixin
 
-from .models import Place, Award, Reward
+from .models import Place, Award, MetaAward
 from production.serializers import StaffTaskSerializer
 
 
@@ -10,15 +10,15 @@ class PlaceSerializer(CountryFieldMixin, serializers.HyperlinkedModelSerializer)
         model = Place
 
 
-class AwardSerializer(serializers.HyperlinkedModelSerializer):
+class MetaAwardSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Award
+        model = MetaAward
 
     task = StaffTaskSerializer()
 
 
-class RewardSerializer(serializers.HyperlinkedModelSerializer):
+class AwardSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Reward
+        model = Award
 
     artwork = serializers.HyperlinkedRelatedField(read_only=True, view_name='artwork-detail')

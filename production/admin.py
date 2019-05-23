@@ -71,10 +71,13 @@ class ArtworkAdmin(admin.ModelAdmin):
     def get_diffusions(self, obj):
         return ", ".join([event.__unicode__() for event in obj.events.all()])
     get_diffusions.short_description = "Diffusion(s)"
+    get_diffusions.admin_order_field = 'events'
 
     def get_awards(self, obj):
-        return ", ".join([reward.__unicode__() for reward in obj.rewards.all()])
+        return ", ".join([u'{0} {1} ({2})'.format(award.meta_award.label, award.date.year, award.meta_award.event.title)
+                         for award in obj.award.all()])
     get_awards.short_description = "Award(s)"
+    get_awards.admin_order_field = 'award'
 
 
 @admin.register(Installation)
@@ -94,8 +97,8 @@ class PerformanceAdmin(ArtworkAdmin):
 
 @admin.register(Event)
 class EventAdmin(ProductionChildAdmin):
-    list_display = (ProductionChildAdmin.list_display + ('starting_date', 'type',))
-    search_fields = ['title']
+    list_display = (ProductionChildAdmin.list_display + ('starting_date', 'type', 'main_event'))
+    search_fields = ['title', 'parent_event__title']
     inlines = (CollaboratorsInline, PartnersInline)
 
 

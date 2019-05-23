@@ -45,7 +45,7 @@ class ArtworkSerializer(serializers.HyperlinkedModelSerializer):
                                                      read_only=True,
                                                      view_name='event-detail',
                                                      many=True)
-    rewards = serializers.HyperlinkedRelatedField(view_name='reward-detail', read_only=True, many=True)
+    meta_award = serializers.HyperlinkedRelatedField(view_name='meta-award-detail', read_only=True, many=True)
 
 
 class InstallationSerializer(serializers.HyperlinkedModelSerializer):
@@ -59,7 +59,7 @@ class InstallationSerializer(serializers.HyperlinkedModelSerializer):
                                                      read_only=True,
                                                      view_name='event-detail',
                                                      many=True)
-    rewards = serializers.HyperlinkedRelatedField(view_name='reward-detail', read_only=True, many=True)
+    meta_award = serializers.HyperlinkedRelatedField(view_name='meta-award-detail', read_only=True, many=True)
 
 
 class FilmSerializer(serializers.HyperlinkedModelSerializer):
@@ -73,7 +73,7 @@ class FilmSerializer(serializers.HyperlinkedModelSerializer):
                                                      read_only=True,
                                                      view_name='event-detail',
                                                      many=True)
-    rewards = serializers.HyperlinkedRelatedField(view_name='reward-detail', read_only=True, many=True)
+    meta_award = serializers.HyperlinkedRelatedField(view_name='meta-award-detail', read_only=True, many=True)
 
 
 class EventSerializer(serializers.HyperlinkedModelSerializer):
@@ -82,6 +82,7 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
         exclude = ('polymorphic_ctype',)
 
     partners = PartnerSerializer(source='organization_tasks', many=True)
+    parent_event = serializers.HyperlinkedRelatedField(view_name='event-detail', read_only=True, many=True)
 
 
 class PerformanceSerializer(serializers.HyperlinkedModelSerializer):
@@ -95,7 +96,7 @@ class PerformanceSerializer(serializers.HyperlinkedModelSerializer):
                                                      read_only=True,
                                                      view_name='event-detail',
                                                      many=True)
-    rewards = serializers.HyperlinkedRelatedField(view_name='reward-detail', read_only=True, many=True)
+    meta_award = serializers.HyperlinkedRelatedField(view_name='meta-award-detail', read_only=True, many=True)
 
 
 class ArtworkPolymorphicSerializer(PolymorphicSerializer):

@@ -31,7 +31,7 @@ from production.views import (
     ItineraryViewSet,
     CollaboratorViewSet, PartnerViewSet, OrganizationTaskViewSet
 )
-from diffusion.views import PlaceViewSet, AwardViewSet, RewardViewSet
+from diffusion.views import PlaceViewSet, AwardViewSet, MetaAwardViewSet
 from common.views import BTBeaconViewSet, WebsiteViewSet
 from assets.views import GalleryViewSet, MediumViewSet
 
@@ -78,8 +78,8 @@ v2_api.register(r'production/performance', PerformanceViewSet)
 v2_api.register(r'production/collaborator', CollaboratorViewSet)
 v2_api.register(r'production/partner', PartnerViewSet)
 v2_api.register(r'diffusion/place', PlaceViewSet)
+v2_api.register(r'diffusion/meta-award', MetaAwardViewSet)
 v2_api.register(r'diffusion/award', AwardViewSet)
-v2_api.register(r'diffusion/reward', RewardViewSet)
 v2_api.register(r'common/beacon', BTBeaconViewSet)
 v2_api.register(r'common/website', WebsiteViewSet)
 v2_api.register(r'assets/gallery', GalleryViewSet)

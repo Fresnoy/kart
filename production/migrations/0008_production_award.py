@@ -8,7 +8,7 @@ import common.utils
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('diffusion', '0002_diffusion'),
+        ('diffusion', '0002_production_award'),
         ('production', '0007_task_and_organisation'),
     ]
 
@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='event',
             name='main_event',
-            field=models.BooleanField(default=False),
+            field=models.BooleanField(default=False, help_text=b'Meta Event'),
         ),
         migrations.AddField(
             model_name='film',
@@ -26,7 +26,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='event',
             name='ending_date',
-            field=models.DateTimeField(blank=True),
+            field=models.DateTimeField(null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='event',
+            name='subevents',
+            field=models.ManyToManyField(related_name='parent_event', to='production.Event', blank=True),
         ),
         migrations.AlterField(
             model_name='event',
