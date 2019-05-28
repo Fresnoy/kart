@@ -59,7 +59,7 @@ class Award(models.Model):
     """
     meta_award = models.ForeignKey(MetaAward, null=True, blank=False, related_name='award')
     artwork = models.ManyToManyField('production.Artwork', blank=True, related_name='award')
-    # artist is Artist and Staff so
+    # artist is Artist or Staff
     artist = models.ManyToManyField(User,
                                     blank=True,
                                     limit_choices_to=Q(artist__isnull=False) | Q(staff__isnull=False),
@@ -71,7 +71,7 @@ class Award(models.Model):
                               limit_choices_to=Q(main_event=False),
                               related_name='award')
     ex_aequo = models.BooleanField(default=False)
-    giver = models.ForeignKey(User, blank=True, null=True, help_text="Who hands the arward", related_name='give_award')
+    giver = models.ManyToManyField(User, blank=True, help_text="Who hands the arward", related_name='give_award')
     sponsor = models.ForeignKey(Organization, null=True, blank=True, related_name='award')
     date = models.DateField(null=True)
     amount = models.CharField(max_length=255, blank=True, help_text="money, visibility, currency free")
@@ -80,9 +80,6 @@ class Award(models.Model):
     def __unicode__(self):
         artworks = ", ".join([artwork.__unicode__() for artwork in self.artwork.all()])
         return u'{0} - {1} pour {2}'.format(self.date.year, self.meta_award, artworks)
-
-
-# Award.artwork.through.__unicode__ = lambda x: x.artwork.__unicode__
 
 
 class Diffusion(models.Model):

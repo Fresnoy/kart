@@ -66,7 +66,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='award',
             name='giver',
-            field=models.ForeignKey(related_name='give_award', blank=True, to=settings.AUTH_USER_MODEL, help_text=b'Who hands the arward', null=True),
+            field=models.ManyToManyField(help_text=b'Who hands the arward', related_name='give_award', to=settings.AUTH_USER_MODEL, blank=True),
         ),
         migrations.AddField(
             model_name='award',

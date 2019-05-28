@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.db import models
+from django.contrib.auth.models import User
 
 from pagedown.widgets import AdminPagedownWidget
 
@@ -28,6 +29,12 @@ class AwardAdmin(admin.ModelAdmin):
         return ", ".join([artwork.__unicode__() for artwork in obj.artwork.all()])
     get_artwork.short_description = "Oeuvre(s)"
     get_artwork.admin_order_field = 'artwork'
+
+    # order manytomany artist field
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == "artist":
+            kwargs["queryset"] = User.objects.order_by('first_name')
+        return super(admin.ModelAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 
 class PlaceAdmin(admin.ModelAdmin):

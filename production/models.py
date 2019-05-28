@@ -204,16 +204,9 @@ class Event(Production):
                                        related_name='parent_event')
 
     def __unicode__(self):
-        parent = self
-        while parent.parent_event.exists():
-            parent = parent.parent_event.first()
-            # prevent infinite loop
-            if parent.parent_event.all().filter(id=self.id).exists():
-                break
-
-        if self is parent:
-            return u'{0}'.format(self.title)
-        return u'{0} ({1})'.format(self.title, parent.title)
+        if self.parent_event.exists():
+            return u'{0} ({1})'.format(self.title, self.parent_event.first().title)
+        return u'{0}'.format(self.title)
 
 
 class Exhibition(Event):
