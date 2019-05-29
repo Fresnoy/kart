@@ -11,5 +11,5 @@ from graphene_django.views import GraphQLView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('people/', include('people.urls')),
-    path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
+    path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=False))),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

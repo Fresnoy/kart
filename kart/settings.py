@@ -41,6 +41,7 @@ DATABASES = {
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'common.apps.CommonConfig',
     'people.apps.PeopleConfig',
     'django.contrib.admin',
@@ -57,6 +58,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -103,7 +105,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:4200",
+]
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
