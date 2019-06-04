@@ -19,7 +19,7 @@ class PromotionSerializer(serializers.HyperlinkedModelSerializer):
 class StudentAutocompleteSerializer(HaystackSerializer):
     class Meta:
         index_classes = [StudentIndex]
-        fields = ["firstname", "lastname"]
+        # fields = ["firstname", "lastname"]
         ignore_fields = ["autocomplete"]
 
         # The `field_aliases` attribute can be used in order to alias a
