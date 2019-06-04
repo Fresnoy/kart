@@ -91,16 +91,16 @@ class TestApplicationEndPoint(TestCase):
         """
         Test creating an studentapplication
         """
-        # set up a campain
+        # set up a campaign
         promotion = Promotion(starting_year=2000, ending_year=2001)
         promotion.save()
-        campain = StudentApplicationSetup(candidature_date_start=timezone.now(),
-                                          candidature_date_end=timezone.now() + datetime.timedelta(days=1),
-                                          promotion=promotion,
-                                          is_current_setup=True,)
-        campain.save()
+        campaign = StudentApplicationSetup(candidature_date_start=timezone.now(),
+                                           candidature_date_end=timezone.now() + datetime.timedelta(days=1),
+                                           promotion=promotion,
+                                           is_current_setup=True,)
+        campaign.save()
         # add a candidature
-        application = StudentApplication(artist=self.artist, campain=campain)
+        application = StudentApplication(artist=self.artist, campaign=campaign)
         application.save()
         self.client_auth.force_authenticate(user=self.user)
         studentapplication_url = reverse('studentapplication-detail', kwargs={'pk': application.pk})
@@ -121,17 +121,17 @@ class TestApplicationSetupEndPoint(TestCase):
     def setUp(self):
         promotion = Promotion(starting_year=2000, ending_year=2001)
         promotion.save()
-        campain = StudentApplicationSetup(candidature_date_start=timezone.now() - datetime.timedelta(days=1),
-                                          candidature_date_end=timezone.now() + datetime.timedelta(days=1),
-                                          promotion=promotion,
-                                          is_current_setup=True,)
-        campain.save()
+        campaign = StudentApplicationSetup(candidature_date_start=timezone.now() - datetime.timedelta(days=1),
+                                           candidature_date_end=timezone.now() + datetime.timedelta(days=1),
+                                           promotion=promotion,
+                                           is_current_setup=True,)
+        campaign.save()
 
-        campain = StudentApplicationSetup(candidature_date_start=timezone.now() - datetime.timedelta(days=2),
-                                          candidature_date_end=timezone.now() - datetime.timedelta(days=1),
-                                          promotion=promotion,
-                                          is_current_setup=False,)
-        campain.save()
+        campaign = StudentApplicationSetup(candidature_date_start=timezone.now() - datetime.timedelta(days=2),
+                                           candidature_date_end=timezone.now() - datetime.timedelta(days=1),
+                                           promotion=promotion,
+                                           is_current_setup=False,)
+        campaign.save()
 
     def tearDown(self):
         pass
@@ -140,7 +140,7 @@ class TestApplicationSetupEndPoint(TestCase):
         url = reverse('studentapplicationsetup-list')
         return self.client.get(url)
 
-    def _get_current_campain(self):
+    def _get_current_campaign(self):
         url = reverse('studentapplicationsetup-list')
         return self.client.get("{}?is_current_setup=2".format(url))
 
@@ -149,17 +149,17 @@ class TestApplicationSetupEndPoint(TestCase):
         Test list of applications without authentification
         """
         response = self._get_list()
-        campain = json.loads(response.content)
+        campaign = json.loads(response.content)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(campain), 2)
+        self.assertEqual(len(campaign), 2)
 
-    def test_campain_open(self):
+    def test_campaign_open(self):
         """
         Test list of applications without authentification
         """
-        response = self._get_current_campain()
-        campain = json.loads(response.content)
+        response = self._get_current_campaign()
+        campaign = json.loads(response.content)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(campain), 1)
+        self.assertEqual(len(campaign), 1)
         # info is True
-        self.assertTrue(campain[0]['candidature_open'])
+        self.assertTrue(campaign[0]['candidature_open'])

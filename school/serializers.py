@@ -36,7 +36,7 @@ class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
         model = StudentApplication
         fields = ('id',
                   'url',
-                  'campain',
+                  'campaign',
                   'artist',
                   'current_year_application_count',
                   'identity_card',

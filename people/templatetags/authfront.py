@@ -13,6 +13,7 @@ register = template.Library()
 def authfront_reset_password_link(token, email):
     setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
     url = ""
+    print(register)
 
     try:
         user = User.objects.get(email=email)

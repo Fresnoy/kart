@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import locale
+import pytz
 from django.utils import timezone
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -52,7 +53,7 @@ def send_candidature_completed_email_to_admin(request, user, application):
             'application': application
         }
     )
-    mail_sent = send_mail('Envoie d\'une candidature',
+    mail_sent = send_mail('Envoi d\'une candidature',
                           msg_plain,
                           'selection@lefresnoy.net',
                           ['selection@lefresnoy.net'],
@@ -73,8 +74,9 @@ def setLocale(str):
 
 def send_candidature_complete_email_to_candidat(request, candidat, application):
     setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
-    # set locale interviews date
+    # set locale  interviews date
     interviews_dates = {'fr': '', "en": ''}
+    # having name of day/month in rigth language
     setLocale('fr_FR.utf8')
     interviews_dates['fr'] = "du {0} au {1}".format(setup.interviews_start_date.strftime("%A %d %B"),
                                                     setup.interviews_end_date.strftime("%A %d %B %Y")
@@ -114,19 +116,63 @@ def send_candidature_complete_email_to_candidat(request, candidat, application):
     return mail_sent
 
 
-def candidature_close(campain=None):
+def send_interview_selection_email_to_candidat(request, candidat, application):
+    # set var for email template
+    interview_date = {'fr': '', "en": ''}
+    # set locale interviews date
+    # having name of day/month in rigth language
+    setLocale('fr_FR.utf8')
+    # convert utc to PARIS's time
+    tz = pytz.timezone("Europe/Paris")
+    interview_date_paris = application.interview_date.astimezone(tz)
+    # get French string date : lundi 01 juillet 2019 à 13h30
+    interview_date['fr'] = 'Le {0} à {1}'.format(
+        interview_date_paris.strftime("%A %d %B %Y"),
+        interview_date_paris.strftime("%Hh%M")
+    )
+    setLocale('en_US.utf8')
+    # get English string date : monday 01 july 2019 à 01h30 PM
+    interview_date['en'] = "{0}".format(
+        interview_date_paris.strftime("%A %d %B %Y at %I.%M %p")
+    )
+    # Send email
+    msg_plain = render_to_string(
+        'emails/send_interview_selection_to_user.txt',
+        {
+            'user': candidat,
+            'interview_date': interview_date,
+        }
+    )
+    msg_html = render_to_string(
+        'emails/send_interview_selection_to_user.html',
+        {
+            'user': candidat,
+            'interview_date': interview_date,
+        }
+    )
+    mail_sent = send_mail('Le Fresnoy présélection / preselection',
+                          msg_plain,
+                          'selection@lefresnoy.net',
+                          [candidat.email],
+                          html_message=msg_html,
+                          )
+
+    return mail_sent
+
+
+def candidature_close(campaign=None):
     """
     Test if a candidature is closed
     """
-    # Try to get current campain
-    if not campain:
-        campain = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
-    if not campain:
+    # Try to get current campaign
+    if not campaign:
+        campaign = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
+    if not campaign:
         return False
 
     now = timezone.localtime(timezone.now())
-    if (now < campain.candidature_date_start or
-            now > campain.candidature_date_end):
+    if (now < campaign.candidature_date_start or
+            now > campaign.candidature_date_end):
         return True
 
     return False

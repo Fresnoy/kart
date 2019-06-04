@@ -94,7 +94,7 @@ class StudentApplication(models.Model):
     Fresnoy's School application procedure
     """
     artist = models.ForeignKey(Artist, related_name='student_application')
-    campain = models.ForeignKey(StudentApplicationSetup, blank=True, null=True, related_name='applications')
+    campaign = models.ForeignKey(StudentApplicationSetup, blank=True, null=True, related_name='applications')
 
     current_year_application_count = models.CharField(
         max_length=8,
@@ -247,7 +247,7 @@ class StudentApplication(models.Model):
         default=False,
         help_text="Administration - Is the candidat selected for the Interview"
     )
-    interview_date = models.DateField(
+    interview_date = models.DateTimeField(
         null=True,
         blank=True,
         help_text="Administration - Date for interview"
