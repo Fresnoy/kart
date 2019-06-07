@@ -96,7 +96,7 @@ class Artwork(Production):
 
     beacons = models.ManyToManyField(BTBeacon, related_name="%(class)ss", blank=True)
 
-    keywords = TaggableManager()
+    keywords = TaggableManager(blank=True,)
 
     def __unicode__(self):
         authors = ", ".join([author.__unicode__() for author in self.authors.all()])
