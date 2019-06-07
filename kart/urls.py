@@ -1,7 +1,8 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django import views as django_views
 
 from tastypie.api import Api
 from rest_framework import routers
@@ -18,8 +19,9 @@ from school.api import PromotionResource, StudentResource, StudentApplicationRes
 
 from people.views import (
     ArtistViewSet, UserViewSet, FresnoyProfileViewSet,
-    StaffViewSet, OrganizationViewSet
+    StaffViewSet, OrganizationViewSet,
 )
+from people import views as people_views
 from school.views import (
     PromotionViewSet, StudentViewSet,
     StudentAutocompleteSearchViewSet, StudentApplicationViewSet, StudentApplicationSetupViewSet
@@ -34,6 +36,7 @@ from production.views import (
 from diffusion.views import PlaceViewSet, AwardViewSet, MetaAwardViewSet
 from common.views import BTBeaconViewSet, WebsiteViewSet
 from assets.views import GalleryViewSet, MediumViewSet
+from assets import views as assets_views
 
 
 admin.autodiscover()
@@ -86,32 +89,32 @@ v2_api.register(r'assets/gallery', GalleryViewSet)
 v2_api.register(r'assets/medium', MediumViewSet)
 
 
-urlpatterns = patterns('',
+urlpatterns = [
                        url(r'^v2/', include(v2_api.urls)),
                        url(r'^v2/auth/', obtain_jwt_token),
                        url(r'^account/activate/%s/$' % settings.PASSWORD_TOKEN,
-                           'people.views.activate', name='user-activate'),
+                           people_views.activate, name='user-activate'),
                        # django user registration
                        url(r'^v2/rest-auth/', include('rest_auth.urls')),
                        url(r'^v2/rest-auth/registration/', include('rest_auth.registration.urls')),
                        # vimeo
                        url(r'^v2/assets/vimeo/upload/token',
-                           'assets.views.vimeo_get_upload_token', name='vimeo-upload-token'),
+                           assets_views.vimeo_get_upload_token, name='vimeo-upload-token'),
                        # send emails
                        url(r'^v2/people/send-emails',
-                           'people.views.send_custom_emails', name='send-emails'),
+                           people_views.send_custom_emails, name='send-emails'),
 
                        # api v1
-                       (r'^', include(v1_api.urls)),
-                       (r'^grappelli/', include('grappelli.urls')),
-                       url('^markdown/', include('django_markdown.urls')),
+                       url(r'^', include(v1_api.urls)),
+                       url(r'^grappelli/', include('grappelli.urls')),
+                       url(r'^markdown/', include('django_markdown.urls')),
                        url(r'v1/doc/',
                            include('tastypie_swagger.urls', namespace='kart_tastypie_swagger'),
                            kwargs={"tastypie_api_module": "kart.urls.v1_api",
                                    "namespace": "kart_tastypie_swagger"}),
                        url(r'^static/(?P<path>.*)$',
-                           'django.views.static.serve',
+                           django_views.static.serve,
                            {'document_root': settings.STATIC_ROOT}),
                        url(r'^admin/', include(admin.site.urls)) \
-                       ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+                       ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
+                       + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

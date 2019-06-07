@@ -5,6 +5,8 @@ from django.db.models import Q
 from polymorphic.models import PolymorphicModel
 from sortedm2m.fields import SortedManyToManyField
 
+from taggit.managers import TaggableManager
+
 from assets.models import Gallery
 from common.models import Website, BTBeacon
 from common.utils import make_filepath
@@ -93,6 +95,8 @@ class Artwork(Production):
     authors = models.ManyToManyField(Artist, related_name="%(class)ss")
 
     beacons = models.ManyToManyField(BTBeacon, related_name="%(class)ss", blank=True)
+
+    keywords = TaggableManager()
 
     def __unicode__(self):
         authors = ", ".join([author.__unicode__() for author in self.authors.all()])

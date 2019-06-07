@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from rest_polymorphic.serializers import PolymorphicSerializer
+from taggit_serializer.serializers import (TagListSerializerField,
+                                           TaggitSerializer)
 
 from .models import (
     Film, FilmGenre, Installation,
@@ -37,7 +39,7 @@ class PartnerSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('organization', 'task')
 
 
-class ArtworkSerializer(serializers.HyperlinkedModelSerializer):
+class ArtworkSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Artwork
 
@@ -62,7 +64,7 @@ class InstallationSerializer(serializers.HyperlinkedModelSerializer):
     award = serializers.HyperlinkedRelatedField(view_name='award-detail', read_only=True, many=True)
 
 
-class FilmSerializer(serializers.HyperlinkedModelSerializer):
+class FilmSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Film
         exclude = ('polymorphic_ctype',)
@@ -74,6 +76,7 @@ class FilmSerializer(serializers.HyperlinkedModelSerializer):
                                                      view_name='event-detail',
                                                      many=True)
     award = serializers.HyperlinkedRelatedField(view_name='award-detail', read_only=True, many=True)
+    keywords = TagListSerializerField()
 
 
 class EventSerializer(serializers.HyperlinkedModelSerializer):

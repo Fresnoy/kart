@@ -1,4 +1,5 @@
-from rest_framework import viewsets, permissions, filters
+from rest_framework import viewsets, permissions
+from django_filters import rest_framework as filters
 
 from .models import (Artwork, Film, Installation, Performance,
                      FilmGenre, InstallationGenre, Event,
@@ -17,7 +18,25 @@ class ArtworkViewSet(viewsets.ModelViewSet):
     queryset = Artwork.objects.all()
     serializer_class = ArtworkPolymorphicSerializer
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
-    filter_backends = (filters.DjangoFilterBackend,)
+
+
+class TagsFilter(filters.CharFilter):
+
+    def filter(self, qs, value):
+        if value:
+            lookup_field = self.field_name + "__name__in"
+            tags = [tag.strip() for tag in value.split(',')]
+            qs = qs.filter(**{lookup_field: tags}).distinct()
+
+        return qs
+
+
+class ArtworkFilter(filters.FilterSet):
+    keywords = TagsFilter(field_name="keywords")
+
+    class Meta:
+        model = Film
+        fields = ['genres', 'keywords']
 
 
 class FilmViewSet(viewsets.ModelViewSet):
@@ -25,7 +44,7 @@ class FilmViewSet(viewsets.ModelViewSet):
     serializer_class = FilmSerializer
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('genres',)
+    filter_class = ArtworkFilter
 
 
 class InstallationViewSet(viewsets.ModelViewSet):
