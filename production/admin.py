@@ -97,6 +97,7 @@ class PerformanceAdmin(ArtworkAdmin):
 
 @admin.register(Event)
 class EventAdmin(ProductionChildAdmin):
+    show_in_index = True
     list_display = (ProductionChildAdmin.list_display + ('starting_date', 'type', 'main_event'))
     search_fields = ['title', 'parent_event__title']
     inlines = (CollaboratorsInline, PartnersInline)
