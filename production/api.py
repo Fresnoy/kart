@@ -155,7 +155,7 @@ class InstallationResource(AbstractArtworkResource):
         filtering = {'authors': ALL_WITH_RELATIONS, 'events': ALL_WITH_RELATIONS}
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
-    events = fields.ToManyField('production.api.EventResource', 'events', full=False)
+    events = fields.ToManyField('production.api.EventResource', 'events', blank=True, full=False)
     genres = fields.ToManyField(InstallationGenreResource, 'genres', full=True)
 
 
@@ -172,7 +172,7 @@ class FilmResource(AbstractArtworkResource):
         filtering = {'authors': ALL_WITH_RELATIONS, 'events': ALL_WITH_RELATIONS, 'genres': ALL_WITH_RELATIONS}
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
-    events = fields.ToManyField('production.api.EventResource', 'events', full=False)
+    events = fields.ToManyField('production.api.EventResource', 'events', blank=True, full=False)
     genres = fields.ToManyField(FilmGenreResource, 'genres', full=True, full_detail=True, full_list=False)
 
 
@@ -184,7 +184,7 @@ class PerformanceResource(AbstractArtworkResource):
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
 
-    events = fields.ToManyField('production.api.EventResource', 'events', full=False)
+    events = fields.ToManyField('production.api.EventResource', 'events', blank=True, full=False)
 
 
 class EventResource(ProductionResource):
@@ -201,7 +201,7 @@ class EventResource(ProductionResource):
 
     performances = fields.ToManyField(PerformanceResource, 'performances', full=True, full_list=False, full_detail=True)
 
-    subevents = fields.ToManyField('production.api.EventResource', 'subevents')
+    subevents = fields.ToManyField('production.api.EventResource', 'subevents', blank=True, full=False)
 
 
 class ItineraryResource(ModelResource):
