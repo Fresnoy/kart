@@ -8,11 +8,13 @@ from production.serializers import StaffTaskSerializer
 class PlaceSerializer(CountryFieldMixin, serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Place
+        fields = '__all__'
 
 
 class MetaAwardSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = MetaAward
+        fields = '__all__'
 
     task = StaffTaskSerializer()
 
@@ -20,5 +22,6 @@ class MetaAwardSerializer(serializers.HyperlinkedModelSerializer):
 class AwardSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Award
+        fields = '__all__'
 
     artwork = serializers.HyperlinkedRelatedField(read_only=True, view_name='artwork-detail')

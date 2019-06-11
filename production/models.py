@@ -176,6 +176,10 @@ class Performance(Artwork):
     pass
 
 
+def main_event_false_limit():
+    return {'pk__in': Event.objects.filter(Q(main_event=False)).values_list('id', flat=True)}
+
+
 class Event(Production):
     main_event = models.BooleanField(default=False, help_text="Meta Event")
 
@@ -203,7 +207,7 @@ class Event(Production):
     performances = models.ManyToManyField(Performance, blank=True, related_name='events')
     # subevent can't be main event
     subevents = models.ManyToManyField('Event',
-                                       limit_choices_to=Q(main_event=False),
+                                       limit_choices_to=main_event_false_limit,
                                        blank=True,
                                        related_name='parent_event')
 

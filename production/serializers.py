@@ -16,6 +16,7 @@ from people.serializers import StaffSerializer
 class OrganizationTaskSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = OrganizationTask
+        fields = '__all__'
 
 
 class StaffTaskSerializer(serializers.HyperlinkedModelSerializer):
@@ -42,6 +43,7 @@ class PartnerSerializer(serializers.HyperlinkedModelSerializer):
 class ArtworkSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Artwork
+        fields = '__all__'
 
     diffusions = serializers.HyperlinkedRelatedField(source='events',
                                                      read_only=True,
@@ -116,13 +118,16 @@ class ArtworkPolymorphicSerializer(PolymorphicSerializer):
 class FilmGenreSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = FilmGenre
+        fields = '__all__'
 
 
 class ItinerarySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Itinerary
+        fields = '__all__'
 
 
 class InstallationGenreSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = InstallationGenre
+        fields = '__all__'

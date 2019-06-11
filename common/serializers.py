@@ -6,6 +6,7 @@ from .models import BTBeacon, Website
 class BTBeaconSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = BTBeacon
+        fields = '__all__'
 
 
 class WebsiteSerializer(serializers.HyperlinkedModelSerializer):

@@ -117,3 +117,4 @@ class StaffSerializer(serializers.HyperlinkedModelSerializer):
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Organization
+        fields = '__all__'

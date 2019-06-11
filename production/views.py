@@ -1,5 +1,6 @@
 from rest_framework import viewsets, permissions
 from django_filters import rest_framework as filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import (Artwork, Film, Installation, Performance,
                      FilmGenre, InstallationGenre, Event,
@@ -43,7 +44,7 @@ class FilmViewSet(viewsets.ModelViewSet):
     queryset = Film.objects.all()
     serializer_class = FilmSerializer
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend,)
     filter_class = ArtworkFilter
 
 
