@@ -88,7 +88,7 @@ class ArtworkResource(AbstractArtworkResource):
         # cache = SimpleCache(timeout=10)
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
-    events = fields.ToManyField('production.api.EventResource', 'events', full=False)
+    events = fields.ToManyField('production.api.EventResource', 'events', blank= True, full=False)
 
     def dehydrate(self, bundle):
         res_types = (InstallationResource, FilmResource, PerformanceResource)
