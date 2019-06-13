@@ -28,7 +28,7 @@ class StaffTaskSerializer(serializers.HyperlinkedModelSerializer):
 class ProductionStaffTaskSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ProductionStaffTask
-        fields = ('staff', 'task')
+        fields = ('url', 'staff', 'task')
 
     staff = StaffSerializer()
     task = StaffTaskSerializer()
@@ -57,8 +57,8 @@ class InstallationSerializer(serializers.HyperlinkedModelSerializer):
         model = Installation
         exclude = ('polymorphic_ctype',)
 
-    collaborators = ProductionStaffTaskSerializer(source='staff_tasks', many=True)
-    partners = PartnerSerializer(source='organization_tasks', many=True)
+    collaborators = ProductionStaffTaskSerializer(source='staff_tasks', many=True, read_only=True)
+    partners = PartnerSerializer(source='organization_tasks', many=True, read_only=True)
     diffusions = serializers.HyperlinkedRelatedField(source='events',
                                                      read_only=True,
                                                      view_name='event-detail',
@@ -71,8 +71,8 @@ class FilmSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer):
         model = Film
         exclude = ('polymorphic_ctype',)
 
-    collaborators = ProductionStaffTaskSerializer(source='staff_tasks', many=True)
-    partners = PartnerSerializer(source='organization_tasks', many=True)
+    collaborators = ProductionStaffTaskSerializer(source='staff_tasks', many=True, read_only=True,)
+    partners = PartnerSerializer(source='organization_tasks', many=True, read_only=True)
     diffusions = serializers.HyperlinkedRelatedField(source='events',
                                                      read_only=True,
                                                      view_name='event-detail',
@@ -86,7 +86,7 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
         model = Event
         exclude = ('polymorphic_ctype',)
 
-    partners = PartnerSerializer(source='organization_tasks', many=True)
+    partners = PartnerSerializer(source='organization_tasks', many=True, read_only=True)
     parent_event = serializers.HyperlinkedRelatedField(view_name='event-detail', read_only=True, many=True)
     meta_award = serializers.HyperlinkedRelatedField(view_name='award-detail', read_only=True, many=True)
 
@@ -96,7 +96,7 @@ class PerformanceSerializer(serializers.HyperlinkedModelSerializer):
         model = Performance
         exclude = ('polymorphic_ctype',)
 
-    collaborators = ProductionStaffTaskSerializer(source='staff_tasks', many=True)
+    collaborators = ProductionStaffTaskSerializer(source='staff_tasks', many=True, read_only=True)
     partners = PartnerSerializer(source='organization_tasks', many=True)
     diffusions = serializers.HyperlinkedRelatedField(source='events',
                                                      read_only=True,
