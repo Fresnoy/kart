@@ -5,7 +5,7 @@ django-cors-headers==1.1.0
 django-countries==5.1
 django-taggit==0.24.0
 django-taggit-serializer==0.1.7
-django-extensions==2.1.7
+django-extensions==2.1.9
 django-grappelli==2.12.3
 django-tastypie==0.14.0
 djangorestframework==3.9.1
@@ -24,7 +24,7 @@ git+https://github.com/oblivio/django_markdown.git
 # django-uuidfield==0.5
 git+https://github.com/lucaswiman/django-uuidfield.git
 django-sortedm2m==1.5.0
-django-haystack==2.4.1
+django-haystack==2.8.1
 drf-haystack==1.5.6
 elasticsearch==2.3.0
 elasticstack==0.1.1
