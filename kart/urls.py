@@ -14,7 +14,7 @@ from production.api import (
     PerformanceResource, EventResource, ExhibitionResource,
     ItineraryResource, ArtworkResource, StaffTaskResource
 )
-from diffusion.api import PlaceResource
+from diffusion.api import PlaceResource, AwardResource, MetaAwardResource
 from school.api import PromotionResource, StudentResource, StudentApplicationResource
 
 from people.views import (
@@ -54,6 +54,8 @@ v1_api.register(StudentApplicationResource())
 v1_api.register(ArtistResource())
 v1_api.register(StaffResource())
 v1_api.register(PlaceResource())
+v1_api.register(AwardResource())
+v1_api.register(MetaAwardResource())
 v1_api.register(ExhibitionResource())
 v1_api.register(ItineraryResource())
 v1_api.register(ArtworkResource())
