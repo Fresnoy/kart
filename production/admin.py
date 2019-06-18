@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db import models
 
 from pagedown.widgets import AdminPagedownWidget
-from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin
+from polymorphic.admin import PolymorphicChildModelAdmin
 
 from .models import (
     Production, Artwork, FilmGenre, Film,
@@ -41,8 +41,8 @@ class InstallationChildAdmin(ArtworkChildAdmin):
     pass
 
 
-# @admin.register(Production)
-class ProductionParentAdmin(PolymorphicParentModelAdmin):
+@admin.register(Production)
+class ProductionParentAdmin(PolymorphicChildModelAdmin):
     list_display = ('title', 'subtitle',)
     search_fields = ['title']
     inlines = (CollaboratorsInline, PartnersInline)
