@@ -14,7 +14,7 @@ from assets.api import GalleryResource
 from people.api import ArtistResource, OrganizationResource, StaffResource
 from diffusion.api import PlaceResource
 
-from .models import Installation, Film, Performance, Event, Itinerary, Artwork, Task
+from .models import Installation, Film, Performance, Event, Itinerary, Artwork
 from .models import ProductionOrganizationTask, OrganizationTask
 from .models import FilmGenre, StaffTask, ProductionStaffTask
 
@@ -176,6 +176,7 @@ class FilmResource(AbstractArtworkResource):
     events = fields.ToManyField('production.api.EventResource', 'events', blank=True, full=False)
     genres = fields.ToManyField(FilmGenreResource, 'genres', full=True, full_detail=True, full_list=False)
     awards = fields.ToManyField('diffusion.api.AwardResource', 'award', blank=True, full=False)
+
 
 class PerformanceResource(AbstractArtworkResource):
     class Meta:

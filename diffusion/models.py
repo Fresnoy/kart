@@ -30,12 +30,13 @@ class Place(models.Model):
 def main_event_true():
     from production.models import Event
     return {'pk__in': Event.objects.filter(Q(main_event=True))
-                                             .values_list('id', flat=True)}
+                                   .values_list('id', flat=True)}
+
 
 def main_event_false():
     from production.models import Event
     return {'pk__in': Event.objects.filter(Q(main_event=False))
-                                             .values_list('id', flat=True)}
+                                   .values_list('id', flat=True)}
 
 
 class MetaAward(models.Model):
@@ -66,7 +67,7 @@ class MetaAward(models.Model):
 
 def staff_and_artist_user_limit():
     return {'pk__in': User.objects.filter(Q(artist__isnull=False) | Q(staff__isnull=False))
-                                   .values_list('id', flat=True)}
+                                  .values_list('id', flat=True)}
 
 
 class Award(models.Model):
