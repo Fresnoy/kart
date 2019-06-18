@@ -24,4 +24,4 @@ class AwardSerializer(serializers.HyperlinkedModelSerializer):
         model = Award
         fields = '__all__'
 
-    artwork = serializers.HyperlinkedRelatedField(read_only=True, view_name='artwork-detail')
+    artwork = serializers.HyperlinkedRelatedField(read_only=True, view_name='artwork-detail', many=True)

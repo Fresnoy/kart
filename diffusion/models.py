@@ -27,6 +27,17 @@ class Place(models.Model):
         return u'{0} ({1})'.format(self.name, extra_info)
 
 
+def main_event_true():
+    from production.models import Event
+    return {'pk__in': Event.objects.filter(Q(main_event=True))
+                                             .values_list('id', flat=True)}
+
+def main_event_false():
+    from production.models import Event
+    return {'pk__in': Event.objects.filter(Q(main_event=False))
+                                             .values_list('id', flat=True)}
+
+
 class MetaAward(models.Model):
     """
     Award from main event
@@ -43,7 +54,7 @@ class MetaAward(models.Model):
 
     event = models.ForeignKey('production.Event',
                               null=True,
-                              limit_choices_to=Q(main_event=True),
+                              limit_choices_to=main_event_true,
                               help_text="Main Event",
                               related_name='meta_award')
     type = models.CharField(max_length=10, null=True, choices=TYPE_CHOICES)
@@ -51,6 +62,11 @@ class MetaAward(models.Model):
 
     def __unicode__(self):
         return u'{0} ({2}, cat. {1})'.format(self.label, self.task, self.event)
+
+
+def staff_and_artist_user_limit():
+    return {'pk__in': User.objects.filter(Q(artist__isnull=False) | Q(staff__isnull=False))
+                                   .values_list('id', flat=True)}
 
 
 class Award(models.Model):
@@ -62,13 +78,13 @@ class Award(models.Model):
     # artist is Artist or Staff
     artist = models.ManyToManyField(User,
                                     blank=True,
-                                    limit_choices_to=Q(artist__isnull=False) | Q(staff__isnull=False),
+                                    limit_choices_to=staff_and_artist_user_limit,
                                     related_name='award',
                                     help_text="Staff or Artist")
     event = models.ForeignKey('production.Event',
                               null=True,
                               blank=False,
-                              limit_choices_to=Q(main_event=False),
+                              limit_choices_to=main_event_false,
                               related_name='award')
     ex_aequo = models.BooleanField(default=False)
     giver = models.ManyToManyField(User, blank=True, help_text="Who hands the arward", related_name='give_award')
