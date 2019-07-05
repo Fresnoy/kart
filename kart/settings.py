@@ -22,6 +22,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '@_#wer-r9+a4lvjc7&r93wq*=df1_x#ecs^^t%35lf@f9cb*i('
 
+# From Kart v1 ------------ not tested 
+PASSWORD_TOKEN = r'(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})'
+
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -42,14 +46,22 @@ DATABASES = {
 
 INSTALLED_APPS = [
     'corsheaders',
-    'common.apps.CommonConfig',
+    # Kart apps
     'people.apps.PeopleConfig',
+    'school.apps.SchoolConfig',
+    'assets.apps.AssetsConfig',
+    'common.apps.CommonConfig',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'guardian',
+    'django_markdown',
+    'rest_framework',
+    'rest_framework.authtoken',
     'languages',
     'django_extensions',
     'graphene_django',
@@ -86,6 +98,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'kart.wsgi.application'
 
+
+# Required by guardian
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend', 'guardian.backends.ObjectPermissionBackend')
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -127,6 +142,14 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
 
 
 # graphql integration

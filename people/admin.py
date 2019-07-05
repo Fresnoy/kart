@@ -42,6 +42,10 @@ class FresnoyProfileAdmin(UserAdmin):
 
 
 
+
+
 admin.site.unregister(User)
 admin.site.register(User, FresnoyProfileAdmin)
 admin.site.register(Artist, ArtistAdmin)
+# admin.site.register(Staff)
+# admin.site.register(Organization, OrganizationAdmin)
