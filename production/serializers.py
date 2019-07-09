@@ -49,8 +49,8 @@ class ArtworkSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
     collaborators = ProductionStaffTaskSerializer(source='staff_tasks', many=True, read_only=True)
     partners = PartnerSerializer(source='organization_tasks', many=True, read_only=True)
     diffusion = serializers.HyperlinkedRelatedField(view_name='diffusion-detail',
-                                                     read_only=True,
-                                                     many=True)
+                                                    read_only=True,
+                                                    many=True)
     award = serializers.HyperlinkedRelatedField(view_name='award-detail', read_only=True, many=True)
 
 
@@ -75,8 +75,8 @@ class FilmSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer):
     collaborators = ProductionStaffTaskSerializer(source='staff_tasks', many=True, read_only=True,)
     partners = PartnerSerializer(source='organization_tasks', many=True, read_only=True)
     diffusion = serializers.HyperlinkedRelatedField(view_name='diffusion-detail',
-                                                     read_only=True,
-                                                     many=True)
+                                                    read_only=True,
+                                                    many=True)
     award = serializers.HyperlinkedRelatedField(view_name='award-detail', read_only=True, many=True)
     keywords = TagListSerializerField()
 
@@ -102,8 +102,8 @@ class PerformanceSerializer(serializers.HyperlinkedModelSerializer):
     collaborators = ProductionStaffTaskSerializer(source='staff_tasks', many=True, read_only=True)
     partners = PartnerSerializer(source='organization_tasks', many=True)
     diffusion = serializers.HyperlinkedRelatedField(view_name='diffusion-detail',
-                                                     read_only=True,
-                                                     many=True)
+                                                    read_only=True,
+                                                    many=True)
     award = serializers.HyperlinkedRelatedField(view_name='metaaward-detail', read_only=True, many=True)
 
 
