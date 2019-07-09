@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 from pagedown.widgets import AdminPagedownWidget
 
-from .models import Place, Award, MetaAward
+from .models import Place, Award, MetaAward, MetaEvent, Diffusion
 
 
 class AwardAdmin(admin.ModelAdmin):
@@ -43,12 +43,32 @@ class PlaceAdmin(admin.ModelAdmin):
     }
 
 
+class MetaEventAdmin(admin.ModelAdmin):
+    list_display = ('event', 'genres', 'keywords_list', 'get_periode')
+    search_fields = ['event__title', 'event__starting_date']
+    ordering = ['event', ]
+
+    def keywords_list(self, obj):
+        return u", ".join(o.name for o in obj.keywords.all())
+
+    def get_periode(self, obj):
+        return obj.event.starting_date.strftime("%B")
+    get_periode.short_description = 'Periode'
+
+
 class MetaAwardAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.TextField: {'widget': AdminPagedownWidget},
     }
 
 
+class DiffusionAdmin(admin.ModelAdmin):
+    list_display = ('artwork', 'event', 'first', 'on_competition')
+    ordering = ['artwork', ]
+
+
 admin.site.register(Place, PlaceAdmin)
 admin.site.register(Award, AwardAdmin)
 admin.site.register(MetaAward, MetaAwardAdmin)
+admin.site.register(MetaEvent, MetaEventAdmin)
+admin.site.register(Diffusion, DiffusionAdmin)

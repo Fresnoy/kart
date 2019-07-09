@@ -2,6 +2,9 @@ from django.db.models import Q
 from django.db import models
 from django_countries.fields import CountryField
 
+from taggit.managers import TaggableManager
+from multiselectfield import MultiSelectField
+
 from people.models import User, Organization
 
 
@@ -99,8 +102,56 @@ class Award(models.Model):
         return u'{0} - {1} pour {2}'.format(self.date.year, self.meta_award, artworks)
 
 
+class MetaEvent(models.Model):
+    """
+    Event additionnal Informations
+    """
+    GENRES_CHOICES = (
+        ('FILM', 'Films'),
+        ('PERF', 'Performances'),
+        ('INST', 'Installations'),
+    )
+    # Add only one meta to Main Event (primary_key=True)
+    event = models.OneToOneField('production.Event',
+                                 primary_key=True,
+                                 limit_choices_to=main_event_true,
+                                 related_name='meta_event')
+
+    genres = MultiSelectField(choices=GENRES_CHOICES, help_text="Global kind of productions shown")
+    keywords = TaggableManager(blank=True, help_text="Qualifies Festival: digital arts, residency, electronic festival")
+    important = models.BooleanField(default=True, help_text="Helps hide minor events")
+
+    def __unicode__(self):
+        return u'{0}'.format(self.event.title)
+
+
 class Diffusion(models.Model):
-    # ARTWORK
-    # Event not main_event
-    # premiere (mondiale, international, ville)
-    pass
+    """
+    Diffusion additionnal Informations
+    """
+    FIRST_CHOICES = (
+        ('WORLD', 'Mondial'),
+        ('INTER', 'International'),
+        ('NATIO', 'National'),
+    )
+    event = models.ForeignKey('production.Event',
+                              blank=False,
+                              null=False,
+                              default=1,
+                              limit_choices_to=main_event_false,
+                              )
+    artwork = models.ForeignKey('production.Artwork', null=False, blank=False, default=1, related_name='diffusion')
+    first = models.CharField(max_length=5,
+                             blank=True,
+                             null=True,
+                             choices=FIRST_CHOICES,
+                             help_text="Qualifies the first broadcast")
+    on_competition = models.BooleanField(default=False, help_text="IN / OFF : On competion or not")
+
+    def __unicode__(self):
+        in_or_not = 'IN' if self.on_competition else 'OFF'
+        return u'{0} au {1} ({2})'.format(self.artwork.title, self.event.title, in_or_not)
+
+    class Meta:
+        # NO DUPLI DIFF
+        unique_together = ('id', 'artwork', 'event')

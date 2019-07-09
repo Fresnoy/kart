@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from django_countries.serializers import CountryFieldMixin
+from taggit_serializer.serializers import (TagListSerializerField,
+                                           TaggitSerializer)
 
-from .models import Place, Award, MetaAward
+from .models import Place, Award, MetaAward, MetaEvent, Diffusion
 from production.serializers import StaffTaskSerializer
 
 
@@ -25,3 +27,17 @@ class AwardSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
     artwork = serializers.HyperlinkedRelatedField(read_only=True, view_name='artwork-detail', many=True)
+
+
+class MetaEventSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = MetaEvent
+        fields = '__all__'
+
+    keywords = TagListSerializerField()
+
+
+class DiffusionSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Diffusion
+        fields = '__all__'
