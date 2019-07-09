@@ -1,4 +1,5 @@
 from rest_framework import viewsets, permissions, filters, status
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 
 from drf_haystack.filters import HaystackAutocompleteFilter
@@ -31,7 +32,7 @@ class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    filter_backends = (filters.SearchFilter, filters.DjangoFilterBackend, filters.OrderingFilter,)
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter,)
     search_fields = ('user__username',)
     ordering_fields = ('user__last_name',)
     filter_fields = ('artist',
@@ -51,7 +52,7 @@ class StudentApplicationSetupViewSet(viewsets.ModelViewSet):
     queryset = StudentApplicationSetup.objects.all()
     serializer_class = StudentApplicationSetupSerializer
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend,)
     filter_fields = ('is_current_setup',)
 
 
@@ -59,7 +60,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
     queryset = StudentApplication.objects.all()
     # serializer_class = StudentApplicationSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    filter_backends = (filters.SearchFilter, filters.DjangoFilterBackend, filters.OrderingFilter)
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter)
     search_fields = ('=artist__user__username', 'artist__user__last_name')
     filter_fields = ('application_completed',
                      'application_complete',

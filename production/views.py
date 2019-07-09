@@ -1,11 +1,13 @@
 from rest_framework import viewsets, permissions
+from django_filters import rest_framework as filters
+from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import (Film, Installation, Performance,
+from .models import (Artwork, Film, Installation, Performance,
                      FilmGenre, InstallationGenre, Event,
                      Itinerary, ProductionStaffTask, ProductionOrganizationTask,
                      OrganizationTask)
 
-from .serializers import (FilmSerializer, InstallationSerializer,
+from .serializers import (ArtworkPolymorphicSerializer, FilmSerializer, InstallationSerializer, KeywordsSerializer,
                           PerformanceSerializer, FilmGenreSerializer,
                           InstallationGenreSerializer, EventSerializer,
                           ItinerarySerializer, ProductionStaffTaskSerializer,
@@ -13,16 +15,44 @@ from .serializers import (FilmSerializer, InstallationSerializer,
                           )
 
 
+class ArtworkViewSet(viewsets.ModelViewSet):
+    queryset = Artwork.objects.all()
+    serializer_class = ArtworkPolymorphicSerializer
+    permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
+
+
+class TagsFilter(filters.CharFilter):
+
+    def filter(self, qs, value):
+        if value:
+            lookup_field = self.field_name + "__name__in"
+            tags = [tag.strip() for tag in value.split(',')]
+            qs = qs.filter(**{lookup_field: tags}).distinct()
+
+        return qs
+
+
+class ArtworkFilter(filters.FilterSet):
+    keywords = TagsFilter(field_name="keywords")
+
+    class Meta:
+        model = Film
+        fields = ['genres', 'keywords']
+
+
 class FilmViewSet(viewsets.ModelViewSet):
     queryset = Film.objects.all()
     serializer_class = FilmSerializer
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = ArtworkFilter
 
 
 class InstallationViewSet(viewsets.ModelViewSet):
     queryset = Installation.objects.all()
     serializer_class = InstallationSerializer
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
+    search_fields = ('genres',)
 
 
 class PerformanceViewSet(viewsets.ModelViewSet):
@@ -70,4 +100,10 @@ class PartnerViewSet(viewsets.ModelViewSet):
 class OrganizationTaskViewSet(viewsets.ModelViewSet):
     queryset = OrganizationTask.objects.all()
     serializer_class = OrganizationTaskSerializer
+    permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
+
+
+class FilmKeywordsViewSet(viewsets.ModelViewSet):
+    queryset = Film.keywords.all()
+    serializer_class = KeywordsSerializer
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)

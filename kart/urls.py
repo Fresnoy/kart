@@ -1,7 +1,8 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django import views as django_views
 
 from tastypie.api import Api
 from rest_framework import routers
@@ -13,27 +14,29 @@ from production.api import (
     PerformanceResource, EventResource, ExhibitionResource,
     ItineraryResource, ArtworkResource, StaffTaskResource
 )
-from diffusion.api import PlaceResource
+from diffusion.api import PlaceResource, AwardResource, MetaAwardResource
 from school.api import PromotionResource, StudentResource, StudentApplicationResource
 
 from people.views import (
     ArtistViewSet, UserViewSet, FresnoyProfileViewSet,
-    StaffViewSet, OrganizationViewSet
+    StaffViewSet, OrganizationViewSet,
 )
+from people import views as people_views
 from school.views import (
     PromotionViewSet, StudentViewSet,
     StudentAutocompleteSearchViewSet, StudentApplicationViewSet, StudentApplicationSetupViewSet
 )
 from production.views import (
-    FilmViewSet, InstallationViewSet,
+    ArtworkViewSet, FilmViewSet, InstallationViewSet,
     PerformanceViewSet, FilmGenreViewSet,
     InstallationGenreViewSet, EventViewSet,
-    ItineraryViewSet,
+    ItineraryViewSet, FilmKeywordsViewSet,
     CollaboratorViewSet, PartnerViewSet, OrganizationTaskViewSet
 )
-from diffusion.views import PlaceViewSet
+from diffusion.views import PlaceViewSet, AwardViewSet, MetaAwardViewSet, MetaEventViewSet, DiffusionViewSet
 from common.views import BTBeaconViewSet, WebsiteViewSet
 from assets.views import GalleryViewSet, MediumViewSet
+from assets import views as assets_views
 
 
 admin.autodiscover()
@@ -51,6 +54,8 @@ v1_api.register(StudentApplicationResource())
 v1_api.register(ArtistResource())
 v1_api.register(StaffResource())
 v1_api.register(PlaceResource())
+v1_api.register(AwardResource())
+v1_api.register(MetaAwardResource())
 v1_api.register(ExhibitionResource())
 v1_api.register(ItineraryResource())
 v1_api.register(ArtworkResource())
@@ -66,49 +71,55 @@ v2_api.register(r'school/promotion', PromotionViewSet)
 v2_api.register(r'school/student', StudentViewSet)
 v2_api.register(r'school/student-application', StudentApplicationViewSet)
 v2_api.register(r'school/student-application-setup', StudentApplicationSetupViewSet)
-v2_api.register(r'school/student/search', StudentAutocompleteSearchViewSet, base_name="school-student-search")
+v2_api.register(r'school/student-search', StudentAutocompleteSearchViewSet, base_name="school-student-search")
+v2_api.register(r'production/artwork', ArtworkViewSet)
 v2_api.register(r'production/film', FilmViewSet)
+v2_api.register(r'production/film-keywords', FilmKeywordsViewSet)
 v2_api.register(r'production/event', EventViewSet)
 v2_api.register(r'production/itinerary', ItineraryViewSet)
-v2_api.register(r'production/film/genre', FilmGenreViewSet)
+v2_api.register(r'production/film-genre', FilmGenreViewSet)
 v2_api.register(r'production/installation', InstallationViewSet)
-v2_api.register(r'production/installation/genre', InstallationGenreViewSet)
+v2_api.register(r'production/installation-genre', InstallationGenreViewSet)
 v2_api.register(r'production/performance', PerformanceViewSet)
 v2_api.register(r'production/collaborator', CollaboratorViewSet)
 v2_api.register(r'production/partner', PartnerViewSet)
 v2_api.register(r'diffusion/place', PlaceViewSet)
+v2_api.register(r'diffusion/meta-award', MetaAwardViewSet)
+v2_api.register(r'diffusion/award', AwardViewSet)
+v2_api.register(r'diffusion/meta-event', MetaEventViewSet)
+v2_api.register(r'diffusion/diffusion', DiffusionViewSet)
 v2_api.register(r'common/beacon', BTBeaconViewSet)
 v2_api.register(r'common/website', WebsiteViewSet)
 v2_api.register(r'assets/gallery', GalleryViewSet)
 v2_api.register(r'assets/medium', MediumViewSet)
 
 
-urlpatterns = patterns('',
+urlpatterns = [
                        url(r'^v2/', include(v2_api.urls)),
                        url(r'^v2/auth/', obtain_jwt_token),
                        url(r'^account/activate/%s/$' % settings.PASSWORD_TOKEN,
-                           'people.views.activate', name='user-activate'),
+                           people_views.activate, name='user-activate'),
                        # django user registration
                        url(r'^v2/rest-auth/', include('rest_auth.urls')),
                        url(r'^v2/rest-auth/registration/', include('rest_auth.registration.urls')),
                        # vimeo
                        url(r'^v2/assets/vimeo/upload/token',
-                           'assets.views.vimeo_get_upload_token', name='vimeo-upload-token'),
+                           assets_views.vimeo_get_upload_token, name='vimeo-upload-token'),
                        # send emails
                        url(r'^v2/people/send-emails',
-                           'people.views.send_custom_emails', name='send-emails'),
+                           people_views.send_custom_emails, name='send-emails'),
 
                        # api v1
-                       (r'^', include(v1_api.urls)),
-                       (r'^grappelli/', include('grappelli.urls')),
-                       url('^markdown/', include('django_markdown.urls')),
+                       url(r'^', include(v1_api.urls)),
+                       url(r'^grappelli/', include('grappelli.urls')),
+                       url(r'^markdown/', include('django_markdown.urls')),
                        url(r'v1/doc/',
                            include('tastypie_swagger.urls', namespace='kart_tastypie_swagger'),
                            kwargs={"tastypie_api_module": "kart.urls.v1_api",
                                    "namespace": "kart_tastypie_swagger"}),
                        url(r'^static/(?P<path>.*)$',
-                           'django.views.static.serve',
+                           django_views.static.serve,
                            {'document_root': settings.STATIC_ROOT}),
                        url(r'^admin/', include(admin.site.urls)) \
-                       ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+                       ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
+                       + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

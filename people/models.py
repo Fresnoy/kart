@@ -66,7 +66,8 @@ class Artist(models.Model):
     websites = models.ManyToManyField(Website, blank=True)
 
     def __unicode__(self):
-        return u'{0} ({1})'.format(self.user, self.nickname)
+        name = self.nickname if self.nickname else self.user
+        return u'{0}'.format(name)
 
 
 class Staff(models.Model):
