@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'polymorphic',
     'taggit',
     'taggit_serializer',
+    'multiselectfield',
     'django_filters',
     'grappelli',
     'django.contrib.admin',

@@ -7,7 +7,7 @@ from .models import (Artwork, Film, Installation, Performance,
                      Itinerary, ProductionStaffTask, ProductionOrganizationTask,
                      OrganizationTask)
 
-from .serializers import (ArtworkPolymorphicSerializer, FilmSerializer, InstallationSerializer,
+from .serializers import (ArtworkPolymorphicSerializer, FilmSerializer, InstallationSerializer, KeywordsSerializer,
                           PerformanceSerializer, FilmGenreSerializer,
                           InstallationGenreSerializer, EventSerializer,
                           ItinerarySerializer, ProductionStaffTaskSerializer,
@@ -100,4 +100,10 @@ class PartnerViewSet(viewsets.ModelViewSet):
 class OrganizationTaskViewSet(viewsets.ModelViewSet):
     queryset = OrganizationTask.objects.all()
     serializer_class = OrganizationTaskSerializer
+    permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
+
+
+class FilmKeywordsViewSet(viewsets.ModelViewSet):
+    queryset = Film.keywords.all()
+    serializer_class = KeywordsSerializer
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)

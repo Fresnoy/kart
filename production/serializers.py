@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_polymorphic.serializers import PolymorphicSerializer
 from taggit_serializer.serializers import (TagListSerializerField,
                                            TaggitSerializer)
+from taggit.models import Tag
 
 from .models import (
     Film, FilmGenre, Installation,
@@ -45,9 +46,10 @@ class ArtworkSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
         model = Artwork
         fields = '__all__'
 
-    diffusions = serializers.HyperlinkedRelatedField(source='events',
+    collaborators = ProductionStaffTaskSerializer(source='staff_tasks', many=True, read_only=True)
+    partners = PartnerSerializer(source='organization_tasks', many=True, read_only=True)
+    diffusion = serializers.HyperlinkedRelatedField(view_name='diffusion-detail',
                                                      read_only=True,
-                                                     view_name='event-detail',
                                                      many=True)
     award = serializers.HyperlinkedRelatedField(view_name='award-detail', read_only=True, many=True)
 
@@ -59,10 +61,9 @@ class InstallationSerializer(serializers.HyperlinkedModelSerializer):
 
     collaborators = ProductionStaffTaskSerializer(source='staff_tasks', many=True, read_only=True)
     partners = PartnerSerializer(source='organization_tasks', many=True, read_only=True)
-    diffusions = serializers.HyperlinkedRelatedField(source='events',
-                                                     read_only=True,
-                                                     view_name='event-detail',
-                                                     many=True)
+    diffusion = serializers.HyperlinkedRelatedField(view_name='diffusion-detail',
+                                                    read_only=True,
+                                                    many=True)
     award = serializers.HyperlinkedRelatedField(view_name='award-detail', read_only=True, many=True)
 
 
@@ -73,9 +74,8 @@ class FilmSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer):
 
     collaborators = ProductionStaffTaskSerializer(source='staff_tasks', many=True, read_only=True,)
     partners = PartnerSerializer(source='organization_tasks', many=True, read_only=True)
-    diffusions = serializers.HyperlinkedRelatedField(source='events',
+    diffusion = serializers.HyperlinkedRelatedField(view_name='diffusion-detail',
                                                      read_only=True,
-                                                     view_name='event-detail',
                                                      many=True)
     award = serializers.HyperlinkedRelatedField(view_name='award-detail', read_only=True, many=True)
     keywords = TagListSerializerField()
@@ -89,6 +89,9 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
     partners = PartnerSerializer(source='organization_tasks', many=True, read_only=True)
     parent_event = serializers.HyperlinkedRelatedField(view_name='event-detail', read_only=True, many=True)
     meta_award = serializers.HyperlinkedRelatedField(view_name='award-detail', read_only=True, many=True)
+    meta_event = serializers.HyperlinkedRelatedField(view_name='metaevent-detail',
+                                                     read_only=True,
+                                                     many=True)
 
 
 class PerformanceSerializer(serializers.HyperlinkedModelSerializer):
@@ -98,9 +101,8 @@ class PerformanceSerializer(serializers.HyperlinkedModelSerializer):
 
     collaborators = ProductionStaffTaskSerializer(source='staff_tasks', many=True, read_only=True)
     partners = PartnerSerializer(source='organization_tasks', many=True)
-    diffusions = serializers.HyperlinkedRelatedField(source='events',
+    diffusion = serializers.HyperlinkedRelatedField(view_name='diffusion-detail',
                                                      read_only=True,
-                                                     view_name='event-detail',
                                                      many=True)
     award = serializers.HyperlinkedRelatedField(view_name='metaaward-detail', read_only=True, many=True)
 
@@ -130,4 +132,10 @@ class ItinerarySerializer(serializers.HyperlinkedModelSerializer):
 class InstallationGenreSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = InstallationGenre
+        fields = '__all__'
+
+
+class KeywordsSerializer(TaggitSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = Tag
         fields = '__all__'

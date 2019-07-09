@@ -30,10 +30,10 @@ from production.views import (
     ArtworkViewSet, FilmViewSet, InstallationViewSet,
     PerformanceViewSet, FilmGenreViewSet,
     InstallationGenreViewSet, EventViewSet,
-    ItineraryViewSet,
+    ItineraryViewSet, FilmKeywordsViewSet,
     CollaboratorViewSet, PartnerViewSet, OrganizationTaskViewSet
 )
-from diffusion.views import PlaceViewSet, AwardViewSet, MetaAwardViewSet
+from diffusion.views import PlaceViewSet, AwardViewSet, MetaAwardViewSet, MetaEventViewSet, DiffusionViewSet
 from common.views import BTBeaconViewSet, WebsiteViewSet
 from assets.views import GalleryViewSet, MediumViewSet
 from assets import views as assets_views
@@ -74,6 +74,7 @@ v2_api.register(r'school/student-application-setup', StudentApplicationSetupView
 v2_api.register(r'school/student-search', StudentAutocompleteSearchViewSet, base_name="school-student-search")
 v2_api.register(r'production/artwork', ArtworkViewSet)
 v2_api.register(r'production/film', FilmViewSet)
+v2_api.register(r'production/film-keywords', FilmKeywordsViewSet)
 v2_api.register(r'production/event', EventViewSet)
 v2_api.register(r'production/itinerary', ItineraryViewSet)
 v2_api.register(r'production/film-genre', FilmGenreViewSet)
@@ -85,6 +86,8 @@ v2_api.register(r'production/partner', PartnerViewSet)
 v2_api.register(r'diffusion/place', PlaceViewSet)
 v2_api.register(r'diffusion/meta-award', MetaAwardViewSet)
 v2_api.register(r'diffusion/award', AwardViewSet)
+v2_api.register(r'diffusion/meta-event', MetaEventViewSet)
+v2_api.register(r'diffusion/diffusion', DiffusionViewSet)
 v2_api.register(r'common/beacon', BTBeaconViewSet)
 v2_api.register(r'common/website', WebsiteViewSet)
 v2_api.register(r'assets/gallery', GalleryViewSet)
