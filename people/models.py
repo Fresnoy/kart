@@ -78,7 +78,7 @@ class Staff(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
-        return self.user.username
+        return u'{0}'.format(self.user)
 
 
 class Organization(models.Model):
