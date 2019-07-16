@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
-from __future__ import unicode_literals
+import sys
+
 from django.core.management.base import BaseCommand
 from django.template.defaultfilters import slugify
 from django.utils.crypto import get_random_string
@@ -8,17 +9,21 @@ from django.contrib.auth.models import User
 from people.models import Staff
 
 
+def arg_to_unicode(bytestring):
+    unicode_string = bytestring.decode(sys.getfilesystemencoding())
+    return unicode_string
+
+
 class Command(BaseCommand):
     help = 'Create staff user like "Andy" "Wharhol" '
 
     def add_arguments(self, parser):
-        parser.add_argument('firstname', type=str, help='Set fist name user')
-        parser.add_argument('lastname', type=str, help='Set last name user')
+        parser.add_argument('firstname', type=arg_to_unicode, help='Set fist name user')
+        parser.add_argument('lastname', type=arg_to_unicode, help='Set last name user')
 
     def handle(self, *args, **options):
-
-        first_name = b'{0}'.format(options['firstname']).decode('latin1').title()
-        last_name = b'{0}'.format(options['lastname']).decode('latin1').title()
+        first_name = options['firstname'].title()
+        last_name = options['lastname'].title()
 
         print u"firstname: {0}".format(first_name)
         print u"lastname: {0}".format(last_name)
