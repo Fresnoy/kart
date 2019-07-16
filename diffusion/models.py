@@ -27,7 +27,8 @@ class Place(models.Model):
 
     def __unicode__(self):
         extra_info = self.organization if self.organization else self.country
-        return u'{0} ({1})'.format(self.name, extra_info)
+        address = self.address[0:20]+"..." if self.address else self.city
+        return u'{0} - {1} ({2})'.format(self.name, address, extra_info)
 
 
 def main_event_true():
