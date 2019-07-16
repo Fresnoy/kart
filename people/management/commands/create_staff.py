@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+from __future__ import unicode_literals
 from django.core.management.base import BaseCommand
 from django.template.defaultfilters import slugify
 from django.utils.crypto import get_random_string
@@ -16,8 +17,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        first_name = options['firstname']
-        last_name = options['lastname']
+        first_name = b'{0}'.format(options['firstname']).decode('latin1').title()
+        last_name = b'{0}'.format(options['lastname']).decode('latin1').title()
 
         print u"firstname: {0}".format(first_name)
         print u"lastname: {0}".format(last_name)
