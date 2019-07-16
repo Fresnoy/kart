@@ -33,4 +33,5 @@ django-polymorphic==2.0.3
 django-rest-polymorphic==0.1.8
 django-categories==1.3b8
 django-pagedown==1.0.6
+geopy==1.20.0
 pytz==2018.5

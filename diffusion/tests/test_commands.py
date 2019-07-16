@@ -52,3 +52,9 @@ class CommandsTestCase(TestCase):
         call_command('synchronize_diffusions', interactive=False, stdout=self.out)
         diffusions = Diffusion.objects.all()
         self.assertEquals(diffusions.count(), 1)
+
+    def test_place_creation(self):
+        "simple TEST Command: create_place"
+        call_command('create_place', 'Macondo', 'Colombia', interactive=False, stdout=self.out)
+        place = Place.objects.all()
+        self.assertEquals(place.count(), 2)
