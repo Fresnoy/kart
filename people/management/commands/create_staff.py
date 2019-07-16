@@ -49,13 +49,13 @@ class Command(BaseCommand):
         staff = False
         created = False
         try:
-            staff = User.objects.get(username=username)
+            staff = Staff.objects.get(user=user)
         except Staff.DoesNotExist:
             staff = Staff(user=user)
             staff.save()
             created = True
 
-        if not created:
+        if created:
             print u"Staff {0} created".format(staff)
         else:
             print u"Staff {0} already created".format(staff)
