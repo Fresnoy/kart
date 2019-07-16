@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 from django.core.management.base import BaseCommand
 from django.template.defaultfilters import slugify
-from school.models import StudentApplication
 from django.utils.crypto import get_random_string
 
 from django.contrib.auth.models import User
@@ -20,8 +19,8 @@ class Command(BaseCommand):
         first_name = options['firstname']
         last_name = options['lastname']
 
-        print first_name
-        print last_name
+        print u"firstname: {0}".format(first_name)
+        print u"lastname: {0}".format(last_name)
 
         username = first_name.lower()[0]+slugify(last_name.lower())
         # try to get USER
@@ -35,11 +34,10 @@ class Command(BaseCommand):
                                             username=username,
                                             password=get_random_string())
             created = True
-            print "User {0} created".format(user)
-
+            print u"User {0} created".format(user)
 
         if not created:
-            print "User {0} already created".format(user)
+            print u"User {0} already created".format(user)
 
         # try to create STAFF
         staff = False
@@ -52,6 +50,6 @@ class Command(BaseCommand):
             created = True
 
         if not created:
-            print "Staff {0} created".format(staff)
+            print u"Staff {0} created".format(staff)
         else:
-            print "Staff {0} already created".format(staff)
+            print u"Staff {0} already created".format(staff)
