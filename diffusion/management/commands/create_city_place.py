@@ -20,7 +20,7 @@ class Command(BaseCommand):
         parser.add_argument('city', type=arg_to_unicode, help='City')
         parser.add_argument('country', type=arg_to_unicode, help='Country')
 
-    def get_location(address):
+    def get_location(self, address):
         location = None
         try:
             geolocator = Nominatim(user_agent="place_create_app")
