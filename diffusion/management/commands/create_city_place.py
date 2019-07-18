@@ -3,7 +3,9 @@ import sys
 
 from django.core.management.base import BaseCommand
 from geopy.geocoders import Nominatim
-from geopy.exc import GeocoderTimedOut
+from geopy.location import Location
+from geopy.point import Point
+from geopy.exc import GeocoderTimedOut, GeocoderServiceError
 
 from diffusion.models import Place
 
@@ -29,8 +31,9 @@ class Command(BaseCommand):
             print 'Geocode timed out'
             location = geolocator.geocode(address, addressdetails=True)
         except GeocoderServiceError:
-            print 'GeocoderServiceError' # test
-            location = {address:address, latitude:0, longitude:0 }
+            # when travis test: no internet access
+            print 'GeocoderServiceError'
+            location = Location(address=address, point=Point(latitude=0, longitude=0))
         return location
 
     def handle(self, *args, **options):
