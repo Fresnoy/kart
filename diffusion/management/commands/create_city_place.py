@@ -16,7 +16,7 @@ def arg_to_unicode(bytestring):
 
 
 class Command(BaseCommand):
-    help = 'Quickly create Place like: tourcoing france "22 place du Fresnoy"  '
+    help = 'Quickly create Place like: tourcoing france'
 
     def add_arguments(self, parser):
         parser.add_argument('city', type=arg_to_unicode, help='City')
@@ -51,7 +51,7 @@ class Command(BaseCommand):
             if location is None:
                 location = self.get_location(city)
 
-            country_code = location.raw['address']['country_code'] if hasattr(location, 'raw') else ""
+            country_code = location.raw['address']['country_code'] if location.raw else ""
 
             place = Place(name=city,
                           description=city,
