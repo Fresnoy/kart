@@ -55,6 +55,6 @@ class CommandsTestCase(TestCase):
 
     def test_place_creation(self):
         "simple TEST Command: create_place"
-        call_command('create_place', 'Macondo', 'Colombia', interactive=False, stdout=self.out)
+        call_command('create_city_place', 'Macondo', 'Colombia', interactive=False, stdout=self.out)
         place = Place.objects.all()
         self.assertEquals(place.count(), 2)
