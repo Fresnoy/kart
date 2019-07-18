@@ -36,7 +36,6 @@ class Command(BaseCommand):
         try:
             user = User.objects.get(first_name=first_name, last_name=last_name)
         except User.DoesNotExist:
-
             user = User.objects.create_user(first_name=first_name,
                                             last_name=last_name,
                                             username=username,

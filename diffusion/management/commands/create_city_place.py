@@ -20,13 +20,17 @@ class Command(BaseCommand):
         parser.add_argument('city', type=arg_to_unicode, help='City')
         parser.add_argument('country', type=arg_to_unicode, help='Country')
 
-    def get_location(address):
+    def get_location(self, address):
         location = None
         try:
             geolocator = Nominatim(user_agent="place_create_app")
             location = geolocator.geocode(address, addressdetails=True)
         except GeocoderTimedOut:
             print 'Geocode timed out'
+            location = geolocator.geocode(address, addressdetails=True)
+        except GeocoderServiceError:
+            print 'GeocoderServiceError' # test
+            location = {address:address, latitude:0, longitude:0 }
         return location
 
     def handle(self, *args, **options):
@@ -44,7 +48,7 @@ class Command(BaseCommand):
             if location is None:
                 location = self.get_location(city)
 
-            country_code = location.raw['address']['country_code'] if location else ""
+            country_code = location.raw['address']['country_code'] if hasattr(location, 'raw') else ""
 
             place = Place(name=city,
                           description=city,
