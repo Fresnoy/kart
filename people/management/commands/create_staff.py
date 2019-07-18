@@ -28,13 +28,15 @@ class Command(BaseCommand):
         print u"firstname: {0}".format(first_name)
         print u"lastname: {0}".format(last_name)
 
-        username = first_name.lower()[0]+slugify(last_name.lower())
-        # try to get USER
+        username = slugify(first_name.lower()+" "+last_name.lower())
+        # try to get USER with first name and lastname
+        # cause username: mmouse can be Mickey Mouse OR Minnie Mouse
         user = False
         created = False
         try:
-            user = User.objects.get(username=username)
+            user = User.objects.get(first_name=first_name, last_name=last_name)
         except User.DoesNotExist:
+
             user = User.objects.create_user(first_name=first_name,
                                             last_name=last_name,
                                             username=username,
