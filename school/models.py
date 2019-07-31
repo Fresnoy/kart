@@ -17,9 +17,9 @@ class Promotion(models.Model):
     class Meta:
         ordering = ['starting_year']
 
-    name = models.CharField(max_length=255)
+    name          = models.CharField(max_length=255)
     starting_year = models.PositiveSmallIntegerField()
-    ending_year = models.PositiveSmallIntegerField()
+    ending_year   = models.PositiveSmallIntegerField()
 
     def __str__(self):
         return f'Promo {self.name} ({self.starting_year}-{self.ending_year})'
@@ -29,11 +29,11 @@ class Student(models.Model):
     """
     An artist, part of a promotion, studying for at least 2 years.
     """
-    number = models.CharField(max_length=50, null=True, blank=True)
+    number    = models.CharField(max_length=50, null=True, blank=True)
     promotion = models.ForeignKey(Promotion, on_delete=models.SET_NULL, null=True)
-    graduate = models.BooleanField(default=False)
-    user = models.OneToOneField(User, null=True, on_delete=models.SET_NULL)
-    artist = models.OneToOneField(Artist, related_name='student', null=True, on_delete=models.SET_NULL)
+    graduate  = models.BooleanField(default=False)
+    user      = models.OneToOneField(User, null=True, on_delete=models.SET_NULL)
+    artist    = models.OneToOneField(Artist, related_name='student', null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return f'{self.user.last_name}'
@@ -45,8 +45,8 @@ class StudentFilter(django_filters.FilterSet):
     class Meta:
         model = Student
         fields = ['number',]
-#
-#
+
+
 # class StudentApplicationSetup(models.Model):
 #     """
 #     Setup Student Application

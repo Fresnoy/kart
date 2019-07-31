@@ -1,9 +1,12 @@
 import graphene
 from graphene_django import DjangoObjectType
 from graphql import GraphQLError
+from graphene_django.rest_framework.mutation import SerializerMutation
 
-from school.models import Student, Promotion
+from school.models import Student, Promotion, Artist
 from people.schema import UserInput, ArtistInput
+
+
 
 
 
@@ -15,9 +18,29 @@ class PromoType(DjangoObjectType):
 
 
 class PromoInput(graphene.InputObjectType):
+    id = graphene.String()
     name = graphene.String()
     starting_year = graphene.String()
     ending_year = graphene.String()
+
+
+class CreatePromo(graphene.Mutation):
+    class Arguments:
+        input = PromoInput(required=True)
+
+    ok = graphene.Boolean()
+    promo = graphene.Field(PromoType)
+
+    @staticmethod
+    def mutate(self, info, input=None):
+        promo = Promotion(
+            name = input.name,
+            starting_year = input.starting_year,
+            ending_year = input.ending_year,
+        )
+        ok = True
+        promo.save()
+        return CreatePromo(promo=promo, ok=ok)
 
 
 class StudentType(DjangoObjectType):
@@ -26,55 +49,51 @@ class StudentType(DjangoObjectType):
         filter_fields = ['number', 'promotion__name']
 
 class StudentInput(graphene.InputObjectType):
-    user = graphene.List(UserInput)
-    promo = graphene.List(PromoInput)
+    id = graphene.String()
+    user = graphene.Field(UserInput)
+    promotion = graphene.Field(PromoInput)
     number = graphene.String()
-    artist = graphene.List(ArtistInput)
+    artist = graphene.Field(ArtistInput)
     graduate = graphene.Boolean()
 
-# class ArtistInput(graphene.InputObjectType):
-#     user = graphene.List(UserInput)
-#     nickname = graphene.String()
-#     bio_short_fr = graphene.String()
-#     bio_short_en = graphene.String()
-#     bio_fr = graphene.String()
-#     bio_en = graphene.String()
-#     updated_on = graphene.types.datetime.DateTime
-#     twitter_account = graphene.String()
-#     facebook_profile = graphene.String()
-#
-#
-# class CreateArtist(graphene.Mutation):
-#     class Arguments:
-#         input = ArtistInput(required=True)
-#
-#     ok = graphene.Boolean()
-#     artist = graphene.Field(ArtistType)
-#
-#     @staticmethod
-#     def mutate(self, info, input=None):
-#         ok = True
-#
-#         user = User.objects.get(pk=input.user.id)
-#         if user is None:
-#             return CreateArtist(ok=False, artist=None)
-#
-#         artist = Artist(
-#             user = user,
-#             nickname = input.nickname,
-#             bio_short_fr = input.bio_short_fr,
-#             bio_short_en = input.bio_short_en,
-#             bio_fr = input.bio_fr,
-#             bio_en = input.bio_en,
-#             updated_on = input.updated_on,
-#             twitter_account = input.twitter_account,
-#             facebook_profile = input.facebook_profile,
-#         )
-#
-#         artist.save()
-#
-#         return CreateArtist(ok=ok, artist=artist)
 
+class CreateStudent(graphene.Mutation):
+    class Arguments:
+        input = StudentInput(required=True)
+
+    ok = graphene.Boolean()
+    student = graphene.Field(StudentType)
+
+    @staticmethod
+    def mutate(self, info, input=None):
+        print("ARTIST", input.artist.id)
+
+        try:
+            artist = Artist.objects.get(pk=input.artist.id)
+        except :
+            return CreateStudent(ok=False, student=None)
+
+        # The Student model requires an Artist AND a user
+        # This looks at least surprising
+        # TODO : delete user from Artist
+
+        try :
+            promotion = Promotion.objects.get(pk=input.promotion.id)
+        except :
+            return CreateStudent(ok=False, student=None)
+
+        print("promo", promotion)
+
+        student = Student(
+            user = artist.user,
+            promotion = promotion,
+            number = input.number,
+            artist = artist,
+            graduate = input.graduate,
+        )
+        ok = True
+        student.save()
+        return CreateStudent(student=student, ok=ok)
 
 
 class Query(graphene.ObjectType):
@@ -104,9 +123,8 @@ class Query(graphene.ObjectType):
         return None
 
 
-#
-#
-# class Mutation(graphene.ObjectType):
-#     create_user = CreateUser.Field()
-#     update_user = UpdateUser.Field()
-#     create_artist = CreateArtist.Field()
+
+
+class Mutation(graphene.ObjectType):
+    create_promo = CreatePromo.Field()
+    create_student = CreateStudent.Field()

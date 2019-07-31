@@ -1,11 +1,20 @@
 import graphene
 from graphene_django import DjangoObjectType
 from graphql import GraphQLError
+from graphene_django.rest_framework.mutation import SerializerMutation
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 
 from .models import Artist
+from .serializers import UserSerializer
+
+## Test d'une mutation avec les serializers
+class TestMutation(SerializerMutation):
+    class Meta:
+        serializer_class = UserSerializer
+
+
 
 
 ########################## User
@@ -17,9 +26,9 @@ class UserType(DjangoObjectType):
 
 
 class UserInput(graphene.InputObjectType):
-    username = graphene.String(required=True)
-    password = graphene.String(required=True)
-    email = graphene.String(required=True)
+    username = graphene.String()
+    password = graphene.String()
+    email = graphene.String()
 
 
 class CreateUser(graphene.Mutation):
@@ -56,7 +65,6 @@ class UpdateUser(graphene.Mutation):
     def mutate(root, info, id, input=None):
         ok = False
         user_instance = User.objects.get(pk=id)
-        print(">>>>>>>>>>>>>>>>>>>>>>>> id : ",id)
         if user_instance:
             ok = True
             user_instance.usernamne = input.username
@@ -81,7 +89,8 @@ class ArtistType(DjangoObjectType):
 
 
 class ArtistInput(graphene.InputObjectType):
-    user = graphene.List(UserInput)
+    id = graphene.String()
+    user = graphene.Field(UserInput)
     nickname = graphene.String()
     bio_short_fr = graphene.String()
     bio_short_en = graphene.String()
@@ -101,7 +110,6 @@ class CreateArtist(graphene.Mutation):
 
     @staticmethod
     def mutate(self, info, input=None):
-        ok = True
 
         user = User.objects.get(pk=input.user.id)
         if user is None:
@@ -120,7 +128,7 @@ class CreateArtist(graphene.Mutation):
         )
 
         artist.save()
-
+        ok = True
         return CreateArtist(ok=ok, artist=artist)
 
 
