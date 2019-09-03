@@ -87,6 +87,7 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
         exclude = ('polymorphic_ctype',)
 
     partners = PartnerSerializer(source='organization_tasks', many=True, read_only=True)
+    collaborators = ProductionStaffTaskSerializer(source='staff_tasks', many=True, read_only=True,)
     parent_event = serializers.HyperlinkedRelatedField(view_name='event-detail', read_only=True, many=True)
     meta_award = serializers.HyperlinkedRelatedField(view_name='award-detail', read_only=True, many=True)
     meta_event = serializers.HyperlinkedRelatedField(view_name='metaevent-detail',
