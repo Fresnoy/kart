@@ -62,11 +62,10 @@ class MetaAward(models.Model):
     description = models.TextField(null=True)
 
     event = models.ForeignKey('production.Event',
-                              null=True,
                               limit_choices_to=main_event_true,
                               help_text="Main Event",
                               related_name='meta_award',
-                              on_delete=models.SET_NULL)
+                              null=True, on_delete=models.SET_NULL)
     type = models.CharField(max_length=10, null=True, choices=TYPE_CHOICES)
 
     task = models.ForeignKey('production.StaffTask',
@@ -143,7 +142,7 @@ class MetaEvent(models.Model):
                                  primary_key=True,
                                  limit_choices_to=main_event_true,
                                  related_name='meta_event',
-                                 on_delete=models.SET_NULL
+                                 on_delete=models.PROTECT
                                  )
 
     genres = MultiSelectField(choices=GENRES_CHOICES,

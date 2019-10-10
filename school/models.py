@@ -29,7 +29,7 @@ class Student(models.Model):
     An artist, part of a promotion, studying for at least 2 years.
     """
     number = models.CharField(max_length=50, null=True, blank=True)
-    promotion = models.ForeignKey(Promotion, on_delete=models.SET_NULL)
+    promotion = models.ForeignKey(Promotion, null=True, on_delete=models.SET_NULL)
     graduate = models.BooleanField(default=False)
     user = models.OneToOneField(User, on_delete=models.PROTECT)
     artist = models.OneToOneField(Artist, related_name='student', on_delete=models.PROTECT)
@@ -44,7 +44,7 @@ class StudentApplicationSetup(models.Model):
     """
     name = models.CharField(max_length=25, null=True, blank=True)
     # Promo
-    promotion = models.ForeignKey(Promotion, null=False, blank=False, on_delete=models.SET_NULL)
+    promotion = models.ForeignKey(Promotion, null=True, blank=False, on_delete=models.SET_NULL)
     # date
     candidature_date_start = models.DateTimeField(null=False, blank=False)
     candidature_date_end = models.DateTimeField(null=False, blank=False)
@@ -93,8 +93,8 @@ class StudentApplication(models.Model):
     """
     Fresnoy's School application procedure
     """
-    artist = models.ForeignKey(Artist, related_name='student_application', on_delete=models.SET_NULL)
-    campaign = models.ForeignKey(StudentApplicationSetup, blank=True, null=True, related_name='applications', on_delete=models.SET_NULL)
+    artist = models.ForeignKey(Artist, related_name='student_application', null=True, on_delete=models.SET_NULL)
+    campaign = models.ForeignKey(StudentApplicationSetup, blank=True, related_name='applications', null=True, on_delete=models.SET_NULL)
 
     current_year_application_count = models.CharField(
         max_length=8,

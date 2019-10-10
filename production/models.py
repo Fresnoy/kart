@@ -44,7 +44,7 @@ class ProductionStaffTask(models.Model):
 
 
 class ProductionOrganizationTask(models.Model):
-    organization = models.ForeignKey(Organization, on_delete=models.SET_NULL)
+    organization = models.ForeignKey(Organization, null=True, on_delete=models.SET_NULL)
     production = models.ForeignKey('Production', related_name="organization_tasks", on_delete=models.PROTECT)
     task = models.ForeignKey(OrganizationTask, on_delete=models.PROTECT)
 
@@ -200,7 +200,7 @@ class Event(Production):
     starting_date = models.DateTimeField()
     ending_date = models.DateTimeField(blank=True, null=True)
 
-    place = models.ForeignKey(Place, on_delete=models.SET_NULL)
+    place = models.ForeignKey(Place, null=True, on_delete=models.SET_NULL)
 
     # artwork types
     installations = models.ManyToManyField(Installation, blank=True, related_name='events')

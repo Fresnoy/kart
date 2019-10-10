@@ -46,12 +46,10 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'sortedm2m',
     'django_countries',
-    'django_markdown',
     'django_cleanup',
     'django_unused_media',
     'kart',
     'tastypie',
-    'tastypie_swagger',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
@@ -70,13 +68,15 @@ INSTALLED_APPS = (
     'assets',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 
     'corsheaders.middleware.CorsMiddleware',
 

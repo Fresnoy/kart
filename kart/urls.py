@@ -1,4 +1,5 @@
 from django.conf.urls import include, url
+from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -95,31 +96,32 @@ v2_api.register(r'assets/medium', MediumViewSet)
 
 
 urlpatterns = [
-                       url(r'^v2/', include(v2_api.urls)),
-                       url(r'^v2/auth/', obtain_jwt_token),
-                       url(r'^account/activate/%s/$' % settings.PASSWORD_TOKEN,
+                       path('v2/', include(v2_api.urls)),
+                       path('v2/auth/', obtain_jwt_token),
+                       path('account/activate/%s/' % settings.PASSWORD_TOKEN,
                            people_views.activate, name='user-activate'),
                        # django user registration
-                       url(r'^v2/rest-auth/', include('rest_auth.urls')),
-                       url(r'^v2/rest-auth/registration/', include('rest_auth.registration.urls')),
+                       path('v2/rest-auth/', include('rest_auth.urls')),
+                       path('v2/rest-auth/registration/', include('rest_auth.registration.urls')),
                        # vimeo
-                       url(r'^v2/assets/vimeo/upload/token',
+                       path('v2/assets/vimeo/upload/token',
                            assets_views.vimeo_get_upload_token, name='vimeo-upload-token'),
                        # send emails
-                       url(r'^v2/people/send-emails',
+                       path('v2/people/send-emails',
                            people_views.send_custom_emails, name='send-emails'),
 
                        # api v1
-                       url(r'^', include(v1_api.urls)),
-                       url(r'^grappelli/', include('grappelli.urls')),
-                       url(r'^markdown/', include('django_markdown.urls')),
-                       url(r'v1/doc/',
-                           include('tastypie_swagger.urls', namespace='kart_tastypie_swagger'),
-                           kwargs={"tastypie_api_module": "kart.urls.v1_api",
-                                   "namespace": "kart_tastypie_swagger"}),
-                       url(r'^static/(?P<path>.*)$',
+                       path('', include(v1_api.urls)),
+                       path('grappelli/', include('grappelli.urls')),
+                       # path('markdown/', include('django_markdown.urls')),
+                       # path('v1/doc/',
+                       #     include('tastypie_swagger.urls', namespace='kart_tastypie_swagger'),
+                       #     kwargs={"tastypie_api_module": "kart.urls.v1_api",
+                       #             "namespace": "kart_tastypie_swagger"}),
+                       path('static/(?P<path>.*)',
                            django_views.static.serve,
                            {'document_root': settings.STATIC_ROOT}),
-                       url(r'^admin/', include(admin.site.urls)) \
-                       ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
-                       + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+                       path('admin/', admin.site.urls) \
+                       ]
+                       #  + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
+                       # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
