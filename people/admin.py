@@ -3,9 +3,9 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
 from people.forms import UserCreateForm
-from people.models import Artist, FresnoyProfile
+from people.models import Artist, FresnoyProfile, Staff, Organization
 
-
+from guardian.admin import GuardedModelAdmin
 
 
 

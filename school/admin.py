@@ -1,31 +1,26 @@
+# -*- encoding: utf-8 -*-
 from django.contrib import admin
-from .models import Student, Promotion
+from django.db import models
+
+from pagedown.widgets import AdminPagedownWidget
+
+from .models import Promotion, Student, StudentApplication, StudentApplicationSetup
 
 
 class StudentAdmin(admin.ModelAdmin):
-    """ Admin model for Student.
-    """
-    list_display = ('stud_display',)
-    search_fields = ['user__first_name', 'user__last_name']
-    # filter_horizontal = ('websites',)
+    list_display = ('artist', 'number', 'promotion', 'graduate')
+    search_fields = ('number', 'user__first_name', 'user__last_name')
 
-    def stud_display(self, obj):
-        return f"{obj.user.first_name} {obj.user.last_name} (Promo {obj.promotion.name})"
-
-    stud_display.short_description = 'Student'
-
-    def firstname(self, obj):
-            return obj.user.first_name
-
-    def lastname(self, obj):
-        return obj.user.last_name
+    formfield_overrides = {
+        models.TextField: {'widget': AdminPagedownWidget},
+    }
 
 
-class PromoAdmin(admin.ModelAdmin):
-    """ Admin model for Promotion.
-    """
+class StudentApplicationAdmin(admin.ModelAdmin):
 
-    list_display = ('promo_display', 'stud_counter')
+    def _get_name(self, obj):
+        return obj.artist.user.get_full_name()
+
     _get_name.short_description = "Nom"
     list_display = (
         'campaign',
@@ -36,19 +31,19 @@ class PromoAdmin(admin.ModelAdmin):
         'remark',
     )
 
-    def promo_display(self, obj):
-        '''Display the name of the promotion and its corresponding years.'''
 
-        return f"Promotion {obj.name} ({obj.starting_year}-{obj.ending_year})"
+class StudentApplicationSetupAdmin(admin.ModelAdmin):
 
-    promo_display.short_description = 'Promotion'
+    def _get_name(self, obj):
+        return obj.artist.user.get_full_name()
 
-    def stud_counter(self, obj):
-        '''Display the number of students per promotion.'''
+    list_display = (
+        'name',
+        'is_current_setup',
+    )
 
-        students = Student.objects.all().filter(pk=obj.pk)
-        return(len(students))
 
-# Model registration
+admin.site.register(Promotion)
+admin.site.register(StudentApplication, StudentApplicationAdmin)
+admin.site.register(StudentApplicationSetup, StudentApplicationSetupAdmin)
 admin.site.register(Student, StudentAdmin)
-admin.site.register(Promotion, PromoAdmin)

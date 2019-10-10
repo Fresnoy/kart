@@ -16,18 +16,22 @@ class Place(models.Model):
     description = models.TextField(null=True)
 
     address = models.CharField(max_length=255, null=True)
-    zipcode = models.CharField(max_length=10, blank=True, help_text="Code postal / Zipcode")
+    zipcode = models.CharField(
+        max_length=10, blank=True, help_text="Code postal / Zipcode")
     city = models.CharField(max_length=50, blank=True)
     country = CountryField(default="")
 
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    latitude = models.DecimalField(
+        max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(
+        max_digits=9, decimal_places=6, null=True, blank=True)
 
-    organization = models.ForeignKey(Organization, blank=True, null=True, related_name='places')
+    organization = models.ForeignKey(
+        Organization, blank=True, null=True, related_name='places', on_delete=models.CASCADE)
 
     def __unicode__(self):
         extra_info = self.organization if self.organization else self.country
-        address = self.address[0:20]+"..." if self.address else self.city
+        address = self.address[0:20] + "..." if self.address else self.city
         return u'{0} - {1} ({2})'.format(self.name, address, extra_info)
 
 
@@ -61,12 +65,20 @@ class MetaAward(models.Model):
                               null=True,
                               limit_choices_to=main_event_true,
                               help_text="Main Event",
-                              related_name='meta_award')
+                              related_name='meta_award',
+                              on_delete=models.SET_NULL)
     type = models.CharField(max_length=10, null=True, choices=TYPE_CHOICES)
-    task = models.ForeignKey('production.StaffTask', blank=True, null=True, related_name='meta_award')
+
+    task = models.ForeignKey('production.StaffTask',
+                             blank=True,
+                             null=True,
+                             related_name='meta_award',
+                             on_delete=models.PROTECT)
 
     def __unicode__(self):
         return u'{0} ({2}, cat. {1})'.format(self.label, self.task, self.event)
+
+# Comments
 
 
 def staff_and_artist_user_limit():
@@ -78,8 +90,10 @@ class Award(models.Model):
     """
     Awards given to artworks & such.
     """
-    meta_award = models.ForeignKey(MetaAward, null=True, blank=False, related_name='award')
-    artwork = models.ManyToManyField('production.Artwork', blank=True, related_name='award')
+    meta_award = models.ForeignKey(
+        MetaAward, null=True, blank=False, related_name='award', on_delete=models.PROTECT)
+    artwork = models.ManyToManyField(
+        'production.Artwork', blank=True, related_name='award')
     # artist is Artist or Staff
     artist = models.ManyToManyField(User,
                                     blank=True,
@@ -90,16 +104,27 @@ class Award(models.Model):
                               null=True,
                               blank=False,
                               limit_choices_to=main_event_false,
-                              related_name='award')
+                              related_name='award',
+                              on_delete=models.PROTECT)
+
     ex_aequo = models.BooleanField(default=False)
-    giver = models.ManyToManyField(User, blank=True, help_text="Who hands the arward", related_name='give_award')
-    sponsor = models.ForeignKey(Organization, null=True, blank=True, related_name='award')
+
+    giver = models.ManyToManyField(
+        User, blank=True, help_text="Who hands the arward", related_name='give_award')
+
+    sponsor = models.ForeignKey(
+        Organization, null=True, blank=True, related_name='award', on_delete=models.SET_NULL)
+
     date = models.DateField(null=True)
-    amount = models.CharField(max_length=255, blank=True, help_text="money, visibility, currency free")
+
+    amount = models.CharField(
+        max_length=255, blank=True, help_text="money, visibility, currency free")
+
     note = models.TextField(blank=True, help_text="Free note")
 
     def __unicode__(self):
-        artworks = ", ".join([artwork.__unicode__() for artwork in self.artwork.all()])
+        artworks = ", ".join([artwork.__unicode__()
+                              for artwork in self.artwork.all()])
         return u'{0} - {1} pour {2}'.format(self.date.year, self.meta_award, artworks)
 
 
@@ -113,14 +138,20 @@ class MetaEvent(models.Model):
         ('INST', 'Installations'),
     )
     # Add only one meta to Main Event (primary_key=True)
+    # fixMe
     event = models.OneToOneField('production.Event',
                                  primary_key=True,
                                  limit_choices_to=main_event_true,
-                                 related_name='meta_event')
+                                 related_name='meta_event',
+                                 on_delete=models.SET_NULL
+                                 )
 
-    genres = MultiSelectField(choices=GENRES_CHOICES, help_text="Global kind of productions shown")
-    keywords = TaggableManager(blank=True, help_text="Qualifies Festival: digital arts, residency, electronic festival")
-    important = models.BooleanField(default=True, help_text="Helps hide minor events")
+    genres = MultiSelectField(choices=GENRES_CHOICES,
+                              help_text="Global kind of productions shown")
+    keywords = TaggableManager(
+        blank=True, help_text="Qualifies Festival: digital arts, residency, electronic festival")
+    important = models.BooleanField(
+        default=True, help_text="Helps hide minor events")
 
     def __unicode__(self):
         return u'{0}'.format(self.event.title)
@@ -135,19 +166,30 @@ class Diffusion(models.Model):
         ('INTER', 'International'),
         ('NATIO', 'National'),
     )
+
     event = models.ForeignKey('production.Event',
                               blank=False,
                               null=False,
                               default=1,
                               limit_choices_to=main_event_false,
+                              on_delete=models.PROTECT
                               )
-    artwork = models.ForeignKey('production.Artwork', null=False, blank=False, default=1, related_name='diffusion')
+
+    artwork = models.ForeignKey('production.Artwork',
+                                null=False,
+                                blank=False,
+                                default=1,
+                                related_name='diffusion',
+                                on_delete=models.PROTECT)
+
     first = models.CharField(max_length=5,
                              blank=True,
                              null=True,
                              choices=FIRST_CHOICES,
                              help_text="Qualifies the first broadcast")
-    on_competition = models.BooleanField(default=False, help_text="IN / OFF : On competion or not")
+
+    on_competition = models.BooleanField(
+        default=False, help_text="IN / OFF : On competion or not")
 
     def __unicode__(self):
         in_or_not = 'IN' if self.on_competition else 'OFF'

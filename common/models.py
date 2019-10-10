@@ -20,3 +20,14 @@ class Website(models.Model):
         Example : Le site du Fresn(...) - http://www.lefresnoy.net
         """
         return "{}(...) - {}".format(self.title_fr[10],url[40])
+
+class BTBeacon(models.Model):
+    label = models.CharField(max_length=255)
+    uuid = models.UUIDField(unique=True)
+    rssi_in = models.IntegerField()
+    rssi_out = models.IntegerField()
+    x = models.FloatField()
+    y = models.FloatField()
+
+    def __unicode__(self):
+        return u'{0} ({1})'.format(self.label, self.uuid)
