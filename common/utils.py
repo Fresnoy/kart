@@ -1,5 +1,6 @@
 import os
 import datetime
+from django.contrib.auth.models import User
 from kart import settings
 
 
@@ -16,6 +17,6 @@ def make_filepath(instance, filename, prefix_folder=None):
 
     #TODO : explore instance to look for user or production reference
     _uss = instance._meta.get_field('user')
-    
+
     dest_folder = os.path.join(_r,context_dir,date_dir,filename)
     return dest_folder

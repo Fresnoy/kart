@@ -26,6 +26,15 @@ class PromoAdmin(admin.ModelAdmin):
     """
 
     list_display = ('promo_display', 'stud_counter')
+    _get_name.short_description = "Nom"
+    list_display = (
+        'campaign',
+        '_get_name',
+        'current_year_application_count',
+        'selected_for_interview',
+        'selected',
+        'remark',
+    )
 
     def promo_display(self, obj):
         '''Display the name of the promotion and its corresponding years.'''

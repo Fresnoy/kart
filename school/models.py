@@ -46,14 +46,13 @@ class StudentFilter(django_filters.FilterSet):
         model = Student
         fields = ['number',]
 
-
 # class StudentApplicationSetup(models.Model):
 #     """
 #     Setup Student Application
 #     """
 #     name = models.CharField(max_length=25, null=True, blank=True)
 #     # Promo
-#     promotion = models.ForeignKey(Promotion, null=True, blank=False, on_delete=models.SET_NULL)
+#     promotion = models.ForeignKey(Promotion, null=False, blank=False)
 #     # date
 #     candidature_date_start = models.DateTimeField(null=False, blank=False)
 #     candidature_date_end = models.DateTimeField(null=False, blank=False)
@@ -102,8 +101,8 @@ class StudentFilter(django_filters.FilterSet):
 #     """
 #     Fresnoy's School application procedure
 #     """
-#     artist = models.ForeignKey(Artist, related_name='student_application', null=True, on_delete=models.SET_NULL)
-#     campaign = models.ForeignKey(StudentApplicationSetup, blank=True, null=True, related_name='applications', on_delete=models.SET_NULL)
+#     artist = models.ForeignKey(Artist, related_name='student_application')
+#     campaign = models.ForeignKey(StudentApplicationSetup, blank=True, null=True, related_name='applications')
 #
 #     current_year_application_count = models.CharField(
 #         max_length=8,
@@ -163,8 +162,7 @@ class StudentFilter(django_filters.FilterSet):
 #         blank=True,
 #         null=True,
 #         related_name='student_application_cursus_justification',
-#         help_text='Gallery of justificaitons',
-#         on_delete=models.SET_NULL
+#         help_text='Gallery of justificaitons'
 #     )
 #     curriculum_vitae = models.FileField(
 #         upload_to=make_filepath,
@@ -297,13 +295,5 @@ class StudentFilter(django_filters.FilterSet):
 #             carry_on = StudentApplication.objects.filter(current_year_application_count=application_number).exists()
 #
 #         return application_number
-
-    # def save(self, *args, **kwargs):
-    #
-    #     # if not self.current_year_application_count:
-    #     #     self.current_year_application_count = self._make_application_number()
-    #
-    #     super(StudentApplication, self).save(*args, **kwargs)
-    #
-    # def __unicode__(self):
-    #     return u"{0} ({1})".format(self.current_year_application_count, self.artist)
+#
+#     def save(self, *args, **kwargs):

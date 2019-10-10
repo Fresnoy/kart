@@ -1,8 +1,16 @@
 from django.contrib.auth.models import User
 
-from rest_framework import viewsets, permissions, status
-from rest_framework.decorators import action
+from django.core.mail import EmailMultiAlternatives
 
+from django.utils.http import base36_to_int
+from django.http import HttpResponse, HttpResponseRedirect
+from django.template.loader import render_to_string
+
+from rest_framework import viewsets, permissions, status, filters
+from rest_framework.response import Response
+from rest_framework.decorators import list_route, api_view, permission_classes, action
+
+from rest_framework_jwt.settings import api_settings
 
 from .serializers import UserSerializer, FresnoyProfileSerializer
 
@@ -39,65 +47,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.errors, status=status.HTTP_403_FORBIDDEN)
 
-########### OLD from kart (p2.7)
-# class UserViewSet(viewsets.ViewSet):
-#
-#     queryset = User.objects.all()
-#     # serializer_class = UserSerializer
-#     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-#     filter_backends = (filters.SearchFilter,)
-#     search_fields = ('=username', '=email')
-#
-#     def get_serializer_class(self, *args, **kwargs):
-#         if (
-#             self.request.user.is_staff or
-#             self.kwargs and self.request.user.pk == int(self.kwargs['pk'])
-#            ):
-#             return UserSerializer
-#         return PublicUserSerializer
-#
-#     @list_route(methods=['POST'], permission_classes=[permissions.AllowAny])
-#     def register(self, request):
-#         serializer = UserRegisterSerializer(data=request.data, context={'request': request})
-#         if serializer.is_valid():
-#             # save user
-#             user = User(first_name=request.data.get('first_name'),
-#                         last_name=request.data.get('last_name'),
-#                         username=request.data.get('username'),
-#                         email=request.data.get('email'))
-#             user.is_active = False
-#             user.save()
-#             profile = FresnoyProfile.objects.create(user=user)
-#             # assign permission
-#             assign_perm('change_user', user, user)
-#             assign_perm('change_fresnoyprofile', user, profile)
-#             # assign group
-#             group = Group.objects.get(name='School Application')
-#             user.groups.add(group)
-#             # send activation email
-#             send_activation_email(request, user)
-#
-#             return Response(user.id, status=status.HTTP_202_ACCEPTED)
-#         else:
-#             return Response(serializer.errors, status=status.HTTP_403_FORBIDDEN)
-#
-#     @list_route(methods=['POST'], permission_classes=[permissions.AllowAny])
-#     def resend_activation_email(self, request):
-#         serializer = UserRegisterSerializer(data=request.data, context={'request': request})
-#         if serializer.is_valid():
-#             user = User.objects.get(username=request.data.get('username'))
-#             if not user.is_active:
-#                 user.email = request.data.get('email')
-#                 user.save()
-#                 send_activation_email(request, user)
-#                 return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-#             else:
-#                 errors = {'user': ['user is active']}
-#                 return Response(errors, status=status.HTTP_403_FORBIDDEN)
-#
-#         return Response(serializer.errors, status=status.HTTP_403_FORBIDDEN)
-
-#
+# # #DEBUG -- fixMe
 # def activate(request, uidb36, token):
 #     """
 #     Check activation token for newly registered users. If successful,

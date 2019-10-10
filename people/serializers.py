@@ -74,3 +74,41 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+class PublicUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'url', 'username', 'first_name', 'last_name')
+
+
+class ArtistSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Artist
+        fields = (
+            'id',
+            'url',
+            'nickname',
+            'bio_short_fr',
+            'bio_short_en',
+            'bio_fr',
+            'bio_en',
+            'twitter_account',
+            'facebook_profile',
+            'user',
+            'websites',
+        )
+
+
+class StaffSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Staff
+        fields = ('user',)
+
+    user = serializers.HyperlinkedRelatedField(view_name='user-detail', read_only=True)
+
+
+class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Organization
+        fields = '__all__'

@@ -41,11 +41,23 @@ class FresnoyProfileAdmin(UserAdmin):
     add_fieldsets = ((None, {'fields': ('username', 'password1', 'password2', 'first_name', 'last_name', 'email'), }), )
 
 
+class StaffAdmin(GuardedModelAdmin):
+    search_fields = ['user__username', 'user__last_name', 'user__first_name']
 
 
+class OrganizationAdmin(GuardedModelAdmin):
+    list_display = ('name',)
+    ordering = ('name',)
+
+
+def user_unicode(self):
+    return u'{0} {1}'.format(self.first_name.capitalize(), self.last_name.capitalize())
+
+
+User.__unicode__ = user_unicode
 
 admin.site.unregister(User)
 admin.site.register(User, FresnoyProfileAdmin)
 admin.site.register(Artist, ArtistAdmin)
-# admin.site.register(Staff)
-# admin.site.register(Organization, OrganizationAdmin)
+admin.site.register(Staff, StaffAdmin)
+admin.site.register(Organization, OrganizationAdmin)
