@@ -14,7 +14,7 @@ from people.schema import UserInput, ArtistInput
 class PromoType(DjangoObjectType):
     class Meta:
         model = Promotion
-        filter_fields = ['name', 'starting_year', 'ending_year']
+        filterset_fields = ['name', 'starting_year', 'ending_year']
 
 
 class PromoInput(graphene.InputObjectType):
@@ -46,7 +46,7 @@ class CreatePromo(graphene.Mutation):
 class StudentType(DjangoObjectType):
     class Meta:
         model = Student
-        filter_fields = ['number', 'promotion__name']
+        filterset_fields = ['number', 'promotion__name']
 
 class StudentInput(graphene.InputObjectType):
     id = graphene.String()

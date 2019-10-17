@@ -63,7 +63,7 @@ class Command(BaseCommand):
                     # Make promotion
                     # Make student
                     # Make artwork
-                    print u" * [%d] %s by %s %s (username=%s)" % (idx, title, firstname, lastname, username)
+                    print(" * [%d] %s by %s %s (username=%s)" % (idx, title, firstname, lastname, username")
                     user = User.objects.get(username=username, first_name=firstname, last_name=lastname)
                     print "  `-- found user %s" % user
                     # profile = FresnoyProfile.objects.get(user=user)
@@ -133,8 +133,7 @@ class Command(BaseCommand):
                     ProductionOrganizationTask.objects.get_or_create(organization=lefresnoy, production=artwork,
                                                                      task=producer)
 
-                    print "."
-
+                    print(""")
         except Exception, e:
             raise CommandError('Error while parsing "%s" %s ' % (filepath, e))
 

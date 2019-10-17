@@ -42,7 +42,7 @@ class Command(BaseCommand):
                     # Make promotion
                     # Make student
                     # Make artwork
-                    print u" * %s %s (username=%s)" % (firstname, lastname, username)
+                    print(" * %s %s (username=%s)" % (firstname, lastname, username")
                     promotion = Promotion.objects.get(name__iexact=promotion_name)
 
                     user, created = User.objects.get_or_create(username=username, first_name=firstname,
@@ -55,8 +55,7 @@ class Command(BaseCommand):
 
                     student, created = Student.objects.get_or_create(user=user, promotion=promotion)
                     if created:
-                        print "  `-- Student %s created" % student
-
+                        print(" `-- Student %s created" % student")
         except Exception, e:
             raise CommandError('Error while parsing "%s" %s ' % (filepath, e))
 

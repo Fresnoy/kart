@@ -38,4 +38,4 @@ class DiffusionViewSet(viewsets.ModelViewSet):
     serializer_class = DiffusionSerializer
     filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    filter_fields = ('event__parent_event__meta_event__important', 'artwork', 'event')
+    filterset_fields = ('event__parent_event__meta_event__important', 'artwork', 'event')

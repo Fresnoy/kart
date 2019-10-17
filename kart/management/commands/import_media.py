@@ -32,8 +32,7 @@ class Command(BaseCommand):
 
             path = "%s/panorama%d/%s_%s/image" % (dirpath, pano_no, lastname, firstname)
 
-            print "Feeding %s by %s" % (artwork.title, path)
-
+            print("Feeding %s by %s" % (artwork.title, path)")
             if not os.path.isdir(path):
                 raise Exception("Dir not found")
 
@@ -45,8 +44,7 @@ class Command(BaseCommand):
                 elif os.path.isfile(main_visu_path_png):
                     artwork.picture.save(os.path.basename(main_visu_path_png), File(open(main_visu_path_png)))
                 else:
-                    print "/!\\ MAIN VISU NOT FOUND"
-
+                    print("!\\ MAIN VISU NOT FOUND"")
             # insitu
             for dirpath2, dirname, filenames in os.walk(os.path.join(path, "insitu")):
                 if not len(artwork.in_situ_galleries.all()):

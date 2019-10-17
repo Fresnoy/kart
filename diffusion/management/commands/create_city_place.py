@@ -11,9 +11,11 @@ from diffusion.models import Place
 
 
 def arg_to_unicode(bytestring):
-    unicode_string = bytestring.decode(sys.getfilesystemencoding())
+    if not isinstance(bytestring, str):
+        unicode_string = bytestring.decode(sys.getfilesystemencoding())
+    else :
+        unicode_string = bytestring
     return unicode_string
-
 
 class Command(BaseCommand):
     help = 'Quickly create Place like: tourcoing france'
@@ -28,11 +30,11 @@ class Command(BaseCommand):
             geolocator = Nominatim(user_agent="place_create_app")
             location = geolocator.geocode(address, addressdetails=True)
         except GeocoderTimedOut:
-            print 'Geocode timed out'
+            print("Geocode timed out")
             location = geolocator.geocode(address, addressdetails=True)
         except GeocoderServiceError:
             # when travis test: no internet access
-            print 'GeocoderServiceError'
+            print("GeocoderServiceError")
             location = Location(address=address, point=Point(latitude=0, longitude=0))
         return location
 

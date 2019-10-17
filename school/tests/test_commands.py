@@ -28,4 +28,4 @@ class CommandsTestCase(TestCase):
         #          [Press any key to continue]")
 
         # print(".{}.".format(result))
-        # self.assertEquals(out.getvalue(), value)
+        # assertEqual(out.getvalue(), value)
