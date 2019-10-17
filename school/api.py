@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from django.conf.urls import url
+
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
-
+from django.urls import path
 from haystack.query import SearchQuerySet
 from tastypie import fields
 from tastypie.resources import ModelResource
@@ -39,9 +39,14 @@ class StudentResource(ArtistResource):
     artist = fields.ForeignKey(ArtistResource, 'artist', full=True)
 
     def prepend_urls(self):
+        #  Debug : transition de url() vers path()
+        # return [
+        #     path(f"(?P<resource_name>{self._meta.resource_name})/search{trailing_slash()}",
+        #         self.wrap_view('get_search'),
+        #         name="api_get_search"),
+        # ]
         return [
-            url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name,
-                                                       trailing_slash()),
+            path(f"(<str:resource_name>{self._meta.resource_name})/search{trailing_slash()}",
                 self.wrap_view('get_search'),
                 name="api_get_search"),
         ]

@@ -1,5 +1,5 @@
 from django.conf.urls import include, url
-from django.urls import path
+from django.urls import path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -98,7 +98,7 @@ v2_api.register(r'assets/medium', MediumViewSet)
 urlpatterns = [
                        path('v2/', include(v2_api.urls)),
                        path('v2/auth/', obtain_jwt_token),
-                       path('account/activate/%s/' % settings.PASSWORD_TOKEN,
+                       re_path(f'account/activate/{settings.PASSWORD_TOKEN}/',
                            people_views.activate, name='user-activate'),
                        # django user registration
                        path('v2/rest-auth/', include('rest_auth.urls')),
@@ -118,7 +118,7 @@ urlpatterns = [
                        #     include('tastypie_swagger.urls', namespace='kart_tastypie_swagger'),
                        #     kwargs={"tastypie_api_module": "kart.urls.v1_api",
                        #             "namespace": "kart_tastypie_swagger"}),
-                       path('static/(?P<path>.*)',
+                       path('static/<path>.*',
                            django_views.static.serve,
                            {'document_root': settings.STATIC_ROOT}),
                        path('admin/', admin.site.urls) \
