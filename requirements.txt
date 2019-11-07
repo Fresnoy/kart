@@ -44,7 +44,6 @@ drf-haystack==1.8.5
 elasticsearch==7.0.5
 elasticstack==0.5.0
 entrypoints==0.3
-flake8==3.6.0
 future==0.18.0
 graphene==2.1.8
 graphene-django==2.6.0
@@ -80,7 +79,7 @@ pexpect==4.7.0
 pickleshare==0.7.5
 Pillow==6.2.0
 pip-upgrader==1.4.15
-pluggy==0.6.0
+
 prometheus-client==0.7.1
 promise==2.2.1
 prompt-toolkit==2.0.10
@@ -92,12 +91,6 @@ Pygments==2.4.2
 PyJWT==1.7.1
 pyparsing==2.4.2
 pyrsistent==0.15.4
-pytest==3.5.1
-pytest-cov==2.5.1
-pytest-django==3.1.2
-pytest-flake8==1.0.1
-pytest-readme==1.0.0
-pytest-sugar==0.9.1
 python-dateutil==2.8.0
 python-mimeparse==1.6.0
 python-ptrace==0.9.4
@@ -117,7 +110,6 @@ terminado==0.8.2
 terminaltables==3.1.0
 testpath==0.4.2
 tornado==6.0.3
-tox==2.4.1
 traitlets==4.3.3
 urllib3==1.25.6
 virtualenv==16.7.5
