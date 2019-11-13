@@ -1,9 +1,8 @@
 language: python
 python:
-  - "3.4"
+  - "3.7"
 install:
-  - pip install tox==2.4.1
-  - pip install tox-travis==0.12
+  - pip install tox==3.14.0 tox-travis==0.12
 script:
   - cp kart/site_settings.py.dev kart/site_settings.py
   - tox
