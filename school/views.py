@@ -1,6 +1,3 @@
-from django.shortcuts import render
-
-# Create your views here.
 from rest_framework import viewsets, permissions, filters, status
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
@@ -39,8 +36,8 @@ class StudentViewSet(viewsets.ModelViewSet):
     search_fields = ('user__username',)
     ordering_fields = ('user__last_name',)
     filterset_fields = ('artist',
-                     'user',
-                     'promotion',)
+                        'user',
+                        'promotion',)
 
 
 class StudentAutocompleteSearchViewSet(HaystackViewSet):
@@ -66,11 +63,11 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter)
     search_fields = ('=artist__user__username', 'artist__user__last_name')
     filterset_fields = ('application_completed',
-                     'application_complete',
-                     'selected_for_interview', 'remote_interview', 'wait_listed_for_interview',
-                     'selected', 'unselected',
-                     'campaign__is_current_setup',
-                     'wait_listed',)
+                        'application_complete',
+                        'selected_for_interview', 'remote_interview', 'wait_listed_for_interview',
+                        'selected', 'unselected',
+                        'campaign__is_current_setup',
+                        'wait_listed',)
     ordering_fields = ('id',
                        'artist__user__last_name',
                        'artist__user__profile__nationality',)

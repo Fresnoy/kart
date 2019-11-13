@@ -1,14 +1,10 @@
 import graphene
 from graphene_django import DjangoObjectType
-from graphql import GraphQLError
-from graphene_django.rest_framework.mutation import SerializerMutation
+# from graphql import GraphQLError
+# from graphene_django.rest_framework.mutation import SerializerMutation
 
 from school.models import Student, Promotion, Artist
 from people.schema import UserInput, ArtistInput
-
-
-
-
 
 
 class PromoType(DjangoObjectType):
@@ -34,9 +30,9 @@ class CreatePromo(graphene.Mutation):
     @staticmethod
     def mutate(self, info, input=None):
         promo = Promotion(
-            name = input.name,
-            starting_year = input.starting_year,
-            ending_year = input.ending_year,
+            name=input.name,
+            starting_year=input.starting_year,
+            ending_year=input.ending_year,
         )
         ok = True
         promo.save()
@@ -47,6 +43,7 @@ class StudentType(DjangoObjectType):
     class Meta:
         model = Student
         filterset_fields = ['number', 'promotion__name']
+
 
 class StudentInput(graphene.InputObjectType):
     id = graphene.String()
@@ -70,26 +67,26 @@ class CreateStudent(graphene.Mutation):
 
         try:
             artist = Artist.objects.get(pk=input.artist.id)
-        except :
+        except Artist.DoesNotExist:
             return CreateStudent(ok=False, student=None)
 
         # The Student model requires an Artist AND a user
         # This looks at least surprising
         # TODO : delete user from Artist
 
-        try :
+        try:
             promotion = Promotion.objects.get(pk=input.promotion.id)
-        except :
+        except Promotion.DoesNotExist:
             return CreateStudent(ok=False, student=None)
 
         print("promo", promotion)
 
         student = Student(
-            user = artist.user,
-            promotion = promotion,
-            number = input.number,
-            artist = artist,
-            graduate = input.graduate,
+            user=artist.user,
+            promotion=promotion,
+            number=input.number,
+            artist=artist,
+            graduate=input.graduate,
         )
         ok = True
         student.save()
@@ -102,7 +99,6 @@ class Query(graphene.ObjectType):
 
     promotion = graphene.Field(PromoType, id=graphene.Int())
     all_promotions = graphene.List(PromoType)
-
 
     def resolve_all_students(self, info, **kwargs):
         return Student.objects.all()
@@ -121,8 +117,6 @@ class Query(graphene.ObjectType):
         if id is not None:
             return Promotion.objects.get(pk=id)
         return None
-
-
 
 
 class Mutation(graphene.ObjectType):

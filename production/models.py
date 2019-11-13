@@ -33,7 +33,6 @@ class OrganizationTask(Task):
     pass
 
 
-
 class ProductionStaffTask(models.Model):
     staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
     production = models.ForeignKey('Production', related_name="staff_tasks", on_delete=models.CASCADE)
@@ -234,7 +233,8 @@ class Itinerary(models.Model):
     label_en = models.CharField(max_length=255)
     description_fr = models.TextField()
     description_en = models.TextField()
-    event = models.ForeignKey(Event, limit_choices_to={'type': 'EXHIB'}, related_name='itineraries', on_delete=models.PROTECT)
+    event = models.ForeignKey(Event, limit_choices_to={'type': 'EXHIB'},
+                              related_name='itineraries', on_delete=models.PROTECT)
     artworks = models.ManyToManyField(Artwork, through='ItineraryArtwork')
     gallery = models.ManyToManyField(Gallery, blank=True, related_name='itineraries')
 

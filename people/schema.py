@@ -9,17 +9,14 @@ from django.contrib.auth.models import User
 from .models import Artist
 from .serializers import UserSerializer
 
-## Test d'une mutation avec les serializers
+
+# Test d'une mutation avec les serializers
 class TestMutation(SerializerMutation):
     class Meta:
         serializer_class = UserSerializer
 
 
-
-
-########################## User
-
-
+# User
 class UserType(DjangoObjectType):
     class Meta:
         model = get_user_model()
@@ -46,11 +43,12 @@ class CreateUser(graphene.Mutation):
             raise GraphQLError('No space allowed in username')
         # Check if username not already taken
         if not User.objects.filter(username=input.username).exists():
-            user_instance = User.objects.create_user(username=input.username, email=input.email, password=input.password)
+            user_instance = User.objects.create_user(username=input.username,
+                                                     email=input.email,
+                                                     password=input.password)
             ok = True
-            return CreateUser(ok=True, user=user_instance)
+            return CreateUser(ok=ok, user=user_instance)
         raise GraphQLError('Username already exists.')
-
 
 
 class UpdateUser(graphene.Mutation):
@@ -75,17 +73,16 @@ class UpdateUser(graphene.Mutation):
         return UpdateUser(ok=ok, user=None)
 
 
-########################## Artist
-
+# Artist
 class ArtistType(DjangoObjectType):
     class Meta:
         model = Artist
 
     # Retrieve the usual name from the model's method
     usual_name = graphene.String()
+
     def resolve_usual_name(self, info, **kwargs):
         return self.get_displayName()
-
 
 
 class ArtistInput(graphene.InputObjectType):
@@ -116,21 +113,20 @@ class CreateArtist(graphene.Mutation):
             return CreateArtist(ok=False, artist=None)
 
         artist = Artist(
-            user = user,
-            nickname = input.nickname,
-            bio_short_fr = input.bio_short_fr,
-            bio_short_en = input.bio_short_en,
-            bio_fr = input.bio_fr,
-            bio_en = input.bio_en,
-            updated_on = input.updated_on,
-            twitter_account = input.twitter_account,
-            facebook_profile = input.facebook_profile,
+            user=user,
+            nickname=input.nickname,
+            bio_short_fr=input.bio_short_fr,
+            bio_short_en=input.bio_short_en,
+            bio_fr=input.bio_fr,
+            bio_en=input.bio_en,
+            updated_on=input.updated_on,
+            twitter_account=input.twitter_account,
+            facebook_profile=input.facebook_profile,
         )
 
         artist.save()
         ok = True
         return CreateArtist(ok=ok, artist=artist)
-
 
 
 class Query(graphene.ObjectType):
@@ -156,8 +152,6 @@ class Query(graphene.ObjectType):
         if id is not None:
             return Artist.objects.get(pk=id)
         return None
-
-
 
 
 class Mutation(graphene.ObjectType):

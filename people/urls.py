@@ -1,7 +1,6 @@
 from django.urls import path
 
 from . import views
-import kart.settings as settings
 
 from kart.urls import router
 
