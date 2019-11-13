@@ -1,4 +1,4 @@
-from django.conf.urls import include, url
+from django.conf.urls import include
 from django.urls import path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
@@ -118,10 +118,10 @@ urlpatterns = [
                        #     include('tastypie_swagger.urls', namespace='kart_tastypie_swagger'),
                        #     kwargs={"tastypie_api_module": "kart.urls.v1_api",
                        #             "namespace": "kart_tastypie_swagger"}),
-                       path('static/<path>.*',
-                           django_views.static.serve,
-                           {'document_root': settings.STATIC_ROOT}),
+                       # path('static/<path>.*',
+                       #     django_views.static.serve,
+                       #     {'document_root': settings.STATIC_ROOT}),
                        path('admin/', admin.site.urls) \
-                       ]
-                       #  + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
-                       # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+                       ] \
+                       + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
+                       + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

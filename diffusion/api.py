@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-
-from django.db import models
-
 from tastypie.resources import ModelResource
 from tastypie import fields
 
@@ -19,14 +16,14 @@ class AwardResource(ModelResource):
         queryset = Award.objects.all()
         resource_name = 'diffusion/award'
 
-
     meta_award = fields.ForeignKey('diffusion.api.MetaAwardResource',
-                                    'meta_award',
-                                    full=True,
-                                    blank=True,
-                                    null=True)
+                                   'meta_award',
+                                   full=True,
+                                   blank=True,
+                                   null=True)
 
-    artwork = fields.ToManyField('production.api.ArtworkResource', 'artwork', full=True, blank=True, null=True)
+    artwork = fields.ToManyField('production.api.ArtworkResource', 'artwork',
+                                 full=True, blank=True, null=True)
     artist = fields.ToManyField('people.api.UserResource', 'artist', full=True, null=True)
     event = fields.ForeignKey('production.api.EventResource', 'event', null=True, )
     giver = fields.ToManyField('people.api.UserResource', 'giver', full=True, null=True)
