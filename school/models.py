@@ -94,7 +94,8 @@ class StudentApplication(models.Model):
     Fresnoy's School application procedure
     """
     artist = models.ForeignKey(Artist, related_name='student_application', null=True, on_delete=models.SET_NULL)
-    campaign = models.ForeignKey(StudentApplicationSetup, blank=True, related_name='applications', null=True, on_delete=models.SET_NULL)
+    campaign = models.ForeignKey(StudentApplicationSetup, blank=True, related_name='applications',
+                                 null=True, on_delete=models.SET_NULL)
 
     current_year_application_count = models.CharField(
         max_length=8,

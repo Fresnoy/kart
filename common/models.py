@@ -6,8 +6,8 @@ class Website(models.Model):
 
     """
     LANGUAGES = (
-        ('FR','Français'),
-        ('EN','English'),
+        ('FR', 'Français'),
+        ('EN', 'English'),
 
     )
     title_fr = models.CharField(max_length=255)
@@ -19,7 +19,10 @@ class Website(models.Model):
         """Return the litterate form of a website.
         Example : Le site du Fresn(...) - http://www.lefresnoy.net
         """
-        return "{}(...) - {}".format(self.title_fr[10],url[40])
+        title = (self.title_fr[:10] + '(...)' if len(self.title_fr) > 10
+                 else self.title_fr)
+        return "{} - {:40}".format(title, self.url)
+
 
 class BTBeacon(models.Model):
     label = models.CharField(max_length=255)

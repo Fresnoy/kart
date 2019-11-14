@@ -9,8 +9,8 @@ from common.utils import make_filepath
 
 from common.models import Website
 
-class FresnoyProfile(models.Model):
 
+class FresnoyProfile(models.Model):
 
     GENDER_CHOICES = (
         ('M', 'Male'),
@@ -19,7 +19,7 @@ class FresnoyProfile(models.Model):
         ('O', 'Other'),
     )
 
-    user = models.OneToOneField(User, related_name='profile',on_delete=models.CASCADE)
+    user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
     photo = models.ImageField(upload_to=make_filepath, blank=True, null=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
 
@@ -49,7 +49,6 @@ class FresnoyProfile(models.Model):
 
     cursus = models.TextField(blank=True)
 
-
     def __str__(self):
         return 'Profile {}'.format(self.user)
 
@@ -76,10 +75,11 @@ class Artist(models.Model):
         return u'{0}'.format(name)
 
     def get_displayName(self):
-        return self.nickname if self.nickname  else "{} {}".format(self.user.first_name, self.user.last_name)
+        return self.nickname if self.nickname else "{} {}".format(self.user.first_name, self.user.last_name)
 
     def __str__(self):
         return '{}'.format(self.get_displayName())
+
 
 class Staff(models.Model):
     """

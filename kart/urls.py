@@ -1,9 +1,8 @@
-from django.conf.urls import include, url
+from django.conf.urls import include
 from django.urls import path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django import views as django_views
 
 from tastypie.api import Api
 from rest_framework import routers
@@ -99,16 +98,16 @@ urlpatterns = [
                        path('v2/', include(v2_api.urls)),
                        path('v2/auth/', obtain_jwt_token),
                        re_path(f'account/activate/{settings.PASSWORD_TOKEN}/',
-                           people_views.activate, name='user-activate'),
+                               people_views.activate, name='user-activate'),
                        # django user registration
                        path('v2/rest-auth/', include('rest_auth.urls')),
                        path('v2/rest-auth/registration/', include('rest_auth.registration.urls')),
                        # vimeo
                        path('v2/assets/vimeo/upload/token',
-                           assets_views.vimeo_get_upload_token, name='vimeo-upload-token'),
+                            assets_views.vimeo_get_upload_token, name='vimeo-upload-token'),
                        # send emails
                        path('v2/people/send-emails',
-                           people_views.send_custom_emails, name='send-emails'),
+                            people_views.send_custom_emails, name='send-emails'),
 
                        # api v1
                        path('', include(v1_api.urls)),
@@ -118,10 +117,10 @@ urlpatterns = [
                        #     include('tastypie_swagger.urls', namespace='kart_tastypie_swagger'),
                        #     kwargs={"tastypie_api_module": "kart.urls.v1_api",
                        #             "namespace": "kart_tastypie_swagger"}),
-                       path('static/<path>.*',
-                           django_views.static.serve,
-                           {'document_root': settings.STATIC_ROOT}),
+                       # path('static/<path>.*',
+                       #     django_views.static.serve,
+                       #     {'document_root': settings.STATIC_ROOT}),
                        path('admin/', admin.site.urls) \
-                       ]
-                       #  + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
-                       # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+                       ] \
+                       + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
+                       + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

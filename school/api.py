@@ -47,8 +47,8 @@ class StudentResource(ArtistResource):
         # ]
         return [
             path(f"(<str:resource_name>{self._meta.resource_name})/search{trailing_slash()}",
-                self.wrap_view('get_search'),
-                name="api_get_search"),
+                 self.wrap_view('get_search'),
+                 name="api_get_search"),
         ]
 
     def get_search(self, request, **kwargs):

@@ -13,9 +13,10 @@ from diffusion.models import Place
 def arg_to_unicode(bytestring):
     if not isinstance(bytestring, str):
         unicode_string = bytestring.decode(sys.getfilesystemencoding())
-    else :
+    else:
         unicode_string = bytestring
     return unicode_string
+
 
 class Command(BaseCommand):
     help = 'Quickly create Place like: tourcoing france'

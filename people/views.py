@@ -9,7 +9,7 @@ from django.template.loader import render_to_string
 
 from rest_framework import viewsets, permissions, status, filters
 from rest_framework.response import Response
-from rest_framework.decorators import  action, api_view, permission_classes
+from rest_framework.decorators import action, api_view, permission_classes
 
 from rest_framework_jwt.settings import api_settings
 
@@ -43,7 +43,7 @@ class UserViewSet(viewsets.ModelViewSet):
             return UserSerializer
         return PublicUserSerializer
 
-    @action(methods=['POST'], permission_classes=[permissions.AllowAny],detail=False)
+    @action(methods=['POST'], permission_classes=[permissions.AllowAny], detail=False)
     def register(self, request):
         serializer = UserRegisterSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
