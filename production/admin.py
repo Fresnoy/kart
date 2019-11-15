@@ -65,16 +65,16 @@ class ArtworkAdmin(admin.ModelAdmin):
     inlines = (CollaboratorsInline, PartnersInline)
 
     def get_authors(self, obj):
-        return ", ".join([author.__unicode__() for author in obj.authors.all()])
+        return ", ".join([author.__str__() for author in obj.authors.all()])
     get_authors.short_description = "Artist(s)"
 
     def get_diffusions(self, obj):
-        return ", ".join([event.__unicode__() for event in obj.events.all()])
+        return ", ".join([event.__str__() for event in obj.events.all()])
     get_diffusions.short_description = "Diffusion(s)"
     get_diffusions.admin_order_field = 'events'
 
     def get_awards(self, obj):
-        return ", ".join([u'{0} {1} ({2})'.format(award.meta_award.label, award.date.year, award.meta_award.event.title)
+        return ", ".join(['{0} {1} ({2})'.format(award.meta_award.label, award.date.year, award.meta_award.event.title)
                          for award in obj.award.all()])
     get_awards.short_description = "Award(s)"
     get_awards.admin_order_field = 'award'

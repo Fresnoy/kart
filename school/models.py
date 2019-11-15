@@ -20,8 +20,8 @@ class Promotion(models.Model):
     starting_year = models.PositiveSmallIntegerField()
     ending_year = models.PositiveSmallIntegerField()
 
-    def __unicode__(self):
-        return u'{0} ({1}-{2})'.format(self.name, self.starting_year, self.ending_year)
+    def __str__(self):
+        return '{0} ({1}-{2})'.format(self.name, self.starting_year, self.ending_year)
 
 
 class Student(models.Model):
@@ -34,8 +34,8 @@ class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.PROTECT)
     artist = models.OneToOneField(Artist, related_name='student', on_delete=models.PROTECT)
 
-    def __unicode__(self):
-        return u'{0} ({1})'.format(self.user, self.number)
+    def __str__(self):
+        return '{0} ({1})'.format(self.user, self.number)
 
 
 class StudentApplicationSetup(models.Model):
@@ -85,8 +85,8 @@ class StudentApplicationSetup(models.Model):
 
         super(StudentApplicationSetup, self).save(*args, **kwargs)
 
-    def __unicode__(self):
-        return u'{0} ({1})'.format(self.name, self.promotion.name)
+    def __str__(self):
+        return '{0} ({1})'.format(self.name, self.promotion.name)
 
 
 class StudentApplication(models.Model):
@@ -297,5 +297,5 @@ class StudentApplication(models.Model):
 
         super(StudentApplication, self).save(*args, **kwargs)
 
-    def __unicode__(self):
-        return u"{0} ({1})".format(self.current_year_application_count, self.artist)
+    def __str__(self):
+        return "{0} ({1})".format(self.current_year_application_count, self.artist)

@@ -70,15 +70,9 @@ class Artist(models.Model):
     facebook_profile = models.URLField(blank=True)
     websites = models.ManyToManyField(Website, blank=True)
 
-    def __unicode__(self):
-        name = self.nickname if self.nickname else self.user
-        return u'{0}'.format(name)
-
-    def get_displayName(self):
-        return self.nickname if self.nickname else "{} {}".format(self.user.first_name, self.user.last_name)
-
     def __str__(self):
-        return '{}'.format(self.get_displayName())
+        return '{}'.format(self.nickname) if self.nickname else "{} {}".format(self.user.first_name,
+                                                                               self.user.last_name)
 
 
 class Staff(models.Model):
@@ -88,8 +82,8 @@ class Staff(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     updated_on = models.DateTimeField(auto_now=True)
 
-    def __unicode__(self):
-        return u'{0}'.format(self.user)
+    def __str__(self):
+        return '{0}'.format(self.user)
 
 
 class Organization(models.Model):

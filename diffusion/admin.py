@@ -26,7 +26,7 @@ class AwardAdmin(admin.ModelAdmin):
     get_award.admin_order_field = 'meta_award__label'
 
     def get_artwork(self, obj):
-        return ", ".join([artwork.__unicode__() for artwork in obj.artwork.all()])
+        return ", ".join([artwork.__str__() for artwork in obj.artwork.all()])
     get_artwork.short_description = "Oeuvre(s)"
     get_artwork.admin_order_field = 'artwork'
 

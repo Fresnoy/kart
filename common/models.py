@@ -19,7 +19,7 @@ class Website(models.Model):
         """Return the litterate form of a website.
         Example : Le site du Fresn(...) - http://www.lefresnoy.net
         """
-        title = (self.title_fr[:10] + '(...)' if len(self.title_fr) > 10
+        title = (self.title_fr[:20] + '(...)' if len(self.title_fr) > 20
                  else self.title_fr)
         return "{} - {:40}".format(title, self.url)
 
@@ -32,5 +32,5 @@ class BTBeacon(models.Model):
     x = models.FloatField()
     y = models.FloatField()
 
-    def __unicode__(self):
-        return u'{0} ({1})'.format(self.label, self.uuid)
+    def __str__(self):
+        return '{0} ({1})'.format(self.label, self.uuid)

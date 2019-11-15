@@ -29,10 +29,10 @@ class Place(models.Model):
     organization = models.ForeignKey(
         Organization, blank=True, null=True, related_name='places', on_delete=models.CASCADE)
 
-    def __unicode__(self):
+    def __str__(self):
         extra_info = self.organization if self.organization else self.country
         address = self.address[0:20] + "..." if self.address else self.city
-        return u'{0} - {1} ({2})'.format(self.name, address, extra_info)
+        return '{0} - {1} ({2})'.format(self.name, address, extra_info)
 
 
 def main_event_true():
@@ -74,8 +74,8 @@ class MetaAward(models.Model):
                              related_name='meta_award',
                              on_delete=models.PROTECT)
 
-    def __unicode__(self):
-        return u'{0} ({2}, cat. {1})'.format(self.label, self.task, self.event)
+    def __str__(self):
+        return '{0} ({2}, cat. {1})'.format(self.label, self.task, self.event)
 
 # Comments
 
@@ -121,10 +121,10 @@ class Award(models.Model):
 
     note = models.TextField(blank=True, help_text="Free note")
 
-    def __unicode__(self):
-        artworks = ", ".join([artwork.__unicode__()
+    def __str__(self):
+        artworks = ", ".join([artwork.__str__()
                               for artwork in self.artwork.all()])
-        return u'{0} - {1} pour {2}'.format(self.date.year, self.meta_award, artworks)
+        return '{0} - {1} pour {2}'.format(self.date.year, self.meta_award, artworks)
 
 
 class MetaEvent(models.Model):
@@ -152,8 +152,8 @@ class MetaEvent(models.Model):
     important = models.BooleanField(
         default=True, help_text="Helps hide minor events")
 
-    def __unicode__(self):
-        return u'{0}'.format(self.event.title)
+    def __str__(self):
+        return '{0}'.format(self.event.title)
 
 
 class Diffusion(models.Model):
@@ -190,9 +190,9 @@ class Diffusion(models.Model):
     on_competition = models.BooleanField(
         default=False, help_text="IN / OFF : On competion or not")
 
-    def __unicode__(self):
+    def __str__(self):
         in_or_not = 'IN' if self.on_competition else 'OFF'
-        return u'{0} au {1} ({2})'.format(self.artwork.title, self.event.title, in_or_not)
+        return '{0} au {1} ({2})'.format(self.artwork.title, self.event.title, in_or_not)
 
     class Meta:
         # NO DUPLI DIFF

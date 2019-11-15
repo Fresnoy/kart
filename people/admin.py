@@ -54,10 +54,10 @@ class OrganizationAdmin(GuardedModelAdmin):
 
 
 def user_unicode(self):
-    return u'{0} {1}'.format(self.first_name.capitalize(), self.last_name.capitalize())
+    return '{0} {1}'.format(self.first_name.capitalize(), self.last_name.capitalize())
 
 
-User.__unicode__ = user_unicode
+User.__str__ = user_unicode
 
 admin.site.unregister(User)
 admin.site.register(User, FresnoyProfileAdmin)
