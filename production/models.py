@@ -33,10 +33,6 @@ class OrganizationTask(Task):
     pass
 
 
-class Coucou(models.Model):
-    title = models.CharField(max_length=100)
-
-
 class ProductionStaffTask(models.Model):
     staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
     production = models.ForeignKey('Production', related_name="staff_tasks", on_delete=models.CASCADE)
