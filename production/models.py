@@ -21,7 +21,7 @@ class Task(models.Model):
     label = models.CharField(max_length=255)
     description = models.TextField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.label
 
 
@@ -38,8 +38,8 @@ class ProductionStaffTask(models.Model):
     production = models.ForeignKey('Production', related_name="staff_tasks", on_delete=models.CASCADE)
     task = models.ForeignKey(StaffTask, on_delete=models.PROTECT)
 
-    def __unicode__(self):
-        return u'{0} ({1})'.format(self.task.label, self.production.title)
+    def __str__(self):
+        return '{0} ({1})'.format(self.task.label, self.production.title)
 
 
 class ProductionOrganizationTask(models.Model):
@@ -70,8 +70,8 @@ class Production(PolymorphicModel):
     description_fr = models.TextField(blank=True, null=True)
     description_en = models.TextField(blank=True, null=True)
 
-    def __unicode__(self):
-        return u'{0}'.format(self.title)
+    def __str__(self):
+        return '{0}'.format(self.title)
 
 
 class Artwork(Production):
@@ -98,15 +98,16 @@ class Artwork(Production):
 
     keywords = TaggableManager(blank=True,)
 
-    def __unicode__(self):
-        authors = ", ".join([author.__unicode__() for author in self.authors.all()])
-        return u'{0} ({1}) de {2}'.format(self.title, self.production_date.year, authors)
+    def __str__(self):
+        authors = (", ".join([author.__str__() for author in self.authors.all()])
+                   if self.authors.count() > 0 else "?")
+        return '{0} ({1}) de {2}'.format(self.title, self.production_date.year, authors)
 
 
 class FilmGenre(models.Model):
     label = models.CharField(max_length=100)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.label
 
 
@@ -163,7 +164,7 @@ class Film(Artwork):
 class InstallationGenre(models.Model):
     label = models.CharField(max_length=100)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.label
 
 
@@ -211,10 +212,10 @@ class Event(Production):
                                        blank=True,
                                        related_name='parent_event')
 
-    def __unicode__(self):
+    def __str__(self):
         if self.parent_event.exists():
-            return u'{0} ({1})'.format(self.title, self.parent_event.first().title)
-        return u'{0}'.format(self.title)
+            return '{0} ({1})'.format(self.title, self.parent_event.first().title)
+        return '{0}'.format(self.title)
 
 
 class Exhibition(Event):
@@ -238,7 +239,7 @@ class Itinerary(models.Model):
     artworks = models.ManyToManyField(Artwork, through='ItineraryArtwork')
     gallery = models.ManyToManyField(Gallery, blank=True, related_name='itineraries')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.label_fr
 
 

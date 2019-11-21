@@ -71,7 +71,7 @@ class AbstractArtworkResource(ProductionResource):
     beacons = fields.ToManyField(BTBeaconResource, 'beacons', full=True)
 
     def dehydrate(self, bundle):
-        bundle.data["type"] = u'{0}'.format(self.Meta.queryset.model.__name__.lower())
+        bundle.data["type"] = '{0}'.format(self.Meta.queryset.model.__name__.lower())
 
         return bundle
 
