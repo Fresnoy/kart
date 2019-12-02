@@ -2,7 +2,7 @@
 
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
-from django.urls import path
+from django.urls import path, re_path
 from haystack.query import SearchQuerySet
 from tastypie import fields
 from tastypie.resources import ModelResource
@@ -41,17 +41,27 @@ class StudentResource(ArtistResource):
     def prepend_urls(self):
         #  Debug : transition de url() vers path()
         # return [
-        #     path(f"(?P<resource_name>{self._meta.resource_name})/search{trailing_slash()}",
+        #     path(f"(?P<resource_name>{self._meta.resource_name})/searchtrailing_slash()",
         #         self.wrap_view('get_search'),
         #         name="api_get_search"),
         # ]
         return [
-            path(f"(<str:resource_name>{self._meta.resource_name})/search{trailing_slash()}",
-                 self.wrap_view('get_search'),
-                 name="api_get_search"),
+            # path(f"<str:resource_name>{self._meta.resource_name}/search{trailing_slash()}",
+            # re_path(r"^{}/search{}".format(self._meta.resource_name, trailing_slash()),
+            re_path(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()),
+                    self.wrap_view('get_search'),
+                    name="api_get_search"),
         ]
+#         return [
+#             re_path(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()),
+#              self.wrap_view('get_search'),
+#              name="api_get_search"),
+# ]
+
+
 
     def get_search(self, request, **kwargs):
+        print(request)
         self.method_check(request, allowed=['get'])
         self.is_authenticated(request)
         self.throttle_check(request)
