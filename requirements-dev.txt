@@ -1,5 +1,4 @@
 tox
-psycopg2==2.8.3
 flake8>=3.6.0
 pytest>=3.5.1
 pluggy>=0.6.0
