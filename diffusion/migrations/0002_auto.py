@@ -40,7 +40,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='MetaEvent',
             fields=[
-                ('event', models.OneToOneField(limit_choices_to=diffusion.models.main_event_true, on_delete=django.db.models.deletion.PROTECT, primary_key=True, related_name='meta_event', serialize=False, to='production.Event')),
+                ('event', models.OneToOneField(limit_choices_to=diffusion.models.main_event_true, on_delete=django.db.models.deletion.CASCADE, primary_key=True, related_name='meta_event', serialize=False, to='production.Event')),
                 ('genres', multiselectfield.db.fields.MultiSelectField(choices=[('FILM', 'Films'), ('PERF', 'Performances'), ('INST', 'Installations')], help_text='Global kind of productions shown', max_length=14)),
                 ('important', models.BooleanField(default=True, help_text='Helps hide minor events')),
                 ('keywords', taggit.managers.TaggableManager(blank=True, help_text='Qualifies Festival: digital arts, residency, electronic festival', through='taggit.TaggedItem', to='taggit.Tag', verbose_name='Tags')),
@@ -49,22 +49,22 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='metaaward',
             name='event',
-            field=models.ForeignKey(help_text='Main Event', limit_choices_to=diffusion.models.main_event_true, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='meta_award', to='production.Event'),
+            field=models.ForeignKey(help_text='Main Event', limit_choices_to=diffusion.models.main_event_true, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='meta_award', to='production.Event'),
         ),
         migrations.AddField(
             model_name='metaaward',
             name='task',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='meta_award', to='production.StaffTask'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='meta_award', to='production.StaffTask'),
         ),
         migrations.AddField(
             model_name='diffusion',
             name='artwork',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.PROTECT, related_name='diffusion', to='production.Artwork'),
+            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='diffusion', to='production.Artwork'),
         ),
         migrations.AddField(
             model_name='diffusion',
             name='event',
-            field=models.ForeignKey(default=1, limit_choices_to=diffusion.models.main_event_false, on_delete=django.db.models.deletion.PROTECT, to='production.Event'),
+            field=models.ForeignKey(default=1, limit_choices_to=diffusion.models.main_event_false, on_delete=django.db.models.deletion.CASCADE, to='production.Event'),
         ),
         migrations.AddField(
             model_name='award',
@@ -79,7 +79,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='award',
             name='event',
-            field=models.ForeignKey(limit_choices_to=diffusion.models.main_event_false, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='award', to='production.Event'),
+            field=models.ForeignKey(limit_choices_to=diffusion.models.main_event_false, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='award', to='production.Event'),
         ),
         migrations.AddField(
             model_name='award',
@@ -89,12 +89,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='award',
             name='meta_award',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='award', to='diffusion.MetaAward'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='award', to='diffusion.MetaAward'),
         ),
         migrations.AddField(
             model_name='award',
             name='sponsor',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='award', to='people.Organization'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='award', to='people.Organization'),
         ),
         migrations.AlterUniqueTogether(
             name='diffusion',

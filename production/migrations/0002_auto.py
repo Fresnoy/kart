@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='event',
             name='place',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='diffusion.Place'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='diffusion.Place'),
         ),
         migrations.AddField(
             model_name='event',

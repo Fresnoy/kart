@@ -125,16 +125,16 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('production', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='staff_tasks', to='production.Production')),
                 ('staff', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='people.Staff')),
-                ('task', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='production.StaffTask')),
+                ('task', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='production.StaffTask')),
             ],
         ),
         migrations.CreateModel(
             name='ProductionOrganizationTask',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('organization', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='people.Organization')),
-                ('production', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='organization_tasks', to='production.Production')),
-                ('task', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='production.OrganizationTask')),
+                ('organization', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='people.Organization')),
+                ('production', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='organization_tasks', to='production.Production')),
+                ('task', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='production.OrganizationTask')),
             ],
         ),
         migrations.AddField(
@@ -226,6 +226,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='itinerary',
             name='event',
-            field=models.ForeignKey(limit_choices_to={'type': 'EXHIB'}, on_delete=django.db.models.deletion.PROTECT, related_name='itineraries', to='production.Event'),
+            field=models.ForeignKey(limit_choices_to={'type': 'EXHIB'}, on_delete=django.db.models.deletion.CASCADE, related_name='itineraries', to='production.Event'),
         ),
     ]
