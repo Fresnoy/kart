@@ -8,14 +8,15 @@ def forwards_func(apps, schema_editor):
     NewStudent = apps.get_model('school', 'NewStudent')
     Student = apps.get_model('school', 'Student')
 
-    for student in Student.objects.all():
-        ns = NewStudent()
-        ns.number = student.number
-        ns.promotion = student.promotion
-        ns.graduate = student.graduate
-        ns.user = student.user
-        ns.artist_id = student.artist_ptr_id
-        ns.save()
+    if Student.objects.all().count()>0:
+        for student in Student.objects.all():
+            ns = NewStudent()
+            ns.number = student.number
+            ns.promotion = student.promotion
+            ns.graduate = student.graduate
+            ns.user = student.user
+            ns.artist_id = student.artist_ptr_id
+            ns.save()
 
 def backwards_func(apps, schema_editor):
     pass

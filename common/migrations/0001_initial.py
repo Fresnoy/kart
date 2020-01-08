@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import uuidfield.fields
 
 
 class Migration(migrations.Migration):
@@ -16,7 +15,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('label', models.CharField(max_length=255)),
-                ('uuid', uuidfield.fields.UUIDField(unique=True, max_length=32)),
+                ('uuid', models.UUIDField(unique=True, max_length=32)),
                 ('rssi_in', models.IntegerField()),
                 ('rssi_out', models.IntegerField()),
             ],
