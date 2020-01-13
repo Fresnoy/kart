@@ -26,9 +26,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Student',
             fields=[
-                ('artist_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='people.Artist')),
+                ('artist_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='people.Artist', on_delete=models.CASCADE)),
                 ('number', models.CharField(max_length=50, null=True, blank=True)),
-                ('promotion', models.ForeignKey(related_name='students', to='school.Promotion')),
+                ('promotion', models.ForeignKey(related_name='students', to='school.Promotion', on_delete=models.CASCADE)),
             ],
             bases=('people.artist',),
         ),

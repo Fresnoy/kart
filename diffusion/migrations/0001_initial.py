@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=255)),
                 ('description', models.TextField()),
-                ('organization', models.ForeignKey(related_name='places', to='people.Organization')),
+                ('organization', models.ForeignKey(related_name='places', to='people.Organization', on_delete=models.CASCADE)),
             ],
         ),
     ]

@@ -2,7 +2,7 @@
 from django.test import TestCase
 
 from production.models import Event
-from ..models import Place, MetaEvent
+from diffusion.models import Place, MetaEvent
 
 
 class CommandsTestCase(TestCase):
@@ -40,9 +40,9 @@ class CommandsTestCase(TestCase):
         # get meta events
         meta_events = MetaEvent.objects.all()
         # test metaEvent created
-        self.assertEquals(meta_events.count(), 1)
+        self.assertEqual(meta_events.count(), 1)
         parent_event = self.event.parent_event.first()
         # test parent event is main event
-        self.assertEquals(parent_event.main_event, True)
+        self.assertEqual(parent_event.main_event, True)
         # test main event is meta event
-        self.assertEquals(parent_event.meta_event.important, True)
+        self.assertEqual(parent_event.meta_event.important, True)

@@ -1,6 +1,5 @@
-Kart
+Little Chick
 ====
+Major update of KART, Le Fresnoy's information system. 
 
-[![Build Status](https://travis-ci.org/Fresnoy/kart.svg?branch=develop)](https://travis-ci.org/Fresnoy/kart)
-
-LeFresnoy's data server.
+This future version is based on Django 2.1

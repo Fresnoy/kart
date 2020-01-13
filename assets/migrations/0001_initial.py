@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(null=True, blank=True)),
                 ('picture', models.ImageField(null=True, upload_to=common.utils.make_filepath, blank=True)),
                 ('medium_url', models.URLField(null=True, blank=True)),
-                ('gallery', models.ForeignKey(related_name='media', to='assets.Gallery')),
+                ('gallery', models.ForeignKey(related_name='media', to='assets.Gallery', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ('position',),
