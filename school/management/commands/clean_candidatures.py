@@ -61,7 +61,7 @@ class Command(BaseCommand):
         print(u"/!\\ Supression des informations de {} anciennes candidatures".format(sa_olds.count()))
         print(u"/!\\ Supression des informations critiques de {} candidatures".format(sa_all.count()))
         # pause to read uplines
-        raw_input('[Press any key to continue]')
+        input('[Press any key to continue]')
         # ALL candidatures : delete critical infos
         for sa in sa_all:
             # set short list
@@ -90,8 +90,8 @@ class Command(BaseCommand):
                 list_delete.extend(a)
         #
         for infos in list_delete:
-                model, field, value = infos
-                print(model, " : ", value)
+            model, field, value = infos
+            print(model, " : ", value)
         #
         confirm = self.ask_user("Voulez-vous supprimer toutes ces informations ? (Y/n)")
         #
@@ -107,7 +107,7 @@ class Command(BaseCommand):
         print("Fin")
 
     def ask_user(self, str_question):
-        check = str(raw_input(str_question)).lower().strip()
+        check = str(input(str_question)).lower().strip()
         try:
             if check[0] in ('y', 'yes', 'o', 'oui',):
                 return True
@@ -172,13 +172,13 @@ class Command(BaseCommand):
         # print(model, " - ", field, " : ", value)
         print(field, " : ", value.__class__.__name__)
         # print(value.__class__.__name__)
-        if value.__class__.__name__ is 'ManyRelatedManager':
+        if value.__class__.__name__ == 'ManyRelatedManager':
             # print("delete arrays")
             # print(value.all())
             value.all().delete()
         elif value.__class__.__name__ in ('FieldFile', 'ImageFieldFile', 'Gallery'):
             # print("delete File")
-            if value.__class__.__name__ is 'Gallery':
+            if value.__class__.__name__ == 'Gallery':
                 # detach Gallery from main Model
                 model.__setattr__(field, None)
                 model.save()

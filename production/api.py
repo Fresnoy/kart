@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from django.conf.urls import url
+from django.urls import re_path
+
 from django.core.paginator import Paginator, InvalidPage
 from django.shortcuts import Http404
 
@@ -70,7 +71,7 @@ class AbstractArtworkResource(ProductionResource):
     beacons = fields.ToManyField(BTBeaconResource, 'beacons', full=True)
 
     def dehydrate(self, bundle):
-        bundle.data["type"] = u'{0}'.format(self.Meta.queryset.model.__name__.lower())
+        bundle.data["type"] = '{0}'.format(self.Meta.queryset.model.__name__.lower())
 
         return bundle
 
@@ -106,10 +107,10 @@ class ArtworkResource(AbstractArtworkResource):
 
     def prepend_urls(self):
         return [
-            url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name,
-                                                       trailing_slash()),
-                self.wrap_view('get_search'),
-                name="api_get_search"),
+            # path(f"<str:resource_name>{self._meta.resource_name})/search{trailing_slash()}",
+            re_path(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()),
+                    self.wrap_view('get_search'),
+                    name="api_get_search"),
         ]
 
     def get_search(self, request, **kwargs):

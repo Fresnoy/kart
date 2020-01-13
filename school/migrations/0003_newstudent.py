@@ -8,14 +8,15 @@ def forwards_func(apps, schema_editor):
     NewStudent = apps.get_model('school', 'NewStudent')
     Student = apps.get_model('school', 'Student')
 
-    for student in Student.objects.all():
-        ns = NewStudent()
-        ns.number = student.number
-        ns.promotion = student.promotion
-        ns.graduate = student.graduate
-        ns.user = student.user
-        ns.artist_id = student.artist_ptr_id
-        ns.save()
+    if Student.objects.all().count()>0:
+        for student in Student.objects.all():
+            ns = NewStudent()
+            ns.number = student.number
+            ns.promotion = student.promotion
+            ns.graduate = student.graduate
+            ns.user = student.user
+            ns.artist_id = student.artist_ptr_id
+            ns.save()
 
 def backwards_func(apps, schema_editor):
     pass
@@ -37,9 +38,9 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('number', models.CharField(max_length=50, null=True, blank=True)),
                 ('graduate', models.BooleanField(default=False)),
-                ('artist', models.OneToOneField(to='people.Artist')),
-                ('promotion', models.ForeignKey(to='school.Promotion')),
-                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
+                ('artist', models.OneToOneField(to='people.Artist', on_delete=models.CASCADE)),
+                ('promotion', models.ForeignKey(to='school.Promotion', on_delete=models.CASCADE)),
+                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
         ),
         migrations.RunPython(forwards_func, backwards_func)

@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='productionorganizationtask',
             name='production',
-            field=models.ForeignKey(related_name='organization_tasks', to='production.Production'),
+            field=models.ForeignKey(related_name='organization_tasks', to='production.Production', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='productionstafftask',
             name='production',
-            field=models.ForeignKey(related_name='staff_tasks', to='production.Production'),
+            field=models.ForeignKey(related_name='staff_tasks', to='production.Production', on_delete=models.CASCADE),
         ),
     ]

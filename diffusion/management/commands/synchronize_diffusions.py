@@ -15,7 +15,7 @@ class Command(BaseCommand):
             artworks.extend(event.films.all().values('id'))
             artworks.extend(event.installations.all().values('id'))
             artworks.extend(event.performances.all().values('id'))
-            print "Event: {0}".format(event.title.encode("utf-8"))
+            print(f"Event: {event.title.encode('utf-8')}")
             #
             for aw in artworks:
                 artwork = Artwork.objects.get(id=aw['id'])
@@ -24,4 +24,4 @@ class Command(BaseCommand):
                 except Exception:
                     diffusion = Diffusion(event=event, artwork=artwork)
                     diffusion.save()
-                    print "   Create diff: ", artwork
+                    print("  Create diff: ", artwork)

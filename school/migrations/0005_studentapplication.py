@@ -46,8 +46,8 @@ class Migration(migrations.Migration):
                 ('selected', models.BooleanField(default=False, help_text=b'Administration - Is the candidat selected')),
                 ('wait_listed', models.BooleanField(default=False, help_text=b'Administration - Is the candidat wait listed')),
                 ('application_complete', models.BooleanField(default=False, help_text=b'Administration - Candidature is complete')),
-                ('artist', models.ForeignKey(related_name='student_application', to='people.Artist')),
-                ('cursus_justifications', models.ForeignKey(related_name='student_application_cursus_justification', blank=True, to='assets.Gallery', help_text=b'Gallery of justificaitons', null=True)),
+                ('artist', models.ForeignKey(related_name='student_application', to='people.Artist', on_delete=models.CASCADE)),
+                ('cursus_justifications', models.ForeignKey(related_name='student_application_cursus_justification', blank=True, to='assets.Gallery', help_text=b'Gallery of justificaitons', null=True, on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -65,12 +65,12 @@ class Migration(migrations.Migration):
                 ('video_service_url', models.URLField(help_text=b'service URL')),
                 ('video_service_token', models.CharField(help_text=b'Video service token', max_length=128, null=True, blank=True)),
                 ('is_current_setup', models.BooleanField(default=True, help_text=b'This configuration is actived')),
-                ('promotion', models.ForeignKey(to='school.Promotion')),
+                ('promotion', models.ForeignKey(to='school.Promotion', on_delete=models.CASCADE)),
             ],
         ),
         migrations.AlterField(
             model_name='student',
             name='artist',
-            field=models.OneToOneField(related_name='student', to='people.Artist'),
+            field=models.OneToOneField(related_name='student', to='people.Artist', on_delete=models.CASCADE),
         ),
     ]

@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 from production.models import Event, Film
 from people.models import Artist
-from ..models import Place, Diffusion
+from diffusion.models import Place, Diffusion
 
 
 class CommandsTestCase(TestCase):
@@ -49,6 +49,13 @@ class CommandsTestCase(TestCase):
 
     def test_synchronize_diffusions(self):
         "simple TEST Command: synchronize_diffusion"
-        call_command('synchronize_diffusions', interactive=False, stdout=self.out)
+        call_command('synchronize_diffusions', stdout=self.out)
         diffusions = Diffusion.objects.all()
-        self.assertEquals(diffusions.count(), 1)
+        self.assertEqual(diffusions.count(), 1)
+
+    def test_place_creation(self):
+        "simple TEST Command: create_place"
+        call_command('create_city_place', 'Macondo', 'Colombia',
+                     stdout=self.out)
+        place = Place.objects.all()
+        self.assertEqual(place.count(), 2)

@@ -25,26 +25,24 @@ class Command(BaseCommand):
         first_name = options['firstname'].title()
         last_name = options['lastname'].title()
 
-        print u"firstname: {0}".format(first_name)
-        print u"lastname: {0}".format(last_name)
-
-        username = first_name.lower()[0]+slugify(last_name.lower())
-        # try to get USER
+        print("firstname: {0}".format(first_name))
+        print("lastname: {0}".format(last_name))
+        username = slugify(first_name.lower()+" "+last_name.lower())
+        # try to get USER with first name and lastname
+        # cause username: mmouse can be Mickey Mouse OR Minnie Mouse
         user = False
         created = False
         try:
-            user = User.objects.get(username=username)
+            user = User.objects.get(first_name=first_name, last_name=last_name)
         except User.DoesNotExist:
             user = User.objects.create_user(first_name=first_name,
                                             last_name=last_name,
                                             username=username,
                                             password=get_random_string())
             created = True
-            print u"User {0} created".format(user)
-
+            print("User {0} created".format(user))
         if not created:
-            print u"User {0} already created".format(user)
-
+            print("User {0} already created".format(user))
         # try to create STAFF
         staff = False
         created = False
@@ -56,6 +54,6 @@ class Command(BaseCommand):
             created = True
 
         if created:
-            print u"Staff {0} created".format(staff)
+            print("Staff {0} created".format(staff))
         else:
-            print u"Staff {0} already created".format(staff)
+            print("Staff {0} already created".format(staff))

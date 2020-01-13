@@ -9,7 +9,7 @@ from django.template.loader import render_to_string
 
 from rest_framework import viewsets, permissions, status, filters
 from rest_framework.response import Response
-from rest_framework.decorators import list_route, api_view, permission_classes
+from rest_framework.decorators import action, api_view, permission_classes
 
 from rest_framework_jwt.settings import api_settings
 
@@ -43,7 +43,7 @@ class UserViewSet(viewsets.ModelViewSet):
             return UserSerializer
         return PublicUserSerializer
 
-    @list_route(methods=['POST'], permission_classes=[permissions.AllowAny])
+    @action(methods=['POST'], permission_classes=[permissions.AllowAny], detail=False)
     def register(self, request):
         serializer = UserRegisterSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
@@ -68,7 +68,7 @@ class UserViewSet(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors, status=status.HTTP_403_FORBIDDEN)
 
-    @list_route(methods=['POST'], permission_classes=[permissions.AllowAny])
+    @action(methods=['POST'], permission_classes=[permissions.AllowAny], detail=False)
     def resend_activation_email(self, request):
         serializer = UserRegisterSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():

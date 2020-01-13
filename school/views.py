@@ -35,9 +35,9 @@ class StudentViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter,)
     search_fields = ('user__username',)
     ordering_fields = ('user__last_name',)
-    filter_fields = ('artist',
-                     'user',
-                     'promotion',)
+    filterset_fields = ('artist',
+                        'user',
+                        'promotion',)
 
 
 class StudentAutocompleteSearchViewSet(HaystackViewSet):
@@ -53,7 +53,7 @@ class StudentApplicationSetupViewSet(viewsets.ModelViewSet):
     serializer_class = StudentApplicationSetupSerializer
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
     filter_backends = (DjangoFilterBackend,)
-    filter_fields = ('is_current_setup',)
+    filterset_fields = ('is_current_setup',)
 
 
 class StudentApplicationViewSet(viewsets.ModelViewSet):
@@ -62,12 +62,12 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter)
     search_fields = ('=artist__user__username', 'artist__user__last_name')
-    filter_fields = ('application_completed',
-                     'application_complete',
-                     'selected_for_interview', 'remote_interview', 'wait_listed_for_interview',
-                     'selected', 'unselected',
-                     'campaign__is_current_setup',
-                     'wait_listed',)
+    filterset_fields = ('application_completed',
+                        'application_complete',
+                        'selected_for_interview', 'remote_interview', 'wait_listed_for_interview',
+                        'selected', 'unselected',
+                        'campaign__is_current_setup',
+                        'wait_listed',)
     ordering_fields = ('id',
                        'artist__user__last_name',
                        'artist__user__profile__nationality',)
@@ -90,7 +90,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         for Staff Anonymous User and gave all application for the others
         """
         user = self.request.user
-        if user.is_authenticated() and not user.is_staff:
+        if user.is_authenticated and not user.is_staff:
             return StudentApplication.objects.filter(artist__user=user.id)
         else:
             return StudentApplication.objects.all()
@@ -106,7 +106,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
         campaign = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
         # user muse be auth
-        if user.is_authenticated():
+        if user.is_authenticated:
             # is an current inscription
             current_year_application = StudentApplication.objects.filter(
                 artist__user=user.id,
