@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.contrib.auth.models import User
 from tastypie import fields
 from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
@@ -17,15 +18,16 @@ class UserResource(ModelResource):
         }
 
     def dehydrate(self, bundle):
-        bundle.data['photo'] = bundle.obj.profile.photo
-        bundle.data['birthdate'] = bundle.obj.profile.birthdate
-        bundle.data['birthplace'] = bundle.obj.profile.birthplace
-        bundle.data['cursus'] = bundle.obj.profile.cursus
-        bundle.data['gender'] = bundle.obj.profile.gender
-        # Nationality : country code separated by commas
-        bundle.data['nationality'] = bundle.obj.profile.nationality
-        bundle.data['homeland_country'] = bundle.obj.profile.homeland_country
-        bundle.data['birthplace_country'] = bundle.obj.profile.birthplace_country
+        if hasattr(bundle.obj, 'profile'):
+            bundle.data['photo'] = bundle.obj.profile.photo
+            bundle.data['birthdate'] = bundle.obj.profile.birthdate
+            bundle.data['birthplace'] = bundle.obj.profile.birthplace
+            bundle.data['cursus'] = bundle.obj.profile.cursus
+            bundle.data['gender'] = bundle.obj.profile.gender
+            # Nationality : country code separated by commas
+            bundle.data['nationality'] = bundle.obj.profile.nationality
+            bundle.data['homeland_country'] = bundle.obj.profile.homeland_country
+            bundle.data['birthplace_country'] = bundle.obj.profile.birthplace_country
 
         return bundle
 

@@ -7,7 +7,7 @@ from rest_framework.test import APIClient
 from rest_framework import status
 
 from django.test import TestCase
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from people.models import Artist
 
@@ -142,7 +142,7 @@ class TestApplicationSetupEndPoint(TestCase):
 
     def _get_current_campaign(self):
         url = reverse('studentapplicationsetup-list')
-        return self.client.get("{}?is_current_setup=2".format(url))
+        return self.client.get("{}?is_current_setup=true".format(url))
 
     def test_list(self):
         """

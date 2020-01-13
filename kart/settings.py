@@ -8,8 +8,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
-from site_settings import * # NOQA
-from site_settings import DEBUG as DEBUG, BASE_DIR as BASE_DIR
+from kart.site_settings import * # NOQA
+from kart.site_settings import DEBUG as DEBUG, BASE_DIR as BASE_DIR
 import datetime
 import os
 
@@ -19,6 +19,7 @@ import os
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '$17%$7@*^nmx&(mb)5=o9v9if&_%s67-*^-skk!iaef3%16*12'
 
+# PASSWORD_TOKEN = r'(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})'
 PASSWORD_TOKEN = r'(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})'
 
 site_name = "Kartel"
@@ -38,16 +39,18 @@ INSTALLED_APPS = (
     'haystack',
     'elasticstack',
     'polymorphic',
+    'taggit',
+    'taggit_serializer',
+    'multiselectfield',
+    'django_filters',
     'grappelli',
     'django.contrib.admin',
     'sortedm2m',
     'django_countries',
-    'django_markdown',
     'django_cleanup',
     'django_unused_media',
     'kart',
     'tastypie',
-    'tastypie_swagger',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
@@ -66,13 +69,15 @@ INSTALLED_APPS = (
     'assets',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 
     'corsheaders.middleware.CorsMiddleware',
 

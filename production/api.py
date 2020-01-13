@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from django.conf.urls import url
+from django.urls import re_path
+
 from django.core.paginator import Paginator, InvalidPage
 from django.shortcuts import Http404
 
@@ -70,7 +71,7 @@ class AbstractArtworkResource(ProductionResource):
     beacons = fields.ToManyField(BTBeaconResource, 'beacons', full=True)
 
     def dehydrate(self, bundle):
-        bundle.data["type"] = self.Meta.queryset.model.__name__.lower()
+        bundle.data["type"] = '{0}'.format(self.Meta.queryset.model.__name__.lower())
 
         return bundle
 
@@ -88,7 +89,8 @@ class ArtworkResource(AbstractArtworkResource):
         # cache = SimpleCache(timeout=10)
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
-    events = fields.ToManyField('production.api.EventResource', 'events', full=False)
+    events = fields.ToManyField('production.api.EventResource', 'events', blank=True, full=False)
+    award = fields.ToManyField('diffusion.api.AwardResource', 'award', blank=True, full=False)
 
     def dehydrate(self, bundle):
         res_types = (InstallationResource, FilmResource, PerformanceResource)
@@ -98,17 +100,17 @@ class ArtworkResource(AbstractArtworkResource):
                 res = res_type()
                 rr_bundle = res.build_bundle(obj=bundle.obj, request=bundle.request)
                 bundle.data = res.full_dehydrate(rr_bundle).data
-                bundle.data['type'] = "{0}".format(res_type.Meta.queryset.model.__name__.lower())
+                bundle.data['type'] = u"{0}".format(res_type.Meta.queryset.model.__name__.lower())
                 break
 
         return bundle
 
     def prepend_urls(self):
         return [
-            url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name,
-                                                       trailing_slash()),
-                self.wrap_view('get_search'),
-                name="api_get_search"),
+            # path(f"<str:resource_name>{self._meta.resource_name})/search{trailing_slash()}",
+            re_path(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()),
+                    self.wrap_view('get_search'),
+                    name="api_get_search"),
         ]
 
     def get_search(self, request, **kwargs):
@@ -155,7 +157,7 @@ class InstallationResource(AbstractArtworkResource):
         filtering = {'authors': ALL_WITH_RELATIONS, 'events': ALL_WITH_RELATIONS}
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
-    events = fields.ToManyField('production.api.EventResource', 'events', full=False)
+    events = fields.ToManyField('production.api.EventResource', 'events', blank=True, full=False)
     genres = fields.ToManyField(InstallationGenreResource, 'genres', full=True)
 
 
@@ -172,8 +174,9 @@ class FilmResource(AbstractArtworkResource):
         filtering = {'authors': ALL_WITH_RELATIONS, 'events': ALL_WITH_RELATIONS, 'genres': ALL_WITH_RELATIONS}
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
-    events = fields.ToManyField('production.api.EventResource', 'events', full=False)
+    events = fields.ToManyField('production.api.EventResource', 'events', blank=True, full=False)
     genres = fields.ToManyField(FilmGenreResource, 'genres', full=True, full_detail=True, full_list=False)
+    awards = fields.ToManyField('diffusion.api.AwardResource', 'award', blank=True, full=False)
 
 
 class PerformanceResource(AbstractArtworkResource):
@@ -184,7 +187,7 @@ class PerformanceResource(AbstractArtworkResource):
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
 
-    events = fields.ToManyField('production.api.EventResource', 'events', full=False)
+    events = fields.ToManyField('production.api.EventResource', 'events', blank=True, full=False)
 
 
 class EventResource(ProductionResource):
@@ -201,7 +204,7 @@ class EventResource(ProductionResource):
 
     performances = fields.ToManyField(PerformanceResource, 'performances', full=True, full_list=False, full_detail=True)
 
-    subevents = fields.ToManyField('production.api.EventResource', 'subevents')
+    subevents = fields.ToManyField('production.api.EventResource', 'subevents', blank=True, full=False)
 
 
 class ItineraryResource(ModelResource):

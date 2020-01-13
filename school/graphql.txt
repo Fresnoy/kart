@@ -1,0 +1,32 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+mutation mamut {
+  createStudent(input:{
+    artist : {
+      id:"1"
+    },
+    promotion : {
+      id:"1"
+    },
+    number:"000000",
+    graduate:false
+  }) {
+    student {
+      number
+    }
+  }
+}

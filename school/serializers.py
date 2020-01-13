@@ -9,17 +9,19 @@ from .utils import candidature_close
 class StudentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Student
+        fields = '__all__'
 
 
 class PromotionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Promotion
+        fields = '__all__'
 
 
 class StudentAutocompleteSerializer(HaystackSerializer):
     class Meta:
         index_classes = [StudentIndex]
-        fields = ["firstname", "lastname"]
+        # fields = ["firstname", "lastname"]
         ignore_fields = ["autocomplete"]
 
         # The `field_aliases` attribute can be used in order to alias a

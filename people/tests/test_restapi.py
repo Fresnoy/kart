@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 
 from django.test import TestCase
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from people.models import Artist
 
@@ -38,7 +38,7 @@ class UserEndPoint(TestCase):
         Test user register link
         """
         url = reverse('user-register')
-        user_registration = {'username': 'roro', 'first_name': 'Romain', 'last_name': 'Lefranc', 'email': 'ska@ree.fr'}
+        user_registration = {'username': 'newuser', 'first_name': 'New', 'last_name': 'User', 'email': 'newuser@ac.art'}
         response = self.client.post(url, user_registration)
         self.assertEqual(response.status_code, 202)
         user_on_base = User.objects.get(email=user_registration.get('email'),

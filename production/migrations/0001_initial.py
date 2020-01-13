@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('order', models.PositiveIntegerField()),
-                ('itinerary', models.ForeignKey(to='production.Itinerary')),
+                ('itinerary', models.ForeignKey(to='production.Itinerary', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ('order',),
@@ -74,7 +74,7 @@ class Migration(migrations.Migration):
             name='ProductionOrganizationTask',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('organization', models.ForeignKey(to='people.Organization')),
+                ('organization', models.ForeignKey(to='people.Organization', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -97,7 +97,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Artwork',
             fields=[
-                ('production_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='production.Production')),
+                ('production_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='production.Production', on_delete=models.CASCADE)),
                 ('production_date', models.DateField()),
                 ('credits_fr', models.TextField(null=True, blank=True)),
                 ('credits_en', models.TextField(null=True, blank=True)),
@@ -111,7 +111,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Event',
             fields=[
-                ('production_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='production.Production')),
+                ('production_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='production.Production', on_delete=models.CASCADE)),
                 ('type', models.CharField(max_length=10, choices=[(b'PROJ', b'Projection'), (b'EXHIB', b'Exhibition'), (b'VARN', b'Varnishing'), (b'PARTY', b'Party'), (b'WORKSHOP', b'Workshop'), (b'EVENING', b'Evening')])),
                 ('starting_date', models.DateTimeField()),
                 ('ending_date', models.DateTimeField()),
@@ -121,27 +121,27 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='productionstafftask',
             name='production',
-            field=models.ForeignKey(to='production.Production'),
+            field=models.ForeignKey(to='production.Production', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='productionstafftask',
             name='staff',
-            field=models.ForeignKey(to='people.Staff'),
+            field=models.ForeignKey(to='people.Staff', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='productionstafftask',
             name='task',
-            field=models.ForeignKey(to='production.StaffTask'),
+            field=models.ForeignKey(to='production.StaffTask', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='productionorganizationtask',
             name='production',
-            field=models.ForeignKey(to='production.Production'),
+            field=models.ForeignKey(to='production.Production', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='productionorganizationtask',
             name='task',
-            field=models.ForeignKey(to='production.OrganizationTask'),
+            field=models.ForeignKey(to='production.OrganizationTask', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='production',
@@ -161,21 +161,21 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Exhibition',
             fields=[
-                ('event_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='production.Event')),
+                ('event_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='production.Event', on_delete=models.CASCADE)),
             ],
             bases=('production.event',),
         ),
         migrations.CreateModel(
             name='Film',
             fields=[
-                ('artwork_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='production.Artwork')),
+                ('artwork_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='production.Artwork', on_delete=models.CASCADE)),
             ],
             bases=('production.artwork',),
         ),
         migrations.CreateModel(
             name='Installation',
             fields=[
-                ('artwork_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='production.Artwork')),
+                ('artwork_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='production.Artwork', on_delete=models.CASCADE)),
                 ('technical_description', models.TextField(blank=True)),
             ],
             bases=('production.artwork',),
@@ -183,14 +183,14 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Performance',
             fields=[
-                ('artwork_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='production.Artwork')),
+                ('artwork_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='production.Artwork', on_delete=models.CASCADE)),
             ],
             bases=('production.artwork',),
         ),
         migrations.AddField(
             model_name='itineraryartwork',
             name='artwork',
-            field=models.ForeignKey(to='production.Artwork'),
+            field=models.ForeignKey(to='production.Artwork', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='itinerary',
@@ -200,12 +200,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='itinerary',
             name='event',
-            field=models.ForeignKey(related_name='itineraries', to='production.Event'),
+            field=models.ForeignKey(related_name='itineraries', to='production.Event', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='event',
             name='place',
-            field=models.ForeignKey(to='diffusion.Place'),
+            field=models.ForeignKey(to='diffusion.Place', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='event',

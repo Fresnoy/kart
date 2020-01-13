@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='studentapplication',
             name='campain',
-            field=models.ForeignKey(related_name='applications', blank=True, to='school.StudentApplicationSetup', null=True),
+            field=models.ForeignKey(related_name='applications', blank=True, to='school.StudentApplicationSetup', null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='studentapplication',

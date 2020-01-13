@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='production',
             name='polymorphic_ctype',
-            field=models.ForeignKey(related_name='polymorphic_production.production_set+', editable=False, to='contenttypes.ContentType', null=True),
+            field=models.ForeignKey(related_name='polymorphic_production.production_set+', editable=False, to='contenttypes.ContentType', null=True, on_delete=models.CASCADE),
         ),
         migrations.RunPython(forwards_func, backwards_func)
     ]
