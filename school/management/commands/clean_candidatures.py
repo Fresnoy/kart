@@ -1,11 +1,13 @@
 # -*- encoding: utf-8 -*-
 import datetime
+from itertools import chain
 
 from django.core.management.base import BaseCommand
 
 from django.db.models import Q
 
 from school.models import StudentApplication
+from people.models import Staff
 
 
 class Command(BaseCommand):
@@ -21,11 +23,16 @@ class Command(BaseCommand):
         # set user too old birthday 35 + 1
         expired_user = datetime.datetime(current_year - 36, 1, 1)
         # keep user's selected infos (when user postulate more than one time)
-        sa_keep_user = StudentApplication.objects.filter(
+        sa_keep_users = StudentApplication.objects.filter(
                         Q(selected=True) |
                         Q(wait_listed=True) |
                         Q(artist__user__is_staff=True)
                        ).values_list("artist__user")
+        # keep staff user (they may postulate)
+        staff_keep_users = Staff.objects.all().values_list("user")
+        # add keep unser
+        keep_users = list(chain(sa_keep_users, staff_keep_users))
+
         # take olds application : last year exclude selected
         sa_olds = StudentApplication.objects.filter(
                         # __lte : less than equal last_year
@@ -33,7 +40,7 @@ class Command(BaseCommand):
                         selected=False,
                   ).exclude(
                             # exclude selected user (=Artist)
-                            artist__user__in=sa_keep_user
+                            artist__user__in=keep_users,
                             )
         # sa expired mean
         #   user is too old to candidate or
@@ -44,7 +51,7 @@ class Command(BaseCommand):
                         Q(artist__user__profile__birthdate__lte=expired_user),
                      ).exclude(
                                # exclude selected user (= Artist)
-                               artist__user__in=sa_keep_user
+                               artist__user__in=keep_users
                                )
         # All sa
         sa_all = StudentApplication.objects.exclude(
@@ -82,12 +89,7 @@ class Command(BaseCommand):
                 list_delete.extend(a)
         # Expired candidat/ure : delete all ()
         for sa in sa_expired:
-            # set short list
-            a = []
-            # add critical infos
-            a.extend(self.list_user(sa))
-            if(a):
-                list_delete.extend(a)
+            list_delete.extend([(sa, "all", sa)])
         #
         for infos in list_delete:
             model, field, value = infos
@@ -128,15 +130,6 @@ class Command(BaseCommand):
             value = getattr(sa, field)
             if (value):
                 a.append((sa, field, value))
-        return a
-
-    def list_user(self, sa):
-        a = []
-        user_infos = ["user", ]
-        for field in user_infos:
-            value = getattr(sa.artist, field)
-            if value:
-                a.append((sa.artist, field, value))
         return a
 
     def list_infos(self, sa):
@@ -187,15 +180,21 @@ class Command(BaseCommand):
             # remove value (file or gallery instance)
             value.delete()
 
-        elif value.__class__.__name__ in ('str'):
+        elif value.__class__.__name__ in ('str',):
             # print("delete str")
             setattr(model, field, "")
-        elif value.__class__.__name__ in ('User'):
+        elif value.__class__.__name__ in ('date'):
+            model.__setattr__(field, None)
+            model.save()
+        elif value.__class__.__name__ in ('StudentApplication'):
+            artist = value.artist
+            # delete sa, artist, user
             value.delete()
+            artist.user.delete()
+            artist.delete()
             return
         else:
             # other model like Date
-            # print("delete simple model")
             delattr(model, field)
             # return model.save()
         model.save()
