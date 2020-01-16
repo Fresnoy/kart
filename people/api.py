@@ -11,7 +11,7 @@ class UserResource(ModelResource):
         queryset = User.objects.exclude(pk=-1)  # Exclude anonymous user
         detail_uri_name = 'username'
         resource_name = 'people/user'
-        fields = ['username', 'first_name', 'last_name', 'id']
+        fields = ['username', 'first_name', 'last_name', 'id', ]
         filtering = {
             'first_name': ALL,
             'last_name': ALL

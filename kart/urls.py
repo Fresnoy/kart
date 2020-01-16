@@ -8,7 +8,7 @@ from tastypie.api import Api
 from rest_framework import routers
 from rest_framework_jwt.views import obtain_jwt_token
 
-from people.api import ArtistResource, StaffResource, OrganizationResource
+from people.api import ArtistResource, StaffResource, OrganizationResource, UserResource
 from production.api import (
     InstallationResource, FilmResource,
     PerformanceResource, EventResource, ExhibitionResource,
@@ -53,6 +53,7 @@ v1_api.register(StudentResource())
 v1_api.register(StudentApplicationResource())
 v1_api.register(ArtistResource())
 v1_api.register(StaffResource())
+v1_api.register(UserResource())
 v1_api.register(PlaceResource())
 v1_api.register(AwardResource())
 v1_api.register(MetaAwardResource())

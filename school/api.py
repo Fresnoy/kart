@@ -3,6 +3,7 @@
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
 from django.urls import re_path
+from django.db.models import Q
 from haystack.query import SearchQuerySet
 from tastypie import fields
 from tastypie.resources import ModelResource
@@ -31,12 +32,31 @@ class StudentResource(ArtistResource):
         filtering = {
             'artist': ALL_WITH_RELATIONS,
             'user': ALL_WITH_RELATIONS,
+            'user__last_name__istartswith': ALL_WITH_RELATIONS,
             'promotion': ALL,
         }
         fields = ['id', 'number', 'promotion', 'graduate', 'user', 'artist']
 
     promotion = fields.ForeignKey(PromotionResource, 'promotion')
     artist = fields.ForeignKey(ArtistResource, 'artist', full=True)
+
+    # BUG Error (why?) user__last_name__istartswith
+    # "The 'last_name' field does not support relations"
+    def build_filters(self, filters=None):
+        # turn off error : ignore_bad_filters et True
+        return super(StudentResource, self).build_filters(filters, ignore_bad_filters=True)
+
+    # override user__last_name__istartswith query
+    def apply_filters(self, request, applicable_filters):
+        base_object_list = super(StudentResource, self).apply_filters(request, applicable_filters)
+        # override
+        query = request.GET.get('user__last_name__istartswith', None)
+        if query:
+            qset = (Q(user__last_name__istartswith=query))
+            base_object_list = base_object_list.filter(qset).distinct()
+
+        return base_object_list
+    # end of Bug Error
 
     def prepend_urls(self):
         return [
