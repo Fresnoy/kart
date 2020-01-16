@@ -20,7 +20,7 @@ django-rest-polymorphic==0.1.8
 django-sortedm2m==2.0.0
 django-taggit==1.1.0
 django-taggit-serializer==0.1.7
-django-tastypie==0.14.2
+django-tastypie==0.14.3
 django-tastypie-swagger==0.1.4
 django-unused-media==0.1.13
 djangorestframework==3.9.4
