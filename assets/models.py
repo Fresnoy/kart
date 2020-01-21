@@ -35,7 +35,7 @@ class Medium(models.Model):
 
     # TODO :
     # Currently, one media can be linked to only one gallery, manyToMany could be relevant ?
-    gallery = models.ForeignKey(Gallery, related_name='media', on_delete='')
+    gallery = models.ForeignKey(Gallery, related_name='media', on_delete=models.CASCADE)
 
     def __str__(self):
         return "{0} - {1}".format(self.label, self.description)
