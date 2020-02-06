@@ -190,10 +190,15 @@ class Diffusion(models.Model):
     on_competition = models.BooleanField(
         default=False, help_text="IN / OFF : On competion or not")
 
+    note = models.TextField(blank=True, help_text="Free note / category")
+
     def __str__(self):
         in_or_not = 'IN' if self.on_competition else 'OFF'
         return '{0} au {1} ({2})'.format(self.artwork.title, self.event.title, in_or_not)
 
     class Meta:
         # NO DUPLI DIFF
-        unique_together = ('id', 'artwork', 'event')
+        ## unique_together = ('id', 'artwork', 'event')
+        constraints = [
+            models.UniqueConstraint(fields=['artwork', 'event'], name='diffusion_unique')
+            ]

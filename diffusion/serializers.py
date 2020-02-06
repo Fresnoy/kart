@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 from django_countries.serializers import CountryFieldMixin
 from taggit_serializer.serializers import (TagListSerializerField,
                                            TaggitSerializer)
@@ -41,3 +42,9 @@ class DiffusionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Diffusion
         fields = '__all__'
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Diffusion.objects.all(),
+                fields=['artwork', 'event']
+            )
+        ]
