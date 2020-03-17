@@ -19,6 +19,7 @@ class Promotion(models.Model):
     name = models.CharField(max_length=255)
     starting_year = models.PositiveSmallIntegerField()
     ending_year = models.PositiveSmallIntegerField()
+    picture = models.ImageField(upload_to=make_filepath, null=True, blank=True)
 
     def __str__(self):
         return '{0} ({1}-{2})'.format(self.name, self.starting_year, self.ending_year)
@@ -28,14 +29,38 @@ class Student(models.Model):
     """
     An artist, part of a promotion, studying for at least 2 years.
     """
-    number = models.CharField(max_length=50, null=True, blank=True)
     promotion = models.ForeignKey(Promotion, null=True, on_delete=models.SET_NULL)
-    graduate = models.BooleanField(default=False)
     user = models.OneToOneField(User, on_delete=models.PROTECT)
     artist = models.OneToOneField(Artist, related_name='student', on_delete=models.PROTECT)
+    graduate = models.BooleanField(default=False)
+
+    INE = models.CharField(max_length=15, null=True, blank=True)
+    status = models.CharField(max_length=255, null=True, blank=True)
+
+    first_year_date = models.ForeignKey(FresnoySchoolYear, null=True, blank=False, on_delete=models.SET_NULL)
+
 
     def __str__(self):
         return '{0} ({1})'.format(self.user, self.number)
+
+
+class FresnoySchoolYear(models.Model):
+    """
+    A School year, a part of two years
+    """
+    name = models.CharField(max_length=255)
+    starting_year = models.PositiveSmallIntegerField()
+    ending_year = models.PositiveSmallIntegerField()
+
+    # pedagogic_week_start
+    # project_validationç_date
+
+    # semaine de rentrée pédagogique
+    # validation des projets
+    # examen des oeuvres 1e/2e année
+    # jury passage en 2e année
+
+
 
 
 class StudentApplicationSetup(models.Model):
