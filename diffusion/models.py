@@ -198,7 +198,6 @@ class Diffusion(models.Model):
 
     class Meta:
         # NO DUPLI DIFF
-        ## unique_together = ('id', 'artwork', 'event')
         constraints = [
             models.UniqueConstraint(fields=['artwork', 'event'], name='diffusion_unique')
             ]
