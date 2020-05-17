@@ -7,6 +7,7 @@ from multiselectfield import MultiSelectField
 
 from people.models import User, Organization
 
+# TODO: Add field is_city - is_country 
 
 class Place(models.Model):
     """
@@ -32,8 +33,10 @@ class Place(models.Model):
     def __str__(self):
         extra_info = self.organization if self.organization else self.country
         address = self.address[0:20] + "..." if self.address else self.city
-        return '{0} - {1} ({2})'.format(self.name, address, extra_info)
-
+        if self.name == address :
+            return f'{self.name} ({extra_info})' 
+        else :
+            return f'{self.name} - {address} ({extra_info})'
 
 def main_event_true():
     from production.models import Event
