@@ -78,9 +78,15 @@ class MetaAward(models.Model):
                              on_delete=models.PROTECT)
 
     def __str__(self):
-        return '{0} ({2}, cat. {1})'.format(self.label, self.task, self.event)
-
-# Comments
+        # Removes the "(main event)" description in event representation
+        if self.event :
+            event  = str(self.event)[:-13]
+        else :
+            event = ''
+        if self.task :
+            return f'{self.label} ({event}, cat. {self.task})'
+        else : 
+            return f'{self.label} ({event})'
 
 
 def staff_and_artist_user_limit():
