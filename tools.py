@@ -11,6 +11,7 @@ from allauth.account.models import EmailAddress, EmailConfirmation
 from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
 from assets.models import Gallery, Medium
 from django.db.models.functions import Replace, Concat, Lower
+from django.db.utils import IntegrityError
 from common.models import BTBeacon, Website
 from diffusion.models import Award, Diffusion, MetaAward, MetaEvent, Place
 from django.contrib.admin.models import LogEntry
@@ -965,14 +966,15 @@ def createAwards() :
 
     total_df = pd.merge(awards, authors,how='left')
 
+    total_df.fillna('',inplace=True)
     # print("total",total_df)
     
 
     for ind, award in total_df.iterrows():
         label = award.meta_award_label
         event_id = int(award.event_id)
-        artwork_id = int(award.artwork_id)
-        artist_id = int(award.artist_id)
+        if (award.artwork_id) : artwork_id = int(award.artwork_id)
+        if (award.artist_id) : artist = Artist.objects.get(pk=award.artist_id)
         note = award.meta_award_label_details
 
 
@@ -1009,11 +1011,15 @@ def createAwards() :
                             event = event.id,
                             # artists = artist_id
                             )
-
+        logger.setLevel(logging.WARNING)
         if new_aw : 
-            logger.info(f"Award exist in Kart")
-            # new_aw.date = event.starting_date
-            # new_aw.save()
+            logger.info(f"{new_aw} exist in Kart")
+            try :
+                new_aw.artist.add(artist.id)
+            except IntegrityError :
+                logger.warning(f"Artist_id : {artist} caused an IntegrityError")
+                pass
+            new_aw.save()
         else :
             new_aw = Award(
                 meta_award = maward,
@@ -1024,12 +1030,8 @@ def createAwards() :
             new_aw.save()
             new_aw.artwork.add(artwork_id)
             new_aw.save()
-            print("Award needs to be created")
-            # artwork = Artwork.objects.get(pk=artwork_id),
-            # artist = artist_id,
-            # 
-            # award.save()
-            # logger.info(f"\"{award}\" created ")
+            print(f"{new_aw}  created")
+            
 
         
 # eventCleaning()
