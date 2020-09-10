@@ -35,17 +35,18 @@ from django.db.models import Avg, Case, Count, F, Max, Min, Prefetch, Q, Sum, Wh
 from django.utils import timezone
 from django.urls import reverse
 
+from datetime import datetime
 import pytz
 
-import pandas as pd 
+import pandas as pd
 import logging
 from pathlib import Path
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 import math
 
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
-# Full width print of dataframe 
+# Full width print of dataframe
 pd.set_option('display.expand_frame_repr', False)
 
 
@@ -60,13 +61,12 @@ awards = awards.applymap(lambda x: x.strip() if isinstance(x, str) else x)
 # Allow to lower data in query with '__lower'
 CharField.register_lookup(Lower)
 
-###### Logging 
+###### Logging
 logger = logging.getLogger('import_awards')
 logger.setLevel(logging.DEBUG)
-# create file handler which logs even debug messages
-
-#clear the logs
+# clear the logs
 open('awards.log','w').close()
+# create file handler which logs even debug messages
 fh = logging.FileHandler('awards.log')
 fh.setLevel(logging.WARNING)
 # create console handler with a higher log level
@@ -85,24 +85,25 @@ logger.addHandler(ch)
 # Timezone
 tz = pytz.timezone('Europe/Paris')
 
+# Clear terminal
 os.system('clear')
 
 def testAwardsProcess() :
-    """Stats stuff about the awards 
-    
+    """Stats stuff about the awards
+
     Dummy code to get familiar with Kart"""
     # ========= Stacked data : awards by events type ... ==============
     import matplotlib.colors as mcolors
     mcol = mcolors.CSS4_COLORS
     mcol = list(mcol.values())
-    # mixing the colors with suficent gap to avoid too close colors 
+    # mixing the colors with suficent gap to avoid too close colors
     colss = [mcol[x+12] for x in range(len(mcol)-12) if x%5==0]
-    # by type of event 
+    # by type of event
     awards.groupby(['event_year','event_type']).size().unstack().plot(kind='bar', stacked=True,color=colss)
     plt.show()
 
 
-def testArtworks() : 
+def testArtworks() :
     """Get authors with artwork id
 
     Dummy code to get familiar with Kart"""
@@ -111,12 +112,12 @@ def testArtworks() :
     # replace NA/Nan by 0
     awards.artwork_id.fillna(0,inplace=True)
 
-    # Convert ids to int 
-    awards.artwork_id = awards['artwork_id'].astype(int) 
+    # Convert ids to int
+    awards.artwork_id = awards['artwork_id'].astype(int)
 
     for id in awards.artwork_id :
         # id must exist (!=0)
-        if not id : continue 
+        if not id : continue
         prod = Production.objects.get(pk=id)
         logger.info(prod.artwork.authors)
 
@@ -128,7 +129,7 @@ def dist2(item1,item2) :
     return round(SequenceMatcher(None, item1.lower(),item2.lower()).ratio(),2)
 
 
-#### Events 
+#### Events
 
 from django.contrib.postgres.search import TrigramSimilarity
 from difflib import SequenceMatcher
@@ -139,25 +140,25 @@ def eventCleaning():
     WARNING : this function requires a human validation and overrides `events_title.csv` & `merge.csv`
 
     1) from the csv data, extract potential events already present in Kart
-    2) when doubts about the name of the event, with close syntax, store the event kart_title in a csv for validation by head of diffusion. 
-    3) if no match at all, mark the event for creation 
+    2) when doubts about the name of the event, with close syntax, store the event kart_title in a csv for validation by head of diffusion.
+    3) if no match at all, mark the event for creation
     """
     # lists to store the titles during process
-    # Titles from events listed in the csv file 
+    # Titles from events listed in the csv file
     csv_titles = list()
     # Titles from events in Kart
     kart_titles = list()
-    # Validated titles when doubts/diff 
+    # Validated titles when doubts/diff
     def_titles = list()
-    # Id of existing events 
+    # Id of existing events
     # def_ids = list()
 
     # We only use event titles for this phase. Drop rows with dup. titles
     aw_events = awards.drop_duplicates(['event_title'])
-    
+
     # With the name/title of each event in the csv file ...
     for ind, csv_event in aw_events.iterrows() :
-        # ... retrieve event from Kart by title similarity and human selection of best action 
+        # ... retrieve event from Kart by title similarity and human selection of best action
         # to take (keep one or the other or create)
         csv_title = str(csv_event.event_title)
         csv_titles.append(csv_title)
@@ -177,7 +178,7 @@ def eventCleaning():
         else :
             go = 1
             # TODO : drop_duplicates in guess
-            while go : 
+            while go :
                 identical = False
                 # check for identical title in the results
                 for i in range(nbGuess):
@@ -193,25 +194,25 @@ def eventCleaning():
                 if identical :
                     cont = 'c'
                     break
-                
+
                 # ... otherwise, ask user what to do
                 logger.info(f"\n\n======================================================")
                 logger.info(f"CSV\t\t\t|{csv_title}|")
                 for i in range(nbGuess):
-                    # Distance btw the title from csv and the one found in Kart 
+                    # Distance btw the title from csv and the one found in Kart
                     dist = round(SequenceMatcher(None, str(guess[i].title).lower(), csv_title.lower()).ratio(),2)
                     logger.info(f"({i+1}) Kart\t\t|{guess[i].title}|\t\t\t(dist :{dist})")
 
                 cont = input(f"""
-                What should I do with the name of this event ? 
+                What should I do with the name of this event ?
                 - Keep from csv (press 'c' or 'enter')
                 - Use match from Kart (press '1','2',..)
                 - Ignore the event : won't be processed in either way (press 'x')
                 > c, 1-9, x :   """)
-                
+
                 if cont == '':
                     cont = 'c' # Default value, we keep csv
-                    
+
                 # We keep the csv data and update Kart (TODO)
                 if cont.lower() == 'c' :
                     def_titles.append(csv_title)
@@ -221,7 +222,7 @@ def eventCleaning():
                 # Ignore the event
                 if cont.lower() == 'x':
                     # Remove the title from the list - won't be processed
-                    csv_titles.pop() 
+                    csv_titles.pop()
                     break
 
                 # We keep the kart data
@@ -231,16 +232,16 @@ def eventCleaning():
                         kart_title = guess[cont-1].title
                         kc = input(f"Use kart title : {kart_title} ? (Y/n) : ")
                         if kc != "n" :
-                            def_titles.append(kart_title) 
+                            def_titles.append(kart_title)
                             kart_titles.append(kart_title)
                             break
                         else :
                             cont = False
                 except :
                     pass
-                
-        
-    # DF with the events names to validate 
+
+
+    # DF with the events names to validate
     event_df = pd.DataFrame({'NomFichier':csv_titles,
                              'NomKart':kart_titles,
                              'NomDefinitif':def_titles
@@ -248,13 +249,13 @@ def eventCleaning():
 
     # merge the cleaned data with awards csv
     merge_df = pd.merge(awards,event_df,how='left',left_on="event_title",right_on="NomFichier")
-    # Drop duplicates 
+    # Drop duplicates
     event_df.drop_duplicates(inplace=True)
 
-    # Export to csv 
+    # Export to csv
     event_df.to_csv('events_title.csv',index=False)
     merge_df.to_csv('merge.csv',index=False)
-    
+
 # eventCleaning()
 
 
@@ -264,18 +265,16 @@ def artworkCleaning():
     WARNING : this function requires a human validation and overrides `artworks_title.csv` & `merge.csv`
 
     1) from the csv data, extract potential artworks already present in Kart
-    2) when doubts about the name of the artwork, with close syntax, store the artwork kart_title in a csv for validation by head of diffusion. 
-    3) if no match at all, mark the artwork for creation 
+    2) when doubts about the name of the artwork, with close syntax, store the artwork kart_title in a csv for validation by head of diffusion.
+    3) if no match at all, mark the artwork for creation
     """
 
     aws = pd.read_csv('merge.csv')
 
-    
-    
     # Check if the id provided in the csv match with the artwork description
     # replace the nan with empty strings
     aws.fillna('',inplace=True)
-    
+
     # List of object to create
     obj2create = []
 
@@ -283,7 +282,7 @@ def artworkCleaning():
     for ind, aw in aws.iterrows() :
 
         # Variables init
-        no_artwork = no_artist = author_match_dist = title_match_dist = False 
+        no_artwork = no_artist = author_match_dist = title_match_dist = False
 
         # Parsing
         aw_id       =   int(aw.artwork_id) if aw.artwork_id else None
@@ -291,15 +290,15 @@ def artworkCleaning():
         lastname    =   str(aw.artist_lastname)
         firstname   =   str(aw.artist_firstname)
 
-        # If an id is declared, get the aw from kart and check its 
-        # similarity with the content of the row to validate 
+        # If an id is declared, get the aw from kart and check its
+        # similarity with the content of the row to validate
         if aw_id :
             # Artwork validation if the title from aw generated with id and title in csv
             aw_kart = Artwork.objects.prefetch_related('authors__user').get(pk=aw_id)
-            if dist2(aw_kart.title,aw_title)<.8 : 
+            if dist2(aw_kart.title,aw_title)<.8 :
                 logger.warning(f"""ARTWORK INTEGRITY PROBLEM :
-                    Kart        :\"{aw_kart.title}\" 
-                    should match 
+                    Kart        :\"{aw_kart.title}\"
+                    should match
                     Candidate   : \"{aw_title}\"""")
                 aws.loc[ind,'aw_art_valid'] = False
 
@@ -314,26 +313,26 @@ def artworkCleaning():
                 if o2c not in obj2create :
                     logger.warning(f"No artist can be found with {firstname} {lastname} : CREATE ARTIST ?\n\n")
                     obj2create.append(o2c)
-                # Create the object in Kart # TODO 
+                # Create the object in Kart # TODO
                 # input(f'Should I create the an artist with these data : {o2c} ')
                 continue
 
             # Compare the artists found in CSV to the authors of the artwork in Kart
-            # List of the artist that are BOTH in the authots in Kart and in the CSV 
+            # List of the artist that are BOTH in the authots in Kart and in the CSV
             artist_in_authors = [x['artist'] for x in _artist_l if x['artist'] in aw_kart.authors.all()]
-            
+
             # If no match between potential artists and authors : integrity issue of the csv
-            if not len(artist_in_authors) : 
+            if not len(artist_in_authors) :
                 logger.warning(f"Artist and artwork do not match ---------- SKIPPING\nArtist : {_artist_l}\nArtwork : {aw_kart}\n{aw_kart.authors.all()[0].id}\n\n")
                 aws.loc[ind,'aw_art_valid'] = False
                 continue
             else :
-                # Otherwise, the authors are validated and their id are stored in csv 
+                # Otherwise, the authors are validated and their id are stored in csv
                 aws.loc[ind, "artist_id"] = ",".join([str(x.id) for x in artist_in_authors])
                 # logger.info(f"authors {aws.loc[ind, 'artist_id']}")
                 # Continue to next row
                 continue
-            
+
 
         # If no id and no title provided, skip
         if not aw_id and aw_title == '':
@@ -346,7 +345,7 @@ def artworkCleaning():
                 logger.info("No info about the artist")
                 no_artist = True
             else : logger.info("Partial data about artist ...")
-        
+
         if all([no_artwork,no_artist]) :
             logger.warning(f"{aw_title} No info about the artwork nor the artists : SKIPPING\n{aw}\n\n")
             continue
@@ -356,7 +355,7 @@ def artworkCleaning():
         guessAW = Artwork.objects.annotate(
                     similarity=TrigramSimilarity('title', aw_title),
                     ).filter(similarity__gt=0.7).order_by('-similarity')
-        
+
         if guessAW :
             logger.warning(f"Potential artworks in Kart found for \"{aw_title}\"...")
             # Explore the potential artworks
@@ -366,8 +365,8 @@ def artworkCleaning():
                 title_match_dist = dist2(aw_title.lower(),gaw.title.lower())
                 logger.warning(f"title_match_dist {title_match_dist}")
                 artist = getArtistByNames(firstname=firstname,lastname=lastname)
-                
-             
+
+
                 if all([title_match_dist, author_match_dist, title_match_dist==1, author_match_dist == 1]) :
                     logger.warning("Perfect match : artwork and related authors exist in Kart")
                 if all([title_match_dist, author_match_dist, title_match_dist==1]) :
@@ -379,10 +378,10 @@ def artworkCleaning():
         else : # no artwork found in Kart
             logger.warning(f"No approaching artwork in KART for {aw_title}")
             # Retrieving data to create the artwork
-        
-        ######### ARTIST 
+
+        ######### ARTIST
         # artist = getArtistByNames(firstname=firstname,lastname=lastname)
-        
+
 
     aws.to_csv('artworks_artists.csv', index=False)
 
@@ -390,7 +389,7 @@ def artworkCleaning():
 search_cache = {}
 def getArtistByNames(firstname=None, lastname=None, pseudo=None, listing=False) : #TODO pseudo
     """Retrieve the closest artist from the first and last names given
-    
+
     Parameters :
     - firstname : (str) Firstname to look for
     - lastname  : (str) Lastname to look for
@@ -401,7 +400,7 @@ def getArtistByNames(firstname=None, lastname=None, pseudo=None, listing=False) 
     - artistObj     : (Django obj / bool) The closest artist object found in Kart. False if no match.
     - dist          : (float) Distance with the given names
     """
-    
+
     # If no lastname no pseudo
     if not any([lastname, pseudo]) :
         logger.info(f"\n** getArtistByNames **\nAt least a lastname or a pseudo is required.\nAborting research. {firstname}")
@@ -409,35 +408,35 @@ def getArtistByNames(firstname=None, lastname=None, pseudo=None, listing=False) 
 
     # List of artists that could match
     art_l = []
-    
 
-    ### Clean names from accents to 
+
+    ### Clean names from accents to
     if lastname :
-        lastname_accent = lastname 
+        lastname_accent = lastname
         lastname = unidecode.unidecode(lastname).lower()
     if firstname :
-        firstname_accent = firstname 
+        firstname_accent = firstname
         firstname = unidecode.unidecode(firstname).lower()
     if pseudo :
-        pseudo_accent = pseudo 
-        pseudo = unidecode.unidecode(pseudo).lower() 
+        pseudo_accent = pseudo
+        pseudo = unidecode.unidecode(pseudo).lower()
     fullname = f"{firstname} {lastname}"
 
-    
+
 
     # Cache
     fullkey = f'{firstname} {lastname} {pseudo}'
-    try : 
+    try :
         # logger.warning("cache", search_cache[fullkey])
         return search_cache[fullkey]
     except KeyError :
         pass
-    
 
-    ##### SEARCH WITH LASTNAME then FIRSTNAME 
+
+    ##### SEARCH WITH LASTNAME then FIRSTNAME
     # First filter by lastname similarity
     guessArtLN = Artist.objects.prefetch_related('user'
-                ).annotate( 
+                ).annotate(
                     # Concat the full name "first last" to detect misclassifications like : "Hee Won -- Lee" where Hee Won is first name but can be stored as "Hee  -- Won Lee"
                     search_name = Concat('user__first_name__unaccent__lower', Value(' '), 'user__last_name__unaccent__lower')
                 ).annotate(
@@ -450,10 +449,10 @@ def getArtistByNames(firstname=None, lastname=None, pseudo=None, listing=False) 
 
     # Refine results
     if guessArtLN :
-    
-        # TODO: Optimize by checking a same artist does not get tested several times 
+
+        # TODO: Optimize by checking a same artist does not get tested several times
         for artist_kart in guessArtLN :
-            
+
             # Clear accents (store a version with accents for further accents issue detection)
             kart_lastname_accent    = artist_kart.user.last_name
             kart_lastname           = unidecode.unidecode(kart_lastname_accent).lower()
@@ -472,27 +471,27 @@ def getArtistByNames(firstname=None, lastname=None, pseudo=None, listing=False) 
                     # ... store the artist in potential matches with extreme probability (2) and continue with next candidate
                     art_l.append({"artist":artist_kart,'dist':2})
                     continue
-                # Check if Kart and candidate names are exactly the same 
+                # Check if Kart and candidate names are exactly the same
                 elif kart_lastname != lastname or kart_firstname != firstname :
-                    
-                    logger.warning(f"""Fullnames globally match {fullname} but not in first and last name correspondences : 
+
+                    logger.warning(f"""Fullnames globally match {fullname} but not in first and last name correspondences :
                     Kart       first : {kart_firstname} last : {kart_lastname}
                     candidate  first : {firstname} last : {lastname}
                                             """)
                     art_l.append({"artist":artist_kart,'dist':dist_full*2})
                     # ### Control for accents TODO still necessary ?
-                    # 
+                    #
                     # accent_diff = kart_lastname_accent != lastname_accent or \
                     #               kart_firstname_accent != firstname_accent
                     # if accent_diff : logger.warning(f"""\
-                    #                 Accent or space problem ? 
-                    #                 Kart : {kart_firstname_accent} {kart_lastname_accent} 
-                    #                 Candidate : {firstname_accent} {lastname_accent} """) 
+                    #                 Accent or space problem ?
+                    #                 Kart : {kart_firstname_accent} {kart_lastname_accent}
+                    #                 Candidate : {firstname_accent} {lastname_accent} """)
                     continue
 
 
             ### Control for blank spaces
-            
+
             if  kart_lastname.find(" ")>=0 or lastname.find(" ")>=0 :
                 # Check distance btw lastnames without spaces
                 if dist2(kart_lastname.replace(" ", ""),lastname.replace(" ", ""))<.9 :
@@ -506,11 +505,11 @@ def getArtistByNames(firstname=None, lastname=None, pseudo=None, listing=False) 
                     logger.warning(f"whitespace problem ? {bef}")
             ###
 
-            
-            
 
 
-            ### Artists whose lastname is the candidate's with similar firstname 
+
+
+            ### Artists whose lastname is the candidate's with similar firstname
 
             # Distance btw the lastnames
             dist_lastname = dist2(kart_lastname,lastname)
@@ -519,7 +518,7 @@ def getArtistByNames(firstname=None, lastname=None, pseudo=None, listing=False) 
             guessArtFN = Artist.objects.prefetch_related('user').annotate(
                         similarity=TrigramSimilarity('user__first_name__unaccent', firstname),
                         ).filter(user__last_name=lastname,similarity__gt=0.8).order_by('-similarity')
-            
+
             # if artist whose lastname is the candidate's with similar firstname names are found
             if guessArtFN :
 
@@ -530,8 +529,8 @@ def getArtistByNames(firstname=None, lastname=None, pseudo=None, listing=False) 
                     dist_firstname = dist2(f"{kart_firstname}",f"{firstname}")
                     # Add the candidate in potential matches add sum the distances last and firstname
                     art_l.append({"artist":artistfn_kart,'dist':dist_firstname+dist_lastname})
-                    
-                    # Distance evaluation with both first and last name at the same time 
+
+                    # Distance evaluation with both first and last name at the same time
                     dist_name = dist2(f"{kart_firstname} {kart_lastname}",f"{firstname} {lastname}")
                     # Add the candidate in potential matches add double the name_dist (to score on 2)
                     art_l.append({"artist":artistfn_kart,'dist':dist_name*2})
@@ -539,11 +538,11 @@ def getArtistByNames(firstname=None, lastname=None, pseudo=None, listing=False) 
             else :
                 # If no close firstname found, store with the sole dist_lastname (unlikely candidate)
                 art_l.append({"artist":artist_kart,'dist':dist_lastname})
-            
-            
+
+
         # Take the highest distance score
         art_l.sort(key = lambda i: i['dist'], reverse=True)
-        
+
         # Return all results if listing is true, return the max otherwise
         if listing :
             search_cache[fullkey] = art_l
@@ -554,45 +553,41 @@ def getArtistByNames(firstname=None, lastname=None, pseudo=None, listing=False) 
     else :
         # research failed
         search_cache[fullkey] = False
-    
-        return False
-    ##### 
-    
-    
-def infoCSVeventTitles():
-    """Display info about potentialy existing events in Kart 
 
-    Check if event names exist with a different case in Kart and display warning 
+        return False
+    #####
+
+
+def infoCSVeventTitles():
+    """Display info about potentialy existing events in Kart
+
+    Check if event names exist with a different case in Kart and display warning
     """
     eventsToCreate = pd.read_csv('events_title.csv')
-    
+
     for evt_title in eventsToCreate.NomFichier :
-        # If a title already exist with different case 
+        # If a title already exist with different case
         exact = Event.objects.filter(title__iexact=evt_title)
-        if exact : 
+        if exact :
             logger.warning(f"Event already exist with same name (but not same case) for {evt_title} :\n{exact}\n")
-        
-        # If a title already contains with different case 
+
+        # If a title already contains with different case
         contains = Event.objects.filter(title__icontains=evt_title)
-        if contains : 
+        if contains :
             logger.warning(f"Event already exist with very approaching name (but not same case) for {evt_title} :\n{contains}\n")
-        
 
-# infoCSVeventTitles()
-
-from datetime import datetime 
 
 def createEvents() :
-    """ Create (in Kart) the events listed in awards csv file 
-    
+    """ Create (in Kart) the events listed in awards csv file
+
     1) Retrieve the data about the events listed in awards csv file
     2) Parse those data and prepare if for Event creation
     3) (optional) Check if meta event exits for the created event, creates it if needed
     """
-    
+
     # Get the events from awards csv extended with title cleaning (merge.csv)
     events = pd.read_csv('merge.csv')
-    
+
     # Create/get the events in Kart
     for ind, event in events.iterrows() :
         title = event.NomDefinitif
@@ -601,39 +596,39 @@ def createEvents() :
         # Convert the year to date
         starting_date = datetime.strptime(str(starting_date),'%Y')
         starting_date = pytz.timezone('Europe/Paris').localize(starting_date)
-        # All events are associated with type festival 
-        # TODO: Add other choices to event ? Delete choices constraint ? 
+        # All events are associated with type festival
+        # TODO: Add other choices to event ? Delete choices constraint ?
         type = "FEST"
-        
+
         # Check if meta event exists, if not, creates it
         obj = Event.objects.filter(
             title=title,
             type=type,
             main_event=True
         )
-        # If event already exist 
+        # If event already exist
         if len(obj) :
             # Arbitrarily use the first event of the queryset (may contain more than 1)
-            # TODO: what if more than one ? 
+            # TODO: what if more than one ?
             obj = obj[0]
-            created = False 
+            created = False
         else :
             # Create the main event
             obj = Event(
                 title=title,
-                # default date to 1st jan 70, should be replaced by the oldest edition 
+                # default date to 1st jan 70, should be replaced by the oldest edition
                 starting_date=datetime.strptime("01-01-70","%d-%m-%y").date(),
                 type=type,
                 main_event=True
             )
             obj.save()
             created = True
-        
+
         if created :
             logger.info(f"META {title} was created")
-        else : 
+        else :
             logger.info(f"META {title} was already in Kart")
-        
+
         # Check if event exists, if not, creates it
         obj = Event.objects.filter(
             title=title,
@@ -642,11 +637,11 @@ def createEvents() :
             # TODO: events with more details
             starting_date=starting_date
         )
-        
+
         if len(obj) :
-            # Arbitrarily use the first event of the queryset 
+            # Arbitrarily use the first event of the queryset
             obj = obj[0]
-            created = False 
+            created = False
         else :
             logger.info("obj is getting created")
             obj = Event(
@@ -656,10 +651,10 @@ def createEvents() :
             )
             obj.save()
             created = True
-        
+
         if created :
             logger.info(f"{title} was created")
-        else : 
+        else :
             logger.info(f"{title} was already in Kart")
         # Store the ids of newly created/already existing events in a csv
         events.loc[ind,'event_id'] = obj.id
@@ -668,7 +663,6 @@ def createEvents() :
 
 from django_countries import countries
 import unidecode
-from collections_extended import collection
 
 def getISOname(countryName=None, simili=False) :
     """Return the ISO3166 international value of `countryName`
@@ -678,13 +672,13 @@ def getISOname(countryName=None, simili=False) :
     - simili          : (bool) If True (default:False), use similarity to compare the names
     """
     # Process the US case (happens often!)
-    if re.search('[EeéÉ]tats[ ]?-?[ ]?[Uu]nis',countryName) : 
+    if re.search('[EeéÉ]tats[ ]?-?[ ]?[Uu]nis',countryName) :
         return "US"
     # Kosovo is not liste in django countries (2020)
     if re.search('kosovo',countryName,re.IGNORECASE) :
         return 'XK'
 
-    # General case 
+    # General case
     if not simili :
         for code, name in list(countries):
             if name == countryName : return code
@@ -714,7 +708,7 @@ def getISOname(countryName=None, simili=False) :
                         continue
                     else :
                         return code
-                    
+
     # Sort the matches by similarity
     sorted(matchCodes, key = lambda i: i['dist'])
     try :
@@ -723,11 +717,11 @@ def getISOname(countryName=None, simili=False) :
     except IndexError :
         return False
 
-    
+
 import re
 def createPlaces() :
     """Create the places listed in the awards csv files
-    
+
     """
 
     # Get the data from awards csv extended with title cleaning and events (merge.csv)
@@ -747,63 +741,63 @@ def createPlaces() :
         country = place.place_country
         if city == country == '' : continue
         logger.info(f"\n\nPLACE : {city} - {country}")
-    
-        ###### Processing CITY 
-        # Look for really approaching (simi=.9) name of city in Kart 
+
+        ###### Processing CITY
+        # Look for really approaching (simi=.9) name of city in Kart
         guessCity = Place.objects.annotate(
                 similarity=TrigramSimilarity('name', city),
                 ).filter(similarity__gt=0.9).order_by('-similarity')
-        
-        # If a city in Kart is close from the city in csv file 
+
+        # If a city in Kart is close from the city in csv file
         if guessCity :
             logger.info(f"CITY FOUND IN KART : {guessCity[0].city}")
             cityInKart = True
         else :
             logger.warning(f"No close city name in Kart, the place should be created or is empty")
 
-        ###### Processing COUNTRY 
+        ###### Processing COUNTRY
         # Look for ISO country code related to the country name in csv
         codeCountryCSV = getISOname(country)
 
-        # If code is easly found, keep it 
+        # If code is easly found, keep it
         if codeCountryCSV :
             logger.info(f"CODE FOUND : {country} -> {codeCountryCSV}")
             pass
 
-        # If no code found, check if the country associated with the city found in Kart 
+        # If no code found, check if the country associated with the city found in Kart
         # is close from the country in csv file to use its code instead
         elif guessCity :
             codeCountryKart = guessCity[0].country
             countryNameKart = dict(countries)[codeCountryKart]
-            
-            # Compute the distance between the 2 country names 
+
+            # Compute the distance between the 2 country names
             dist = round(SequenceMatcher(None, str(country).lower(),
                          countryNameKart.lower()).ratio(),2)
-            
+
             # If really close, keep the Kart version
             if dist>.9 :
                 logger.info(f"Really close name, replacing {country} by {countryNameKart}")
                 codeCountryCSV = codeCountryKart
             else :
                 # Process the us case (happens often!)
-                if re.search('[EeéÉ]tats[ ]?-?[ ]?[Uu]nis',country) : 
+                if re.search('[EeéÉ]tats[ ]?-?[ ]?[Uu]nis',country) :
                     codeCountryCSV = "US"
                 else : # If not close to the Kart version, try with similarity with other countries
                     codeCountryCSV = getISOname(country, simili=True)
-                    
+
         else : # No city found, so no clue to find the country => full search
             # parameter simili=True triggers a search by similarity btw `country` and django countries entries
             codeCountryCSV = getISOname(country, simili=True)
             if codeCountryCSV :
                 logger.info(f"Looked for the country code of {country} and obtained {codeCountryCSV}")
-            else : 
+            else :
                 # Check for Kosovo :
                 # Although Kosovo has no ISO 3166-1 code either, it is generally accepted to be XK temporarily; see http://ec.europa.eu/budget/contracts_grants/info_contracts/inforeuro/inforeuro_en.cfm or the CLDR
                 if re.search("kosovo",country,re.IGNORECASE) :
                     codeCountryCSV = "XK"
                 logger.info("No city found, no country found :-(")
 
-        
+
 
         # Check if place exists, if not, creates it
         obj = Place.objects.filter(
@@ -811,12 +805,12 @@ def createPlaces() :
             city = city,
             country = codeCountryCSV if codeCountryCSV else ''
         )
-        # If place already exist 
+        # If place already exist
         if len(obj) :
             # Arbitrarily use the first place of the queryset (may contain more than 1)
-            # TODO: what if more than one ? 
+            # TODO: what if more than one ?
             obj = obj[0]
-            created = False 
+            created = False
         else :
             # Create the Place
             obj = Place(
@@ -830,12 +824,12 @@ def createPlaces() :
             logger.info('==========================================================================',obj)
         if created :
             logger.info(f"Place {obj} was created")
-        else : 
+        else :
             logger.info(f"Place {obj} was already in Kart")
         # Store the id of the place
-        places.loc[ind,'place_id'] = obj.id 
-    
-    # Store the places 
+        places.loc[ind,'place_id'] = obj.id
+
+    # Store the places
     places.to_csv('places.csv',index=False)
 
     # test to deal with city only rows, use "NULL" to allow the merging with missing data
@@ -851,7 +845,7 @@ def createPlaces() :
     merge_df.loc[merge_df['place_city']=="**NULL**",'place_city'] = ''
     merge_df.to_csv('merge_events_places.csv',index=False)
 
-# TODO: Fill artwork in the event 
+# TODO: Fill artwork in the event
 
 def associateEventsPlaces() :
     """Fill the place field of created events with the created places
@@ -861,7 +855,7 @@ def associateEventsPlaces() :
     # Get the events and places csv
     evt_places = pd.read_csv("merge_events_places.csv")
 
-    # Update the events with the place 
+    # Update the events with the place
     for ind, award in evt_places.iterrows():
         event_id = int(award.event_id)
         try: # some events have no places specified
@@ -880,22 +874,22 @@ def safeGet(obj_class=None, default_index=None, force=False, **args) :
 
     Parameters :
     - objClass      : (Django obj) The class on which to apply the get function
-    - default       : (int) The index of the queryset to return in case of MultipleObjectsReturned error. 
+    - default       : (int) The index of the queryset to return in case of MultipleObjectsReturned error.
                       '0' is used in case of IndexError
     - args          : the arguments of the get query
     - force         : (bool) Force the return of the whole queryset rather than just one object - Default : False
 
-    Return : 
-    - obj           : (Django obj or bool) a unique object of `obj_class`matching the **args, 
-                       False if `ObjectDoesNotExist` is raised 
+    Return :
+    - obj           : (Django obj or bool) a unique object of `obj_class`matching the **args,
+                       False if `ObjectDoesNotExist` is raised
     - filtered      : a boolean indicating if the returned obj was unique or from a >1 queryset
     """
 
-    try : 
+    try :
         obj = obj_class.objects.get(**args)
         return obj , False
 
-    # If the object does not exist, return False 
+    # If the object does not exist, return False
     except ObjectDoesNotExist :
         return False, False
 
@@ -904,7 +898,7 @@ def safeGet(obj_class=None, default_index=None, force=False, **args) :
         objs = obj_class.objects.filter(**args)
         logger.info(f"The request of {args}  returned multiple entries for the class {obj_class}")
 
-        if default_index : 
+        if default_index :
             try :
                 return objs[default_index], True
             except :
@@ -915,15 +909,15 @@ def safeGet(obj_class=None, default_index=None, force=False, **args) :
 
 
 def objExistPlus(obj_class=None, default_index=None ,**args) :
-    """Return a True if one or more objects with `**args` parameters exist 
+    """Return a True if one or more objects with `**args` parameters exist
 
     Parameters :
     - objClass      : (DjangoObject) The class on which to apply the get function
-    - default       : (int) The index of the queryset to return in case of MultipleObjectsReturned error. 
+    - default       : (int) The index of the queryset to return in case of MultipleObjectsReturned error.
                       '0' is used in case of IndexError
     - args          : the arguments of the get query
 
-    Return : 
+    Return :
     - exists        : (bool)
     - multiple      : (int) the amount of existing object
     """
@@ -932,18 +926,18 @@ def objExistPlus(obj_class=None, default_index=None ,**args) :
     if objs :
         return True, len(objs)
     else :
-        return False, 
+        return False,
 
 def objExist(obj_class=None, default_index=None ,**args) :
-    """Return a True if one or more objects with `**args` parameters exist 
+    """Return a True if one or more objects with `**args` parameters exist
 
     Parameters :
     - objClass      : (DjangoObject) The class on which to apply the get function
-    - default       : (int) The index of the queryset to return in case of MultipleObjectsReturned error. 
+    - default       : (int) The index of the queryset to return in case of MultipleObjectsReturned error.
                       '0' is used in case of IndexError
     - args          : the arguments of the get query
 
-    Return : 
+    Return :
     - exists        : (bool)
     """
 
@@ -955,9 +949,9 @@ def objExist(obj_class=None, default_index=None ,**args) :
 
 def createAwards() :
     """Create the awards listed in csv in Kart
-    
+
     """
-    
+
     # Load the events associated to places and artworks (generated by createPlaces())
     awards = pd.read_csv("merge_events_places.csv")
 
@@ -968,7 +962,7 @@ def createAwards() :
 
     total_df.fillna('',inplace=True)
     # print("total",total_df)
-    
+
 
     for ind, award in total_df.iterrows():
         label = award.meta_award_label
@@ -982,16 +976,16 @@ def createAwards() :
         if pd.isna(award.meta_award_label_details):
             description = ''
 
-        ### GET THE META-eventsToCreate 
+        ### GET THE META-eventsToCreate
         # Retrieve the Kart title of the event
         event, filt = safeGet(Event, pk=event_id)
         mevent, filt = safeGet(Event, title=event.title, main_event = True)
-        
+
         ### GET OR CREATE THE META-AWARD
-        # Check if award exists in Kart, otherwise creates it 
+        # Check if award exists in Kart, otherwise creates it
         maward, filt = safeGet(MetaAward, label = f"{label}", event = mevent.id)
-        
-        if maward : 
+
+        if maward :
             logger.info(f"MetaAward {label} exist in Kart")
         else :
             maward = MetaAward(
@@ -1004,15 +998,14 @@ def createAwards() :
             logger.info(f"\"{maward}\" created ")
 
         ###  GET OR CREATE THE AWARDS
-         # Choices are: amount, artist, artwork, date, event, event_id, ex_aequo, giver, id, meta_award, meta_award_id, note, sponsor, sponsor_id
-        new_aw, filt = safeGet(Award, 
-                            meta_award = maward.id, 
+        new_aw, filt = safeGet(Award,
+                            meta_award = maward.id,
                             artwork = artwork_id,
                             event = event.id,
                             # artists = artist_id
                             )
         logger.setLevel(logging.WARNING)
-        if new_aw : 
+        if new_aw :
             logger.info(f"{new_aw} exist in Kart")
             try :
                 new_aw.artist.add(artist.id)
@@ -1031,12 +1024,12 @@ def createAwards() :
             new_aw.artwork.add(artwork_id)
             new_aw.save()
             print(f"{new_aw}  created")
-            
 
-        
+
+# Fonctions à lancer dans l'ordre chronologique
 # eventCleaning()
 # artworkCleaning()
 # createEvents()
 # createPlaces()
 # associateEventsPlaces()
-createAwards()
+# createAwards()
