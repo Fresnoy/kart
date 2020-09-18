@@ -994,6 +994,7 @@ def createAwards() :
                 description = description,
                 type = "INDIVIDUAL" # indivudal by default, no related info in csv
             )
+            print(f"label {maward.label}, event {mevent}, description {description}")
             maward.save()
             logger.info(f"\"{maward}\" created ")
 
@@ -1020,10 +1021,14 @@ def createAwards() :
                 date = event.starting_date,
                 note = note
             )
-            new_aw.save()
-            new_aw.artwork.add(artwork_id)
-            new_aw.save()
-            print(f"{new_aw}  created")
+            try :
+                new_aw.save()
+                new_aw.artwork.add(artwork_id)
+                new_aw.save()
+                print(f"{new_aw}  created")
+            except :
+                logger.warning(f"Artist_id : {artist} caused an IntegrityError")
+                pass
 
 
 # Fonctions à lancer dans l'ordre chronologique
