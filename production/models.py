@@ -214,9 +214,12 @@ class Event(Production):
 
     def __str__(self):
         if self.parent_event.exists():
-            return '{0} ({1})'.format(self.title, self.parent_event.first().title)
-        return '{0}'.format(self.title)
-
+            return f"{self.title} ({self.parent_event.first().title})"
+        # Events are displayed with their year of edition 
+        if not self.main_event :
+            return f"{self.title} - {self.starting_date.year}"
+        # Main events don't have a particular date
+        else : return f"{self.title} (main event)"
 
 class Exhibition(Event):
     pass  # TODO?
