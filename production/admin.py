@@ -101,8 +101,10 @@ class EventAdmin(ProductionChildAdmin):
     list_display = (ProductionChildAdmin.list_display + ('starting_date', 'type', 'main_event'))
     search_fields = ['title', 'parent_event__title']
     inlines = (CollaboratorsInline, PartnersInline)
+
     def get_ordering(self, request):
         return ['id']  # sort case insensitive
+
 
 class ItineraryArtworkInline(admin.TabularInline):
     model = Itinerary.artworks.through

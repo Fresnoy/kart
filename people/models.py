@@ -71,7 +71,10 @@ class Artist(models.Model):
     websites = models.ManyToManyField(Website, blank=True)
 
     def __str__(self):
-        return f'({self.id}) {self.nickname}' if self.nickname else f"({self.id}) {self.user.first_name} {self.user.last_name}"
+        if self.nickname:
+            return f"({self.id}) {self.nickname}"
+        else:
+            return f"({self.id}) {self.user.first_name} {self.user.last_name}"
 
 
 class Staff(models.Model):
