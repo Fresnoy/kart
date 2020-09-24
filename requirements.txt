@@ -29,6 +29,6 @@ drf-haystack==1.8.5
 elasticsearch==2.4.1
 elasticstack==0.5.0
 geopy==1.20.0
-Pillow==6.2.0
+Pillow==7.1.0
 pytz==2019.3
 psycopg2==2.8.4
