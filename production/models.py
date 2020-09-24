@@ -223,7 +223,6 @@ class Event(Production):
             return f"{self.title} (main event)"
 
 
-
 class Exhibition(Event):
     pass  # TODO?
 
