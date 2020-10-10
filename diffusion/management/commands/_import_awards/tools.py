@@ -1,13 +1,17 @@
 #! /usr/bin/env python
 # -*- coding=utf8 -*-
 
+import os
+import django
+
 from difflib import SequenceMatcher
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
+import pathlib
 import logging
 import pandas as pd
 import pytz
 from datetime import datetime
-from production.models import Artwork, Event, Production
+from production.models import Artwork, Event
 from people.models import Artist
 from diffusion.models import Award, MetaAward, Place
 from django.db.utils import IntegrityError
@@ -17,14 +21,12 @@ from django.db.models import CharField, Value
 from django.contrib.postgres.search import TrigramSimilarity
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
-import os
-import django
 import re
 import unidecode
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kart.settings")
-django.setup()
 
-# Shell Plus Django Imports
+# # Shell Plus Django Imports
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kart.settings")
+# django.setup()
 
 
 # Full width print of dataframe
@@ -35,10 +37,11 @@ pd.set_option('display.expand_frame_repr', False)
 
 DEBUG = True
 
-# Get the data from csv
-awards = pd.read_csv('awards.csv')
-# Strip all data
-awards = awards.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+# Set file location as current working directory
+OLD_CWD = os.getcwd()
+os.chdir(pathlib.Path(__file__).parent.absolute())
+
+
 # Allow to lower data in query with '__lower'
 CharField.register_lookup(Lower)
 
@@ -70,40 +73,43 @@ tz = pytz.timezone('Europe/Paris')
 os.system('clear')
 
 
-def testAwardsProcess():
-    """Stats stuff about the awards
-
-    Dummy code to get familiar with Kart"""
-    # ========= Stacked data : awards by events type ... ==============
-    import matplotlib.colors as mcolors
-    mcol = mcolors.CSS4_COLORS
-    mcol = list(mcol.values())
-    # mixing the colors with suficent gap to avoid too close colors
-    colss = [mcol[x+12] for x in range(len(mcol)-12) if x % 5 == 0]
-    # by type of event
-    awards.groupby(['event_year', 'event_type']).size(
-    ).unstack().plot(kind='bar', stacked=True, color=colss)
-    plt.show()
-
-
-def testArtworks():
-    """Get authors with artwork id
-
-    Dummy code to get familiar with Kart"""
-    # Artworks
-
-    # replace NA/Nan by 0
-    awards.artwork_id.fillna(0, inplace=True)
-
-    # Convert ids to int
-    awards.artwork_id = awards['artwork_id'].astype(int)
-
-    for id in awards.artwork_id:
-        # id must exist (!=0)
-        if not id:
-            continue
-        prod = Production.objects.get(pk=id)
-        logger.info(prod.artwork.authors)
+# def testAwardsProcess():
+#     """Stats stuff about the awards
+#
+#     Dummy code to get familiar with Kart"""
+#     # ========= Stacked data : awards by events type ... ==============
+#     import matplotlib.colors as mcolors
+#     mcol = mcolors.CSS4_COLORS
+#     mcol = list(mcol.values())
+#     # mixing the colors with suficent gap to avoid too close colors
+#     colss = [mcol[x+12] for x in range(len(mcol)-12) if x % 5 == 0]
+#     # by type of event
+#     awards.groupby(['event_year', 'event_type']).size(
+#     ).unstack().plot(kind='bar', stacked=True, color=colss)
+#     plt.show()
+#
+#
+# def testArtworks():
+#     """Get authors with artwork id
+#
+#     Dummy code to get familiar with Kart"""
+#     # Get the data from csv
+#     awards = pd.read_csv('awards.csv')
+#     # Strip all data
+#     awards = awards.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+#
+#     # replace NA/Nan by 0
+#     awards.artwork_id.fillna(0, inplace=True)
+#
+#     # Convert ids to int
+#     awards.artwork_id = awards['artwork_id'].astype(int)
+#
+#     for id in awards.artwork_id:
+#         # id must exist (!=0)@
+#         if not id:
+#             continue
+#         prod = Production.objects.get(pk=id)
+#         logger.info(prod.artwork.authors)
 
 
 def dist2(item1, item2):
@@ -135,6 +141,11 @@ def eventCleaning():
     def_titles = list()
     # Id of existing events
     # def_ids = list()
+
+    # Get the data from csv
+    awards = pd.read_csv('awards.csv')
+    # Strip all data
+    awards = awards.applymap(lambda x: x.strip() if isinstance(x, str) else x)
 
     # We only use event titles for this phase. Drop rows with dup. titles
     aw_events = awards.drop_duplicates(['event_title'])
@@ -1016,9 +1027,16 @@ def createAwards():
 
 
 # Fonctions à lancer dans l'ordre chronologique
+# WARNING : eventCleaning and artworkCleaning should not be used !! (Natalia, head of diffusion, already
+# validated diffusion/utils/import_awards/events_title.csv and diffusion/utils/import_awards/artworks_artists.csv)
+
+# WARNING : this function requires a human validation and overrides `events_title.csv` & `merge.csv`
 # eventCleaning()
+# WARNING : this function requires a human validation and overrides `artworks_title.csv` & `merge.csv`
 # artworkCleaning()
-createEvents()
+
+
+# createEvents()
 # createPlaces()
 # associateEventsPlaces()
 # createAwards()
