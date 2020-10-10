@@ -2,8 +2,6 @@
 # -*- coding=utf8 -*-
 
 import os
-import django
-
 from difflib import SequenceMatcher
 # import matplotlib.pyplot as plt
 import pathlib

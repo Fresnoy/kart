@@ -1,5 +1,6 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from ._import_awards.tools import createEvents, createPlaces, associateEventsPlaces, createAwards
+
 
 class Command(BaseCommand):
     help = 'Import awards from CSV file -  ./manage.py import_awards'
