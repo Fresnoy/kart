@@ -71,6 +71,8 @@ class ItineraryViewSet(viewsets.ModelViewSet):
     queryset = Itinerary.objects.all()
     serializer_class = ItinerarySerializer
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('event',)
 
 
 class FilmGenreViewSet(viewsets.ModelViewSet):
