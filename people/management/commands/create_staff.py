@@ -6,7 +6,7 @@ from django.template.defaultfilters import slugify
 from django.utils.crypto import get_random_string
 
 from django.contrib.auth.models import User
-from people.models import Staff
+from people.models import FresnoyProfile, Staff
 
 
 def arg_to_unicode(bytestring):
@@ -39,6 +39,7 @@ class Command(BaseCommand):
                                             last_name=last_name,
                                             username=username,
                                             password=get_random_string())
+            profile = FresnoyProfile.objects.create(user=user)
             created = True
             print("User {0} created".format(user))
         if not created:
