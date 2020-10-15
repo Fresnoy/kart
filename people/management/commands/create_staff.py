@@ -10,7 +10,7 @@ from people.models import Staff
 
 
 def arg_to_unicode(bytestring):
-    unicode_string = bytestring.decode(sys.getfilesystemencoding())
+    unicode_string = bytestring # no need (python2) : .decode(sys.getfilesystemencoding())
     return unicode_string
 
 
