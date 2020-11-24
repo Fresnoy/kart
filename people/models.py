@@ -60,11 +60,7 @@ class FresnoyProfile(models.Model):
         return self.user.staff_set.count() > 0
 
     def is_student(self):
-        try:
-            self.user.student
-            return True
-        except self.user.student.DoesNotExist:
-            return False
+        return hasattr(self.user, 'student')
 
 
 class Artist(models.Model):
