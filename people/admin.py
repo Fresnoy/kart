@@ -33,6 +33,7 @@ class FresnoyProfileInline(admin.StackedInline):
     """StackedInline admin for FresnoyProfile.
     """
     model = FresnoyProfile
+    readonly_fields = ('is_artist', 'is_student', 'is_staff',)
 
 
 class FresnoyProfileAdmin(UserAdmin):
@@ -46,9 +47,14 @@ class FresnoyProfileAdmin(UserAdmin):
 
 class StaffAdmin(GuardedModelAdmin):
     search_fields = ['user__username', 'user__last_name', 'user__first_name']
+    list_display = ("user", "artist")
+
+    def artist(self, obj):
+        return obj.user.profile.is_artist
 
 
 class OrganizationAdmin(GuardedModelAdmin):
+    search_fields = ['name']
     list_display = ('name',)
     ordering = ('name',)
 

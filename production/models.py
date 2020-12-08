@@ -41,6 +41,9 @@ class ProductionStaffTask(models.Model):
     def __str__(self):
         return '{0} ({1})'.format(self.task.label, self.production.title)
 
+    class Meta:
+        ordering = ['pk']
+
 
 class ProductionOrganizationTask(models.Model):
     organization = models.ForeignKey(Organization, null=True, on_delete=models.SET_NULL)
@@ -245,7 +248,7 @@ class Itinerary(models.Model):
     gallery = models.ManyToManyField(Gallery, blank=True, related_name='itineraries')
 
     def __str__(self):
-        return self.label_fr
+        return '{0} ({1})'.format(self.label_fr, self.event.title)
 
 
 class ItineraryArtwork(models.Model):

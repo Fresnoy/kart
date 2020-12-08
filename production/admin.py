@@ -112,6 +112,7 @@ class ItineraryArtworkInline(admin.TabularInline):
 
 @admin.register(Itinerary)
 class ItineraryAdmin(admin.ModelAdmin):
+    search_fields = ['label_fr', 'event__title']
     inlines = (ItineraryArtworkInline,)
 
     formfield_overrides = {

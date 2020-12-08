@@ -1,16 +1,14 @@
 # -*- encoding: utf-8 -*-
-import sys
-
 from django.core.management.base import BaseCommand
 from django.template.defaultfilters import slugify
 from django.utils.crypto import get_random_string
 
 from django.contrib.auth.models import User
-from people.models import Staff
+from people.models import FresnoyProfile, Staff
 
 
 def arg_to_unicode(bytestring):
-    unicode_string = bytestring.decode(sys.getfilesystemencoding())
+    unicode_string = bytestring  # no need (python2) : .decode(sys.getfilesystemencoding())
     return unicode_string
 
 
@@ -39,6 +37,7 @@ class Command(BaseCommand):
                                             last_name=last_name,
                                             username=username,
                                             password=get_random_string())
+            FresnoyProfile.objects.create(user=user)
             created = True
             print("User {0} created".format(user))
         if not created:

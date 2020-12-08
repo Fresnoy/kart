@@ -52,6 +52,16 @@ class FresnoyProfile(models.Model):
     def __str__(self):
         return 'Profile {}'.format(self.user)
 
+    @property
+    def is_artist(self):
+        return self.user.artist_set.count() > 0
+
+    def is_staff(self):
+        return self.user.staff_set.count() > 0
+
+    def is_student(self):
+        return hasattr(self.user, 'student')
+
 
 class Artist(models.Model):
     class Meta:
@@ -84,6 +94,9 @@ class Staff(models.Model):
 
     def __str__(self):
         return '{0}'.format(self.user)
+
+    class Meta:
+        ordering = ['user__first_name']
 
 
 class Organization(models.Model):

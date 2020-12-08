@@ -33,6 +33,9 @@ class FresnoyProfileSerializer(serializers.ModelSerializer):
             "residence_town",
             "social_insurance_number",
             "family_status",
+            "is_artist",
+            "is_staff",
+            "is_student",
         )
 
     id = serializers.ReadOnlyField()
