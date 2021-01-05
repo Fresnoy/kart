@@ -1,3 +1,5 @@
+from django.db.models import Prefetch
+
 from rest_framework import viewsets, permissions
 from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
@@ -68,9 +70,13 @@ class EventViewSet(viewsets.ModelViewSet):
 
 
 class ItineraryViewSet(viewsets.ModelViewSet):
-    queryset = Itinerary.objects.all()
+    #  the order of artworks in itinerary must be certain
+    queryset = Itinerary.objects.all().prefetch_related(
+                    Prefetch('artworks', queryset=Artwork.objects.all().order_by('itineraryartwork__order')))
     serializer_class = ItinerarySerializer
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('event',)
 
 
 class FilmGenreViewSet(viewsets.ModelViewSet):

@@ -33,12 +33,15 @@ class FresnoyProfileSerializer(serializers.ModelSerializer):
             "residence_town",
             "social_insurance_number",
             "family_status",
+            "is_artist",
+            "is_staff",
+            "is_student",
         )
 
     id = serializers.ReadOnlyField()
-    birthplace_country = CountryField(default="")
-    homeland_country = CountryField(default="")
-    residence_country = CountryField(default="")
+    birthplace_country = CountryField(default="", allow_blank=True)
+    homeland_country = CountryField(default="", allow_blank=True)
+    residence_country = CountryField(default="", allow_blank=True)
 
 
 class UserRegisterSerializer(serializers.Serializer):

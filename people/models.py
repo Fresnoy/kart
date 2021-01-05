@@ -44,13 +44,23 @@ class FresnoyProfile(models.Model):
     family_status = models.CharField(max_length=50,
                                      null=True, blank=True)
 
-    mother_tongue = LanguageField(blank=True, null=True)
+    mother_tongue = LanguageField(max_length=8, blank=True, null=True)
     other_language = models.CharField(max_length=24, null=True, blank=True)
 
     cursus = models.TextField(blank=True)
 
     def __str__(self):
         return 'Profile {}'.format(self.user)
+
+    @property
+    def is_artist(self):
+        return self.user.artist_set.count() > 0
+
+    def is_staff(self):
+        return self.user.staff_set.count() > 0
+
+    def is_student(self):
+        return hasattr(self.user, 'student')
 
 
 class Artist(models.Model):
@@ -84,6 +94,9 @@ class Staff(models.Model):
 
     def __str__(self):
         return '{0}'.format(self.user)
+
+    class Meta:
+        ordering = ['user__first_name']
 
 
 class Organization(models.Model):

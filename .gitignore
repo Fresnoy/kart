@@ -8,6 +8,7 @@ kart/site_settings.py
 .coverage
 .tox
 littlechick_db
+static/
 
 # Created by https://www.gitignore.io
 
