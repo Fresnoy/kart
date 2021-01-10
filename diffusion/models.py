@@ -33,11 +33,11 @@ class Place(models.Model):
 
     def __str__(self):
         extra_info = self.organization if self.organization else self.country
-        address = self.address[0:20] + "..." if self.address else self.city
+        address = self.address[0:20] + "..." if self.address else " - " + self.city if self.city else ""
         if self.name == address:
             return f'{self.name} ({extra_info})'
         else:
-            return f'{self.name} - {address} ({extra_info})'
+            return f'{self.name} {address} ({extra_info})'
 
 
 def main_event_true():
