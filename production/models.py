@@ -5,8 +5,6 @@ from django.db.models import Q
 from polymorphic.models import PolymorphicModel
 from sortedm2m.fields import SortedManyToManyField
 
-from django.utils.dateparse import parse_datetime
-from datetime import datetime
 import pytz
 
 from taggit.managers import TaggableManager
@@ -224,7 +222,7 @@ class Event(Production):
             return f"{self.title} ({self.parent_event.first().title})"
         # Events are displayed with their year of edition
         if not self.main_event:
-            # Important to convert to Paris Timezone because a datetime 01/01/2015 00:00 
+            # Important to convert to Paris Timezone because a datetime 01/01/2015 00:00
             # returns the year 2014 in UTCtime (one hour before 2015) ..
             starting_date = self.starting_date.astimezone(pytz.timezone('Europe/Paris'))
             return f"{self.title} - {starting_date.year}"
