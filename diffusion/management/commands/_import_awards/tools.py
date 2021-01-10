@@ -9,9 +9,7 @@ import logging
 import pandas as pd
 import pytz
 from datetime import datetime
-from production.models import Artwork, Event
-from people.models import Artist
-from diffusion.models import Award, MetaAward, Place
+import django
 from django.db.utils import IntegrityError
 from django_countries import countries
 from django.db.models.functions import Concat, Lower
@@ -22,17 +20,20 @@ from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 import re
 import unidecode
 
-# # Shell Plus Django Imports
-# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kart.settings")
-# django.setup()
+# Shell Plus Django Imports
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kart.settings")
+django.setup()
 
+from production.models import Artwork, Event
+from people.models import Artist
+from diffusion.models import Award, MetaAward, Place
 
 # Full width print of dataframe
 pd.set_option('display.expand_frame_repr', False)
 
 
 # TODO: Harmonise created and read files (merge.csv, ...)
-
+DRY_RUN = False # No save() if True
 DEBUG = True
 
 # Set file location as current working directory
@@ -50,7 +51,7 @@ logger.setLevel(logging.DEBUG)
 open('awards.log', 'w').close()
 # create file handler which logs even debug messages
 fh = logging.FileHandler('awards.log')
-fh.setLevel(logging.WARNING)
+fh.setLevel(logging.DEBUG)
 # create console handler with a higher log level
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
@@ -255,7 +256,7 @@ def eventCleaning():
 def artworkCleaning():
     """Preparation and cleannig step of the awards csv file
 
-    WARNING : this function requires a human validation and overrides `artworks_title.csv` & `merge.csv`
+    WARNING : this function requires a human validation and overrides `artworks_artists.csv` & `merge.csv`
 
     1) from the csv data, extract potential artworks already present in Kart
     2) when doubts about the name of the artwork, with close syntax, store the artwork kart_title in a csv for
@@ -283,6 +284,8 @@ def artworkCleaning():
         aw_title = str(aw.artwork_title)
         lastname = str(aw.artist_lastname)
         firstname = str(aw.artist_firstname)
+        _artist_l = getArtistByNames(firstname=firstname, lastname=lastname, listing=True)
+
 
         # If an id is declared, get the aw from kart and check its
         # similarity with the content of the row to validate
@@ -352,39 +355,55 @@ def artworkCleaning():
 
         # IF NO ID ARTWORK
         # Retrieve artwork with title similarity
-        guessAW = Artwork.objects.annotate(
-            similarity=TrigramSimilarity('title', aw_title),
-        ).filter(similarity__gt=0.7).order_by('-similarity')
+        getArtworkByTitle()
 
-        if guessAW:
-            logger.warning(f"Potential artworks in Kart found for \"{aw_title}\"...")
-            # Explore the potential artworks
-            for gaw in guessAW:
-                logger.warning(f"\t->Best guess : \"{gaw.title}\"")
-                # If approaching results is exactly the same
-                title_match_dist = dist2(aw_title.lower(), gaw.title.lower())
-                logger.warning(f"title_match_dist {title_match_dist}")
-
-                if all([title_match_dist, author_match_dist, title_match_dist == 1, author_match_dist == 1]):
-                    logger.warning("Perfect match : artwork and related authors exist in Kart")
-                if all([title_match_dist, author_match_dist, title_match_dist == 1]):
-                    logger.warning(
-                        f"Sure about the artwork title, confidence in author : {author_match_dist}")
-                if all([title_match_dist, author_match_dist, author_match_dist == 1]):
-                    logger.warning(
-                        f"Sure about the authors, confidence in artwirk : {author_match_dist}")
-
-        else:  # no artwork found in Kart
-            logger.warning(f"No approaching artwork in KART for {aw_title}")
-            # Retrieving data to create the artwork
 
     aws.to_csv('artworks_artists.csv', index=False)
+
+def getArtworkByTitle(aw_title) :
+    guessAW = Artwork.objects.annotate(
+        similarity=TrigramSimilarity('title', aw_title),
+    ).filter(similarity__gt=0.7).order_by('-similarity')
+
+
+
+    if guessAW:
+        logger.warning(f"Potential artworks in Kart found for \"{aw_title}\"...")
+        # Explore the potential artworks
+        for gaw in guessAW:
+            logger.warning(f"\t->Best guess : \"{gaw.title}\"")
+            # If approaching results is exactly the same
+            title_match_dist = dist2(aw_title.lower(), gaw.title.lower())
+            logger.warning(f"title_match_dist {title_match_dist}")
+
+            # if all([title_match_dist, author_match_dist, title_match_dist == 1, author_match_dist == 1]):
+            #     logger.warning("Perfect match : artwork and related authors exist in Kart")
+            # if all([title_match_dist, author_match_dist, title_match_dist == 1]):
+            #     logger.warning(
+            #         f"Sure about the artwork title, confidence in author : {author_match_dist}")
+            # if all([title_match_dist, author_match_dist, author_match_dist == 1]):
+            #     logger.warning(
+            #         f"Sure about the authors, confidence in artwirk : {author_match_dist}")
+
+            # TODO: include author_match_dist for higher specificity
+            # if all([title_match_dist, author_match_dist, title_match_dist == 1, author_match_dist == 1]):
+            #     logger.warning("Perfect match : artwork and related authors exist in Kart")
+            # if all([title_match_dist, author_match_dist, title_match_dist == 1]):
+            #     logger.warning(
+            #         f"Sure about the artwork title, confidence in author : {author_match_dist}")
+            # if all([title_match_dist, author_match_dist, author_match_dist == 1]):
+            #     logger.warning(
+            #         f"Sure about the authors, confidence in artwirk : {author_match_dist}")
+
+    else:  # no artwork found in Kart
+        logger.warning(f"No approaching artwork in KART for {aw_title}")
+        # Retrieving data to create the artwork
 
 
 search_cache = {}
 
 
-def getArtistByNames(firstname=None, lastname=None, pseudo=None, listing=False):  # TODO pseudo
+def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TODO pseudo
     """Retrieve the closest artist from the first and last names given
 
     Parameters :
@@ -402,6 +421,13 @@ def getArtistByNames(firstname=None, lastname=None, pseudo=None, listing=False):
     if not any([lastname, pseudo]):
         logger.info(
             f"\n** getArtistByNames **\nAt least a lastname or a pseudo is required.\nAborting research. {firstname}")
+        return False
+
+    # If data not string
+    # print([x for x in [firstname,lastname,pseudo]])
+    if not all([type(x)==str for x in [firstname,lastname,pseudo]]) :
+        logger.info(
+            f"\n** getArtistByNames **\nfirstname,lastname,pseudo must be strings")
         return False
 
     # List of artists that could match
@@ -423,7 +449,7 @@ def getArtistByNames(firstname=None, lastname=None, pseudo=None, listing=False):
     fullkey = f'{firstname} {lastname} {pseudo}'
     try:
         # logger.warning("cache", search_cache[fullkey])
-        return search_cache[fullkey]
+        return search_cache[fullkey] if listing else search_cache[fullkey][0]
     except KeyError:
         pass
 
@@ -438,13 +464,11 @@ def getArtistByNames(firstname=None, lastname=None, pseudo=None, listing=False):
     ).annotate(
         similarity=TrigramSimilarity('search_name', fullname),
     ).filter(
-        search_name__unaccent__trigram_similar=lastname,
-        similarity__gt=0.5
+        similarity__gt=0.3
     ).order_by('-similarity')
 
     # Refine results
     if guessArtLN:
-
         # TODO: Optimize by checking a same artist does not get tested several times
         for artist_kart in guessArtLN:
 
@@ -457,15 +481,14 @@ def getArtistByNames(firstname=None, lastname=None, pseudo=None, listing=False):
             kart_fullname = f"{kart_firstname} {kart_lastname}".lower()
 
             dist_full = dist2(kart_fullname, fullname)
-
+                    
             # logger.warning('match ',kart_fullname , dist2(kart_fullname,fullname), fullname,kart_fullname == fullname)
-
             # In case of perfect match ...
             if dist_full > .9:
                 if kart_fullname == fullname:
                     # store the artist in potential matches with extreme probability (2)
                     # and continue with next candidate
-                    art_l.append({"artist": artist_kart, 'dist': 2})
+                    art_l.append({"artist": artist_kart, 'dist': 2})    
                     continue
                 # Check if Kart and candidate names are exactly the same
                 elif kart_lastname != lastname or kart_firstname != firstname:
@@ -580,7 +603,7 @@ def createEvents():
 
     # Get the events from awards csv extended with title cleaning (merge.csv)
     events = pd.read_csv('merge.csv')
-
+    
     # Create/get the events in Kart
     for ind, event in events.iterrows():
         title = event.NomDefinitif
@@ -589,32 +612,37 @@ def createEvents():
         # Convert the year to date
         starting_date = datetime.strptime(str(starting_date), '%Y')
         starting_date = pytz.timezone('Europe/Paris').localize(starting_date)
+
         # All events are associated with type festival
         # TODO: Add other choices to event ? Delete choices constraint ?
         type = "FEST"
+        
+        # If no title is defined, skip the event
+        if str(title) in ["nan",""] :
+            continue
 
         # Check if meta event exists, if not, creates it
-        obj = Event.objects.filter(
+        evt = Event.objects.filter(
             title=title,
             type=type,
             main_event=True
         )
         # If event already exist
-        if len(obj):
+        if len(evt):
             # Arbitrarily use the first event of the queryset (may contain more than 1)
             # TODO: what if more than one ?
-            obj = obj[0]
+            evt = evt[0]
             created = False
         else:
             # Create the main event
-            obj = Event(
+            evt = Event(
                 title=title,
                 # default date to 1st jan 70, should be replaced by the oldest edition
                 starting_date=datetime.strptime("01-01-70", "%d-%m-%y").date(),
                 type=type,
                 main_event=True
             )
-            obj.save()
+            if not DRY_RUN : evt.save()
             created = True
 
         if created:
@@ -623,7 +651,7 @@ def createEvents():
             logger.info(f"META {title} was already in Kart")
 
         # Check if event exists, if not, creates it
-        obj = Event.objects.filter(
+        evt = Event.objects.filter(
             title=title,
             type=type,
             # just use the starting date for now
@@ -631,18 +659,18 @@ def createEvents():
             starting_date=starting_date
         )
 
-        if len(obj):
+        if len(evt):
             # Arbitrarily use the first event of the queryset
-            obj = obj[0]
+            evt = evt[0]
             created = False
         else:
             logger.info("obj is getting created")
-            obj = Event(
+            evt = Event(
                 title=title,
                 type=type,
                 starting_date=starting_date
             )
-            obj.save()
+            if not DRY_RUN : evt.save()
             created = True
 
         if created:
@@ -650,7 +678,7 @@ def createEvents():
         else:
             logger.info(f"{title} was already in Kart")
         # Store the ids of newly created/already existing events in a csv
-        events.loc[ind, 'event_id'] = obj.id
+        events.loc[ind, 'event_id'] = evt.id
     events.to_csv('events.csv', index=False)
 
 
@@ -743,7 +771,7 @@ def createPlaces():
         if guessCity:
             logger.info(f"CITY FOUND IN KART : {guessCity[0].city}")
         else:
-            logger.warning("No close city name in Kart, the place should be created or is empty")
+            logger.info("No close city name in Kart, the place should be created or is empty")
 
         # Processing COUNTRY
         # Look for ISO country code related to the country name in csv
@@ -752,7 +780,6 @@ def createPlaces():
         # If code is easly found, keep it
         if codeCountryCSV:
             logger.info(f"CODE FOUND : {country} -> {codeCountryCSV}")
-            pass
 
         # If no code found, check if the country associated with the city found in Kart
         # is close from the country in csv file to use its code instead
@@ -790,34 +817,35 @@ def createPlaces():
                 logger.info("No city found, no country found :-(")
 
         # Check if place exists, if not, creates it
-        obj = Place.objects.filter(
+        place_obj = Place.objects.filter(
             name=city if city else country,
             city=city,
             country=codeCountryCSV if codeCountryCSV else ''
         )
         # If place already exist
-        if len(obj):
+        if len(place_obj):
             # Arbitrarily use the first place of the queryset (may contain more than 1)
             # TODO: what if more than one ?
-            obj = obj[0]
+            place_obj = place_obj[0]
             created = False
         else:
             # Create the Place
-            obj = Place(
+            place_obj = Place(
                 name=city if city else country,
                 city=city,
                 country=codeCountryCSV if codeCountryCSV else ''
             )
-            obj.save()
+            if not DRY_RUN : place_obj.save()
             created = True
         if place.place_city == '':
-            logger.info('==========================================================================', obj)
+            logger.info(f'Empty City ============== {place_obj}')
+
         if created:
-            logger.info(f"Place {obj} was created")
+            logger.info(f"Place {place_obj} was created")
         else:
-            logger.info(f"Place {obj} was already in Kart")
+            logger.info(f"Place {place_obj} was already in Kart")
         # Store the id of the place
-        places.loc[ind, 'place_id'] = obj.id
+        places.loc[ind, 'place_id'] = place_obj.id
 
     # Store the places
     places.to_csv('places.csv', index=False)
@@ -849,14 +877,15 @@ def associateEventsPlaces():
     # Update the events with the place
     for ind, award in evt_places.iterrows():
         event_id = int(award.event_id)
-        try:  # some events have no places specified
-            place_id = int(award.place_id)
-            evt = Event.objects.get(pk=event_id)
-            evt.place_id = place_id
-            evt.save()
-            logger.info(evt)
-        except ValueError as ve:
-            logger.info("ve", ve)
+        if str(award.place_id) != "nan" :
+            try:  # some events have no places specified
+                place_id = int(award.place_id)
+                evt = Event.objects.get(pk=event_id)
+                evt.place_id = place_id
+                if not DRY_RUN : evt.save()
+                logger.info(evt)
+            except ValueError as ve:
+                logger.info("ve", ve, "award.place_id",award.place_id)
 
 
 def safeGet(obj_class=None, default_index=None, force=False, **args):
@@ -944,25 +973,53 @@ def createAwards():
     """Create the awards listed in csv in Kart
 
     """
-
+    print("Create AWARDS")
     # Load the events associated to places and artworks (generated by createPlaces())
     awards = pd.read_csv("merge_events_places.csv")
 
     # Load the artists and associated artworks (generated by artworkCleaning())
     authors = pd.read_csv("artworks_artists.csv")
 
+    # Merge all the data in a dataframe
     total_df = pd.merge(awards, authors, how='left')
-
+    total_df["notes"] = ""
     total_df.fillna('', inplace=True)
-    # print("total",total_df)
+    cpt = 0
+    
+    # Check if artist are ok (not fully controled before ...)
+    # if no artist_id, search by name in db 
+    for id,row in total_df[total_df['artist_id']==''].iterrows() :
+        art = getArtistByNames(firstname=row['artist_firstname'], lastname=row['artist_lastname'], listing=False)
+        # if there is a match 
+        # dist == 2 is the maximum score for artist matching
+        if art and art['dist'] == 2 : 
+            # the id is stored in df
+            total_df.loc[id, "artist_id"] = art['artist'].id
 
     for ind, award in total_df.iterrows():
+        # init
+        artwork_id = artist = False
+
         label = award.meta_award_label
         event_id = int(award.event_id)
-        if (award.artwork_id):
+
+        # An artwork id is required to create the award
+        if (award.artwork_id) :
             artwork_id = int(award.artwork_id)
+        else :
+            logger.warning(f"No idartwork for {award.artwork_title}")
+            continue
+
         if (award.artist_id):
-            artist = Artist.objects.get(pk=award.artist_id)
+            artist = Artist.objects.get(pk=int(award.artist_id))
+        else :
+            cpt+= 1 
+            print("NO ID ARTIST ", label, event_id)
+        
+        # try :
+        #     print("award.artist_id",int(award.artist_id))
+        # except ValueError :
+        #     print("------------------>", award.artist_id)
         note = award.meta_award_label_details
 
         description = award.meta_award_label_details
@@ -988,7 +1045,7 @@ def createAwards():
                 type="INDIVIDUAL"  # indivudal by default, no related info in csv
             )
             print(f"label {maward.label}, event {mevent}, description {description}")
-            maward.save()
+            if not DRY_RUN : maward.save()
             logger.info(f"\"{maward}\" created ")
 
         # GET OR CREATE THE AWARDS
@@ -999,14 +1056,17 @@ def createAwards():
                                # artists = artist_id
                                )
         logger.setLevel(logging.WARNING)
-        if new_aw:
+        if new_aw :
             logger.info(f"{new_aw} exist in Kart")
             try:
                 new_aw.artist.add(artist.id)
             except IntegrityError:
-                logger.warning(f"Artist_id : {artist} caused an IntegrityError")
+                # logger.warning(f"Artist_id : {artist} caused an IntegrityError")
                 pass
-            new_aw.save()
+            except AttributeError:
+                # logger.warning(f"Artist_id : {artist} caused an AttributeError")
+                pass
+            if not DRY_RUN : new_aw.save()
         else:
             new_aw = Award(
                 meta_award=maward,
@@ -1015,14 +1075,15 @@ def createAwards():
                 note=note
             )
             try:
-                new_aw.save()
-                new_aw.artwork.add(artwork_id)
-                new_aw.save()
-                print(f"{new_aw}  created")
+                if not DRY_RUN : 
+                    new_aw.save()
+                    new_aw.artwork.add(artwork_id)
+                    new_aw.save()
+                    print(f"{new_aw}  created")
             except ValueError:
-                logger.warning(f"Artist_id : {artist} caused an IntegrityError")
+                # logger.warning(f"Artist_id : {artist} caused an IntegrityError")
                 pass
-
+        # print("CPT", cpt)
 
 # Fonctions à lancer dans l'ordre chronologique
 # WARNING : eventCleaning and artworkCleaning should not be used !! (Natalia, head of diffusion, already
@@ -1033,8 +1094,16 @@ def createAwards():
 # WARNING : this function requires a human validation and overrides `artworks_title.csv` & `merge.csv`
 # artworkCleaning()
 
-
-# createEvents()
-# createPlaces()
-# associateEventsPlaces()
+# logger.setLevel(logging.CRITICAL)
+# DRY_RUN = True
+# # 
+# # # createEvents()
+# # # createPlaces()
+# # # associateEventsPlaces()
 # createAwards()
+# # 
+# 
+# art = getArtistByNames(firstname="Daphné", lastname="Hérétakis", pseudo=None, listing=False)
+# print('\n')
+# print(art['artist'].id)
+

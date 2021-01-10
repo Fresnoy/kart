@@ -37,7 +37,7 @@ class Place(models.Model):
         if self.name == address:
             return f'{self.name} ({extra_info})'
         else:
-            return f'{self.name}{address} ({extra_info})'
+            return f'{self.name} {address} ({extra_info})'
 
 
 def main_event_true():
