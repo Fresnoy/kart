@@ -1,42 +1,62 @@
 # -*- encoding: utf-8 -*-
 import datetime
+import pytz
 from itertools import chain
 
 from django.core.management.base import BaseCommand
 
 from django.db.models import Q
 
-from school.models import StudentApplication
+from school.models import StudentApplication, Student
 from people.models import Staff
+
+from school.utils import setLocale
 
 
 class Command(BaseCommand):
     help = 'Remove critics informations from old Student Application'
 
+    def add_arguments(self, parser):
+        # -- optional
+        parser.add_argument('--year', type=int, help='Current year or give him a year')
+
     def handle(self, *args, **options):
+        # to avoid warning set local time
+        setLocale('fr_FR.utf8')
+        # convert utc to PARIS's time
+        tz = pytz.timezone("Europe/Paris")
+
+        # get current year or custom year
+        current_year = datetime.date.today().year if not options['year'] else options['year']
         # get last year
-        last_year = datetime.date.today().year - 1
-        # get current year
-        current_year = datetime.date.today().year
-        # set expired time : we keep 4 years
-        expired_candtidatures = datetime.datetime(current_year - 5, 1, 1)
-        # set user too old birthday 35 + 1
-        expired_user = datetime.datetime(current_year - 36, 1, 1)
+        last_year = current_year - 1
+        print(current_year)
+        print(last_year)
+        # get the date when set expired time : we keep 4 years
+        expired_candidatures = datetime.datetime(current_year - 5, 1, 1).astimezone(tz)
+        print(expired_candidatures)
+        # expired user : user is too old to candidate (35 years): 35 + 1
+        expired_user = datetime.datetime(current_year - 36, 1, 1).astimezone(tz)
         # keep user's selected infos (when user postulate more than one time)
         sa_keep_users = StudentApplication.objects.filter(
                         Q(selected=True) |
                         Q(wait_listed=True) |
-                        Q(artist__user__is_staff=True)
+                        # Organisation staff
+                        Q(artist__user__is_staff=True) |
+                        # in case of bad manipulation we keep current year's application infos
+                        Q(created_on__year=datetime.date.today().year)
                        ).values_list("artist__user")
         # keep staff user (they may postulate)
         staff_keep_users = Staff.objects.all().values_list("user")
-        # add keep unser
-        keep_users = list(chain(sa_keep_users, staff_keep_users))
+        # keep student
+        student_keep_users = Student.objects.all().values_list("user")
+        # keep user
+        keep_users = list(chain(sa_keep_users, staff_keep_users, student_keep_users))
 
         # take olds application : last year exclude selected
         sa_olds = StudentApplication.objects.filter(
                         # __lte : less than equal last_year
-                        created_on__lte=datetime.datetime(last_year, 1, 1),
+                        created_on__lte=datetime.datetime(last_year, 1, 1).astimezone(tz),
                         selected=False,
                   ).exclude(
                             # exclude selected user (=Artist)
@@ -47,26 +67,35 @@ class Command(BaseCommand):
         #   we dont keep infos greater than 5 years (grpd)
         sa_expired = StudentApplication.objects.filter(
                         # Q to make OR (|) statement
-                        Q(created_on__lte=expired_candtidatures) |
+                        Q(created_on__lte=expired_candidatures) |
                         Q(artist__user__profile__birthdate__lte=expired_user),
                      ).exclude(
                                # exclude selected user (= Artist)
-                               artist__user__in=keep_users
+                               artist__user__in=keep_users,
                                )
         # All sa
         sa_all = StudentApplication.objects.exclude(
                         #
                         Q(identity_card__isnull=True) |
                         Q(experience_justification__isnull=True) |
-                        Q(cursus_justifications__isnull=True)
+                        Q(cursus_justifications__isnull=True) |
+                        Q(created_on__year__gt=current_year) |
+                        # in case of bad manipulation we keep current year application
+                        Q(created_on__year=datetime.date.today().year)
                  )
         # set list of delete info
         list_delete = []
 
+        print(u"**** Sur un total de : ")
+        print(u"**** {} candidatures totales".format(StudentApplication.objects.all().count()))
+        print(u"**** {} profiles sauvegardés".format(len(keep_users)))
+        print(u"**** {} étudiants".format(Student.objects.all().count()))
+
         print(u"Liste des informations qui vont être supprimées : ".encode('utf-8'))
-        print(u"/!\\ Supression complète de {} profiles".format(sa_expired.count()))
-        print(u"/!\\ Supression des informations de {} anciennes candidatures".format(sa_olds.count()))
+        print(u"/!\\ Supression complète de {} candidatures".format(sa_expired.count()))
+        print(u"/!\\ Nettoyage des informations de {} anciennes candidatures".format(sa_olds.count()))
         print(u"/!\\ Supression des informations critiques de {} candidatures".format(sa_all.count()))
+
         # pause to read uplines
         input('[Press any key to continue]')
         # ALL candidatures : delete critical infos
@@ -90,6 +119,7 @@ class Command(BaseCommand):
         # Expired candidat/ure : delete all ()
         for sa in sa_expired:
             list_delete.extend([(sa, "all", sa)])
+
         #
         for infos in list_delete:
             model, field, value = infos
@@ -192,6 +222,7 @@ class Command(BaseCommand):
             value.delete()
             artist.user.delete()
             artist.delete()
+            # not save
             return
         else:
             # other model like Date
