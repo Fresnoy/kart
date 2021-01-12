@@ -42,7 +42,7 @@ class StudentResource(ArtistResource):
 
     # BUG Error (why?) user__last_name__istartswith
     # "The 'last_name' field does not support relations"
-    def build_filters(self, filters=None):
+    def build_filters(self, filters=None, ignore_bad_filters=False):
         # turn off error : ignore_bad_filters et True
         return super(StudentResource, self).build_filters(filters, ignore_bad_filters=True)
 

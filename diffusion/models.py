@@ -7,6 +7,8 @@ from multiselectfield import MultiSelectField
 
 from people.models import User, Organization
 
+# TODO: Add field is_city - is_country
+
 
 class Place(models.Model):
     """
@@ -31,8 +33,11 @@ class Place(models.Model):
 
     def __str__(self):
         extra_info = self.organization if self.organization else self.country
-        address = self.address[0:20] + "..." if self.address else self.city
-        return '{0} - {1} ({2})'.format(self.name, address, extra_info)
+        address = self.address[0:20] + "..." if self.address else " - " + self.city if self.city else ""
+        if self.name == address:
+            return f'{self.name} ({extra_info})'
+        else:
+            return f'{self.name} {address} ({extra_info})'
 
 
 def main_event_true():
@@ -75,9 +80,15 @@ class MetaAward(models.Model):
                              on_delete=models.PROTECT)
 
     def __str__(self):
-        return '{0} ({2}, cat. {1})'.format(self.label, self.task, self.event)
-
-# Comments
+        # Removes the "(main event)" description in event representation
+        if self.event:
+            event = str(self.event)[:-13]
+        else:
+            event = ''
+        if self.task:
+            return f'{self.label} ({event}, cat. {self.task})'
+        else:
+            return f'{self.label} ({event})'
 
 
 def staff_and_artist_user_limit():

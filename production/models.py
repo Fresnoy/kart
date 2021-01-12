@@ -5,6 +5,8 @@ from django.db.models import Q
 from polymorphic.models import PolymorphicModel
 from sortedm2m.fields import SortedManyToManyField
 
+import pytz
+
 from taggit.managers import TaggableManager
 
 from assets.models import Gallery
@@ -40,6 +42,9 @@ class ProductionStaffTask(models.Model):
 
     def __str__(self):
         return '{0} ({1})'.format(self.task.label, self.production.title)
+
+    class Meta:
+        ordering = ['pk']
 
 
 class ProductionOrganizationTask(models.Model):
@@ -214,8 +219,16 @@ class Event(Production):
 
     def __str__(self):
         if self.parent_event.exists():
-            return '{0} ({1})'.format(self.title, self.parent_event.first().title)
-        return '{0}'.format(self.title)
+            return f"{self.title} ({self.parent_event.first().title})"
+        # Events are displayed with their year of edition
+        if not self.main_event:
+            # Important to convert to Paris Timezone because a datetime 01/01/2015 00:00
+            # returns the year 2014 in UTCtime (one hour before 2015) ..
+            starting_date = self.starting_date.astimezone(pytz.timezone('Europe/Paris'))
+            return f"{self.title} - {starting_date.year}"
+        # Main events don't have a particular date
+        else:
+            return f"{self.title} (main event)"
 
 
 class Exhibition(Event):
@@ -240,7 +253,7 @@ class Itinerary(models.Model):
     gallery = models.ManyToManyField(Gallery, blank=True, related_name='itineraries')
 
     def __str__(self):
-        return self.label_fr
+        return '{0} ({1})'.format(self.label_fr, self.event.title)
 
 
 class ItineraryArtwork(models.Model):
