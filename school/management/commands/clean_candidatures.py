@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
 import datetime
-import pytz
 from itertools import chain
 
 from django.core.management.base import BaseCommand
@@ -10,33 +9,21 @@ from django.db.models import Q
 from school.models import StudentApplication, Student
 from people.models import Staff
 
-from school.utils import setLocale
-
 
 class Command(BaseCommand):
     help = 'Remove critics informations from old Student Application'
 
     def add_arguments(self, parser):
-        # -- optional
-        parser.add_argument('--year', type=int, help='Current year or give him a year')
+        # -- required
+        parser.add_argument("--year", type=int, help='Default : last year')
 
     def handle(self, *args, **options):
-        # to avoid warning set local time
-        setLocale('fr_FR.utf8')
-        # convert utc to PARIS's time
-        tz = pytz.timezone("Europe/Paris")
-
-        # get current year or custom year
-        current_year = datetime.date.today().year if not options['year'] else options['year']
-        # get last year
-        last_year = current_year - 1
-        print(current_year)
-        print(last_year)
+        # get the treatment year
+        year = options['year'] if options['year'] else datetime.date.today().year - 1
         # get the date when set expired time : we keep 4 years
-        expired_candidatures = datetime.datetime(current_year - 5, 1, 1).astimezone(tz)
-        print(expired_candidatures)
+        expired_candidatures = year - 4
         # expired user : user is too old to candidate (35 years): 35 + 1
-        expired_user = datetime.datetime(current_year - 36, 1, 1).astimezone(tz)
+        expired_user = year - 36
         # keep user's selected infos (when user postulate more than one time)
         sa_keep_users = StudentApplication.objects.filter(
                         Q(selected=True) |
@@ -55,8 +42,8 @@ class Command(BaseCommand):
 
         # take olds application : last year exclude selected
         sa_olds = StudentApplication.objects.filter(
-                        # __lte : less than equal last_year
-                        created_on__lte=datetime.datetime(last_year, 1, 1).astimezone(tz),
+                        # __lte : less than equal year
+                        created_on__year__lte=year,
                         selected=False,
                   ).exclude(
                             # exclude selected user (=Artist)
@@ -67,8 +54,8 @@ class Command(BaseCommand):
         #   we dont keep infos greater than 5 years (grpd)
         sa_expired = StudentApplication.objects.filter(
                         # Q to make OR (|) statement
-                        Q(created_on__lte=expired_candidatures) |
-                        Q(artist__user__profile__birthdate__lte=expired_user),
+                        Q(created_on__year__lte=expired_candidatures) |
+                        Q(artist__user__profile__birthdate__year__lte=expired_user),
                      ).exclude(
                                # exclude selected user (= Artist)
                                artist__user__in=keep_users,
@@ -79,22 +66,23 @@ class Command(BaseCommand):
                         Q(identity_card__isnull=True) |
                         Q(experience_justification__isnull=True) |
                         Q(cursus_justifications__isnull=True) |
-                        Q(created_on__year__gt=current_year) |
+                        Q(created_on__year__gt=year) |
                         # in case of bad manipulation we keep current year application
                         Q(created_on__year=datetime.date.today().year)
                  )
         # set list of delete info
         list_delete = []
+        # Display messages
+        print("Traitement des candidatures <= ", year)
+        print("**** Total de : ")
+        print("**** {} candidatures".format(StudentApplication.objects.all().count()))
+        print("**** {} candidatures non modifiables".format(len(keep_users)))
+        print("**** {} étudiants".format(Student.objects.all().count()))
 
-        print(u"**** Sur un total de : ")
-        print(u"**** {} candidatures totales".format(StudentApplication.objects.all().count()))
-        print(u"**** {} profiles sauvegardés".format(len(keep_users)))
-        print(u"**** {} étudiants".format(Student.objects.all().count()))
-
-        print(u"Liste des informations qui vont être supprimées : ".encode('utf-8'))
-        print(u"/!\\ Supression complète de {} candidatures".format(sa_expired.count()))
-        print(u"/!\\ Nettoyage des informations de {} anciennes candidatures".format(sa_olds.count()))
-        print(u"/!\\ Supression des informations critiques de {} candidatures".format(sa_all.count()))
+        print("Liste des informations qui vont être supprimées : ")
+        print("/!\\ Supression complète de {} candidatures".format(sa_expired.count()))
+        print("/!\\ Supression des informations critiques de {} candidatures".format(sa_all.count()))
+        print("/!\\ Nettoyage, si besoin, des informations de {} anciennes candidatures".format(sa_olds.count()))
 
         # pause to read uplines
         input('[Press any key to continue]')
@@ -192,8 +180,8 @@ class Command(BaseCommand):
         return a
 
     def del_info(self, model, field, value):
-        # print(model, " - ", field, " : ", value)
-        print(field, " : ", value.__class__.__name__)
+        print(model, " - ", field, " : ", value)
+        # print(field, " : ", value.__class__.__name__)
         # print(value.__class__.__name__)
         if value.__class__.__name__ == 'ManyRelatedManager':
             # print("delete arrays")
