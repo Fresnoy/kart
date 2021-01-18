@@ -3,7 +3,7 @@ import os
 
 from django.core.files import File
 from django.test import TestCase
-from django.utils.six import BytesIO
+from io import BytesIO
 
 from PIL import Image
 

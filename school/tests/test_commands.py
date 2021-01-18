@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 # from django.core.management import call_command
-from django.utils.six import StringIO
+from io import StringIO
 from django.test import TestCase
 
 

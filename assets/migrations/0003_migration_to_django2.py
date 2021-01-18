@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='medium',
             name='gallery',
-            field=models.ForeignKey(on_delete='', related_name='media', to='assets.Gallery'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='media', to='assets.Gallery'),
         ),
     ]

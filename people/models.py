@@ -44,7 +44,7 @@ class FresnoyProfile(models.Model):
     family_status = models.CharField(max_length=50,
                                      null=True, blank=True)
 
-    mother_tongue = LanguageField(blank=True, null=True)
+    mother_tongue = LanguageField(max_length=8, blank=True, null=True)
     other_language = models.CharField(max_length=24, null=True, blank=True)
 
     cursus = models.TextField(blank=True)
