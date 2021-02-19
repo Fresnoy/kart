@@ -110,6 +110,12 @@ class StudentApplication(models.Model):
         blank=True,
         help_text="Identity justificative"
     )
+    INE = models.CharField(
+        max_length=11,
+        null=True,
+        blank=True,
+        help_text="Identifiant National Etudiant (only French student) - 10 numbers + 1 letter ou 9 numbers + 2 letters"
+    )
     # First Candidature
     first_time = models.BooleanField(
         default=False,
@@ -258,6 +264,11 @@ class StudentApplication(models.Model):
         default=False,
         help_text="Administration - Is the candidat wait listed for the Interview"
     )
+    position_in_interview_waitlist = models.PositiveSmallIntegerField(
+        blank=True,
+        null=True,
+        help_text="Administration - Set the position in interview waitlist"
+    )
     selected = models.BooleanField(
         default=False,
         help_text="Administration - Is the candidat selected"
@@ -269,6 +280,11 @@ class StudentApplication(models.Model):
     wait_listed = models.BooleanField(
         default=False,
         help_text="Administration - Is the candidat wait listed"
+    )
+    position_in_waitlist = models.PositiveSmallIntegerField(
+        blank=True,
+        null=True,
+        help_text="Administration - Set the position in waitlist"
     )
     application_complete = models.BooleanField(
         default=False,
