@@ -1,0 +1,56 @@
+{% extends "base-candidature-email.html" %}
+
+{% block title %}
+Candidature | Le Fresnoy – Studio national des arts contemporains
+{% endblock %}
+
+{% block content %}
+
+Bonjour {{user.first_name}} {{user.last_name}},
+_______
+
+
+Vous avez candidaté au concours {{ application.campaign.promotion.starting_year }}
+du Fresnoy – Studio national des arts contemporains, nous vous remercions de votre intérêt pour notre école.
+
+Malgré la qualité des éléments transmis et présentés à nos jurys, nous sommes au regret de vous annoncer que votre
+candidature n'a pas été retenue cette année pour rejoindre la prochaine promotion du Fresnoy.
+
+Les membres du jury ne se réunissent qu'une fois pour sélectionner les candidat.es et ne communiquent pas d'argumentaire
+pour justifier leurs décisions.
+
+Nous vous invitons à candidater à nouveau l’année prochaine si vous remplissez les conditions d’accès.
+
+Avec nos salutations les plus cordiales,
+
+La direction pédagogique
+
+
+===
+English version below
+===
+
+
+
+Dear {{user.first_name}} {{user.last_name}},
+_______
+
+You have entered the {{ application.campaign.promotion.starting_year }} application process
+for Le Fresnoy – Studio national des arts contemporains.
+Thank you for your interest in our school.
+
+Despite the quality of the material you submitted,
+we are sorry to inform you that your application to enter
+the school next academic year has not been successful.
+
+The jury meets only once to choose applicants and does not communicate the reasoning behind its decisions.
+
+However, we encourage you to apply again next year if you meet the entry conditions.
+
+
+With our very best regards,
+
+The teaching staff
+
+
+{% endblock %}

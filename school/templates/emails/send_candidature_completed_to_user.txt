@@ -1,10 +1,11 @@
-Bonjour,
+Bonjour {{user.first_name}} {{user.last_name}},
+
 Vous avez finalisé votre candidature (numéro {{application.current_year_application_count}}), nous allons
 procéder à sa vérification et vous adresser une confirmation prochainement par e-mail.
 
 Bien cordialement,
 
-L'équipe du Fresnoy - Studio national
+L'équipe du Fresnoy – Studio national
 
 == English version below ==
 
@@ -14,4 +15,4 @@ receive a confirmation message soon by e-mail, once we have checked it.
 
 Kind regards,
 
-The team of Le Fresnoy - Studio national
+The team of Le Fresnoy – Studio national

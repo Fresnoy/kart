@@ -1,31 +1,35 @@
-<html>
-    <head>
-      <title>Le Fresnoy - Account Activation</title>
-    </head>
-    <body style="color: black; background-color: #31bdf0;" bgcolor="#31bdf0">
-      <div class="page" style="max-width: 960px; width: 80%; background-color: white; margin: 5% 5%; padding: 5% 5%;">
-        <img style="width:100%" src="https://app.lefresnoy.net/candidatures/assets/logo-fresnoy.png">
-        <p>Bonjour,</p>
+{% extends "base-candidature-email.html" %}
 
-        <p>Vous êtes sur le point de créer un compte sur notre base de données, veuillez
+{% block title %} Le Fresnoy - Account Activation {% endblock %}
+
+{% block content %}
+
+        <p><strong>Bonjour,</strong><br/>
+        <img width="60" height="5" src="https://app.lefresnoy.net/candidatures/assets/mail/separateur.jpg" />
+        </p>
+
+        <p>Vous êtes sur le point de créer un compte dans notre base de données, veuillez
           <a href='{{url}}'>suivre ce lien</a>
           pour créer votre mot de passe et pouvoir ainsi continuer la procédure d'inscription.
         </p>
         <p>
-          En cas de problèmes pour vous inscrire, vous pouvez nous contacter en répondant à ce message.
+          En cas de problème pour vous inscrire, vous pouvez nous contacter en répondant à ce message.
         </p>
         <p>
         Bien cordialement,
         </p>
         <p>
-          L'équipe du Fresnoy
+          L'équipe du Fresnoy – Studio national
         </p>
         <hr/>
-        <p style="text-align:center;">English version below</p>
+        <p style="text-align:center;">English version</p>
         <hr/>
-        <p>Hello,</p>
+        <p><strong>Hello,</strong><br/>
+        <img width="60" height="5" src="https://app.lefresnoy.net/candidatures/assets/mail/separateur.jpg" />
+        </p>
 
-        <p>You are about to create an account on our database. Please
+
+        <p>You are about to create an account in our database. Please
           <a href='{{url}}'>click on this link </a>
           to create your password and go on with your enrolment process.
         </p>
@@ -36,8 +40,7 @@
         Kind regards,
         </p>
         <p>
-        The team at Le Fresnoy
+        The team at Le Fresnoy – Studio national
         </p>
-    </div>
-  <body>
-</html>
+
+{% endblock %}

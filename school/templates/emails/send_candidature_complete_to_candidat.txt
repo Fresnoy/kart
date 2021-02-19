@@ -1,22 +1,24 @@
-Bonjour,
+Bonjour {{user.first_name}} {{user.last_name}},
 
 Nous avons bien reçu votre dossier de candidature au concours du
 Fresnoy - Studio national des arts contemporains et vous en remercions.
 
-Votre dossier a été vérifié par le département pédagogique qui le déclare complet.
+L’équipe pédagogique du Fresnoy a vérifié votre dossier et le déclare complet.
 
-Si vous êtes présélectionné(e), vous recevrez un email de convocation à l’oral qui se déroulera
+Si vous êtes présélectionné.e, vous recevrez un email de convocation à l’oral qui se déroulera
+
 {{interviews_dates.fr}} à Tourcoing
-(ou une convocation pour un entretien par Skype si vous habitez hors du continent européen
+
+(ou une convocation pour un entretien par visioconférence si vous habitez hors du continent européen
 et si vous en avez fait la demande lors de votre inscription).
 
 Nous vous prions d’agréer nos cordiales salutations.
 
-L'équipe du Fresnoy - Studio national
+L'équipe du Fresnoy – Studio national
 
 == English version below ==
 
-Hello,
+Hello {{user.first_name}} {{user.last_name}},
 
 We have received your application for the Le Fresnoy – Studio national des arts contemporains. Thank you for applying.
 
@@ -24,8 +26,8 @@ Your application has been checked and found complete by the teaching department.
 
 If you are shortlisted, you will receive an email asking you to attend the interviews
 {{interviews_dates.en}} in Tourcoing
-(or for a Skype interview if you live outside Europe and requested this method in your application).
+(or for a visio-conference interview if you live outside Europe and requested this method in your application).
 
 Kind regards,
 
-The team of Le Fresnoy - Studio national
+The team of Le Fresnoy – Studio national

@@ -1,32 +1,55 @@
-<html>
-    <head>
-      <title>Le Fresnoy - Account information</title>
-    </head>
-    <body style="color: black; background-color: #31bdf0;" bgcolor="#31bdf0">
-    <div class="page" style="max-width: 960px; width: 80%; background-color: white; margin: 5% 5%; padding: 5% 5%;">
-        <img src="https://app.lefresnoy.net/candidatures/assets/logo-fresnoy.png" />
-          <p>
-            Bonjour,
-          </p>
-          <p>
-            Voici un récapitulatif de vos données de connexion
-          </p>
-          <ul>
-            <li>Nom : {{user.last_name}}</li>
-            <li>Prénom : {{user.first_name}}</li>
-            <li>Nom d'utilisateur : {{user.username}}</li>
-            <li>Email : {{user.email}}</li>
-          </ul>
-          <p>
-            Connectez vous via <a href="{{authentification_url}}">ce lien</a>.<br/>
-            Vous pouvez changer votre mot de passe en utilisant <a href="{{recover_password_url}}">ce lien </a>.<br/>
+{% extends "base-candidature-email.html" %}
 
-          </p>
-          <p>
+{% block title %} Le Fresnoy - Account Informations {% endblock %}
 
-            L'équipe du Fresnoy
-          </p>
+{% block content %}
+  <p><strong>Bonjour,</strong><br/>
+  <img width="60" height="5" src="https://app.lefresnoy.net/candidatures/assets/mail/separateur.jpg" />
+  </p>
+  <p>
+    Voici un récapitulatif de vos données de connexion
+  </p>
+  <ul>
+    <li>Prénom : {{user.first_name}}</li>
+    <li>Nom : {{user.last_name}}</li>
+    <li>Nom d'utilisateur : {{user.username}}</li>
+    <li>Email : {{user.email}}</li>
+  </ul>
+  <p>
+    Connectez vous via <a href="{{authentification_url}}">ce lien</a>.<br/>
+    Vous pouvez changer votre mot de passe en utilisant <a href="{{recover_password_url}}">ce lien </a>.<br/>
+  </p>
+  <p>
+    L'équipe du Fresnoy
+  </p>
 
-    </div>
-    </body>
-</html>
+
+  <hr/>
+  <p style="text-align:center;">English version</p>
+  <hr/>
+
+  <p><strong>Hello,</strong><br/>
+  <img width="60" height="5" src="https://app.lefresnoy.net/candidatures/assets/mail/separateur.jpg" />
+  </p>
+  <p>
+    Here is a summary of your connection data:
+  </p>
+  <ul>
+    <li>Given name : {{user.first_name}}</li>
+    <li>Surname: {{user.last_name}}</li>
+    <li>Username: {{user.username}}</li>
+    <li>Email: {{user.email}}</li>
+  </ul>
+  <p>
+    You can connect  <a href="{{authentification_url}}">here</a>.<br/>
+    To change your password, click  <a href="{{recover_password_url}}">here </a>.<br/>
+  </p>
+  <p>
+    The teaching staff
+  </p>
+
+
+
+
+
+{% endblock %}
