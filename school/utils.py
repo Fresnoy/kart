@@ -2,7 +2,7 @@
 import locale
 import pytz
 from django.utils import timezone
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 
 from school.models import StudentApplicationSetup
@@ -13,12 +13,14 @@ def send_candidature_completed_email_to_user(request, user, application):
     msg_plain = render_to_string(
         'emails/send_candidature_completed_to_user.txt',
         {
+            'user': user,
             'application': application
         }
     )
     msg_html = render_to_string(
         'emails/send_candidature_completed_to_user.html',
         {
+            'user': user,
             'application': application
         }
     )
@@ -157,6 +159,117 @@ def send_interview_selection_email_to_candidat(request, candidat, application):
                           html_message=msg_html,
                           )
 
+    return mail_sent
+
+
+def send_is_on_waitlist_for_interview_to_candidat(request, candidat, application):
+    # set locale  interviews date
+    interviews_dates = {'fr': '', "en": ''}
+    # having name of day/month in rigth language
+    setLocale('fr_FR.utf8')
+    setup = application.campaign
+    interviews_dates['fr'] = "entre le {0} au {1}".format(setup.interviews_start_date.strftime("%A %d %B"),
+                                                          setup.interviews_end_date.strftime("%A %d %B %Y")
+                                                          )
+    setLocale('en_US.utf8')
+    interviews_dates['en'] = "from {0} to {1}".format(setup.interviews_start_date.strftime("%A %d %B"),
+                                                      setup.interviews_end_date.strftime("%A %d %B %Y")
+                                                      )
+
+    # Send email : PRESELECTION : ON WAITLIST
+    msg_plain = render_to_string(
+        'emails/send_on_waitlist_for_interview_to_candidat.txt',
+        {
+            'application': application,
+            'user': candidat,
+            'interviews_dates': interviews_dates
+        }
+    )
+    msg_html = render_to_string(
+        'emails/send_on_waitlist_for_interview_to_candidat.html',
+        {
+            'application': application,
+            'user': candidat,
+            'interviews_dates': interviews_dates
+        }
+    )
+    mail_sent = send_mail('Candidature | Le Fresnoy – Studio national des arts contemporains',
+                          msg_plain,
+                          'selection@lefresnoy.net',
+                          [candidat.email],
+                          html_message=msg_html,
+                          )
+    return mail_sent
+
+
+def send_not_selected_email_to_candidat(request, candidat, application):
+    # Send email : NOT SELECTED
+    msg_plain = render_to_string(
+        'emails/send_not_selected_email_to_candidat.txt',
+        {
+            'application': application,
+            'user': candidat,
+        }
+    )
+    msg_html = render_to_string(
+        'emails/send_not_selected_email_to_candidat.html',
+        {
+            'application': application,
+            'user': candidat,
+        }
+    )
+    subject = 'Candidature | Le Fresnoy – Studio national des arts contemporains '
+
+    mail_sent = send_mail(subject,
+                          msg_plain,
+                          'selection@lefresnoy.net',
+                          [candidat.email],
+                          html_message=msg_html,
+                          )
+    return mail_sent
+
+
+def send_candidature_not_finalized_to_candidats(request, application_setup, list_candidats):
+
+    # jeudi 22 avril 2021 à 14h
+    application = application_setup.applications
+    # set locale  interviews date
+    application_end = {'fr': '', "en": ''}
+    # having name of day/month in rigth language
+    setLocale('fr_FR.utf8')
+    tz = pytz.timezone("Europe/Paris")
+    candidature_date_end = application_setup.candidature_date_end.astimezone(tz)
+
+    application_end['fr'] = '{0} à {1}'.format(
+        candidature_date_end.strftime("%A %d %B %Y"),
+        candidature_date_end.strftime("%Hh%M")
+    )
+    setLocale('en_US.utf8')
+    application_end['en'] = candidature_date_end.strftime("%I %p/%H.%M (Paris time) on %A %d %B %Y")
+    # Send email : NOT SELECTED
+    msg_plain = render_to_string(
+        'emails/send_candidature_not_finalized_to_candidat.txt',
+        {
+            'application': application,
+            'application_end': application_end
+        }
+    )
+    msg_html = render_to_string(
+        'emails/send_candidature_not_finalized_to_candidat.html',
+        {
+            'application': application,
+            'application_end': application_end
+        }
+    )
+    mail = EmailMultiAlternatives('Finalisez votre candidature / Finalize your application ',
+                                  msg_plain,
+                                  'selection@lefresnoy.net',
+                                  ['selection@lefresnoy.net', ],
+                                  bcc=list_candidats,  # bcc
+                                  reply_to=['selection@lefresnoy.net'],
+                                  )
+    mail.attach_alternative(msg_html, "text/html")
+    mail_sent = mail.send()
     return mail_sent
 
 

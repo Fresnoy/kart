@@ -18,6 +18,8 @@ from .utils import (send_candidature_completed_email_to_user,
                     send_candidature_completed_email_to_admin,
                     send_candidature_complete_email_to_candidat,
                     send_interview_selection_email_to_candidat,
+                    send_is_on_waitlist_for_interview_to_candidat,
+                    send_not_selected_email_to_candidat,
                     candidature_close,
                     )
 
@@ -70,7 +72,9 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                         'wait_listed',)
     ordering_fields = ('id',
                        'artist__user__last_name',
-                       'artist__user__profile__nationality',)
+                       'artist__user__profile__nationality',
+                       'position_in_interview_waitlist',
+                       'position_in_waitlist',)
 
     def get_serializer_class(self, *args, **kwargs):
         """
@@ -153,7 +157,11 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                 request.data.get('application_complete') or
                 request.data.get('selected_for_interview') or
                 request.data.get('selected') or
+                request.data.get('unselected') or
                 request.data.get('wait_listed') or
+                request.data.get('wait_listed_for_interview') or
+                request.data.get('position_in_waitlist') or
+                request.data.get('position_in_interview_waitlist') or
                 request.data.get('application_complete') or
                 request.data.get('campaign'))
         ):
@@ -172,11 +180,23 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
             candidat = application.artist.user
             send_candidature_complete_email_to_candidat(request, candidat, application)
 
-        # send email to candidat when is select
+        # send email to candidat when is on interview waiting list
+        if(request.data.get('wait_listed_for_interview')):
+            application = self.get_object()
+            candidat = application.artist.user
+            send_is_on_waitlist_for_interview_to_candidat(request, candidat, application)
+
+        # send email to candidat when is select for intervieux
         if(request.data.get('selected_for_interview')):
             application = self.get_object()
             candidat = application.artist.user
             send_interview_selection_email_to_candidat(request, candidat, application)
+
+        # send email to candidat when is not selected
+        if(request.data.get('unselected')):
+            application = self.get_object()
+            candidat = application.artist.user
+            send_not_selected_email_to_candidat(request, candidat, application)
 
         # basic update
         return super(self.__class__, self).update(request, *args, **kwargs)

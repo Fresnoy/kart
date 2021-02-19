@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-# from django.core.management import call_command
+from django.core.management import call_command
 from io import StringIO
 from django.test import TestCase
 
@@ -29,3 +29,8 @@ class CommandsTestCase(TestCase):
 
         # print(".{}.".format(result))
         # assertEqual(out.getvalue(), value)
+
+    def test_application_end_date_reminder(self):
+        " Test app end date reminder."
+        call_command('application_end_date_reminder', stdout=self.out)
+        self.assertTrue

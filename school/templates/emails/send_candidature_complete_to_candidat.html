@@ -1,36 +1,36 @@
-<html>
-    <head>
-      <title>Selection - Candidature complete</title>
-    </head>
-    <body style="color: black; background-color: #31bdf0;" bgcolor="#31bdf0">
-      <div class="page" style="max-width: 960px; width: 80%; background-color: white; margin: 5% 5%; padding: 5% 5%;">
-        <img style="width:100%" src="https://app.lefresnoy.net/candidatures/assets/logo-fresnoy.png">
+{% extends "base-candidature-email.html" %}
 
-        <p>Bonjour, </p>
+{% block title %}
+Selection - Candidature complete
+{% endblock %}
+
+{% block content %}
+
+        <p><strong>Bonjour {{user.first_name}} {{user.last_name}},</strong><br/>
+        <img width="60" height="5" src="https://app.lefresnoy.net/candidatures/assets/mail/separateur.jpg" />
+        </p>
         <p>Nous avons bien reçu votre dossier de candidature au concours du
           Fresnoy - Studio national des arts contemporains et vous en remercions.</p>
-        <p>Votre dossier a été vérifié par le département pédagogique qui le déclare complet.</p>
-        <p>Si vous êtes présélectionné(e), vous recevrez un email de convocation à l’oral qui se déroulera
+        <p>L’équipe pédagogique du Fresnoy a vérifié votre dossier et le déclare complet.</p>
+        <p>Si vous êtes présélectionné.e, vous recevrez un email de convocation à l’oral qui se déroulera
           {{interviews_dates.fr}} à Tourcoing
-          (ou une convocation pour un entretien par Skype si vous habitez hors du continent européen
+          (ou une convocation pour un entretien par visioconférence si vous habitez hors du continent européen
           et si vous en avez fait la demande lors de votre inscription). </p>
         <p>Nous vous prions d’agréer nos cordiales salutations. </p>
-        <p>L'équipe du Fresnoy - Studio national</p>
+        <p>L'équipe du Fresnoy – Studio national</p>
 
         <hr/>
-        <p style="text-align:center;">English version below</p>
+        <p style="text-align:center;">English version</p>
         <hr/>
 
-        <p>Hello,</p>
+        <p><strong>Hello {{user.first_name}} {{user.last_name}},</strong></p>
         <p>We have received your application for the
           Le Fresnoy – Studio national des arts contemporains. Thank you for applying.</p>
         <p>Your application has been checked and found complete by the teaching department. </p>
         <p>If you are shortlisted, you will receive an email asking you to attend the interviews held
           {{interviews_dates.en}} in Tourcoing
-          (or for a Skype interview if you live outside Europe and requested this method in your application). </p>
+          (or for a videoconference interview if you live outside Europe and requested this method in your application). </p>
         <p>Kind regards,</p>
-        <p>The team of Le Fresnoy - Studio national</p>
+        <p>The team of Le Fresnoy – Studio national</p>
 
-    </div>
-  </body>
-</html>
+{% endblock %}

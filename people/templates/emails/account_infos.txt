@@ -1,11 +1,33 @@
-  Bonjour,
+Bonjour,
   Voici un récapitulatif de vos données de connexion
-      Nom : {{user.last_name}}
-      Prénom : {{user.first_name}}
-      Nom d'utilisateur : {{user.username}}
-      Email : {{user.email}}
+  Prénom : {{user.first_name}}
+  Nom : {{user.last_name}}
+  Nom d'utilisateur : {{user.username}}
+  Email : {{user.email}}
+</ul>
 
-      Connectez vous en utilisant ce lien {{authentification_url}}.
-      Vous pouvez changer votre mot de passe en utilisant ce lien {{recover_password_url}}.
+  Connectez vous via ce lien : {{authentification_url}}.
+  Vous pouvez changer votre mot de passe en utilisant ce lien : {{recover_password_url}} .
 
-      L'équipe du Fresnoy
+
+  L'équipe du Fresnoy
+
+
+==  English version below ==
+
+
+Hello,
+  Here is a summary of your connection data:
+
+
+  Given name : {{user.first_name}}
+  Surname: {{user.last_name}}
+  Username: {{user.username}}
+  Email: {{user.email}}
+
+
+  You can connect  here {{authentification_url}}
+  To change your password, click  here: {{recover_password_url}}
+
+
+  The teaching staff
