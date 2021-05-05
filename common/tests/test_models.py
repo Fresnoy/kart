@@ -2,6 +2,8 @@
 from django.test import TestCase
 from common.models import Website
 
+from .factories import WebsiteFactory
+
 
 class CommandsTestCase(TestCase):
     """
@@ -10,11 +12,7 @@ class CommandsTestCase(TestCase):
 
     def setUp(self):
         # create place
-        self.website = Website(title_fr="Site web d'Andy Warhol",
-                               title_en="Andrew Warhol's Website",
-                               language="EN",
-                               url="https://www.warhol.org/",)
-        self.website.save()
+        self.website = WebsiteFactory()
 
     def tearDown(self):
         pass
