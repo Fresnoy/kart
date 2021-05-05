@@ -1,32 +1,30 @@
-# -*- encoding: utf-8 -*-
-from django.test import TestCase
+import pytest
+
 from assets.models import Gallery, Medium
 
 from .factories import MediumFactory
 
 
-class ModelsTestCase(TestCase):
+@pytest.mark.django_db
+class TestModels:
     """
         Tests Assets Models
     """
-
-    def setUp(self):
-        # create place
+    def setup(self):
         self.medium = MediumFactory()
 
-    def tearDown(self):
-        pass
-
     def test_gallery(self):
-        "simple TEST gallery"
-        # get gallery
         galleries = Gallery.objects.all()
-        # test gallerie created
-        self.assertEqual(galleries.count(), 1)
+        assert galleries.count() == 1
+
+    def test_gallery_str(self):
+        assert self.medium.gallery.label in str(self.medium.gallery)
+        assert self.medium.gallery.description in str(self.medium.gallery)
 
     def test_medium(self):
-        "simple TEST medium"
-        # get gallery
         media = Medium.objects.all()
-        # test medium created
-        self.assertEqual(media.count(), 1)
+        assert media.count() == 1
+
+    def test_medium_str(self):
+        assert self.medium.label in str(self.medium)
+        assert self.medium.description in str(self.medium)
