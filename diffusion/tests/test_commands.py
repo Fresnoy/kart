@@ -2,11 +2,11 @@
 from django.core.management import call_command
 from io import StringIO
 from django.test import TestCase
-from django.contrib.auth.models import User
 
 from production.models import Event, Film
 from people.models import Artist
 from diffusion.models import Place, Diffusion
+from utils.tests.factories import AndyFactory
 
 
 class CommandsTestCase(TestCase):
@@ -21,12 +21,7 @@ class CommandsTestCase(TestCase):
         self.place = Place(name="Le Fresnoy", description="Le Fresnoy Studio National", address="22 rue du Fresnoy")
         self.place.save()
         # create Author
-        self.user = User()
-        self.user.first_name = "Andrew"
-        self.user.last_name = "Warhola"
-        self.user.username = "awarhol"
-        self.user.password = "xxx"
-        self.user.save()
+        self.user = AndyFactory()
         # create artist
         self.artist = Artist(user=self.user, nickname="Andy Warhol")
         self.artist.save()

@@ -6,6 +6,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 
 from people.models import FresnoyProfile, Artist
+from utils.tests.factories import AndyFactory
 
 
 class UserEndPoint(TestCase):
@@ -15,11 +16,7 @@ class UserEndPoint(TestCase):
     fixtures = ['groups.json']
 
     def setUp(self):
-        self.user = User()
-        self.user.first_name = "Andrew"
-        self.user.last_name = "Warhola"
-        self.user.username = "awarhol"
-        self.user.save()
+        self.user = AndyFactory()
 
         profile = FresnoyProfile(user=self.user)
         profile.save()
@@ -105,11 +102,7 @@ class ArtistEndPoint(TestCase):
     Tests Artist's endpoint
     """
     def setUp(self):
-        self.user = User()
-        self.user.first_name = "Andrew"
-        self.user.last_name = "Warhola"
-        self.user.username = "awarhol"
-        self.user.save()
+        self.user = AndyFactory()
 
         self.artist = Artist(user=self.user, nickname="Andy Warhol")
         self.artist.save()

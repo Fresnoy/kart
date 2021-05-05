@@ -2,7 +2,6 @@ import json
 import datetime
 from django.utils import timezone
 # import time
-from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 from rest_framework import status
 
@@ -12,6 +11,7 @@ from django.urls import reverse
 from people.models import Artist
 
 from school.models import StudentApplication, StudentApplicationSetup, Promotion
+from utils.tests.factories import AndyFactory
 
 
 class TestApplicationEndPoint(TestCase):
@@ -20,12 +20,8 @@ class TestApplicationEndPoint(TestCase):
     """
 
     def setUp(self):
-        self.user = User()
-        self.user.first_name = "Andrew"
-        self.user.last_name = "Warhola"
-        self.user.username = "awarhol"
-        self.user.password = "xxx"
-        self.user.save()
+        self.user = AndyFactory()
+
         # save generate token
         self.token = ""
         self.client_auth = APIClient()

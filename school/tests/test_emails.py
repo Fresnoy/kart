@@ -1,7 +1,6 @@
 import datetime
 from django.test.client import RequestFactory
 from django.utils import timezone
-from django.contrib.auth.models import User
 
 from school.models import StudentApplication, StudentApplicationSetup, Promotion
 
@@ -18,6 +17,7 @@ from school.utils import (send_candidature_completed_email_to_user,
                           send_interview_selection_email_to_candidat,
                           send_not_selected_email_to_candidat,
                           )
+from utils.tests.factories import AndyFactory
 
 
 class SendSendEmail(TestCase):
@@ -27,11 +27,8 @@ class SendSendEmail(TestCase):
     fixtures = ['groups.json']
 
     def setUp(self):
-        self.user = User(first_name="Andrew",
-                         last_name="Warhola",
-                         username="awarhol",
-                         email="awarhola@pop.art")
-        self.user.save()
+        self.user = AndyFactory()
+
         # force authenticate
         self.client_auth = APIClient()
         self.client_auth.force_authenticate(user=self.user)

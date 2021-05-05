@@ -6,8 +6,8 @@ from PIL import Image
 
 from rest_framework.test import APIClient
 
-from django.contrib.auth.models import User
 from assets.models import Gallery, Medium
+from utils.tests.factories import SuperAndyFactory
 
 
 class GalleryEndPoint(TestCase):
@@ -15,12 +15,7 @@ class GalleryEndPoint(TestCase):
     Tests concernants Gallery's endpoint
     """
     def setUp(self):
-        self.user = User(first_name="Andrew", last_name="Warhola",
-                         username="awarhol", password="xxx")
-        # bypass permission
-        self.user.is_superuser = True
-        self.user.is_active = True
-        self.user.save()
+        self.user = SuperAndyFactory()
 
         self.gallery = Gallery(label="Diptyque Marilyn",
                                description="Andrew Warhol's Artwork pictures",)
@@ -67,11 +62,7 @@ class MediumEndPoint(TestCase):
     """
     def setUp(self):
         # User
-        self.user = User(first_name="Andrew", last_name="Warhola",
-                         username="awarhol", password="xxx")
-        self.user.is_superuser = True
-        self.user.is_active = True
-        self.user.save()
+        self.user = SuperAndyFactory()
 
         self.client_auth = APIClient()
         self.client_auth.force_authenticate(user=self.user)
