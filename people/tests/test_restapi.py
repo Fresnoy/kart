@@ -5,8 +5,10 @@ from django.urls import reverse
 
 from rest_framework.test import APIClient
 
-from people.models import FresnoyProfile, Artist
+from people.models import FresnoyProfile
 from utils.tests.factories import AndyFactory
+
+from .factories import ArtistFactory
 
 
 class UserEndPoint(TestCase):
@@ -102,10 +104,7 @@ class ArtistEndPoint(TestCase):
     Tests Artist's endpoint
     """
     def setUp(self):
-        self.user = AndyFactory()
-
-        self.artist = Artist(user=self.user, nickname="Andy Warhol")
-        self.artist.save()
+        self.artist = ArtistFactory()
 
         self.response = None
 

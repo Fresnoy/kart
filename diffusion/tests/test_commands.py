@@ -4,9 +4,8 @@ from io import StringIO
 from django.test import TestCase
 
 from production.models import Event, Film
-from people.models import Artist
+from people.tests.factories import ArtistFactory
 from diffusion.models import Place, Diffusion
-from utils.tests.factories import AndyFactory
 
 
 class CommandsTestCase(TestCase):
@@ -20,10 +19,8 @@ class CommandsTestCase(TestCase):
         # create place
         self.place = Place(name="Le Fresnoy", description="Le Fresnoy Studio National", address="22 rue du Fresnoy")
         self.place.save()
-        # create Author
-        self.user = AndyFactory()
         # create artist
-        self.artist = Artist(user=self.user, nickname="Andy Warhol")
+        self.artist = ArtistFactory()
         self.artist.save()
         # create arwork
         self.film = Film(title="title", production_date="2019-01-01")

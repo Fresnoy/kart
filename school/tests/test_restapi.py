@@ -8,10 +8,8 @@ from rest_framework import status
 from django.test import TestCase
 from django.urls import reverse
 
-from people.models import Artist
-
+from people.tests.factories import ArtistFactory
 from school.models import StudentApplication, StudentApplicationSetup, Promotion
-from utils.tests.factories import AndyFactory
 
 
 class TestApplicationEndPoint(TestCase):
@@ -20,14 +18,12 @@ class TestApplicationEndPoint(TestCase):
     """
 
     def setUp(self):
-        self.user = AndyFactory()
+        self.artist = ArtistFactory()
+        self.user = self.artist.user
 
         # save generate token
         self.token = ""
         self.client_auth = APIClient()
-
-        self.artist = Artist(user=self.user, nickname="Andy Warhol")
-        self.artist.save()
 
     def tearDown(self):
         pass

@@ -2,10 +2,10 @@
 from django.test import TestCase
 from django.utils.dateparse import parse_date
 
-from django.contrib.auth.models import User
-from people.models import Artist
 from production.models import Event, Film
 from diffusion.models import Place
+
+from people.tests.factories import ArtistFactory
 
 
 class CommandsTestCase(TestCase):
@@ -17,12 +17,8 @@ class CommandsTestCase(TestCase):
         # create place
         self.place = Place(name="Le Fresnoy", description="Le Fresnoy Studio National", address="22 rue du Fresnoy")
         self.place.save()
-        # create user
-        self.user = User(first_name="Andrew", last_name="Warhola", username="awarhol")
-        self.user.save()
         # create Artist
-        self.artist = Artist(user=self.user)
-        self.artist.save()
+        self.artist = ArtistFactory()
 
     def tearDown(self):
         pass
