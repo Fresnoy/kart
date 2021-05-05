@@ -8,7 +8,8 @@ from io import BytesIO
 from PIL import Image
 
 from django.conf import settings
-from assets.models import Gallery, Medium
+
+from assets.tests.factories import MediumFactory
 
 
 def create_image(filename, size=(100, 100), image_mode='RGB', image_format='PNG'):
@@ -27,12 +28,7 @@ class UploadTestCase(TestCase):
     """
 
     def setUp(self):
-        # create gallery
-        self.gallery = Gallery(label="Avatars gallery")
-        self.gallery.save()
-        # create medium associated
-        self.medium = Medium(label="Avatar", gallery=self.gallery)
-        self.medium.save()
+        self.medium = MediumFactory()
 
     def tearDown(self):
         pass

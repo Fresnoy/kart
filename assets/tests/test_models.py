@@ -2,6 +2,8 @@
 from django.test import TestCase
 from assets.models import Gallery, Medium
 
+from .factories import MediumFactory
+
 
 class ModelsTestCase(TestCase):
     """
@@ -10,14 +12,7 @@ class ModelsTestCase(TestCase):
 
     def setUp(self):
         # create place
-        self.gallery = Gallery(label="Diptyque Marilyn",
-                               description="Andrew Warhol's Artwork pictures",)
-        self.gallery.save()
-
-        self.medium = Medium(label="Picture Diptyque Marilyn",
-                             description="Color & Grey Marilyn",
-                             gallery=self.gallery,)
-        self.medium.save()
+        self.medium = MediumFactory()
 
     def tearDown(self):
         pass

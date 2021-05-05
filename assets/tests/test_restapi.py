@@ -6,8 +6,9 @@ from PIL import Image
 
 from rest_framework.test import APIClient
 
-from assets.models import Gallery, Medium
 from utils.tests.factories import SuperAndyFactory
+
+from .factories import GalleryFactory, MediumFactory
 
 
 class GalleryEndPoint(TestCase):
@@ -16,10 +17,7 @@ class GalleryEndPoint(TestCase):
     """
     def setUp(self):
         self.user = SuperAndyFactory()
-
-        self.gallery = Gallery(label="Diptyque Marilyn",
-                               description="Andrew Warhol's Artwork pictures",)
-        self.gallery.save()
+        self.gallery = GalleryFactory()
 
     def tearDown(self):
         pass
@@ -66,15 +64,9 @@ class MediumEndPoint(TestCase):
 
         self.client_auth = APIClient()
         self.client_auth.force_authenticate(user=self.user)
-        # Gallery
-        self.gallery = Gallery(label="Diptyque Marilyn",
-                               description="Andrew Warhol's Artwork pictures",)
-        self.gallery.save()
         # Medium
-        self.medium = Medium(label="Picture Diptyque Marilyn",
-                             description="Color & Grey Marilyn",
-                             gallery=self.gallery,)
-        self.medium.save()
+        self.medium = MediumFactory()
+        self.gallery = self.medium.gallery
 
     def tearDown(self):
         pass
