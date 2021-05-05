@@ -1,34 +1,28 @@
-# -*- encoding: utf-8 -*-
 import pytest
-from django.test import TestCase
 
+from common.models import Website
 
 from .factories import BTBeaconFactory, WebsiteFactory
 
-class CommandsTestCase(TestCase):
-    """
-        Tests Common Commands
-    """
 
-    def setUp(self):
-        # create place
+@pytest.mark.django_db
+class TestWebsite:
+    """
+        Tests Common Models
+    """
+    def setup(self):
         self.website = WebsiteFactory()
 
-    def tearDown(self):
-        pass
-
     def test_websites(self):
-        "simple TEST website"
-        # get gallery
-        website = Website.objects.all()
-        # test metaEvent created
-        self.assertEqual(website.count(), 1)
+        websites = Website.objects.all()
+        assert websites.count() == 1
 
     def test_websites_str(self):
         assert self.website.url in str(self.website)
         assert '...' in str(self.website), self.title_fr
+
+    def test_websites_short_str(self):
         self.website.title_fr = "Andy's website"
-        self.website.save()
         assert self.website.title_fr in str(self.website)
         assert '...' not in str(self.website), self.title_fr
         assert self.website.url in str(self.website)
