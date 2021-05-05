@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
+import pytest
 from django.test import TestCase
-from common.models import Website
 
-from .factories import WebsiteFactory
 
+from .factories import BTBeaconFactory, WebsiteFactory
 
 class CommandsTestCase(TestCase):
     """
@@ -32,3 +32,11 @@ class CommandsTestCase(TestCase):
         assert self.website.title_fr in str(self.website)
         assert '...' not in str(self.website), self.title_fr
         assert self.website.url in str(self.website)
+
+
+@pytest.mark.django_db
+class TestBTBeacon:
+    def test_BTBeacon_str(self):
+        beacon = BTBeaconFactory()
+        assert beacon.label in str(beacon)
+        assert str(beacon.uuid) in str(beacon)
