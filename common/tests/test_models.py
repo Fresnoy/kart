@@ -23,3 +23,12 @@ class CommandsTestCase(TestCase):
         website = Website.objects.all()
         # test metaEvent created
         self.assertEqual(website.count(), 1)
+
+    def test_websites_str(self):
+        assert self.website.url in str(self.website)
+        assert '...' in str(self.website), self.title_fr
+        self.website.title_fr = "Andy's website"
+        self.website.save()
+        assert self.website.title_fr in str(self.website)
+        assert '...' not in str(self.website), self.title_fr
+        assert self.website.url in str(self.website)
