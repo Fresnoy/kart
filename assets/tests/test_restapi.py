@@ -6,7 +6,7 @@ from PIL import Image
 
 from rest_framework.test import APIClient
 
-from utils.tests.factories import SuperAndyFactory
+from utils.tests.factories import AdminFactory
 
 from .factories import GalleryFactory, MediumFactory
 
@@ -16,7 +16,7 @@ class GalleryEndPoint(TestCase):
     Tests concernants Gallery's endpoint
     """
     def setUp(self):
-        self.user = SuperAndyFactory()
+        self.user = AdminFactory()
         self.gallery = GalleryFactory()
 
     def tearDown(self):
@@ -60,7 +60,7 @@ class MediumEndPoint(TestCase):
     """
     def setUp(self):
         # User
-        self.user = SuperAndyFactory()
+        self.user = AdminFactory()
 
         self.client_auth = APIClient()
         self.client_auth.force_authenticate(user=self.user)

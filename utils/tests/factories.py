@@ -3,16 +3,26 @@ from django.contrib.auth.models import User
 import factory
 
 
-class AndyFactory(factory.django.DjangoModelFactory):
+factory.Faker._DEFAULT_LOCALE = 'fr_FR'
+
+
+class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
 
+    email = factory.Faker('email')
+    first_name = factory.Faker('first_name')
+    last_name = factory.Faker('last_name')
+    username = factory.Faker('user_name')
+
+
+class AndyFactory(UserFactory):
     email = "awarhola@pop.art"
     first_name = "Andrew"
     last_name = "Warhola"
     username = "awarhol"
 
 
-class SuperAndyFactory(AndyFactory):
+class AdminFactory(UserFactory):
     is_superuser = True
     is_active = True

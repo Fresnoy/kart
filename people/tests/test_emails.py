@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.test.client import RequestFactory
 
 from people.utils import send_activation_email, send_account_information_email
-from utils.tests.factories import AndyFactory
+from utils.tests.factories import UserFactory
 
 
 class SendSendEmail(TestCase):
@@ -19,7 +19,7 @@ class SendSendEmail(TestCase):
     fixtures = ['groups.json']
 
     def setUp(self):
-        self.user = AndyFactory()
+        self.user = UserFactory()
 
         self.setup = StudentApplicationSetup(candidature_date_start=timezone.now() - datetime.timedelta(days=1),
                                              candidature_date_end=timezone.now() + datetime.timedelta(days=1),
