@@ -81,10 +81,9 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         This switch serializers
         From Staff (and StudentApplication owner) to private and Other to public
         """
-        if (
-            self.request.user.is_staff or
-            StudentApplication.objects.filter(artist__user=self.request.user.id)
-           ):
+        if (self.request.user.is_authenticated and
+            (self.request.user.is_staff or
+             StudentApplication.objects.filter(artist__user=self.request.user.id))):
             return StudentApplicationSerializer
         return PublicStudentApplicationSerializer
 
