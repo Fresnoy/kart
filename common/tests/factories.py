@@ -1,4 +1,5 @@
 import factory
+import factory.fuzzy
 
 from .. import models
 
@@ -7,10 +8,10 @@ class WebsiteFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.Website
 
-    title_fr = "Site web d'Andy Warhol"
-    title_en = "Andrew Warhol's Website"
-    language = "EN"
-    url = "https://www.warhol.org/"
+    title_fr = factory.Faker('sentence')
+    title_en = factory.Faker('sentence')
+    language = factory.fuzzy.FuzzyChoice(models.Website.LANGUAGES, getter=lambda c: c[0])
+    url = factory.Faker('url')
 
 
 class BTBeaconFactory(factory.django.DjangoModelFactory):
