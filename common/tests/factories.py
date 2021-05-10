@@ -1,6 +1,8 @@
 import factory
 import factory.fuzzy
 
+from utils.tests.utils import first
+
 from .. import models
 
 
@@ -10,7 +12,7 @@ class WebsiteFactory(factory.django.DjangoModelFactory):
 
     title_fr = factory.Faker('sentence')
     title_en = factory.Faker('sentence')
-    language = factory.fuzzy.FuzzyChoice(models.Website.LANGUAGES, getter=lambda c: c[0])
+    language = factory.fuzzy.FuzzyChoice(models.Website.LANGUAGES, getter=first)
     url = factory.Faker('url')
 
 

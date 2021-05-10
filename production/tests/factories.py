@@ -2,6 +2,7 @@ import factory
 import factory.fuzzy
 
 from people.tests.factories import StaffFactory, OrganizationFactory
+from utils.tests.utils import first
 
 from .. import models
 
@@ -91,7 +92,7 @@ class EventFactory(ProductionFactory):
     class Meta:
         model = models.Event
 
-    type = factory.fuzzy.FuzzyChoice(models.Event.TYPE_CHOICES, getter=lambda c: c[0])
+    type = factory.fuzzy.FuzzyChoice(models.Event.TYPE_CHOICES, getter=first)
     starting_date = factory.Faker('date_time_this_month')
 
     @factory.post_generation

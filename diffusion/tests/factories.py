@@ -2,6 +2,7 @@ import factory
 
 from people.tests.factories import OrganizationFactory
 from production.tests.factories import ArtworkFactory, EventFactory, StaffTaskFactory
+from utils.tests.utils import first
 
 from .. import models
 
@@ -22,7 +23,7 @@ class MetaAwardFactory(factory.django.DjangoModelFactory):
 
     label = factory.Faker('sentence')
     description = factory.Faker('paragraph')
-    type = factory.fuzzy.FuzzyChoice(models.MetaAward.TYPE_CHOICES, getter=lambda c: c[0])
+    type = factory.fuzzy.FuzzyChoice(models.MetaAward.TYPE_CHOICES, getter=first)
     event = factory.SubFactory(EventFactory, main_event=True)
     task = factory.SubFactory(StaffTaskFactory)
 
