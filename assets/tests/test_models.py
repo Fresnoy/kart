@@ -1,30 +1,16 @@
 import pytest
 
-from assets.models import Gallery, Medium
-
-from .factories import MediumFactory
-
 
 @pytest.mark.django_db
-class TestModels:
-    """
-        Tests Assets Models
-    """
-    def setup(self):
-        self.medium = MediumFactory()
+class TestGalery:
+    def test_str(self, gallery):
+        gallery_str = str(gallery)
+        assert gallery.label in gallery_str
+        assert gallery.description in gallery_str
 
-    def test_gallery(self):
-        galleries = Gallery.objects.all()
-        assert galleries.count() == 1
 
-    def test_gallery_str(self):
-        assert self.medium.gallery.label in str(self.medium.gallery)
-        assert self.medium.gallery.description in str(self.medium.gallery)
-
-    def test_medium(self):
-        media = Medium.objects.all()
-        assert media.count() == 1
-
-    def test_medium_str(self):
-        assert self.medium.label in str(self.medium)
-        assert self.medium.description in str(self.medium)
+class TestMedium:
+    def test_str(self, medium):
+        medium_str = str(medium)
+        assert medium.label in medium_str
+        assert medium.description in medium_str
