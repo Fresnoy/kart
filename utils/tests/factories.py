@@ -16,13 +16,6 @@ class UserFactory(factory.django.DjangoModelFactory):
     username = factory.Faker('user_name')
 
 
-class AndyFactory(UserFactory):
-    email = "awarhola@pop.art"
-    first_name = "Andrew"
-    last_name = "Warhola"
-    username = "awarhol"
-
-
 class AdminFactory(UserFactory):
     is_superuser = True
     is_active = True

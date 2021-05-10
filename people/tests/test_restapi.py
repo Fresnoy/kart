@@ -8,7 +8,7 @@ from rest_framework.test import APIClient
 from people.models import FresnoyProfile
 from utils.tests.factories import UserFactory
 
-from .factories import AndyArtistFactory
+from .factories import ArtistFactory
 
 
 class UserEndPoint(TestCase):
@@ -104,7 +104,7 @@ class ArtistEndPoint(TestCase):
     Tests Artist's endpoint
     """
     def setUp(self):
-        self.artist = AndyArtistFactory()
+        self.artist = ArtistFactory()
 
         self.response = None
 

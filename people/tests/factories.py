@@ -1,6 +1,6 @@
 import factory
 
-from utils.tests.factories import UserFactory, AndyFactory
+from utils.tests.factories import UserFactory
 from .. import models
 
 
@@ -18,11 +18,6 @@ class ArtistFactory(factory.django.DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
     nickname = factory.Faker('name')
     bio_short_fr = factory.Faker('paragraph')
-
-
-class AndyArtistFactory(ArtistFactory):
-    user = factory.SubFactory(AndyFactory)
-    nickname = "Andy Warhol"
 
 
 class StaffFactory(factory.django.DjangoModelFactory):
