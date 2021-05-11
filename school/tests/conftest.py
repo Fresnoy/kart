@@ -1,27 +1,25 @@
 import pytest
 
+from utils.tests.conftest import *  # noqa
+
 from . import factories
 
 
 @pytest.fixture
-def promotion(django_db_setup, django_db_blocker):
-    with django_db_blocker.unblock():
-        return factories.PromotionFactory()
+def promotion(db_ready):
+    return factories.PromotionFactory()
 
 
 @pytest.fixture
-def student(django_db_setup, django_db_blocker):
-    with django_db_blocker.unblock():
-        return factories.StudentFactory()
+def student(db_ready):
+    return factories.StudentFactory()
 
 
 @pytest.fixture
-def student_application_setup(django_db_setup, django_db_blocker):
-    with django_db_blocker.unblock():
-        return factories.StudentApplicationSetupFactory()
+def student_application_setup(db_ready):
+    return factories.StudentApplicationSetupFactory()
 
 
 @pytest.fixture
-def student_application(django_db_setup, django_db_blocker):
-    with django_db_blocker.unblock():
-        return factories.StudentApplicationFactory()
+def student_application(db_ready):
+    return factories.StudentApplicationFactory()

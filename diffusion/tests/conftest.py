@@ -1,33 +1,30 @@
 import pytest
 
+from utils.tests.conftest import *  # noqa
+
 from . import factories
 
 
 @pytest.fixture
-def place(django_db_setup, django_db_blocker):
-    with django_db_blocker.unblock():
-        return factories.PlaceFactory()
+def place(db_ready):
+    return factories.PlaceFactory()
 
 
 @pytest.fixture
-def meta_award(django_db_setup, django_db_blocker):
-    with django_db_blocker.unblock():
-        return factories.MetaAwardFactory()
+def meta_award(db_ready):
+    return factories.MetaAwardFactory()
 
 
 @pytest.fixture
-def award(django_db_setup, django_db_blocker):
-    with django_db_blocker.unblock():
-        return factories.AwardFactory()
+def award(db_ready):
+    return factories.AwardFactory()
 
 
 @pytest.fixture
-def meta_event(django_db_setup, django_db_blocker):
-    with django_db_blocker.unblock():
-        return factories.MetaEventFactory()
+def meta_event(db_ready):
+    return factories.MetaEventFactory()
 
 
 @pytest.fixture
-def diffusion(django_db_setup, django_db_blocker):
-    with django_db_blocker.unblock():
-        return factories.DiffusionFactory()
+def diffusion(db_ready):
+    return factories.DiffusionFactory()

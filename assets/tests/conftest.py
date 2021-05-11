@@ -1,15 +1,15 @@
 import pytest
 
+from utils.tests.conftest import *  # noqa
+
 from . import factories
 
 
 @pytest.fixture
-def gallery(django_db_setup, django_db_blocker):
-    with django_db_blocker.unblock():
-        return factories.GalleryFactory()
+def gallery(db_ready):
+    return factories.GalleryFactory()
 
 
 @pytest.fixture
-def medium(django_db_setup, django_db_blocker):
-    with django_db_blocker.unblock():
-        return factories.MediumFactory()
+def medium(db_ready):
+    return factories.MediumFactory()
