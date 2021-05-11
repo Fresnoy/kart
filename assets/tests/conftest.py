@@ -1,5 +1,6 @@
 import pytest
 
+from school.tests.conftest import *  # noqa
 from utils.tests.conftest import *  # noqa
 
 from . import factories
