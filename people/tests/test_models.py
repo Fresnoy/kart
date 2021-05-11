@@ -27,7 +27,9 @@ class TestArtist:
     def test_str_without_nickname(self, artist):
         artist.nickname = ""
         artist.save()
-        assert str(artist.user) in str(artist)
+        artist_str = str(artist)
+        assert artist.user.first_name in artist_str
+        assert artist.user.last_name in artist_str
 
 
 @pytest.mark.django_db
