@@ -40,6 +40,7 @@ def vimeo_get_upload_token(request):
 
         if(user):
             setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
+            # FIXME: setup peut être nul à ce stade
             vimeo = {
                 'name': setup.video_service_name,
                 'url': setup.video_service_url,
