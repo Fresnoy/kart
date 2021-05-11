@@ -9,6 +9,7 @@ class TestGalery:
         assert gallery.description in gallery_str
 
 
+@pytest.mark.django_db
 class TestMedium:
     def test_str(self, medium):
         medium_str = str(medium)
