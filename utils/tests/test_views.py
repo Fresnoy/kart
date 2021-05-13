@@ -2,7 +2,7 @@ import pytest
 
 from django.urls import reverse
 
-from utils.tests.utils import obtain_jwt_token
+from utils.tests.utils import obtain_jwt_token, validate_jwt_token
 
 
 @pytest.mark.django_db
@@ -28,7 +28,10 @@ class TestJWTToken:
 
         assert response.status_code == expected
         if expected == 200:
-            assert 'token' in response.json()
+            json_response = response.json()
+            assert 'token' in json_response
+            assert validate_jwt_token(json_response['token'], user)
 
     def test_obtain_jwt_token(self, client, user):
-        assert obtain_jwt_token(user)
+        jwt = obtain_jwt_token(user)['token']
+        assert validate_jwt_token(jwt, user)
