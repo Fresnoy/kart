@@ -62,6 +62,7 @@ class UserViewSet(viewsets.ModelViewSet):
             group = Group.objects.get(name='School Application')
             user.groups.add(group)
             # send activation email
+            # FIXME: adding a work proof to avoid dumb spambots
             send_activation_email(request, user)
 
             return Response(user.id, status=status.HTTP_202_ACCEPTED)
