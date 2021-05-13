@@ -1,5 +1,7 @@
 import factory
 
+from django.utils import timezone
+
 from people.tests.factories import OrganizationFactory
 from production.tests.factories import ArtworkFactory, EventFactory, StaffTaskFactory
 from utils.tests.utils import first
@@ -34,7 +36,7 @@ class AwardFactory(factory.django.DjangoModelFactory):
 
     meta_award = factory.SubFactory(MetaAwardFactory)
     event = factory.SubFactory(EventFactory)
-    date = factory.Faker('date_time_this_year')
+    date = factory.Faker('date_time_this_year', tzinfo=timezone.utc)
 
     @factory.post_generation
     def artworks(self, create, extracted, **kwargs):

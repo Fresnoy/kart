@@ -1,6 +1,8 @@
 import factory
 import factory.fuzzy
 
+from django.utils import timezone
+
 from people.tests.factories import StaffFactory, OrganizationFactory
 from utils.tests.utils import first
 
@@ -54,7 +56,7 @@ class ArtworkFactory(ProductionFactory):
     class Meta:
         model = models.Artwork
 
-    production_date = factory.Faker('date_time_this_month')
+    production_date = factory.Faker('date_time_this_month', tzinfo=timezone.utc)
 
     @factory.post_generation
     def authors(self, create, extracted, **kwargs):
@@ -93,7 +95,7 @@ class EventFactory(ProductionFactory):
         model = models.Event
 
     type = factory.fuzzy.FuzzyChoice(models.Event.TYPE_CHOICES, getter=first)
-    starting_date = factory.Faker('date_time_this_month')
+    starting_date = factory.Faker('date_time_this_month', tzinfo=timezone.utc)
 
     @factory.post_generation
     def subevents(self, create, extracted, **kwargs):
