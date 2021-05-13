@@ -1,5 +1,7 @@
 import pytest
 
+from django.contrib.auth.models import Group, Permission
+
 from . import factories
 
 
@@ -28,3 +30,26 @@ def admin(db_ready):
 def joker(db_ready):
     # return a user-like object nonexistant in db
     return factories.UserFactory.stub()
+
+
+@pytest.fixture
+def school_application_group(db_ready):
+    # FIXME: c'est ce que je comprends de la fixture groups.json
+    # FIXME: amha ça mériterais une migration
+    perms = [
+        'view_staff',
+        'delete_staff',
+        'add_itinerary',
+        'change_itinerary',
+        'delete_itinerary',
+        'view_itinerary',
+        'view_organizationtask',
+        'delete_organizationtask',
+        'add_production',
+        'add_taggeditem',
+        'change_taggeditem',
+    ]
+
+    group = Group.objects.create(name='School Application')
+    group.permissions.set(Permission.objects.filter(codename__in=perms))
+    return group

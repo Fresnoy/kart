@@ -16,7 +16,7 @@ def student(db_ready):
 
 
 @pytest.fixture
-def student_application_setup(db_ready):
+def student_application_setup(db_ready, school_application_group):
     return factories.StudentApplicationSetupFactory()
 
 

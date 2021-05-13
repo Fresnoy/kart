@@ -125,6 +125,7 @@ def activate(request, uidb36, token):
             return HttpResponseRedirect(change_password_link)
 
         else:
+            # FIXME: if activation is already_ok the previous branch is taken
             # activation already ok
             activation_already_ok = render_to_string('account/activation_already_ok.html', {
                                                      'username': user.username,
