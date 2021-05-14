@@ -16,8 +16,8 @@ def meta_award(db_ready):
 
 
 @pytest.fixture
-def award(db_ready):
-    return factories.AwardFactory()
+def award(db_ready, artwork):
+    return factories.AwardFactory(artwork=[artwork])
 
 
 @pytest.fixture
