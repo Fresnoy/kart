@@ -62,6 +62,11 @@ def installation(db_ready, artist):
 
 
 @pytest.fixture
+def performance(db_ready, artist):
+    return factories.PerformanceFactory(authors=[artist])
+
+
+@pytest.fixture
 def event(db_ready):
     return factories.EventFactory()
 
@@ -74,3 +79,8 @@ def main_event(db_ready, event):
 @pytest.fixture
 def itinerary(db_ready):
     return factories.ItineraryFactory()
+
+
+@pytest.fixture
+def exhibition(db_ready):
+    return factories.EventFactory(type='EXHIB')

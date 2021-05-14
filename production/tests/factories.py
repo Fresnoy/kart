@@ -91,6 +91,11 @@ class InstallationFactory(ArtworkFactory):
         model = models.Installation
 
 
+class PerformanceFactory(ArtworkFactory):
+    class Meta:
+        model = models.Performance
+
+
 class EventFactory(ProductionFactory):
     class Meta:
         model = models.Event
