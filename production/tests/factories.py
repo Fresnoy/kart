@@ -3,6 +3,7 @@ import factory.fuzzy
 
 from django.utils import timezone
 
+from diffusion.tests.factories_alt import PlaceFactory
 from people.tests.factories import StaffFactory, OrganizationFactory
 from utils.tests.utils import first
 
@@ -96,6 +97,7 @@ class EventFactory(ProductionFactory):
 
     type = factory.fuzzy.FuzzyChoice(models.Event.TYPE_CHOICES, getter=first)
     starting_date = factory.Faker('date_time_this_month', tzinfo=timezone.utc)
+    place = factory.SubFactory(PlaceFactory)
 
     @factory.post_generation
     def subevents(self, create, extracted, **kwargs):

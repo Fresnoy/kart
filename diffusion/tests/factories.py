@@ -2,21 +2,11 @@ import factory
 
 from django.utils import timezone
 
-from people.tests.factories import OrganizationFactory
 from production.tests.factories import ArtworkFactory, EventFactory, StaffTaskFactory
 from utils.tests.utils import first
 
 from .. import models
-
-
-class PlaceFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = models.Place
-
-    name = factory.Faker('sentence')
-    description = factory.Faker('paragraph')
-    address = factory.Faker('street_address')
-    organization = factory.SubFactory(OrganizationFactory)
+from .factories_alt import PlaceFactory  # noqa
 
 
 class MetaAwardFactory(factory.django.DjangoModelFactory):
