@@ -29,20 +29,20 @@ class AwardFactory(factory.django.DjangoModelFactory):
     date = factory.Faker('date_time_this_year', tzinfo=timezone.utc)
 
     @factory.post_generation
-    def artworks(self, create, extracted, **kwargs):
+    def artwork(self, create, extracted, **kwargs):
         if extracted:
             # A list of artworks were passed in, use them
             for artwork in extracted:
-                self.artworks.add(artwork)
+                self.artwork.add(artwork)
                 for artist in artwork.authors.all():
-                    self.artists.add(artist)
+                    self.artist.add(artist.user)
 
     @factory.post_generation
-    def artists(self, create, extracted, **kwargs):
+    def artist(self, create, extracted, **kwargs):
         if extracted:
             # A list of artists were passed in, use them
             for artist in extracted:
-                self.artists.add(artist)
+                self.artist.add(artist.user)  # FIXME: artists are user?
 
 
 class MetaEventFactory(factory.django.DjangoModelFactory):
