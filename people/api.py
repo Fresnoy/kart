@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from django.contrib.auth.models import User
 from tastypie import fields
 from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
@@ -6,9 +7,16 @@ from common.api import WebsiteResource
 from .models import Artist, Staff, Organization
 
 
+# django-guardian anonymous user
+try:
+    ANONYMOUS_USER_NAME = settings.ANONYMOUS_USER_NAME
+except AttributeError:
+    ANONYMOUS_USER_NAME = "AnonymousUser"
+
+
 class UserResource(ModelResource):
     class Meta:
-        queryset = User.objects.exclude(pk=-1)  # Exclude anonymous user
+        queryset = User.objects.exclude(username=ANONYMOUS_USER_NAME)  # Exclude anonymous user
         detail_uri_name = 'username'
         resource_name = 'people/user'
         fields = ['username', 'first_name', 'last_name', 'id', ]
