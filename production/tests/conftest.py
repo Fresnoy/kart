@@ -37,8 +37,18 @@ def film_genre(db_ready):
 
 
 @pytest.fixture
+def film(db_ready, artist):
+    return factories.FilmFactory(authors=[artist])
+
+
+@pytest.fixture
 def installation_genre(db_ready):
     return factories.InstallationGenreFactory()
+
+
+@pytest.fixture
+def installation(db_ready, artist):
+    return factories.InstallationFactory(authors=[artist])
 
 
 @pytest.fixture
