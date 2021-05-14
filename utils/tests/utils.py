@@ -57,11 +57,14 @@ class HelpTestForModelRessource:
 
         return method not in self.methods_behavior or self.methods_behavior[method] != 200
 
-    def prepare_request(self, client, user_role, data=None):
+    def prepare_request(self, client, user_role, data=None, json=True):
         if user_role == 'user':
             client.force_login(self.requestor())
 
-        kwargs = {'content_type': 'application/json'}
+        kwargs = {}
+        if json:
+            kwargs['content_type'] = 'application/json'
+
         if data is not None:
             kwargs['data'] = data
 
@@ -161,3 +164,51 @@ class HelpTestForReadOnlyModelRessource(HelpTestForModelRessource):
         'post': 501,
         'delete': 401,
     }
+
+
+class FilterModelRessourceMixin:
+
+    search_field = None
+
+    @pytest.mark.parametrize('user_role', HelpTestForModelRessource._user_roles)
+    def test_search(self, client, user_role, request):
+        self.setup_fixtures(request)
+
+        data = {self.search_field: getattr(self.target(), self.search_field)}
+        kwargs = self.prepare_request(client, user_role, data)
+        response = client.get(self.base_url, **kwargs)
+
+        if self.thats_all_folk('list', response):
+            return
+
+        answer = response.json()
+
+        assert "meta" in answer
+        assert "objects" in answer
+        assert len(answer["objects"]) == 1
+
+        for field in self.expected_fields:
+            assert field in answer["objects"][0]
+
+
+class HaystaskSearchModelRessourceMixin:
+
+    search_suffix = '/search'
+    search_param = 'q'
+    search_field = None
+
+    @pytest.mark.parametrize('user_role', HelpTestForModelRessource._user_roles)
+    def test_haystack_search(self, client, user_role, request):
+        self.setup_fixtures(request)
+
+        data = {self.search_param: getattr(self.target(), self.search_field)}
+        kwargs = self.prepare_request(client, user_role, data, json=False)
+        response = client.get(self.base_url + self.search_suffix, **kwargs)
+
+        if self.thats_all_folk('list', response):
+            return
+
+        answer = response.json()
+
+        assert "objects" in answer
+        assert len(answer["objects"]) == 0  # FIXME: currently haystack doesn't work in tests

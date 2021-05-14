@@ -1,7 +1,7 @@
 import pytest
 
 from utils.tests.conftest import *  # noqa
-from utils.tests.utils import HelpTestForReadOnlyModelRessource
+from utils.tests.utils import HaystaskSearchModelRessourceMixin, HelpTestForReadOnlyModelRessource
 
 from .. import api
 
@@ -23,13 +23,15 @@ class TestPromotionRessource(HelpTestForReadOnlyModelRessource):
 
 
 @pytest.mark.django_db
-class TestStudentRessource(HelpTestForReadOnlyModelRessource):
+class TestStudentRessource(HaystaskSearchModelRessourceMixin, HelpTestForReadOnlyModelRessource):
     model = api.StudentResource
 
     fixtures = ['student']
 
     expected_list_size = 1
     expected_fields = ['number', 'promotion', 'artist']
+
+    search_field = 'number'
 
     def target(self):
         return self.student

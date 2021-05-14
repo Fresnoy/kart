@@ -2,7 +2,11 @@ import pytest
 
 from diffusion.tests.conftest import *  # noqa
 from utils.tests.conftest import *  # noqa
-from utils.tests.utils import HelpTestForReadOnlyModelRessource
+from utils.tests.utils import (
+    FilterModelRessourceMixin,
+    HaystaskSearchModelRessourceMixin,
+    HelpTestForReadOnlyModelRessource,
+)
 
 from .. import api
 
@@ -24,13 +28,19 @@ class TestStaffTaskRessource(HelpTestForReadOnlyModelRessource):
 
 
 @pytest.mark.django_db
-class TestArtworkRessource(HelpTestForReadOnlyModelRessource):
+class TestArtworkRessource(
+    HaystaskSearchModelRessourceMixin,
+    FilterModelRessourceMixin,
+    HelpTestForReadOnlyModelRessource,
+):
     model = api.ArtworkResource
 
     fixtures = ['user', 'installation', 'film', 'award']
 
     expected_list_size = 2
     expected_fields = ['production_date', 'authors', 'events']
+
+    search_field = 'title'
 
     def target(self):
         return self.installation
