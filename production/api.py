@@ -89,6 +89,7 @@ class ArtworkResource(AbstractArtworkResource):
         # cache = SimpleCache(timeout=10)
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
+    # FIXME: events should be with null=True in accordance with Artwork definition
     events = fields.ToManyField('production.api.EventResource', 'events', blank=True, full=False)
     award = fields.ToManyField('diffusion.api.AwardResource', 'award', blank=True, full=False)
 

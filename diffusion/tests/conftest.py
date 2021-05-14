@@ -1,5 +1,6 @@
 import pytest
 
+from production.tests.conftest import *  # noqa
 from utils.tests.conftest import *  # noqa
 
 from . import factories
@@ -16,8 +17,8 @@ def meta_award(db_ready):
 
 
 @pytest.fixture
-def award(db_ready, artwork):
-    return factories.AwardFactory(artwork=[artwork])
+def award(db_ready, film):
+    return factories.AwardFactory(artwork=[film])
 
 
 @pytest.fixture
