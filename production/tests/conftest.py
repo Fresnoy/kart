@@ -22,6 +22,16 @@ def production(db_ready):
 
 
 @pytest.fixture
+def organization_task(db_ready):
+    return factories.OrganizationTaskFactory()
+
+
+@pytest.fixture
+def production_organization_task(db_ready):
+    return factories.ProductionOrganizationTaskFactory()
+
+
+@pytest.fixture
 def anonymous_artwork(db_ready):
     return factories.ArtworkFactory(authors=[])
 

@@ -18,12 +18,12 @@ class TaskFactory(factory.django.DjangoModelFactory):
     description = factory.Faker('paragraph')
 
 
-class StaffTaskFactory(factory.django.DjangoModelFactory):
+class StaffTaskFactory(TaskFactory):
     class Meta:
         model = models.StaffTask
 
 
-class OrganizationTaskFactory(factory.django.DjangoModelFactory):
+class OrganizationTaskFactory(TaskFactory):
     class Meta:
         model = models.OrganizationTask
 
