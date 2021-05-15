@@ -1,5 +1,3 @@
-import pytest
-
 from django.test import Client
 from django.urls import reverse
 from rest_framework_jwt.settings import api_settings
@@ -26,6 +24,16 @@ def validate_jwt_token(token, user):
     jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
     infos = jwt_decode_handler(token)
     return infos and 'user_id' in infos and User.objects.filter(pk=infos['user_id']).exists()
+
+
+def parametrize_user_roles(metafunc):
+    """
+    Dynamic handling for parametrization.
+    Allow class driven behavior using orverloading, whereas
+    @pytest.mark.parametrize only act as collect time.
+    """
+    if hasattr(metafunc.cls, '_user_roles') and "user_role" in metafunc.fixturenames:
+        metafunc.parametrize('user_role', metafunc.cls._user_roles)
 
 
 class HelpTestForModelRessource:
@@ -74,7 +82,6 @@ class HelpTestForModelRessource:
 
         return kwargs
 
-    @pytest.mark.parametrize('user_role', _user_roles)
     def test_list(self, client, user_role, request):
         self.setup_fixtures(request)
 
@@ -94,7 +101,6 @@ class HelpTestForModelRessource:
             for field in self.expected_fields:
                 assert field in ressource
 
-    @pytest.mark.parametrize('user_role', _user_roles)
     def test_get(self, client, user_role, request):
         self.setup_fixtures(request)
 
@@ -109,7 +115,6 @@ class HelpTestForModelRessource:
         for field in self.expected_fields:
             assert field in answer
 
-    @pytest.mark.parametrize('user_role', _user_roles)
     def test_post(self, client, user_role, request):
         self.setup_fixtures(request)
 
@@ -120,7 +125,6 @@ class HelpTestForModelRessource:
         if self.thats_all_folk('post', response):
             return
 
-    @pytest.mark.parametrize('user_role', _user_roles)
     def test_put(self, client, user_role, request):
         self.setup_fixtures(request)
 
@@ -131,7 +135,6 @@ class HelpTestForModelRessource:
         if self.thats_all_folk('put', response):
             return
 
-    @pytest.mark.parametrize('user_role', _user_roles)
     def test_patch(self, client, user_role, request):
         self.setup_fixtures(request)
 
@@ -142,7 +145,6 @@ class HelpTestForModelRessource:
         if self.thats_all_folk('patch', response):
             return
 
-    @pytest.mark.parametrize('user_role', _user_roles)
     def test_delete(self, client, user_role, request):
         self.setup_fixtures(request)
 
@@ -170,7 +172,6 @@ class FilterModelRessourceMixin:
 
     search_field = None
 
-    @pytest.mark.parametrize('user_role', HelpTestForModelRessource._user_roles)
     def test_search(self, client, user_role, request):
         self.setup_fixtures(request)
 
@@ -197,7 +198,6 @@ class HaystaskSearchModelRessourceMixin:
     search_param = 'q'
     search_field = None
 
-    @pytest.mark.parametrize('user_role', HelpTestForModelRessource._user_roles)
     def test_haystack_search(self, client, user_role, request):
         self.setup_fixtures(request)
 

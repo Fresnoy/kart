@@ -6,9 +6,15 @@ from utils.tests.utils import (
     FilterModelRessourceMixin,
     HaystaskSearchModelRessourceMixin,
     HelpTestForReadOnlyModelRessource,
+    parametrize_user_roles,
 )
 
 from .. import api
+
+
+def pytest_generate_tests(metafunc):
+    # pytest hook; called once per each test function
+    parametrize_user_roles(metafunc)
 
 
 @pytest.mark.django_db

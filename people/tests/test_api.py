@@ -3,9 +3,14 @@ import pytest
 from common.tests.conftest import *  # noqa
 from diffusion.tests.conftest import *  # noqa
 from production.tests.conftest import *  # noqa
-from utils.tests.utils import HelpTestForReadOnlyModelRessource
+from utils.tests.utils import HelpTestForReadOnlyModelRessource, parametrize_user_roles
 
 from .. import api
+
+
+def pytest_generate_tests(metafunc):
+    # pytest hook; called once per each test function
+    parametrize_user_roles(metafunc)
 
 
 @pytest.mark.django_db

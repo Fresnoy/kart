@@ -1,9 +1,18 @@
 import pytest
 
 from utils.tests.conftest import *  # noqa
-from utils.tests.utils import HaystaskSearchModelRessourceMixin, HelpTestForReadOnlyModelRessource
+from utils.tests.utils import (
+    HaystaskSearchModelRessourceMixin,
+    HelpTestForReadOnlyModelRessource,
+    parametrize_user_roles,
+)
 
 from .. import api
+
+
+def pytest_generate_tests(metafunc):
+    # pytest hook; called once per each test function
+    parametrize_user_roles(metafunc)
 
 
 @pytest.mark.django_db
@@ -39,7 +48,6 @@ class TestStudentRessource(HaystaskSearchModelRessourceMixin, HelpTestForReadOnl
     def requestor(self):
         return self.student.user
 
-    @pytest.mark.parametrize('user_role', HelpTestForReadOnlyModelRessource._user_roles)
     def test_user__last_name__istartswith_search(self, client, user_role, request):
         self.setup_fixtures(request)
 
