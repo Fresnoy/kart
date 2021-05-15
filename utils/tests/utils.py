@@ -1,3 +1,4 @@
+from django.db.models.constants import LOOKUP_SEP
 from django.test import Client
 from django.urls import reverse
 from rest_framework_jwt.settings import api_settings
@@ -49,6 +50,8 @@ class AbstractHelpTestForAPI:
     }
 
     mutate_fields = []
+    hyperlinked_fields = {}
+    renamed_fields = {}
 
     _user_roles = [None, 'user', 'jwt']
 
@@ -60,11 +63,15 @@ class AbstractHelpTestForAPI:
         for fixture_name in self.fixtures:
             setattr(self, fixture_name, request.getfixturevalue(fixture_name))
 
-    def thats_all_folk(self, method, response):
+    def thats_all_folk(self, method, response, user_role):
         if method in self.methods_behavior:
-            assert response.status_code == self.methods_behavior[method]
-
-        return method not in self.methods_behavior or self.methods_behavior[method] != 200
+            expected = self.methods_behavior[method]
+            if not isinstance(expected, int):
+                expected = expected[user_role]
+            assert response.status_code == expected
+            return response.status_code not in [200, 204]
+        else:
+            return True
 
     def prepare_request(self, client, user_role, data=None, json=True):
         if user_role == 'user':
@@ -79,9 +86,30 @@ class AbstractHelpTestForAPI:
 
         if user_role == 'jwt':
             jwt = obtain_jwt_token(self.requestor())
-            kwargs['HTTP_AUTHORIZATION'] = 'Bearer {}'.format(jwt['token'])
+            kwargs['HTTP_AUTHORIZATION'] = 'JWT {}'.format(jwt['token'])
 
         return kwargs
+
+    def get_data(self, field):
+        if field in self.hyperlinked_fields:
+            return reverse(
+                '{}-detail'.format(self.hyperlinked_fields[field]),
+                kwargs={'pk': getattr(self.target(), field).pk},
+            )
+        elif field in self.renamed_fields:
+            return getattr(self.target(), self.renamed_fields[field])
+        else:
+            return getattr(self.target(), field)
+
+    def check_expected_fields(self, obj):
+        for field in self.expected_fields:
+            if LOOKUP_SEP in field:
+                next_obj = obj
+                for lookup_field in field.split(LOOKUP_SEP):
+                    assert lookup_field in next_obj
+                    next_obj = next_obj.get(lookup_field)
+            else:
+                assert field in obj
 
     def test_list(self, client, user_role, request):
         self.setup_fixtures(request)
@@ -89,7 +117,7 @@ class AbstractHelpTestForAPI:
         kwargs = self.prepare_request(client, user_role)
         response = client.get(self.base_url, **kwargs)
 
-        if self.thats_all_folk('list', response):
+        if self.thats_all_folk('list', response, user_role):
             return
 
         answer = response.json()
@@ -102,42 +130,41 @@ class AbstractHelpTestForAPI:
         kwargs = self.prepare_request(client, user_role)
         response = client.get('{}/{}'.format(self.base_url, self.target_uri_suffix()), **kwargs)
 
-        if self.thats_all_folk('get', response):
+        if self.thats_all_folk('get', response, user_role):
             return
 
         answer = response.json()
 
-        for field in self.expected_fields:
-            assert field in answer
+        self.check_expected_fields(answer)
 
     def test_post(self, client, user_role, request):
         self.setup_fixtures(request)
 
-        data = {f: getattr(self.target(), f) for f in self.mutate_fields}
+        data = {f: self.get_data(f) for f in self.mutate_fields}
         kwargs = self.prepare_request(client, user_role, data)
         response = client.post('{}/{}'.format(self.base_url, self.target_uri_suffix()), **kwargs)
 
-        if self.thats_all_folk('post', response):
+        if self.thats_all_folk('post', response, user_role):
             return
 
     def test_put(self, client, user_role, request):
         self.setup_fixtures(request)
 
-        data = {f: getattr(self.target(), f) for f in self.mutate_fields}
+        data = {f: self.get_data(f) for f in self.put_fields}
         kwargs = self.prepare_request(client, user_role, data)
         response = client.put('{}/{}'.format(self.base_url, self.target_uri_suffix()), **kwargs)
 
-        if self.thats_all_folk('put', response):
+        if self.thats_all_folk('put', response, user_role):
             return
 
     def test_patch(self, client, user_role, request):
         self.setup_fixtures(request)
 
-        data = {f: getattr(self.target(), f) for f in self.mutate_fields}
+        data = {f: self.get_data(f) for f in self.mutate_fields}
         kwargs = self.prepare_request(client, user_role, data)
         response = client.patch('{}/{}'.format(self.base_url, self.target_uri_suffix()), **kwargs)
 
-        if self.thats_all_folk('patch', response):
+        if self.thats_all_folk('patch', response, user_role):
             return
 
     def test_delete(self, client, user_role, request):
@@ -146,8 +173,63 @@ class AbstractHelpTestForAPI:
         kwargs = self.prepare_request(client, user_role)
         response = client.delete('{}/{}'.format(self.base_url, self.target_uri_suffix()), **kwargs)
 
-        if self.thats_all_folk('delete', response):
+        if self.thats_all_folk('delete', response, user_role):
             return
+
+
+class HelpTestForModelViewSet(AbstractHelpTestForAPI):
+    """
+    Help to test interfaces to ModelViewSet (DRF)
+    """
+    url_prefix = "/v2"
+
+    _user_roles = [None, 'user', 'jwt']
+
+    methods_behavior = {
+        'list': {None: 403, 'user': 200, 'jwt': 200},
+        'get': {None: 403, 'user': 200, 'jwt': 200},
+        'patch': {None: 403, 'user': 403, 'jwt': 403},
+        'put': {None: 403, 'user': 403, 'jwt': 403},
+        'post': {None: 403, 'user': 403, 'jwt': 403},
+        'delete': {None: 403, 'user': 403, 'jwt': 403},
+    }
+
+    @property
+    def uri(self):
+        return self.viewset_name
+
+    def target_uri_suffix(self):
+        return self.target().pk
+
+    def validate_list(self, answer):
+        assert len(answer) == self.expected_list_size
+
+        for ressource in answer:
+            self.check_expected_fields(ressource)
+
+
+class IsAuthenticatedOrReadOnlyModelViewSetMixin:
+    methods_behavior = {
+        'list': 200,
+        'get': 200,
+        'patch': {None: 403, 'user': 200, 'jwt': 200},
+        'put': {None: 403, 'user': 200, 'jwt': 200},
+        'post': {None: 403, 'user': 405, 'jwt': 405},
+        'delete': {None: 403, 'user': 204, 'jwt': 204},
+    }
+
+
+class ReadOnlyModelViewSetMixin:
+    _user_roles = [None, 'user']
+
+    methods_behavior = {
+        'list': 200,
+        'get': 200,
+        'patch': 403,
+        'put': 403,
+        'post': 403,
+        'delete': 403,
+    }
 
 
 class HelpTestForModelRessource(AbstractHelpTestForAPI):
@@ -155,6 +237,10 @@ class HelpTestForModelRessource(AbstractHelpTestForAPI):
     Help to test interfaces to ModelResource (tastypie)
     """
     url_prefix = "/v1"
+
+    @property
+    def put_fields(self):
+        return self.mutate_fields
 
     @property
     def uri(self):
@@ -169,8 +255,7 @@ class HelpTestForModelRessource(AbstractHelpTestForAPI):
         assert len(answer["objects"]) == self.expected_list_size
 
         for ressource in answer["objects"]:
-            for field in self.expected_fields:
-                assert field in ressource
+            self.check_expected_fields(ressource)
 
 
 class HelpTestForReadOnlyModelRessource(HelpTestForModelRessource):
@@ -197,7 +282,7 @@ class FilterModelRessourceMixin:
         kwargs = self.prepare_request(client, user_role, data)
         response = client.get(self.base_url, **kwargs)
 
-        if self.thats_all_folk('list', response):
+        if self.thats_all_folk('list', response, user_role):
             return
 
         answer = response.json()
@@ -206,8 +291,7 @@ class FilterModelRessourceMixin:
         assert "objects" in answer
         assert len(answer["objects"]) == 1
 
-        for field in self.expected_fields:
-            assert field in answer["objects"][0]
+        self.check_expected_fields(answer["objects"][0])
 
 
 class HaystackSearchModelRessourceMixin:
@@ -223,7 +307,7 @@ class HaystackSearchModelRessourceMixin:
         kwargs = self.prepare_request(client, user_role, data, json=False)
         response = client.get(self.base_url + self.search_suffix, **kwargs)
 
-        if self.thats_all_folk('list', response):
+        if self.thats_all_folk('list', response, user_role):
             return
 
         answer = response.json()

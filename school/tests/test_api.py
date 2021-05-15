@@ -55,7 +55,7 @@ class TestStudentRessource(HaystackSearchModelRessourceMixin, HelpTestForReadOnl
         kwargs = self.prepare_request(client, user_role, data)
         response = client.get(self.base_url, **kwargs)
 
-        if self.thats_all_folk('list', response):
+        if self.thats_all_folk('list', response, user_role):
             return
 
         answer = response.json()
