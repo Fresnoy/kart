@@ -2,7 +2,7 @@
 from django.urls import re_path
 
 from django.core.paginator import Paginator, InvalidPage
-from django.shortcuts import Http404
+from django.http import Http404, HttpResponseBadRequest
 
 
 from haystack.query import SearchQuerySet
@@ -127,6 +127,8 @@ class ArtworkResource(AbstractArtworkResource):
 
         try:
             page = paginator.page(int(request.GET.get('page', 1)))
+        except ValueError:
+            return HttpResponseBadRequest("Bad page number.")
         except InvalidPage:
             raise Http404("Sorry, no results on that page.")
 
