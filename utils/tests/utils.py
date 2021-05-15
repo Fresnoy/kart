@@ -211,7 +211,7 @@ class HaystackSearchModelRessourceMixin:
         answer = response.json()
 
         assert "objects" in answer
-        assert len(answer["objects"]) == 0  # FIXME: currently haystack doesn't work in tests
+        assert len(answer["objects"]) == 1
 
         kwargs['data']['page'] = '-1'
         response = client.get(self.base_url + self.search_suffix, **kwargs)
