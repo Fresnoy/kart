@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
 
@@ -28,8 +29,15 @@ from .serializers import (
 from .utils import send_activation_email, send_account_information_email
 
 
+# django-guardian anonymous user
+try:
+    ANONYMOUS_USER_NAME = settings.ANONYMOUS_USER_NAME
+except AttributeError:
+    ANONYMOUS_USER_NAME = "AnonymousUser"
+
+
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
+    queryset = User.objects.exclude(username=ANONYMOUS_USER_NAME)
     # serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
