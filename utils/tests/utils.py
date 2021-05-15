@@ -212,3 +212,11 @@ class HaystackSearchModelRessourceMixin:
 
         assert "objects" in answer
         assert len(answer["objects"]) == 0  # FIXME: currently haystack doesn't work in tests
+
+        kwargs['data']['page'] = '-1'
+        response = client.get(self.base_url + self.search_suffix, **kwargs)
+        assert response.status_code == 404
+
+        kwargs['data']['page'] = 'none'
+        response = client.get(self.base_url + self.search_suffix, **kwargs)
+        assert response.status_code == 400
