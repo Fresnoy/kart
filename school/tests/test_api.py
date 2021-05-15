@@ -2,7 +2,7 @@ import pytest
 
 from utils.tests.conftest import *  # noqa
 from utils.tests.utils import (
-    HaystaskSearchModelRessourceMixin,
+    HaystackSearchModelRessourceMixin,
     HelpTestForReadOnlyModelRessource,
     parametrize_user_roles,
 )
@@ -32,7 +32,7 @@ class TestPromotionRessource(HelpTestForReadOnlyModelRessource):
 
 
 @pytest.mark.django_db
-class TestStudentRessource(HaystaskSearchModelRessourceMixin, HelpTestForReadOnlyModelRessource):
+class TestStudentRessource(HaystackSearchModelRessourceMixin, HelpTestForReadOnlyModelRessource):
     model = api.StudentResource
 
     fixtures = ['student']

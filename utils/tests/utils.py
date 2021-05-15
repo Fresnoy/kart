@@ -192,7 +192,7 @@ class FilterModelRessourceMixin:
             assert field in answer["objects"][0]
 
 
-class HaystaskSearchModelRessourceMixin:
+class HaystackSearchModelRessourceMixin:
 
     search_suffix = '/search'
     search_param = 'q'
