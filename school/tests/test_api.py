@@ -17,7 +17,7 @@ def pytest_generate_tests(metafunc):
 
 @pytest.mark.django_db
 class TestPromotionRessource(HelpTestForReadOnlyModelRessource):
-    model = api.PromotionResource
+    resource = api.PromotionResource
 
     fixtures = ['user', 'promotion']
 
@@ -33,7 +33,7 @@ class TestPromotionRessource(HelpTestForReadOnlyModelRessource):
 
 @pytest.mark.django_db
 class TestStudentRessource(HaystackSearchModelRessourceMixin, HelpTestForReadOnlyModelRessource):
-    model = api.StudentResource
+    resource = api.StudentResource
 
     fixtures = ['student']
 
@@ -67,7 +67,7 @@ class TestStudentRessource(HaystackSearchModelRessourceMixin, HelpTestForReadOnl
 
 @pytest.mark.django_db
 class TestStudentApplicationRessource(HelpTestForReadOnlyModelRessource):
-    model = api.StudentApplicationResource
+    resource = api.StudentApplicationResource
 
     fixtures = ['student_application']
 

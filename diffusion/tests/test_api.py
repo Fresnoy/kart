@@ -14,7 +14,7 @@ def pytest_generate_tests(metafunc):
 
 @pytest.mark.django_db
 class TestPlaceRessource(HelpTestForReadOnlyModelRessource):
-    model = api.PlaceResource
+    resource = api.PlaceResource
 
     fixtures = ['user', 'place']
 
@@ -30,7 +30,7 @@ class TestPlaceRessource(HelpTestForReadOnlyModelRessource):
 
 @pytest.mark.django_db
 class TestAwardRessource(HelpTestForReadOnlyModelRessource):
-    model = api.AwardResource
+    resource = api.AwardResource
 
     fixtures = ['award', 'artist', 'artwork']
 
@@ -46,7 +46,7 @@ class TestAwardRessource(HelpTestForReadOnlyModelRessource):
 
 @pytest.mark.django_db
 class TestMetaAwardRessource(HelpTestForReadOnlyModelRessource):
-    model = api.MetaAwardResource
+    resource = api.MetaAwardResource
 
     fixtures = ['meta_award', 'user']
 

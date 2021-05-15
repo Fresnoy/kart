@@ -19,7 +19,7 @@ def pytest_generate_tests(metafunc):
 
 @pytest.mark.django_db
 class TestStaffTaskRessource(HelpTestForReadOnlyModelRessource):
-    model = api.StaffTaskResource
+    resource = api.StaffTaskResource
 
     fixtures = ['user', 'staff_task']
 
@@ -39,7 +39,7 @@ class TestArtworkRessource(
     FilterModelRessourceMixin,
     HelpTestForReadOnlyModelRessource,
 ):
-    model = api.ArtworkResource
+    resource = api.ArtworkResource
 
     fixtures = ['user', 'installation', 'film', 'award']
 
@@ -57,7 +57,7 @@ class TestArtworkRessource(
 
 @pytest.mark.django_db
 class TestInstallationResource(HelpTestForReadOnlyModelRessource):
-    model = api.InstallationResource
+    resource = api.InstallationResource
 
     fixtures = ['user', 'installation']
 
@@ -73,7 +73,7 @@ class TestInstallationResource(HelpTestForReadOnlyModelRessource):
 
 @pytest.mark.django_db
 class TestFilmResource(HelpTestForReadOnlyModelRessource):
-    model = api.FilmResource
+    resource = api.FilmResource
 
     fixtures = ['user', 'film']
 
@@ -89,7 +89,7 @@ class TestFilmResource(HelpTestForReadOnlyModelRessource):
 
 @pytest.mark.django_db
 class TestPerformanceResource(HelpTestForReadOnlyModelRessource):
-    model = api.PerformanceResource
+    resource = api.PerformanceResource
 
     fixtures = ['user', 'performance']
 
@@ -105,7 +105,7 @@ class TestPerformanceResource(HelpTestForReadOnlyModelRessource):
 
 @pytest.mark.django_db
 class TestEventResource(HelpTestForReadOnlyModelRessource):
-    model = api.EventResource
+    resource = api.EventResource
 
     fixtures = ['user', 'event']
 
@@ -121,7 +121,7 @@ class TestEventResource(HelpTestForReadOnlyModelRessource):
 
 @pytest.mark.django_db
 class TestItineraryResource(HelpTestForReadOnlyModelRessource):
-    model = api.ItineraryResource
+    resource = api.ItineraryResource
 
     fixtures = ['user', 'itinerary']
 
@@ -137,7 +137,7 @@ class TestItineraryResource(HelpTestForReadOnlyModelRessource):
 
 @pytest.mark.django_db
 class TestExhibitionResource(TestEventResource):
-    model = api.ExhibitionResource
+    resource = api.ExhibitionResource
 
     fixtures = ['user', 'exhibition']
 

@@ -15,7 +15,7 @@ def pytest_generate_tests(metafunc):
 
 @pytest.mark.django_db
 class TestUserRessource(HelpTestForReadOnlyModelRessource):
-    model = api.UserResource
+    resource = api.UserResource
 
     fixtures = ['user', 'profile']
 
@@ -45,7 +45,7 @@ class TestUserProfileRessource(TestUserRessource):
 
 @pytest.mark.django_db
 class TestArtistRessource(HelpTestForReadOnlyModelRessource):
-    model = api.ArtistResource
+    resource = api.ArtistResource
 
     fixtures = ['artist', 'artist_profile', 'artist_website', 'artwork']
 
@@ -61,7 +61,7 @@ class TestArtistRessource(HelpTestForReadOnlyModelRessource):
 
 @pytest.mark.django_db
 class TestStaffRessource(HelpTestForReadOnlyModelRessource):
-    model = api.StaffResource
+    resource = api.StaffResource
 
     fixtures = ['staff', 'staff_profile']
 
@@ -77,7 +77,7 @@ class TestStaffRessource(HelpTestForReadOnlyModelRessource):
 
 @pytest.mark.django_db
 class TestOrganizationRessource(HelpTestForReadOnlyModelRessource):
-    model = api.OrganizationResource
+    resource = api.OrganizationResource
 
     fixtures = ['organization', 'place', 'user']
 

@@ -36,28 +36,29 @@ def parametrize_user_roles(metafunc):
         metafunc.parametrize('user_role', metafunc.cls._user_roles)
 
 
-class HelpTestForModelRessource:
+class AbstractHelpTestForAPI:
     """
-    Help to test interfaces to ModelResource
+    Help to test interfaces to Rest API
     """
+
     fixtures = []
+
     methods_behavior = {
         method: 200
         for method in ['list', 'get', 'patch', 'put', 'post', 'delete']
     }
+
     mutate_fields = []
 
     _user_roles = [None, 'user', 'jwt']
 
-    def setup(self):
-        self.base_url = "/v1/{}".format(self.model._meta.resource_name)
+    @property
+    def base_url(self):
+        return "{}/{}".format(self.url_prefix, self.uri)
 
     def setup_fixtures(self, request):
         for fixture_name in self.fixtures:
             setattr(self, fixture_name, request.getfixturevalue(fixture_name))
-
-    def target_uri(self):
-        return getattr(self.target(), self.model._meta.detail_uri_name)
 
     def thats_all_folk(self, method, response):
         if method in self.methods_behavior:
@@ -93,19 +94,13 @@ class HelpTestForModelRessource:
 
         answer = response.json()
 
-        assert "meta" in answer
-        assert "objects" in answer
-        assert len(answer["objects"]) == self.expected_list_size
-
-        for ressource in answer["objects"]:
-            for field in self.expected_fields:
-                assert field in ressource
+        self.validate_list(answer)
 
     def test_get(self, client, user_role, request):
         self.setup_fixtures(request)
 
         kwargs = self.prepare_request(client, user_role)
-        response = client.get('{}/{}'.format(self.base_url, self.target_uri()), **kwargs)
+        response = client.get('{}/{}'.format(self.base_url, self.target_uri_suffix()), **kwargs)
 
         if self.thats_all_folk('get', response):
             return
@@ -120,7 +115,7 @@ class HelpTestForModelRessource:
 
         data = {f: getattr(self.target(), f) for f in self.mutate_fields}
         kwargs = self.prepare_request(client, user_role, data)
-        response = client.post('{}/{}'.format(self.base_url, self.target_uri()), **kwargs)
+        response = client.post('{}/{}'.format(self.base_url, self.target_uri_suffix()), **kwargs)
 
         if self.thats_all_folk('post', response):
             return
@@ -130,7 +125,7 @@ class HelpTestForModelRessource:
 
         data = {f: getattr(self.target(), f) for f in self.mutate_fields}
         kwargs = self.prepare_request(client, user_role, data)
-        response = client.put('{}/{}'.format(self.base_url, self.target_uri()), **kwargs)
+        response = client.put('{}/{}'.format(self.base_url, self.target_uri_suffix()), **kwargs)
 
         if self.thats_all_folk('put', response):
             return
@@ -140,7 +135,7 @@ class HelpTestForModelRessource:
 
         data = {f: getattr(self.target(), f) for f in self.mutate_fields}
         kwargs = self.prepare_request(client, user_role, data)
-        response = client.patch('{}/{}'.format(self.base_url, self.target_uri()), **kwargs)
+        response = client.patch('{}/{}'.format(self.base_url, self.target_uri_suffix()), **kwargs)
 
         if self.thats_all_folk('patch', response):
             return
@@ -149,10 +144,33 @@ class HelpTestForModelRessource:
         self.setup_fixtures(request)
 
         kwargs = self.prepare_request(client, user_role)
-        response = client.delete('{}/{}'.format(self.base_url, self.target_uri()), **kwargs)
+        response = client.delete('{}/{}'.format(self.base_url, self.target_uri_suffix()), **kwargs)
 
         if self.thats_all_folk('delete', response):
             return
+
+
+class HelpTestForModelRessource(AbstractHelpTestForAPI):
+    """
+    Help to test interfaces to ModelResource (tastypie)
+    """
+    url_prefix = "/v1"
+
+    @property
+    def uri(self):
+        return self.resource._meta.resource_name
+
+    def target_uri_suffix(self):
+        return getattr(self.target(), self.resource._meta.detail_uri_name)
+
+    def validate_list(self, answer):
+        assert "meta" in answer
+        assert "objects" in answer
+        assert len(answer["objects"]) == self.expected_list_size
+
+        for ressource in answer["objects"]:
+            for field in self.expected_fields:
+                assert field in ressource
 
 
 class HelpTestForReadOnlyModelRessource(HelpTestForModelRessource):
