@@ -28,6 +28,8 @@ def vimeo_get_upload_token(request):
 
     # make sur user is auth
     if(request.META.get('HTTP_AUTHORIZATION')):
+        # FIXME: on devrait filtrer la méthode d'autorisation
+        # et intercepter une exception de décodage
         token = request.META['HTTP_AUTHORIZATION'].split(' ')[1]
         jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
         infos = jwt_decode_handler(token)
