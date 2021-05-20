@@ -97,7 +97,7 @@ v2_api.register(r'assets/medium', MediumViewSet)
 
 urlpatterns = [
                        path('v2/', include(v2_api.urls)),
-                       path('v2/auth/', obtain_jwt_token),
+                       path('v2/auth/', obtain_jwt_token, name='obtain-jwt-token'),
                        re_path(f'account/activate/{settings.PASSWORD_TOKEN}/',
                                people_views.activate, name='user-activate'),
                        # django user registration

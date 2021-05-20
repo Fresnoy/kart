@@ -62,6 +62,7 @@ class UserViewSet(viewsets.ModelViewSet):
             group = Group.objects.get(name='School Application')
             user.groups.add(group)
             # send activation email
+            # FIXME: adding a work proof to avoid dumb spambots
             send_activation_email(request, user)
 
             return Response(user.id, status=status.HTTP_202_ACCEPTED)
@@ -125,6 +126,7 @@ def activate(request, uidb36, token):
             return HttpResponseRedirect(change_password_link)
 
         else:
+            # FIXME: if activation is already_ok the previous branch is taken
             # activation already ok
             activation_already_ok = render_to_string('account/activation_already_ok.html', {
                                                      'username': user.username,
@@ -188,11 +190,13 @@ def send_custom_emails(request, format=None):
         if msg.send() == 1:
             return Response({"Sent email(s)"}, status=status.HTTP_200_OK)
         else:
+            # FIXME: dead code: afaik msg.send() will except on errors
             return Response({'error': 'Email(s) not sent'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
     else:
         errors = {'error': "User : {} can't send email".format(user)}
         return Response(errors, status=status.HTTP_401_UNAUTHORIZED)
 
+    # FIXME: dead code: handled by APIView.permission_denied which raise HTTP_403
     errors = {'error': "Not Authenticated"}
     return Response(errors, status=status.HTTP_401_UNAUTHORIZED)
 

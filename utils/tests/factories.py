@@ -1,9 +1,20 @@
-from django.contrib.auth.models import User
-
 import factory
 
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
 
-factory.Faker._DEFAULT_LOCALE = 'fr_FR'
+
+class Password(factory.declarations.LazyFunction):
+    """
+    Inspired from FactoryBoy last upstream
+    """
+
+    def __init__(self, password, *args, **kwargs):
+        super().__init__(make_password, *args, **kwargs)
+        self.value = password
+
+    def evaluate(self, instance, step, extra):
+        return self.function(self.value)
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -14,6 +25,7 @@ class UserFactory(factory.django.DjangoModelFactory):
     first_name = factory.Faker('first_name')
     last_name = factory.Faker('last_name')
     username = factory.Faker('user_name')
+    password = Password('p4ssw0rd')
 
 
 class AdminFactory(UserFactory):
