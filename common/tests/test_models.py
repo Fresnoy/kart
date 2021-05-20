@@ -1,27 +1,25 @@
-# -*- encoding: utf-8 -*-
-from django.test import TestCase
-from common.models import Website
+import pytest
 
 
-class CommandsTestCase(TestCase):
-    """
-        Tests Common Commands
-    """
+@pytest.mark.django_db
+class TestWebsite:
+    def test_str(self, website):
+        website_str = str(website)
+        assert website.url in website_str
+        assert '...' in website_str or len(website.title_fr) <= 20
 
-    def setUp(self):
-        # create place
-        self.website = Website(title_fr="Site web d'Andy Warhol",
-                               title_en="Andrew Warhol's Website",
-                               language="EN",
-                               url="https://www.warhol.org/",)
-        self.website.save()
+    def test_short_str(self, website):
+        website.title_fr = "Andy's website"
+        website.save()
+        website_str = str(website)
+        assert website.title_fr in website_str
+        assert '...' not in website_str
+        assert website.url in website_str
 
-    def tearDown(self):
-        pass
 
-    def test_websites(self):
-        "simple TEST website"
-        # get gallery
-        website = Website.objects.all()
-        # test metaEvent created
-        self.assertEqual(website.count(), 1)
+@pytest.mark.django_db
+class TestBTBeacon:
+    def test_BTBeacon_str(self, btbeacon):
+        btbeacon_str = str(btbeacon)
+        assert btbeacon.label in btbeacon_str
+        assert str(btbeacon.uuid) in btbeacon_str

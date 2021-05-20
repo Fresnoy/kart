@@ -2,10 +2,9 @@
 from django.core.management import call_command
 from io import StringIO
 from django.test import TestCase
-from django.contrib.auth.models import User
 
 from production.models import Event, Film
-from people.models import Artist
+from people.tests.factories import ArtistFactory
 from diffusion.models import Place, Diffusion
 
 
@@ -20,15 +19,8 @@ class CommandsTestCase(TestCase):
         # create place
         self.place = Place(name="Le Fresnoy", description="Le Fresnoy Studio National", address="22 rue du Fresnoy")
         self.place.save()
-        # create Author
-        self.user = User()
-        self.user.first_name = "Andrew"
-        self.user.last_name = "Warhola"
-        self.user.username = "awarhol"
-        self.user.password = "xxx"
-        self.user.save()
         # create artist
-        self.artist = Artist(user=self.user, nickname="Andy Warhol")
+        self.artist = ArtistFactory()
         self.artist.save()
         # create arwork
         self.film = Film(title="title", production_date="2019-01-01")

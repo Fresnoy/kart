@@ -6,8 +6,9 @@ from PIL import Image
 
 from rest_framework.test import APIClient
 
-from django.contrib.auth.models import User
-from assets.models import Gallery, Medium
+from utils.tests.factories import AdminFactory
+
+from .factories import GalleryFactory, MediumFactory
 
 
 class GalleryEndPoint(TestCase):
@@ -15,16 +16,8 @@ class GalleryEndPoint(TestCase):
     Tests concernants Gallery's endpoint
     """
     def setUp(self):
-        self.user = User(first_name="Andrew", last_name="Warhola",
-                         username="awarhol", password="xxx")
-        # bypass permission
-        self.user.is_superuser = True
-        self.user.is_active = True
-        self.user.save()
-
-        self.gallery = Gallery(label="Diptyque Marilyn",
-                               description="Andrew Warhol's Artwork pictures",)
-        self.gallery.save()
+        self.user = AdminFactory()
+        self.gallery = GalleryFactory()
 
     def tearDown(self):
         pass
@@ -67,23 +60,13 @@ class MediumEndPoint(TestCase):
     """
     def setUp(self):
         # User
-        self.user = User(first_name="Andrew", last_name="Warhola",
-                         username="awarhol", password="xxx")
-        self.user.is_superuser = True
-        self.user.is_active = True
-        self.user.save()
+        self.user = AdminFactory()
 
         self.client_auth = APIClient()
         self.client_auth.force_authenticate(user=self.user)
-        # Gallery
-        self.gallery = Gallery(label="Diptyque Marilyn",
-                               description="Andrew Warhol's Artwork pictures",)
-        self.gallery.save()
         # Medium
-        self.medium = Medium(label="Picture Diptyque Marilyn",
-                             description="Color & Grey Marilyn",
-                             gallery=self.gallery,)
-        self.medium.save()
+        self.medium = MediumFactory()
+        self.gallery = self.medium.gallery
 
     def tearDown(self):
         pass

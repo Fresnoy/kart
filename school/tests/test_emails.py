@@ -1,7 +1,6 @@
 import datetime
 from django.test.client import RequestFactory
 from django.utils import timezone
-from django.contrib.auth.models import User
 
 from school.models import StudentApplication, StudentApplicationSetup, Promotion
 
@@ -10,14 +9,13 @@ from django.urls import reverse
 
 from rest_framework.test import APIClient
 
-from people.models import Artist
-
 from school.utils import (send_candidature_completed_email_to_user,
                           send_candidature_completed_email_to_admin,
                           send_candidature_complete_email_to_candidat,
                           send_interview_selection_email_to_candidat,
                           send_not_selected_email_to_candidat,
                           )
+from people.tests.factories import ArtistFactory
 
 
 class SendSendEmail(TestCase):
@@ -27,17 +25,12 @@ class SendSendEmail(TestCase):
     fixtures = ['groups.json']
 
     def setUp(self):
-        self.user = User(first_name="Andrew",
-                         last_name="Warhola",
-                         username="awarhol",
-                         email="awarhola@pop.art")
-        self.user.save()
+        self.artist = ArtistFactory()
+        self.user = self.artist.user
+
         # force authenticate
         self.client_auth = APIClient()
         self.client_auth.force_authenticate(user=self.user)
-
-        self.artist = Artist(user=self.user, nickname="Andy Warhol")
-        self.artist.save()
 
         self.promotion = Promotion(name="Promo", starting_year=timezone.now().year, ending_year=timezone.now().year+1)
         self.promotion.save()
@@ -98,5 +91,4 @@ class SendSendEmail(TestCase):
         """
         request = RequestFactory().request(url=self.studentapplication_detail_url, methods="PATCH")
         mail_sent = send_not_selected_email_to_candidat(request, self.user, self.application)
-        print(mail_sent)
         self.assertEqual(mail_sent, True)

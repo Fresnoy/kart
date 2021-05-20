@@ -2,15 +2,13 @@ import json
 import datetime
 from django.utils import timezone
 # import time
-from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 from rest_framework import status
 
 from django.test import TestCase
 from django.urls import reverse
 
-from people.models import Artist
-
+from people.tests.factories import ArtistFactory
 from school.models import StudentApplication, StudentApplicationSetup, Promotion
 
 
@@ -20,18 +18,12 @@ class TestApplicationEndPoint(TestCase):
     """
 
     def setUp(self):
-        self.user = User()
-        self.user.first_name = "Andrew"
-        self.user.last_name = "Warhola"
-        self.user.username = "awarhol"
-        self.user.password = "xxx"
-        self.user.save()
+        self.artist = ArtistFactory()
+        self.user = self.artist.user
+
         # save generate token
         self.token = ""
         self.client_auth = APIClient()
-
-        self.artist = Artist(user=self.user, nickname="Andy Warhol")
-        self.artist.save()
 
     def tearDown(self):
         pass
