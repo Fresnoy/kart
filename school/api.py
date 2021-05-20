@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.core.paginator import Paginator, InvalidPage
-from django.http import Http404
+from django.http import Http404, HttpResponseBadRequest
 from django.urls import re_path
 from django.db.models import Q
 from haystack.query import SearchQuerySet
@@ -76,6 +76,8 @@ class StudentResource(ArtistResource):
 
         try:
             page = paginator.page(int(request.GET.get('page', 1)))
+        except ValueError:
+            return HttpResponseBadRequest("Bad page number.")
         except InvalidPage:
             raise Http404("Sorry, no results on that page.")
 

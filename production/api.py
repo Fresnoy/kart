@@ -2,7 +2,7 @@
 from django.urls import re_path
 
 from django.core.paginator import Paginator, InvalidPage
-from django.shortcuts import Http404
+from django.http import Http404, HttpResponseBadRequest
 
 
 from haystack.query import SearchQuerySet
@@ -89,6 +89,7 @@ class ArtworkResource(AbstractArtworkResource):
         # cache = SimpleCache(timeout=10)
 
     authors = fields.ToManyField(ArtistResource, 'authors', full=True, full_detail=True, full_list=False)
+    # FIXME: events should be with null=True in accordance with Artwork definition
     events = fields.ToManyField('production.api.EventResource', 'events', blank=True, full=False)
     award = fields.ToManyField('diffusion.api.AwardResource', 'award', blank=True, full=False)
 
@@ -126,6 +127,8 @@ class ArtworkResource(AbstractArtworkResource):
 
         try:
             page = paginator.page(int(request.GET.get('page', 1)))
+        except ValueError:
+            return HttpResponseBadRequest("Bad page number.")
         except InvalidPage:
             raise Http404("Sorry, no results on that page.")
 
@@ -195,6 +198,7 @@ class EventResource(ProductionResource):
         queryset = Event.objects.all()
         resource_name = 'production/event'
 
+    # FIXME: place should be with null=True in accordance with Event definition
     place = fields.ForeignKey(PlaceResource, 'place', full=True)
 
     installations = fields.ToManyField(InstallationResource, 'installations',

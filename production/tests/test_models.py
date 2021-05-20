@@ -40,9 +40,29 @@ class TestFilmGenre:
 
 
 @pytest.mark.django_db
+class TestFilm:
+    def test_str(self, film):
+        artwork = film
+        artwork_str = str(artwork)
+        assert artwork.title in artwork_str
+        assert str(artwork.production_date.year) in artwork_str
+        assert str(artwork.authors.last()) in artwork_str
+
+
+@pytest.mark.django_db
 class TestInstallationGenre:
     def test_str(self, installation_genre):
         assert installation_genre.label == str(installation_genre)
+
+
+@pytest.mark.django_db
+class TestInstallation:
+    def test_str(self, installation):
+        artwork = installation
+        artwork_str = str(artwork)
+        assert artwork.title in artwork_str
+        assert str(artwork.production_date.year) in artwork_str
+        assert str(artwork.authors.last()) in artwork_str
 
 
 @pytest.mark.django_db

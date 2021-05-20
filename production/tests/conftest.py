@@ -22,6 +22,16 @@ def production(db_ready):
 
 
 @pytest.fixture
+def organization_task(db_ready):
+    return factories.OrganizationTaskFactory()
+
+
+@pytest.fixture
+def production_organization_task(db_ready):
+    return factories.ProductionOrganizationTaskFactory()
+
+
+@pytest.fixture
 def anonymous_artwork(db_ready):
     return factories.ArtworkFactory(authors=[])
 
@@ -37,8 +47,23 @@ def film_genre(db_ready):
 
 
 @pytest.fixture
+def film(db_ready, artist):
+    return factories.FilmFactory(authors=[artist])
+
+
+@pytest.fixture
 def installation_genre(db_ready):
     return factories.InstallationGenreFactory()
+
+
+@pytest.fixture
+def installation(db_ready, artist):
+    return factories.InstallationFactory(authors=[artist])
+
+
+@pytest.fixture
+def performance(db_ready, artist):
+    return factories.PerformanceFactory(authors=[artist])
 
 
 @pytest.fixture
@@ -54,3 +79,8 @@ def main_event(db_ready, event):
 @pytest.fixture
 def itinerary(db_ready):
     return factories.ItineraryFactory()
+
+
+@pytest.fixture
+def exhibition(db_ready):
+    return factories.EventFactory(type='EXHIB')
