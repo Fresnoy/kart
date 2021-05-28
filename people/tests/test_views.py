@@ -159,7 +159,6 @@ class TestSendCustomEmails:
 
         url = reverse('send-emails')
         response = getattr(client, method)(url, data=data)
-        print(response, response.content.decode())
 
         assert response.status_code == expected_code
         assert len(mailoutbox) == expected_email
