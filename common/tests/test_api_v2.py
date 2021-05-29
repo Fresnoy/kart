@@ -1,5 +1,7 @@
 import pytest
 
+from uuid import uuid4
+
 from common.tests.conftest import *  # noqa
 from diffusion.tests.conftest import *  # noqa
 from production.tests.conftest import *  # noqa
@@ -26,6 +28,7 @@ class TestBTBeaconViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestFo
 
     mutate_fields = ['rssi_in']
     put_fields = ['rssi_in', 'rssi_out', 'uuid', 'x', 'y', 'label']
+    built_fields = {'uuid': lambda x: str(uuid4())}
 
     def target(self):
         return self.btbeacon

@@ -52,6 +52,7 @@ class AbstractHelpTestForAPI:
     mutate_fields = []
     hyperlinked_fields = {}
     renamed_fields = {}
+    built_fields = {}
 
     _user_roles = [None, 'user', 'jwt']
 
@@ -92,12 +93,11 @@ class AbstractHelpTestForAPI:
 
     def get_data(self, field):
         if field in self.hyperlinked_fields:
-            return reverse(
-                '{}-detail'.format(self.hyperlinked_fields[field]),
-                kwargs={'pk': getattr(self.target(), field).pk},
-            )
+            return self.reverse_hyperlink(field)
         elif field in self.renamed_fields:
             return getattr(self.target(), self.renamed_fields[field])
+        elif field in self.built_fields:
+            return self.built_fields[field](self.target())
         else:
             return getattr(self.target(), field)
 
@@ -140,9 +140,10 @@ class AbstractHelpTestForAPI:
     def test_post(self, client, user_role, request):
         self.setup_fixtures(request)
 
-        data = {f: self.get_data(f) for f in self.mutate_fields}
+        fields = getattr(self, 'post_fields', self.put_fields)
+        data = {f: self.get_data(f) for f in fields}
         kwargs = self.prepare_request(client, user_role, data)
-        response = client.post('{}/{}'.format(self.base_url, self.target_uri_suffix()), **kwargs)
+        response = client.post(self.base_url, **kwargs)
 
         if self.thats_all_folk('post', response, user_role):
             return
@@ -207,6 +208,12 @@ class HelpTestForModelViewSet(AbstractHelpTestForAPI):
         for ressource in answer:
             self.check_expected_fields(ressource)
 
+    def reverse_hyperlink(self, field):
+        return reverse(
+            '{}-detail'.format(self.hyperlinked_fields[field]),
+            kwargs={'pk': getattr(self.target(), field).pk},
+        )
+
 
 class IsAuthenticatedOrReadOnlyModelViewSetMixin:
     methods_behavior = {
@@ -214,7 +221,7 @@ class IsAuthenticatedOrReadOnlyModelViewSetMixin:
         'get': 200,
         'patch': {None: 403, 'user': 200, 'jwt': 200},
         'put': {None: 403, 'user': 200, 'jwt': 200},
-        'post': {None: 403, 'user': 405, 'jwt': 405},
+        'post': {None: 403, 'user': 201, 'jwt': 201},
         'delete': {None: 403, 'user': 204, 'jwt': 204},
     }
 
@@ -257,6 +264,16 @@ class HelpTestForModelRessource(AbstractHelpTestForAPI):
         for ressource in answer["objects"]:
             self.check_expected_fields(ressource)
 
+    def reverse_hyperlink(self, field):
+        resource_name = self.hyperlinked_fields[field]
+        key = 'username' if resource_name == 'people/user' else 'pk'
+        kwargs = {
+            'api_name': 'v1',
+            'resource_name': resource_name,
+            key: getattr(getattr(self.target(), field), key)
+        }
+        return reverse('api_dispatch_detail', kwargs=kwargs)
+
 
 class HelpTestForReadOnlyModelRessource(HelpTestForModelRessource):
     _user_roles = [None]
@@ -266,7 +283,7 @@ class HelpTestForReadOnlyModelRessource(HelpTestForModelRessource):
         'get': 200,
         'patch': 401,
         'put': 401,
-        'post': 501,
+        'post': 401,
         'delete': 401,
     }
 

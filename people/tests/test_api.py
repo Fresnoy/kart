@@ -52,6 +52,9 @@ class TestArtistRessource(HelpTestForReadOnlyModelRessource):
     expected_list_size = 1
     expected_fields = ['nickname', 'artworks', 'websites']
 
+    post_fields = ['user']
+    hyperlinked_fields = {'user': 'people/user'}
+
     def target(self):
         return self.artist
 
@@ -67,6 +70,9 @@ class TestStaffRessource(HelpTestForReadOnlyModelRessource):
 
     expected_list_size = 1
     expected_fields = ['user']
+
+    post_fields = ['user']
+    hyperlinked_fields = {'user': 'people/user'}
 
     def target(self):
         return self.staff

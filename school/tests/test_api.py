@@ -40,6 +40,9 @@ class TestStudentRessource(HaystackSearchModelRessourceMixin, HelpTestForReadOnl
     expected_list_size = 1
     expected_fields = ['number', 'promotion', 'artist']
 
+    post_fields = ['user', 'artist']
+    hyperlinked_fields = {'user': 'people/user', 'artist': 'people/artist'}
+
     search_field = 'number'
 
     def target(self):
@@ -79,7 +82,7 @@ class TestStudentApplicationRessource(HelpTestForReadOnlyModelRessource):
         'get': 401,
         'patch': 401,
         'put': 401,
-        'post': 501,
+        'post': 401,
         'delete': 401,
     }
 
