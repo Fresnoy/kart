@@ -74,9 +74,15 @@ class AbstractHelpTestForAPI:
         else:
             return True
 
+    def requestor(self, role):
+        if role == 'user':
+            return self.user
+        if role == 'artist':
+            return self.artist.user
+
     def prepare_request(self, client, user_role, data=None, json=True):
-        if user_role == 'user':
-            client.force_login(self.requestor())
+        if user_role in ['artist', 'user']:
+            client.force_login(self.requestor(user_role))
 
         kwargs = {}
         if json:
@@ -86,7 +92,7 @@ class AbstractHelpTestForAPI:
             kwargs['data'] = data
 
         if user_role == 'jwt':
-            jwt = obtain_jwt_token(self.requestor())
+            jwt = obtain_jwt_token(self.requestor('user'))  # FIXME: obsolete
             kwargs['HTTP_AUTHORIZATION'] = 'JWT {}'.format(jwt['token'])
 
         return kwargs

@@ -24,9 +24,6 @@ class TestPlaceRessource(HelpTestForReadOnlyModelRessource):
     def target(self):
         return self.place
 
-    def requestor(self):
-        return self.user
-
 
 @pytest.mark.django_db
 class TestAwardRessource(HelpTestForReadOnlyModelRessource):
@@ -40,7 +37,7 @@ class TestAwardRessource(HelpTestForReadOnlyModelRessource):
     def target(self):
         return self.award
 
-    def requestor(self):
+    def requestor(self, role):
         return self.artist.user
 
 
@@ -55,6 +52,3 @@ class TestMetaAwardRessource(HelpTestForReadOnlyModelRessource):
 
     def target(self):
         return self.meta_award
-
-    def requestor(self):
-        return self.user

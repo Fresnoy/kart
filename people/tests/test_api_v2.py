@@ -31,9 +31,6 @@ class TestUserViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestForMod
     def target(self):
         return self.user
 
-    def requestor(self):
-        return self.user
-
 
 @pytest.mark.django_db
 class TestPrivateUserProfileViewSet(TestUserViewSet):
@@ -56,7 +53,7 @@ class TestPrivateUserProfileViewSet(TestUserViewSet):
     def target(self):
         return self.profile.user
 
-    def requestor(self):
+    def requestor(self, role):
         return self.profile.user
 
 
@@ -74,7 +71,7 @@ class TestProfileViewSet(HelpTestForModelViewSet):
     def target(self):
         return self.profile
 
-    def requestor(self):
+    def requestor(self, role):
         return self.profile.user
 
 
@@ -94,7 +91,7 @@ class TestArtistViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestForM
     def target(self):
         return self.artist
 
-    def requestor(self):
+    def requestor(self, role):
         return self.artist.user
 
 
@@ -118,7 +115,7 @@ class TestStaffViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestForMo
     def target(self):
         return self.staff
 
-    def requestor(self):
+    def requestor(self, role):
         return self.staff.user
 
 
@@ -136,6 +133,3 @@ class TestOrganizationViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTe
 
     def target(self):
         return self.organization
-
-    def requestor(self):
-        return self.user

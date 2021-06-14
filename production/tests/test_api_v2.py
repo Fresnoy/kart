@@ -36,7 +36,7 @@ class TestArtworkViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelViewSet):
     def target(self):
         return self.installation
 
-    def requestor(self):
+    def requestor(self, role):
         return self.installation.authors.first().user
 
 
@@ -59,7 +59,7 @@ class TestFilmViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelViewSet):
     def target(self):
         return self.film
 
-    def requestor(self):
+    def requestor(self, role):
         return self.film.authors.first().user
 
 
@@ -82,7 +82,7 @@ class TestInstallationViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelViewSet
     def target(self):
         return self.installation
 
-    def requestor(self):
+    def requestor(self, role):
         return self.installation.authors.first().user
 
 
@@ -105,7 +105,7 @@ class TestPerformanceViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelViewSet)
     def target(self):
         return self.performance
 
-    def requestor(self):
+    def requestor(self, role):
         return self.performance.authors.first().user
 
 
@@ -123,9 +123,6 @@ class TestEventViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelViewSet):
 
     def target(self):
         return self.event
-
-    def requestor(self):
-        return self.user
 
 
 @pytest.mark.django_db
@@ -150,9 +147,6 @@ class TestItineraryViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelViewSet):
     def target(self):
         return self.itinerary
 
-    def requestor(self):
-        return self.user
-
 
 @pytest.mark.django_db
 class TestFilmGenreViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelViewSet):
@@ -169,9 +163,6 @@ class TestFilmGenreViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelViewSet):
     def target(self):
         return self.film_genre
 
-    def requestor(self):
-        return self.user
-
 
 @pytest.mark.django_db
 class TestInstallationGenreViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelViewSet):
@@ -187,9 +178,6 @@ class TestInstallationGenreViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelVi
 
     def target(self):
         return self.installation_genre
-
-    def requestor(self):
-        return self.user
 
 
 @pytest.mark.django_db
@@ -211,7 +199,7 @@ class TestCollaboratorViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelViewSet
     def target(self):
         return self.production_staff_task
 
-    def requestor(self):
+    def requestor(self, role):
         return self.production_staff_task.staff.user
 
 
@@ -234,9 +222,6 @@ class TestPartnerViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelViewSet):
     def target(self):
         return self.production_organization_task
 
-    def requestor(self):
-        return self.user
-
 
 @pytest.mark.django_db
 class TestOrganizationTaskViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelViewSet):
@@ -254,9 +239,6 @@ class TestOrganizationTaskViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelVie
     def target(self):
         return self.organization_task
 
-    def requestor(self):
-        return self.user
-
 
 @pytest.mark.django_db
 class TestFilmKeywordsViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelViewSet):
@@ -272,6 +254,3 @@ class TestFilmKeywordsViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelViewSet
 
     def target(self):
         return self.film_keyword
-
-    def requestor(self):
-        return self.user

@@ -27,9 +27,6 @@ class TestPromotionRessource(HelpTestForReadOnlyModelRessource):
     def target(self):
         return self.promotion
 
-    def requestor(self):
-        return self.user
-
 
 @pytest.mark.django_db
 class TestStudentRessource(HaystackSearchModelRessourceMixin, HelpTestForReadOnlyModelRessource):
@@ -48,7 +45,7 @@ class TestStudentRessource(HaystackSearchModelRessourceMixin, HelpTestForReadOnl
     def target(self):
         return self.student
 
-    def requestor(self):
+    def requestor(self, role):
         return self.student.user
 
     def test_user__last_name__istartswith_search(self, client, user_role, request):

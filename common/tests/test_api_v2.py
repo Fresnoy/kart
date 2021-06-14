@@ -33,9 +33,6 @@ class TestBTBeaconViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestFo
     def target(self):
         return self.btbeacon
 
-    def requestor(self):
-        return self.user
-
 
 @pytest.mark.django_db
 class TestWebsiteViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestForModelViewSet):
@@ -53,6 +50,3 @@ class TestWebsiteViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestFor
 
     def target(self):
         return self.website
-
-    def requestor(self):
-        return self.user

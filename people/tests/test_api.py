@@ -25,9 +25,6 @@ class TestUserRessource(HelpTestForReadOnlyModelRessource):
     def target(self):
         return self.user
 
-    def requestor(self):
-        return self.user
-
 
 @pytest.mark.django_db
 class TestUserProfileRessource(TestUserRessource):
@@ -39,7 +36,7 @@ class TestUserProfileRessource(TestUserRessource):
     def target(self):
         return self.profile.user
 
-    def requestor(self):
+    def requestor(self, role):
         return self.profile.user
 
 
@@ -58,7 +55,7 @@ class TestArtistRessource(HelpTestForReadOnlyModelRessource):
     def target(self):
         return self.artist
 
-    def requestor(self):
+    def requestor(self, role):
         return self.artist.user
 
 
@@ -77,7 +74,7 @@ class TestStaffRessource(HelpTestForReadOnlyModelRessource):
     def target(self):
         return self.staff
 
-    def requestor(self):
+    def requestor(self, role):
         return self.staff.user
 
 
@@ -92,6 +89,3 @@ class TestOrganizationRessource(HelpTestForReadOnlyModelRessource):
 
     def target(self):
         return self.organization
-
-    def requestor(self):
-        return self.user

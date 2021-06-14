@@ -29,9 +29,6 @@ class TestStaffTaskRessource(HelpTestForReadOnlyModelRessource):
     def target(self):
         return self.staff_task
 
-    def requestor(self):
-        return self.user
-
 
 @pytest.mark.django_db
 class TestArtworkRessource(
@@ -51,9 +48,6 @@ class TestArtworkRessource(
     def target(self):
         return self.installation
 
-    def requestor(self):
-        return self.user
-
 
 @pytest.mark.django_db
 class TestInstallationResource(HelpTestForReadOnlyModelRessource):
@@ -66,9 +60,6 @@ class TestInstallationResource(HelpTestForReadOnlyModelRessource):
 
     def target(self):
         return self.installation
-
-    def requestor(self):
-        return self.user
 
 
 @pytest.mark.django_db
@@ -83,9 +74,6 @@ class TestFilmResource(HelpTestForReadOnlyModelRessource):
     def target(self):
         return self.film
 
-    def requestor(self):
-        return self.user
-
 
 @pytest.mark.django_db
 class TestPerformanceResource(HelpTestForReadOnlyModelRessource):
@@ -98,9 +86,6 @@ class TestPerformanceResource(HelpTestForReadOnlyModelRessource):
 
     def target(self):
         return self.performance
-
-    def requestor(self):
-        return self.user
 
 
 @pytest.mark.django_db
@@ -115,9 +100,6 @@ class TestEventResource(HelpTestForReadOnlyModelRessource):
     def target(self):
         return self.event
 
-    def requestor(self):
-        return self.user
-
 
 @pytest.mark.django_db
 class TestItineraryResource(HelpTestForReadOnlyModelRessource):
@@ -131,9 +113,6 @@ class TestItineraryResource(HelpTestForReadOnlyModelRessource):
     def target(self):
         return self.itinerary
 
-    def requestor(self):
-        return self.user
-
 
 @pytest.mark.django_db
 class TestExhibitionResource(TestEventResource):
@@ -146,6 +125,3 @@ class TestExhibitionResource(TestEventResource):
 
     def target(self):
         return self.exhibition
-
-    def requestor(self):
-        return self.user
