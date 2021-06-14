@@ -166,7 +166,7 @@ class AbstractHelpTestForAPI:
     def test_post(self, client, user_role, auth_method, request):
         self.setup_fixtures(request)
 
-        fields = getattr(self, 'post_fields', self.put_fields)
+        fields = getattr(self, 'post_fields', getattr(self, 'put_fields', self.mutate_fields))
         data = {f: self.get_data(f) for f in fields}
         kwargs = self.prepare_request(client, user_role, auth_method, data)
         response = client.post(self.base_url, **kwargs)
@@ -177,7 +177,8 @@ class AbstractHelpTestForAPI:
     def test_put(self, client, user_role, auth_method, request):
         self.setup_fixtures(request)
 
-        data = {f: self.get_data(f) for f in self.put_fields}
+        fields = getattr(self, 'put_fields', self.mutate_fields)
+        data = {f: self.get_data(f) for f in fields}
         kwargs = self.prepare_request(client, user_role, auth_method, data)
         response = client.put('{}/{}'.format(self.base_url, self.target_uri_suffix()), **kwargs)
 
@@ -267,10 +268,6 @@ class HelpTestForModelRessource(AbstractHelpTestForAPI):
     Help to test interfaces to ModelResource (tastypie)
     """
     url_prefix = "/v1"
-
-    @property
-    def put_fields(self):
-        return self.mutate_fields
 
     @property
     def uri(self):

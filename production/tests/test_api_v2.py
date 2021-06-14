@@ -158,7 +158,6 @@ class TestFilmGenreViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelViewSet):
     expected_fields = ['label']
 
     mutate_fields = ['label']
-    put_fields = ['label']
 
     def target(self):
         return self.film_genre
@@ -174,7 +173,6 @@ class TestInstallationGenreViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelVi
     expected_fields = ['label']
 
     mutate_fields = ['label']
-    put_fields = ['label']
 
     def target(self):
         return self.installation_genre
