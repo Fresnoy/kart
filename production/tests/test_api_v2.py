@@ -5,6 +5,7 @@ from common.tests.conftest import *  # noqa
 from diffusion.tests.conftest import *  # noqa
 from people.tests.conftest import *  # noqa
 from utils.tests.utils import (
+    IsArtistOrReadOnlyModelViewSetMixin,
     ReadOnlyModelViewSetMixin,
     HelpTestForModelViewSet,
     parametrize_user_roles,
@@ -149,10 +150,10 @@ class TestItineraryViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelViewSet):
 
 
 @pytest.mark.django_db
-class TestFilmGenreViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelViewSet):
+class TestFilmGenreViewSet(IsArtistOrReadOnlyModelViewSetMixin, HelpTestForModelViewSet):
     viewset_name = 'production/film-genre'
 
-    fixtures = ['film_genre', 'user']
+    fixtures = ['film_genre', 'artist', 'user']
 
     expected_list_size = 1
     expected_fields = ['label']

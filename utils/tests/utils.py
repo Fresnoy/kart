@@ -254,8 +254,20 @@ class IsAuthenticatedOrReadOnlyModelViewSetMixin:
     }
 
 
-class ReadOnlyModelViewSetMixin:
+class IsArtistOrReadOnlyModelViewSetMixin:
+    _user_roles = [None, 'user', 'artist']
 
+    methods_behavior = {
+        'list': 200,
+        'get': 200,
+        'patch': {None: 403, 'user': 403, 'artist': 200},
+        'put': {None: 403, 'user': 403, 'artist': 200},
+        'post': {None: 403, 'user': 403, 'artist': 201},
+        'delete': {None: 403, 'user': 403, 'artist': 204},
+    }
+
+
+class ReadOnlyModelViewSetMixin:
     methods_behavior = {
         'list': 200,
         'get': 200,
