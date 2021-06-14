@@ -40,7 +40,7 @@ def school_application_group(db_ready):
         "add_filmgenre",
         "add_gallery",
         "add_medium",
-        "add_promotion",
+        "add_promotion",  # FIXME: a priori pas nécessaire
         "add_stafftask",
         "add_student",
         "add_studentapplication",

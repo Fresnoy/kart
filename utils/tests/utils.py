@@ -1,3 +1,5 @@
+import pytest
+
 from django.db.models.constants import LOOKUP_SEP
 from django.test import Client
 from django.urls import reverse
@@ -276,6 +278,34 @@ class ReadOnlyModelViewSetMixin:
         'post': 403,
         'delete': 403,
     }
+
+
+class IgnoreModelViewSetMixin:
+    methods_behavior = {}
+
+    @pytest.mark.skip()
+    def test_list(self):
+        pass
+
+    @pytest.mark.skip()
+    def test_get(self):
+        pass
+
+    @pytest.mark.skip()
+    def test_patch(self):
+        pass
+
+    @pytest.mark.skip()
+    def test_put(self):
+        pass
+
+    @pytest.mark.skip()
+    def test_post(self):
+        pass
+
+    @pytest.mark.skip()
+    def test_delete(self):
+        pass
 
 
 class HelpTestForModelRessource(AbstractHelpTestForAPI):
