@@ -48,11 +48,11 @@ class TestStudentRessource(HaystackSearchModelRessourceMixin, HelpTestForReadOnl
     def requestor(self, role):
         return self.student.user
 
-    def test_user__last_name__istartswith_search(self, client, user_role, request):
+    def test_user__last_name__istartswith_search(self, client, user_role, auth_method, request):
         self.setup_fixtures(request)
 
         data = {'user__last_name__istartswith': self.student.user.last_name[0]}
-        kwargs = self.prepare_request(client, user_role, data)
+        kwargs = self.prepare_request(client, user_role, auth_method, data)
         response = client.get(self.base_url, **kwargs)
 
         if self.thats_all_folk('list', response, user_role):

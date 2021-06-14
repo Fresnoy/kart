@@ -39,7 +39,8 @@ class TestPrivateUserProfileViewSet(TestUserViewSet):
     expected_list_size = 1
     expected_fields = ['first_name', 'profile__nationality']
 
-    _user_roles = ['user', 'jwt']
+    _user_roles = ['user']
+    _auth_methods = ['forced']
 
     methods_behavior = {
         # list not tested since it only expose TestUserViewSet.expected_fields

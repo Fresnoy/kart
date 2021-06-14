@@ -33,8 +33,26 @@ def parametrize_user_roles(metafunc):
     Allow class driven behavior using orverloading, whereas
     @pytest.mark.parametrize only act as collect time.
     """
-    if hasattr(metafunc.cls, '_user_roles') and "user_role" in metafunc.fixturenames:
+    if (
+        hasattr(metafunc.cls, '_user_roles')
+        and "user_role" in metafunc.fixturenames
+        and hasattr(metafunc.cls, '_auth_methods')
+        and "auth_method" in metafunc.fixturenames
+    ):
+        if None in metafunc.cls._user_roles:
+            # avoid parametrizing auth method when user is anonymous
+            parametrization = [(None, None)] + list(zip(
+                [r for r in metafunc.cls._user_roles if r is not None],
+                metafunc.cls._auth_methods,
+            ))
+        else:
+            parametrization = zip(metafunc.cls._user_roles, metafunc.cls._auth_methods)
+
+        metafunc.parametrize(['user_role', 'auth_method'], parametrization)
+    elif hasattr(metafunc.cls, '_user_roles') and "user_role" in metafunc.fixturenames:
         metafunc.parametrize('user_role', metafunc.cls._user_roles)
+    elif hasattr(metafunc.cls, '_auth_methods') and "auth_method" in metafunc.fixturenames:
+        metafunc.parametrize('auth_method', metafunc.cls._auth_methods)
 
 
 class AbstractHelpTestForAPI:
@@ -54,7 +72,8 @@ class AbstractHelpTestForAPI:
     renamed_fields = {}
     built_fields = {}
 
-    _user_roles = [None, 'user', 'jwt']
+    _user_roles = [None, 'user']
+    _auth_methods = ['forced', 'jwt']
 
     @property
     def base_url(self):
@@ -80,20 +99,21 @@ class AbstractHelpTestForAPI:
         if role == 'artist':
             return self.artist.user
 
-    def prepare_request(self, client, user_role, data=None, json=True):
-        if user_role in ['artist', 'user']:
-            client.force_login(self.requestor(user_role))
-
+    def prepare_request(self, client, user_role, auth_method, data=None, json=True):
         kwargs = {}
+
+        if user_role in ['artist', 'user']:
+            if auth_method == 'forced':
+                client.force_login(self.requestor(user_role))
+            elif auth_method == 'jwt':
+                jwt = obtain_jwt_token(self.requestor(user_role))
+                kwargs['HTTP_AUTHORIZATION'] = 'JWT {}'.format(jwt['token'])
+
         if json:
             kwargs['content_type'] = 'application/json'
 
         if data is not None:
             kwargs['data'] = data
-
-        if user_role == 'jwt':
-            jwt = obtain_jwt_token(self.requestor('user'))  # FIXME: obsolete
-            kwargs['HTTP_AUTHORIZATION'] = 'JWT {}'.format(jwt['token'])
 
         return kwargs
 
@@ -117,10 +137,10 @@ class AbstractHelpTestForAPI:
             else:
                 assert field in obj
 
-    def test_list(self, client, user_role, request):
+    def test_list(self, client, user_role, auth_method, request):
         self.setup_fixtures(request)
 
-        kwargs = self.prepare_request(client, user_role)
+        kwargs = self.prepare_request(client, user_role, auth_method)
         response = client.get(self.base_url, **kwargs)
 
         if self.thats_all_folk('list', response, user_role):
@@ -130,10 +150,10 @@ class AbstractHelpTestForAPI:
 
         self.validate_list(answer)
 
-    def test_get(self, client, user_role, request):
+    def test_get(self, client, user_role, auth_method, request):
         self.setup_fixtures(request)
 
-        kwargs = self.prepare_request(client, user_role)
+        kwargs = self.prepare_request(client, user_role, auth_method)
         response = client.get('{}/{}'.format(self.base_url, self.target_uri_suffix()), **kwargs)
 
         if self.thats_all_folk('get', response, user_role):
@@ -143,41 +163,41 @@ class AbstractHelpTestForAPI:
 
         self.check_expected_fields(answer)
 
-    def test_post(self, client, user_role, request):
+    def test_post(self, client, user_role, auth_method, request):
         self.setup_fixtures(request)
 
         fields = getattr(self, 'post_fields', self.put_fields)
         data = {f: self.get_data(f) for f in fields}
-        kwargs = self.prepare_request(client, user_role, data)
+        kwargs = self.prepare_request(client, user_role, auth_method, data)
         response = client.post(self.base_url, **kwargs)
 
         if self.thats_all_folk('post', response, user_role):
             return
 
-    def test_put(self, client, user_role, request):
+    def test_put(self, client, user_role, auth_method, request):
         self.setup_fixtures(request)
 
         data = {f: self.get_data(f) for f in self.put_fields}
-        kwargs = self.prepare_request(client, user_role, data)
+        kwargs = self.prepare_request(client, user_role, auth_method, data)
         response = client.put('{}/{}'.format(self.base_url, self.target_uri_suffix()), **kwargs)
 
         if self.thats_all_folk('put', response, user_role):
             return
 
-    def test_patch(self, client, user_role, request):
+    def test_patch(self, client, user_role, auth_method, request):
         self.setup_fixtures(request)
 
         data = {f: self.get_data(f) for f in self.mutate_fields}
-        kwargs = self.prepare_request(client, user_role, data)
+        kwargs = self.prepare_request(client, user_role, auth_method, data)
         response = client.patch('{}/{}'.format(self.base_url, self.target_uri_suffix()), **kwargs)
 
         if self.thats_all_folk('patch', response, user_role):
             return
 
-    def test_delete(self, client, user_role, request):
+    def test_delete(self, client, user_role, auth_method, request):
         self.setup_fixtures(request)
 
-        kwargs = self.prepare_request(client, user_role)
+        kwargs = self.prepare_request(client, user_role, auth_method)
         response = client.delete('{}/{}'.format(self.base_url, self.target_uri_suffix()), **kwargs)
 
         if self.thats_all_folk('delete', response, user_role):
@@ -190,15 +210,13 @@ class HelpTestForModelViewSet(AbstractHelpTestForAPI):
     """
     url_prefix = "/v2"
 
-    _user_roles = [None, 'user', 'jwt']
-
     methods_behavior = {
-        'list': {None: 403, 'user': 200, 'jwt': 200},
-        'get': {None: 403, 'user': 200, 'jwt': 200},
-        'patch': {None: 403, 'user': 403, 'jwt': 403},
-        'put': {None: 403, 'user': 403, 'jwt': 403},
-        'post': {None: 403, 'user': 403, 'jwt': 403},
-        'delete': {None: 403, 'user': 403, 'jwt': 403},
+        'list': {None: 403, 'user': 200},
+        'get': {None: 403, 'user': 200},
+        'patch': {None: 403, 'user': 403},
+        'put': {None: 403, 'user': 403},
+        'post': {None: 403, 'user': 403},
+        'delete': {None: 403, 'user': 403},
     }
 
     @property
@@ -225,15 +243,14 @@ class IsAuthenticatedOrReadOnlyModelViewSetMixin:
     methods_behavior = {
         'list': 200,
         'get': 200,
-        'patch': {None: 403, 'user': 200, 'jwt': 200},
-        'put': {None: 403, 'user': 200, 'jwt': 200},
-        'post': {None: 403, 'user': 201, 'jwt': 201},
-        'delete': {None: 403, 'user': 204, 'jwt': 204},
+        'patch': {None: 403, 'user': 200},
+        'put': {None: 403, 'user': 200},
+        'post': {None: 403, 'user': 201},
+        'delete': {None: 403, 'user': 204},
     }
 
 
 class ReadOnlyModelViewSetMixin:
-    _user_roles = [None, 'user']
 
     methods_behavior = {
         'list': 200,
@@ -298,11 +315,11 @@ class FilterModelRessourceMixin:
 
     search_field = None
 
-    def test_search(self, client, user_role, request):
+    def test_search(self, client, user_role, auth_method, request):
         self.setup_fixtures(request)
 
         data = {self.search_field: getattr(self.target(), self.search_field)}
-        kwargs = self.prepare_request(client, user_role, data)
+        kwargs = self.prepare_request(client, user_role, auth_method, data)
         response = client.get(self.base_url, **kwargs)
 
         if self.thats_all_folk('list', response, user_role):
@@ -323,11 +340,11 @@ class HaystackSearchModelRessourceMixin:
     search_param = 'q'
     search_field = None
 
-    def test_haystack_search(self, client, user_role, request):
+    def test_haystack_search(self, client, user_role, auth_method, request):
         self.setup_fixtures(request)
 
         data = {self.search_param: getattr(self.target(), self.search_field)}
-        kwargs = self.prepare_request(client, user_role, data, json=False)
+        kwargs = self.prepare_request(client, user_role, auth_method, data, json=False)
         response = client.get(self.base_url + self.search_suffix, **kwargs)
 
         if self.thats_all_folk('list', response, user_role):
