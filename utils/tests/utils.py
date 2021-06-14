@@ -93,6 +93,9 @@ class AbstractHelpTestForAPI:
         else:
             return True
 
+    def target(self):
+        return getattr(self, self.fixtures[0])
+
     def requestor(self, role):
         if role == 'user':
             return self.user

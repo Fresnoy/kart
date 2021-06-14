@@ -52,9 +52,6 @@ class TestArtistRessource(HelpTestForReadOnlyModelRessource):
     post_fields = ['user']
     hyperlinked_fields = {'user': 'people/user'}
 
-    def target(self):
-        return self.artist
-
     def requestor(self, role):
         return self.artist.user
 
@@ -71,9 +68,6 @@ class TestStaffRessource(HelpTestForReadOnlyModelRessource):
     post_fields = ['user']
     hyperlinked_fields = {'user': 'people/user'}
 
-    def target(self):
-        return self.staff
-
     def requestor(self, role):
         return self.staff.user
 
@@ -86,6 +80,3 @@ class TestOrganizationRessource(HelpTestForReadOnlyModelRessource):
 
     expected_list_size = 2
     expected_fields = ['name']
-
-    def target(self):
-        return self.organization

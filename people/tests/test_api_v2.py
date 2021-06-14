@@ -28,9 +28,6 @@ class TestUserViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestForMod
     put_fields = ['username', 'last_name', 'first_name']
     built_fields = {'username': lambda x: x.username + '-bis'}
 
-    def target(self):
-        return self.user
-
 
 @pytest.mark.django_db
 class TestPrivateUserProfileViewSet(TestUserViewSet):
@@ -69,9 +66,6 @@ class TestProfileViewSet(HelpTestForModelViewSet):
     mutate_fields = ['nationality']
     put_fields = ['nationality']
 
-    def target(self):
-        return self.profile
-
     def requestor(self, role):
         return self.profile.user
 
@@ -88,9 +82,6 @@ class TestArtistViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestForM
     mutate_fields = ['nickname']
     put_fields = ['nickname', 'user']
     hyperlinked_fields = {'user': 'user'}
-
-    def target(self):
-        return self.artist
 
     def requestor(self, role):
         return self.artist.user
@@ -113,9 +104,6 @@ class TestStaffViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestForMo
     def test_post(self):
         return
 
-    def target(self):
-        return self.staff
-
     def requestor(self, role):
         return self.staff.user
 
@@ -131,6 +119,3 @@ class TestOrganizationViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTe
 
     mutate_fields = ['name']
     put_fields = ['name', 'description']
-
-    def target(self):
-        return self.organization

@@ -159,9 +159,6 @@ class TestFilmGenreViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelViewSet):
 
     mutate_fields = ['label']
 
-    def target(self):
-        return self.film_genre
-
 
 @pytest.mark.django_db
 class TestInstallationGenreViewSet(ReadOnlyModelViewSetMixin, HelpTestForModelViewSet):

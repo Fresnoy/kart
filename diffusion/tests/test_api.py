@@ -16,13 +16,10 @@ def pytest_generate_tests(metafunc):
 class TestPlaceRessource(HelpTestForReadOnlyModelRessource):
     resource = api.PlaceResource
 
-    fixtures = ['user', 'place']
+    fixtures = ['place', 'user']
 
     expected_list_size = 1
     expected_fields = ['name', 'latitude', 'longitude']
-
-    def target(self):
-        return self.place
 
 
 @pytest.mark.django_db
@@ -33,9 +30,6 @@ class TestAwardRessource(HelpTestForReadOnlyModelRessource):
 
     expected_list_size = 1
     expected_fields = ['date', 'meta_award', 'artwork', 'artist']
-
-    def target(self):
-        return self.award
 
     def requestor(self, role):
         return self.artist.user
@@ -49,6 +43,3 @@ class TestMetaAwardRessource(HelpTestForReadOnlyModelRessource):
 
     expected_list_size = 1
     expected_fields = ['label', 'event', 'task']
-
-    def target(self):
-        return self.meta_award

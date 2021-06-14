@@ -30,9 +30,6 @@ class TestBTBeaconViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestFo
     put_fields = ['rssi_in', 'rssi_out', 'uuid', 'x', 'y', 'label']
     built_fields = {'uuid': lambda x: str(uuid4())}
 
-    def target(self):
-        return self.btbeacon
-
 
 @pytest.mark.django_db
 class TestWebsiteViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestForModelViewSet):
@@ -47,6 +44,3 @@ class TestWebsiteViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestFor
     put_fields = ['link', 'language', 'title_fr', 'title_en']
     hyperlinked_fields = {'url': 'website'}
     renamed_fields = {'link': 'url'}
-
-    def target(self):
-        return self.website
