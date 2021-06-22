@@ -7,12 +7,19 @@ update_from_webformcsv
 Update Kart with data extracted from a webform produced csv file.
 
 Data source : https://www.lefresnoy.net/fr/node/6059/webform
+
+
+Admitted rules
+--------------
+If a user can not be found in Kart from csv data, no further research for potential match with artist or student data in csv is made
+
 """
 
 
 import os
 import sys
 import re
+import time
 
 from difflib import SequenceMatcher
 import pathlib
@@ -20,6 +27,7 @@ import logging
 import pandas as pd
 import pytz
 from datetime import datetime
+import json
 
 from django.db.utils import IntegrityError
 from django_countries import countries
@@ -41,10 +49,11 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kart.settings")
 django.setup()
 ################## end shell plus
 
-from production.models import Artwork, Event
+from production.models import Artwork, Event, Film, Installation
 from people.models import Artist
 from diffusion.models import Award, MetaAward, Place
 from school.models import Student, Promotion
+from django.contrib.auth.models import User
 # Full width print of dataframe
 pd.set_option('display.expand_frame_repr', False)
 
@@ -63,7 +72,7 @@ CharField.register_lookup(Lower)
 
 # Logging
 logger = logging.getLogger('import_awards')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.CRITICAL)
 # clear the logs
 open('import_csv.log', 'w').close()
 # create file handler which logs even debug messages
@@ -90,7 +99,45 @@ tz = pytz.timezone('Europe/Paris')
 # Clear terminal
 os.system('clear')
 
+##################################################
+# Mappings btw webforms fields and Kart's fields #
+##################################################
+wf2kart_mapping = {
+    'user' : {
+        'e_mail':'email',
+        'nom_prenom':'XXXXX',
+        'lastname':'last_name',
+        'firstname':'first_name',
+        'views_add':''
+    },
 
+    'artist' : {
+        'nom_dartiste':'nickname',
+        'biographie':'bio_fr',
+        'biogaphie_en':'bio_en'
+    },
+
+    'student' : {
+        'promotion':'promotion',
+    },
+
+    'artwork' : {
+        'type':'type',
+        'titre':'title',
+        'sous_titre':'subtitle',
+        'duree':'duration',
+        'dream_theme':'',
+        'description___texte_catalogue':'description_fr',
+        'description___texte_catalogue_en':'description_en',
+        'remerciements':'thanks_fr',
+        'Nom':'',
+        'Taille du fichier (KB)':'',
+        'description_des_partenaires':'',
+        'Nom':'',
+        'Taille du fichier (KB)':''
+    }
+
+}
 # def testAwardsProcess():
 #     """Stats stuff about the awards
 #
@@ -149,51 +196,274 @@ def clean_csv(csv_path, dest='./') :
 
     """
 
-    csv = pd.read_csv(csv_path, skiprows=2)
-    # print(csv)
+    csv_df = pd.read_csv(csv_path, skiprows=2)
 
-    if "nom_prenom" not in csv.keys() :
+    if "nom_prenom" not in csv_df.keys() :
         logger.error("The csv file does not seem to be well formated. Make sure 'Form Key' header format is checked when exporting from webform.")
         return
 
     # Activate or not some processes (debuging)
     check_name = True
 
+    # The list holding validated (with match in Kart) user objects
+    existing_users = list()
+    # The list holding user objects that need to be created
+    missing_users = list()
+
     # The list holding validated (with match in Kart) artist objects
-    valid_artists = list()
-    # Extract the uppercase string to get the lastname (TODO : should separate columns in webform)
-    for name in csv["nom_prenom"] :
-        if not check_name : continue #
+    existing_artists = list()
+    # The list holding artist objects that need to be created
+    missing_artists = list()
+
+    # The list holding validated (with match in Kart) student objects
+    existing_students = list()
+    # The list holding student objects that need to be created
+    missing_students = list()
+
+    # The list holding validated (with match in Kart) artwork objects
+    valid_artworks = list()
+    # The list holding artwork objects that need to be created
+    create_artworks = list()
+
+
+    # external json file for dream themes [{'id':23, theme:'A'}, {'id':543, theme:'C'}, ...]
+    dream_df = list()
+
+
+# Serializing json
+json_object = json.dumps(dictionary, indent = 4)
+
+    # Data filtering and extraction from the csv
+    for index, row in csv_df.iterrows() :
+        # Init user
+        user = None
+
+        # First, try to retrieve the user from Kart from first and last names
+        name = row["nom_prenom"]
+
+        if not check_name : continue # Bypass check_name
+
+        # Extract the uppercase string to get the lastname (TODO : should separate columns in webform)
         # List from string with space separator
         nn = [unkown for unkown in name.split(' ')]
 
+        # Init lists
         firstname = list()
         lastname = list()
 
         # Set lastname when string is fully uppercased, firstname otherwise
         # strip strings as leading space may occur
         for unknown in nn :
-            is_all_uppercase = unknown.isupper() and unknown.isalpha()
-            if is_all_uppercase :
+            is_all_uppercase = [letter.isupper() for letter in unknown if letter.isalpha()]
+            if all(is_all_uppercase) :
                 lastname += [unknown]
-            elif unknown.isalpha():
+            else :
                 firstname += [unknown]
-        firstname = " ".join(firstname)
-        lastname = " ".join(lastname)
 
-        # Try to retrieve the artist from Kart
-        artist = getArtistByNames(lastname = lastname, firstname = firstname)
+        # Convert lists to strings
+        firstname = (" ".join(firstname)).strip()
+        lastname = (" ".join(lastname)).strip()
 
-        logger.info(f"Artiste recherché : prénom > {firstname}, nom > {lastname}")
-        if not artist :
-            logger.info("Not found")
-        elif artist['dist']>1.8 :
-            logger.info(f"Artist found {artist}")
-            valid_artists += [artist['artist']]
-        elif artist['dist']>1 :
-            logger.info(f"Artist maybe found ? {artist}")
-        else :
-            logger.info("Artist not found in Kart")
+        # Fill new firstname and lastname columns in csv
+        csv_df.loc[index,'firstname'] = firstname
+        csv_df.loc[index,'lastname'] = lastname
+
+        # User obj to created / updated
+        user_obj = User (
+                    username    =   "",
+                    first_name  =   firstname,
+                    last_name   =   lastname,
+                    email       =   row[kart2webf('user','email')],
+                    password    =   ""
+                )
+
+        # Prepare the creation of an artist object
+        artist_obj = Artist (
+                    nickname    =   row[kart2webf('artist', 'nickname')],
+                    bio_fr      =   row[kart2webf('artist', 'bio_fr')],
+                    bio_en      =   row[kart2webf('artist', 'bio_en')],
+        )
+
+        # Prepare the creation of a student object
+        student_obj = Student ()
+
+        ##########
+        #  USER  #
+        ##########
+
+        logger.info(f"User recherché : prénom > {firstname}, nom > {lastname}")
+        # Try to retrieve the artist from Kart from first and last names
+        userSearch = getUserByNames(lastname=lastname, firstname=firstname)
+
+
+        # If csv user match in Kart (dist = similarity btw csv last and firstnames and Kart's)
+        if userSearch and userSearch['dist']>1.8 :
+            # Get the user object from search
+            user = userSearch['user']
+
+            logger.info(f"User found {userSearch}")
+
+            # Add user to existing users list
+            existing_users += [user]
+
+            # Set user_found col in csv
+            csv_df.loc[index,'user_found'] = True
+            csv_df.loc[index,'user_id'] = user.id
+
+            ###########
+            # ARTISTS #
+            ###########
+            # Check if artist object is associated with user
+            try :
+                # Get the artist with matching user id
+                artist = Artist.objects.get(user__pk=user.id)
+                # print("Associated artist ! ", artist)
+                existing_artists += [artist]
+                # Check artist_found in csv
+                csv_df.loc[index,'artist_found'] = True
+                csv_df.loc[index,'artist_id'] = artist.id
+
+            except:
+                csv_df.loc[index,'artist_found'] = False
+                missing_artists += [artist_obj]
+                pass
+
+            ############
+            # STUDENTS #
+            ############
+            # Check if student object is associated with user
+            try :
+                # Get the student with matching user and artist ids
+                student = Student.objects.get(user__pk=user.id, artist__pk=artist.id)
+                # print("Associated student ! ", student)
+                existing_students += [student]
+                # Check student_found in csv
+                csv_df.loc[index,'student_found'] = True
+                csv_df.loc[index,'student_id'] = student.id
+
+            except:
+                csv_df.loc[index,'student_found'] = False
+                missing_students += [student_obj]
+                pass
+
+        else : # if no user match in Kart
+            csv_df.loc[index,'user_found'] = False
+            csv_df.loc[index,'artist_found'] = False
+            csv_df.loc[index,'student_found'] = False
+            logger.info("Not found in Kart, add to create list.")
+            # Add the index of the row to the list of users to create
+            missing_users += [user]
+
+        ############
+        # ARTWORKS #
+        ############
+
+        # Check if aw not already in Kart (should not !)
+        # Try to retrieve artworks from Kart with user in authors
+        if user :
+            try :
+                aw_kart = Artwork.objects.prefetch_related('authors__user').filter(authors__user=user.id)
+                # If an aw is found, we compare with the csv title
+                if dist2(aw.title, row[kart2webf('artwork','title')]) >.8 :
+                    for aw in aw_kart :
+                        print("\tAssociated artworks in Kart : ", aw.title)
+                        print("\t                     in csv : ", row[kart2webf('artwork','title')])
+                        print("---->" , dist2(aw.title, row[kart2webf('artwork','title')]))
+            except:
+                logger.info("No related artwork in Kart")
+                pass
+        print('\n')
+
+        # Get the type from csv
+        aw_type = row['type']
+
+        print("Type", aw_type)
+        artwork_obj = ""
+
+        if "installation" == aw_type.lower() :
+                artwork_obj = Installation (
+                            title            =   row[kart2webf('artwork', 'title')],
+                            subtitle         =   row[kart2webf('artwork', 'subtitle')],
+                            description_fr   =   row[kart2webf('artwork', 'description_fr')],
+                            description_en   =   row[kart2webf('artwork', 'description_en')],
+                            thanks_fr        =   row[kart2webf('artwork', 'thanks_fr')],
+                )
+
+        if "film" == aw_type.lower() :
+                artwork_obj = Film (
+                            title            =   row[kart2webf('artwork', 'title')],
+                            subtitle         =   row[kart2webf('artwork', 'subtitle')],
+                            duration         =   row[kart2webf('artwork', 'duration')],
+                            description_fr   =   row[kart2webf('artwork', 'description_fr')],
+                            description_en   =   row[kart2webf('artwork', 'description_en')],
+                            thanks_fr        =   row[kart2webf('artwork', 'thanks_fr')],
+                )
+        print("ARTWORK", artwork_obj)
+
+        # Dream theme -> external json file
+        dream_df += [{'id':'', 'theme':row['dream_theme']}]
+
+    with open('./dream_themes.json', 'w') as fout:
+        json.dumps(dream_df)
+
+        # Prepare the creation of an artist object
+        # artwork_obj = Artwork (
+        #
+        #             title            =   row[kart2webf('artwork', 'title')],
+        #             subtitle         =   row[kart2webf('artwork', 'subtitle')],
+        #             duration         =   row[kart2webf('artwork', 'duration')],
+        #             description_fr   =   row[kart2webf('artwork', 'description_fr')],
+        #             description_en   =   row[kart2webf('artwork', 'description_en')],
+        #             thanks_fr        =   row[kart2webf('artwork', 'thanks_fr')],
+        # )
+        #
+
+
+
+
+
+
+
+
+
+
+    # # Check if artist object exists from existing users
+    # print("Checking existing artists in existing users...")
+    # for user in existing_users :
+    #     artist = Artist.objects.get(user__pk=user.id)
+    #
+    # # Check if artist object exists from users to create (should not !)
+    # print("Checking existing artists in missing users...")
+    # for user in missing_users :
+    #     try :
+    #         artist = Artist.objects.get(user__pk=user.id)
+    #     except :
+    #         print("Not an artist : ",user)
+    #         pass
+
+        # Explore the first artist (révisions :) !)
+        # artist = existing_users[0]
+
+        ############
+        # STUDENTS #
+        ############
+        # promotion   =   getPromoByName(row[kart2webf('student','promotion')]),
+            # try :
+            #     student = Student.objects.get(pk=artist.student.id)
+            #     print('student', student)
+            # except :
+            #     print("Not a student : ",user)
+            #     pass
+    # print(csv_df)
+    # cols containing "_id"
+    cols = [col for col in csv_df.columns if '_id' in col]
+    csv_df[cols] = csv_df[cols].fillna(0)
+    csv_df[cols] = csv_df[cols].astype(int)
+    csv_df.to_csv('merged.csv',index=False)
+    exit()
+
+
+
 
     # Artwork process
     # Check if artwork already exists
@@ -204,16 +474,6 @@ def clean_csv(csv_path, dest='./') :
 
 
 
-    for artist in valid_artists :
-        try :
-            student = Student.objects.get(pk=artist.student.id)
-            print('student', student)
-        except :
-            print("Not a student : ",artist)
-            pass
-    exit()
-    # Explore the first artist (révisions :) !)
-    artist = valid_artists[0]
     # print(artist.user)
     # print(artist.student.__dict__)
 
@@ -231,43 +491,12 @@ def clean_csv(csv_path, dest='./') :
     # USER
     # {'_state':, 'id': 1513, 'password': '', 'last_login': datetime.datetime(2019, 4, 23, 13, 22, 48, tzinfo=<UTC>), 'is_superuser': , 'username': 'inessieulle', 'first_name': 'Inès', 'last_name': 'Sieulle', 'email': 'ines.sieulle@gmail.com', 'is_staff': False, 'is_active': True, 'date_joined': }
 
-    # For each field provided by webform, check if a non empty version of the field exists in Kart
-    user_mapping = {
-        'e_mail':'email',
-        'nom_prenom':'XXXXX',
-        'lastname':'last_name',
-        'firstname':'first_name',
-        'promotion':'',
-        'views_add':''
-    }
-
     # Identify the promotion
     promo = Promotion.objects.get(pk=artist.student.promotion_id)
     print(promo.__dict__)
     student_mapping = {
         'promotion':'',
     }
-
-    artist_mapping = {
-        'nom_dartiste':'nickname',
-        'biographie':'bio_fr',
-        'biogaphie_en':'bio_en'
-    }
-
-    artwork_mapping = {
-    'type':'',
-    'titre':'title',
-    'sous_titre':'',
-    'duree':'',
-    'dream_theme':'',
-    'description___texte_catalogue':'',
-    'description___texte_catalogue_en':'',
-    'remerciements':'',
-    'Nom':'',
-    'Taille du fichier (KB)':'',
-    'description_des_partenaires':'',
-    'Nom':'',
-    'Taille du fichier (KB)':''}
 
 
         # logger.info("\n\n")
@@ -296,12 +525,35 @@ def clean_csv(csv_path, dest='./') :
 
 ###############################################################     Below : from projet diff ########################
 
+def getPromoByName(promo_name="") :
+    ''' Return a promotion object from a promo name'''
+    # First filter by lastname similarity
+    guessPromo = Promotion.objects.annotate(
+                                        similarity=TrigramSimilarity('name', promo_name)
+                                   ).filter(
+                                        similarity__gt=0.8
+                                    ).order_by('-similarity')
+    if guessPromo :
+        print(promo_name, "------------->",guessPromo[0])
+        return guessPromo[0]
+    print("Promo non trouvée", promo_name)
+    return False
+
+def webf2kart(model="",field=""):
+    ''' Return the corresponding field name in Kart from Webform field name'''
+    return wf2kart_mapping[model][field]
 
 
-
+def kart2webf(model="",field=""):
+    ''' Return the corresponding field name in Webform from Kart field name'''
+    if model in wf2kart_mapping.keys() :
+        for k, v in wf2kart_mapping[model].items():
+            if v == field : return k
+    return False
 
 def dist2(item1, item2):
     """Return the distance between the 2 strings"""
+    # print(f"dist2 {item1} versus {item2}")
     if not type(item1) == type(item2) == str:
         raise TypeError("Parameters should be str.")
     return round(SequenceMatcher(None, item1.lower(), item2.lower()).ratio(), 2)
@@ -454,8 +706,7 @@ def getArtworkByTitle(aw_title):
 
 search_cache = {}
 
-
-def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TODO pseudo
+def getArtistByNames(firstname="", lastname="", pseudo="", listing=False): # TODO pseudo
     """Retrieve the closest artist from the first and last names given
 
     Parameters:
@@ -466,6 +717,24 @@ def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TO
 
     Return:
     - artistObj    : (Django obj / bool) The closest artist object found in Kart. False if no match.
+    - dist         : (float) Distance with the given names
+    """
+    user = getUserByNames(firstname, lastname, listing=listing)
+    if user :
+        return Artist.objects.get(user__pk=user.id)
+    return False
+
+
+def getUserByNames(firstname="", lastname="", pseudo="", listing=False): # TODO remove pseudo from params
+    """Retrieve the closest user from the first and last names given
+
+    Parameters:
+    - firstname: (str) Firstname to look for
+    - lastname : (str) Lastname to look for
+    - listing  : (bool) If True, return a list of matching artists (Default, return the closest)
+
+    Return:
+    - artistObj    : (Django obj / bool) The closest user object found in Kart. False if no match.
     - dist         : (float) Distance with the given names
     """
 
@@ -482,8 +751,8 @@ def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TO
             "\n** getArtistByNames **\nfirstname,lastname,pseudo must be strings")
         return False
 
-    # List of artists that could match
-    art_l = []
+    # List of users that could match
+    users_l = []
 
     # Clean names from accents to
     if lastname:
@@ -492,9 +761,9 @@ def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TO
     if firstname:
         # firstname_accent = firstname
         firstname = unidecode.unidecode(firstname).lower()
-    if pseudo:
-        # pseudo_accent = pseudo
-        pseudo = unidecode.unidecode(pseudo).lower()
+    # if pseudo:
+    #     # pseudo_accent = pseudo
+    #     pseudo = unidecode.unidecode(pseudo).lower()
     fullname = f"{firstname} {lastname}"
 
     # Cache
@@ -506,13 +775,24 @@ def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TO
         pass
 
     # SEARCH WITH LASTNAME then FIRSTNAME
+    # # First filter by lastname similarity
+    # guessArtLN = Artist.objects.prefetch_related('user').annotate(
+    #     # Concat the full name "first last" to detect misclassifications like: "Hee Won -- Lee" where Hee Won is first
+    #     # name but can be stored as "Hee  -- Won Lee"
+    #     search_name=Concat('user__first_name__unaccent__lower',
+    #                        Value(' '), 'user__last_name__unaccent__lower')
+    # ).annotate(
+    #     similarity=TrigramSimilarity('search_name', fullname),
+    # ).filter(
+    #     similarity__gt=0.3
+    # ).order_by('-similarity')
+
     # First filter by lastname similarity
-    guessArtLN = Artist.objects.prefetch_related('user'
-                                                 ).annotate(
+    guessArtLN = User.objects.annotate(
         # Concat the full name "first last" to detect misclassifications like: "Hee Won -- Lee" where Hee Won is first
         # name but can be stored as "Hee  -- Won Lee"
-        search_name=Concat('user__first_name__unaccent__lower',
-                           Value(' '), 'user__last_name__unaccent__lower')
+        search_name=Concat('first_name__unaccent__lower',
+                           Value(' '), 'last_name__unaccent__lower')
     ).annotate(
         similarity=TrigramSimilarity('search_name', fullname),
     ).filter(
@@ -522,14 +802,16 @@ def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TO
     # Refine results
     if guessArtLN:
         # TODO: Optimize by checking a same artist does not get tested several times
-        for artist_kart in guessArtLN:
+        for user_kart in guessArtLN:
 
+            # print(f"\tARTIST : {user_kart}")
             # Clear accents (store a version with accents for further accents issue detection)
-            kart_lastname_accent = artist_kart.user.last_name
+            kart_lastname_accent = user_kart.last_name
             kart_lastname = unidecode.unidecode(kart_lastname_accent).lower()
-            kart_firstname_accent = artist_kart.user.first_name
+            kart_firstname_accent = user_kart.first_name
             kart_firstname = unidecode.unidecode(kart_firstname_accent).lower()
-            # kart_fullname_accent = artist_kart.search_name
+            kart_fullname_accent = user_kart.search_name
+            # print(f"\t\tuser_kart.search_name {user_kart.search_name}")
             kart_fullname = f"{kart_firstname} {kart_lastname}".lower()
 
             dist_full = dist2(kart_fullname, fullname)
@@ -540,7 +822,7 @@ def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TO
                 if kart_fullname == fullname:
                     # store the artist in potential matches with extreme probability (2)
                     # and continue with next candidate
-                    art_l.append({"artist": artist_kart, 'dist': 2})
+                    users_l.append({"user": user_kart, 'dist': 2})
                     continue
                 # Check if Kart and candidate names are exactly the same
                 elif kart_lastname != lastname or kart_firstname != firstname :
@@ -549,7 +831,7 @@ def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TO
                     Kart       first: {kart_firstname} last: {kart_lastname}
                     candidate  first: {firstname} last: {lastname}
                                             """)
-                    art_l.append({"artist": artist_kart, 'dist': dist_full*2})
+                    users_l.append({"user": user_kart, 'dist': dist_full*2})
                     # ### Control for accents TODO still necessary ?
                     #
                     # accent_diff = kart_lastname_accent != lastname_accent or \
@@ -564,13 +846,13 @@ def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TO
 
             if kart_lastname.find(" ") >= 0 or lastname.find(" ") >= 0:
                 # Check distance btw lastnames without spaces
-                if dist2(kart_lastname.replace(" ", ""), lastname.replace(" ", "")) < .9:
+                if dist2(kart_lastname.replace(" ", ""), lastname.replace(" ", "")) > .9:
                     bef = f"\"{kart_lastname}\" <> \"{lastname}\""
                     logger.warning(f"whitespace problem ? {bef}")
 
             if kart_firstname.find(" ") >= 0 or firstname.find(" ") >= 0:
                 # Check distance btw firstnames without spaces
-                if dist2(kart_firstname.replace(" ", ""), firstname.replace(" ", "")) < .9:
+                if dist2(kart_firstname.replace(" ", ""), firstname.replace(" ", "")) > .9:
                     bef = f"\"{kart_firstname}\" <> \"{firstname}\""
                     logger.warning(f"whitespace problem ? {bef}")
             ###
@@ -580,46 +862,52 @@ def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TO
             # Distance btw the lastnames
             dist_lastname = dist2(kart_lastname, lastname)
 
-            # try to find by similarity with firstname
-            guessArtFN = Artist.objects.prefetch_related('user').annotate(
-                similarity=TrigramSimilarity('user__first_name__unaccent', firstname),
-            ).filter(user__last_name=lastname, similarity__gt=0.8).order_by('-similarity')
+            # # try to find by similarity with firstname
+            # guessArtFN = Artist.objects.prefetch_related('user').annotate(
+            #     similarity=TrigramSimilarity('user__first_name__unaccent', firstname),
+            # ).filter(user__last_name=lastname, similarity__gt=0.8).order_by('-similarity')
 
-            # if artist whose lastname is the candidate's with similar firstname names are found
-            if guessArtFN:
+            guessUserFN = User.objects.annotate(
+                similarity=TrigramSimilarity('first_name__unaccent', firstname),
+            ).filter(last_name=lastname, similarity__gt=0.8).order_by('-similarity')
 
-                # Check artists with same lastname than candidate and approaching firstname
-                for artistfn_kart in guessArtFN:
-                    kart_firstname = unidecode.unidecode(artistfn_kart.user.first_name)
+
+            # if user whose lastname is the candidate's with similar firstname names are found
+            if guessUserFN:
+
+                # Check users with same lastname than candidate and approaching firstname
+                for userfn_kart in guessUserFN:
+                    kart_firstname = unidecode.unidecode(userfn_kart.first_name)
                     # Dist btw candidate firstname and a similar found in Kart
                     dist_firstname = dist2(f"{kart_firstname}", f"{firstname}")
                     # Add the candidate in potential matches add sum the distances last and firstname
-                    art_l.append({"artist": artistfn_kart, 'dist': dist_firstname+dist_lastname})
+                    users_l.append({"user": userfn_kart, 'dist': dist_firstname+dist_lastname})
 
                     # Distance evaluation with both first and last name at the same time
                     dist_name = dist2(f"{kart_firstname} {kart_lastname}",
                                       f"{firstname} {lastname}")
                     # Add the candidate in potential matches add double the name_dist (to score on 2)
-                    art_l.append({"artist": artistfn_kart, 'dist': dist_name*2})
+                    users_l.append({"user": userfn_kart, 'dist': dist_name*2})
 
             else:
                 # If no close firstname found, store with the sole dist_lastname (unlikely candidate)
-                art_l.append({"artist": artist_kart, 'dist': dist_lastname})
+                users_l.append({"user": user_kart, 'dist': dist_lastname})
+
+            ### end for user_kart in guessArtLN
 
         # Take the highest distance score
-        art_l.sort(key=lambda i: i['dist'], reverse=True)
+        users_l.sort(key=lambda i: i['dist'], reverse=True)
 
         # Return all results if listing is true, return the max otherwise
         if listing:
-            search_cache[fullkey] = art_l
-            return art_l
+            search_cache[fullkey] = users_l
+            return users_l
         else:
-            search_cache[fullkey] = [art_l[0]]
-            return art_l[0]
+            search_cache[fullkey] = [users_l[0]]
+            return users_l[0]
     else:
         # research failed
         search_cache[fullkey] = False
-
         return False
     #####
 
@@ -1164,6 +1452,21 @@ def createAwards():
 # art = getArtistByNames(firstname="Daphné", lastname="Hérétakis", pseudo=None, listing=False)
 # print('\n')
 # print(art['artist'].id)
+
+
+
+#   _____ _      ______          _   _
+#  / ____| |    |  ____|   /\   | \ | |
+# | |    | |    | |__     /  \  |  \| |
+# | |    | |    |  __|   / /\ \ | . ` |
+# | |____| |____| |____ / ____ \| |\  |
+#  \_____|______|______/_/    \_\_| \_|
+#
+# TODO Database cleanings :
+# - strip : remove leading / trailing spaces in string fields
+
+
+
 
 if __name__ == "__main__" :
     run_import()
