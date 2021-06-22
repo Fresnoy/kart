@@ -196,7 +196,8 @@ def clean_csv(csv_path, dest='./') :
 
     """
 
-    csv_df = pd.read_csv(csv_path, skiprows=2)
+    csv_df = pd.read_csv(csv_path, skiprows=2, encoding='utf8')
+
 
     if "nom_prenom" not in csv_df.keys() :
         logger.error("The csv file does not seem to be well formated. Make sure 'Form Key' header format is checked when exporting from webform.")
@@ -227,11 +228,7 @@ def clean_csv(csv_path, dest='./') :
 
 
     # external json file for dream themes [{'id':23, theme:'A'}, {'id':543, theme:'C'}, ...]
-    dream_df = list()
-
-
-# Serializing json
-json_object = json.dumps(dictionary, indent = 4)
+    dream_l = list()
 
     # Data filtering and extraction from the csv
     for index, row in csv_df.iterrows() :
@@ -354,6 +351,21 @@ json_object = json.dumps(dictionary, indent = 4)
             # Add the index of the row to the list of users to create
             missing_users += [user]
 
+            # Username from fist and last names
+            username = usernamize(firstname, lastname)
+            i = 2
+
+            # Check if username is already taken, add 2, 3, 4 ... until its unique
+            while objExist(User,default_index=None,username=username) :
+                username = usernamize(firstname, lastname) + f"{i}"
+                i+=1
+
+            user_obj.username = username
+            user_obj.save()
+
+            print("id ",user_obj.id)
+        continue
+
         ############
         # ARTWORKS #
         ############
@@ -376,8 +388,6 @@ json_object = json.dumps(dictionary, indent = 4)
 
         # Get the type from csv
         aw_type = row['type']
-
-        print("Type", aw_type)
         artwork_obj = ""
 
         if "installation" == aw_type.lower() :
@@ -398,28 +408,14 @@ json_object = json.dumps(dictionary, indent = 4)
                             description_en   =   row[kart2webf('artwork', 'description_en')],
                             thanks_fr        =   row[kart2webf('artwork', 'thanks_fr')],
                 )
-        print("ARTWORK", artwork_obj)
+        # print("ARTWORK", artwork_obj)
 
         # Dream theme -> external json file
-        dream_df += [{'id':'', 'theme':row['dream_theme']}]
+        dream_l += [{'id':'', 'theme':row['dream_theme']}]
 
+    # Store the dream themes in an external json file
     with open('./dream_themes.json', 'w') as fout:
-        json.dumps(dream_df)
-
-        # Prepare the creation of an artist object
-        # artwork_obj = Artwork (
-        #
-        #             title            =   row[kart2webf('artwork', 'title')],
-        #             subtitle         =   row[kart2webf('artwork', 'subtitle')],
-        #             duration         =   row[kart2webf('artwork', 'duration')],
-        #             description_fr   =   row[kart2webf('artwork', 'description_fr')],
-        #             description_en   =   row[kart2webf('artwork', 'description_en')],
-        #             thanks_fr        =   row[kart2webf('artwork', 'thanks_fr')],
-        # )
-        #
-
-
-
+        json.dump(dream_l, fout)
 
 
 
@@ -523,7 +519,22 @@ json_object = json.dumps(dictionary, indent = 4)
 
 
 
-###############################################################     Below : from projet diff ########################
+################################################################
+
+def usernamize(fn="", ln="") :
+    ''' Return a username from first and lastname '''
+    # Check if multipart firstname
+    fn_l = re.split('\W+',fn)
+    # Extract first letter of each fn part
+    fn_l = [part[0].lower() for part in fn_l if part.isalpha()]
+    # Lower lastname and remove non alpha chars
+    ln_l = [letter.lower() for letter in ln if letter.isalnum()]
+    # Concat strings
+    username = "".join(fn_l) + "".join(ln_l)
+    # Remove any special characters
+    username = unidecode.unidecode(username)
+    # Trim at 10 characters
+    return username[:10]
 
 def getPromoByName(promo_name="") :
     ''' Return a promotion object from a promo name'''
