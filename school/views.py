@@ -134,6 +134,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                 errors = {'candidature': 'you are not able to create another candidature this session'}
                 return Response(errors, status=status.HTTP_409_CONFLICT)
         else:
+            # FIXME: dead code: handled by APIView.permission_denied which raise HTTP_403
             errors = {'candidature': 'forbidden'}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
 
@@ -161,12 +162,13 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                 request.data.get('wait_listed_for_interview') or
                 request.data.get('position_in_waitlist') or
                 request.data.get('position_in_interview_waitlist') or
-                request.data.get('application_complete') or
+                request.data.get('application_complete') or  # FIXME: complete or completed?
                 request.data.get('campaign'))
         ):
             errors = {'Error': 'Field permission denied'}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
 
+        # FIXME: dead code since it never pass througth the previous test
         # send email to admin and USER (who click) is completed
         if(request.data.get('application_completed')):
             application = self.get_object()

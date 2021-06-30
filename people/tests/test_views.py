@@ -121,7 +121,7 @@ class TestSendCustomEmails:
         'user_role, method, expected_code, expected_email', [
             (None, 'post', 403, 0),
             ('user', 'post', 401, 0),
-            ('admin', 'post', 401, 0),
+            ('admin', 'post', 200, 1),
             ('staff', 'get', 406, 0),
             ('staff', 'post', 200, 1),
             ('staff_bad_request', 'post', 406, 0),
@@ -159,7 +159,6 @@ class TestSendCustomEmails:
 
         url = reverse('send-emails')
         response = getattr(client, method)(url, data=data)
-        print(response, response.content.decode())
 
         assert response.status_code == expected_code
         assert len(mailoutbox) == expected_email

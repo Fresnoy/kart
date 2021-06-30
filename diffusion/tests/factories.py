@@ -50,6 +50,7 @@ class MetaEventFactory(factory.django.DjangoModelFactory):
         model = models.MetaEvent
 
     event = factory.SubFactory(EventFactory, main_event=True)
+    genres = factory.fuzzy.FuzzyChoice(models.MetaEvent.GENRES_CHOICES, getter=first)
 
 
 class DiffusionFactory(factory.django.DjangoModelFactory):
