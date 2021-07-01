@@ -104,9 +104,11 @@ class Artwork(Production):
     keywords = TaggableManager(blank=True,)
 
     def __str__(self):
-        authors = (", ".join([author.__str__() for author in self.authors.all()])
-                   if self.authors.count() > 0 else "?")
-        return '{0} ({1}) de {2}'.format(self.title, self.production_date.year, authors)
+        try :
+            authors = ", ".join([author.__str__() for author in self.authors.all()])
+            return f"{self.title} ({ self.production_date.year}) de {authors}'"
+        except :
+            return "Artwork not yet created"
 
 
 class FilmGenre(models.Model):
