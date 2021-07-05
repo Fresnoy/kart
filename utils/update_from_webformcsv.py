@@ -59,7 +59,7 @@ pd.set_option('display.expand_frame_repr', False)
 
 
 # TODO: Harmonise created and read files (merge.csv, ...)
-DRY_RUN = True  # No save() if True
+DRY_RUN = False  # No save() if True
 DEBUG = True
 
 # Set file location as current working directory
@@ -71,8 +71,8 @@ os.chdir(pathlib.Path(__file__).parent.absolute())
 CharField.register_lookup(Lower)
 
 # Logging
-logger = logging.getLogger('import_awards')
-logger.setLevel(logging.CRITICAL)
+logger = logging.getLogger('import_pano_data')
+logger.setLevel(logging.DEBUG)
 # clear the logs
 open('import_csv.log', 'w').close()
 # create file handler which logs even debug messages
@@ -132,7 +132,7 @@ wf2kart_mapping = {
         'remerciements':'thanks_fr',
         'Nom':'',
         'Taille du fichier (KB)':'',
-        'description_des_partenaires':'',
+        'description_des_partenaires':'partners_txt',  # Partenaires à la mano ?
         'Nom':'',
         'Taille du fichier (KB)':''
     }
@@ -180,7 +180,7 @@ def run_import() :
     """ Main function to call to trigger the import process """
 
     # Clean the csv from udesired data (TODO : csv path as argument)
-    clean_csv("/Users/ocapra/Dropbox/_PROJECTS/KART/kart/utils/catalogue_panorama_23.csv")
+    clean_csv("./catalogue_panorama_23.csv")
 
 
 # Clean the csv
@@ -197,7 +197,7 @@ def clean_csv(csv_path, dest='./') :
     """
 
     csv_df = pd.read_csv(csv_path, skiprows=2, encoding='utf8')
-
+    clean_df = pd.DataFrame()
 
     if "nom_prenom" not in csv_df.keys() :
         logger.error("The csv file does not seem to be well formated. Make sure 'Form Key' header format is checked when exporting from webform.")
@@ -226,47 +226,33 @@ def clean_csv(csv_path, dest='./') :
     # The list holding artwork objects that need to be created
     create_artworks = list()
 
-
+    # Main json file
+    json_export = dict()
     # external json file for dream themes [{'id':23, theme:'A'}, {'id':543, theme:'C'}, ...]
     dream_l = list()
+    partners_l = list()
 
     # Data filtering and extraction from the csv
     for index, row in csv_df.iterrows() :
+
+        # Clean the nan's 
+        for k,v in row.items():
+            if 'nan' == str(v) and v in [row[kart2webf('artwork', 'subtitle')]] : 
+                # logger.info(f'found nan ! : {k} {row[k]} - {v}')
+                row[k] = None
+        
         # Init user
         user = None
 
         # First, try to retrieve the user from Kart from first and last names
-        name = row["nom_prenom"]
-
-        if not check_name : continue # Bypass check_name
-
-        # Extract the uppercase string to get the lastname (TODO : should separate columns in webform)
-        # List from string with space separator
-        nn = [unkown for unkown in name.split(' ')]
-
-        # Init lists
-        firstname = list()
-        lastname = list()
-
-        # Set lastname when string is fully uppercased, firstname otherwise
-        # strip strings as leading space may occur
-        for unknown in nn :
-            is_all_uppercase = [letter.isupper() for letter in unknown if letter.isalpha()]
-            if all(is_all_uppercase) :
-                lastname += [unknown]
-            else :
-                firstname += [unknown]
-
-        # Convert lists to strings
-        firstname = (" ".join(firstname)).strip()
-        lastname = (" ".join(lastname)).strip()
+        firstname, lastname = get_names_from_name(row["nom_prenom"])
 
         # Fill new firstname and lastname columns in csv
-        csv_df.loc[index,'firstname'] = firstname
-        csv_df.loc[index,'lastname'] = lastname
+        clean_df.loc[index,'firstname'] = firstname
+        clean_df.loc[index,'lastname'] = lastname
 
         # User obj to created / updated
-        user_obj = User (
+        user_dict = dict (
                     username    =   "",
                     first_name  =   firstname,
                     last_name   =   lastname,
@@ -275,26 +261,40 @@ def clean_csv(csv_path, dest='./') :
                 )
 
         # Prepare the creation of an artist object
-        artist_obj = Artist (
+        artist_dict = dict (
                     nickname    =   row[kart2webf('artist', 'nickname')],
                     bio_fr      =   row[kart2webf('artist', 'bio_fr')],
                     bio_en      =   row[kart2webf('artist', 'bio_en')],
-        )
+                    )
 
         # Prepare the creation of a student object
-        student_obj = Student ()
+        promo_name = row[kart2webf('student', 'promotion')]
+        promotion  = getPromoByName(promo_name)
+        student_dict = dict (
+                    promotion  = promotion
+                    )
+
+        # Prepare the creation of an artwork object
+        artwork_dict =  dict (
+                title            =   row[kart2webf('artwork', 'title')],
+                subtitle         =   row[kart2webf('artwork', 'subtitle')],
+                description_fr   =   row[kart2webf('artwork', 'description_fr')],
+                description_en   =   row[kart2webf('artwork', 'description_en')],
+                thanks_fr        =   row[kart2webf('artwork', 'thanks_fr')],
+        )
 
         ##########
         #  USER  #
         ##########
 
         logger.info(f"User recherché : prénom > {firstname}, nom > {lastname}")
-        # Try to retrieve the artist from Kart from first and last names
-        userSearch = getUserByNames(lastname=lastname, firstname=firstname)
 
+        # Try to retrieve the artist from Kart from first and last names
+        userSearch = getUserByNames(lastname=lastname, firstname=firstname, dist_min=1.8)
 
         # If csv user match in Kart (dist = similarity btw csv last and firstnames and Kart's)
-        if userSearch and userSearch['dist']>1.8 :
+        if userSearch :
+
             # Get the user object from search
             user = userSearch['user']
 
@@ -304,122 +304,231 @@ def clean_csv(csv_path, dest='./') :
             existing_users += [user]
 
             # Set user_found col in csv
-            csv_df.loc[index,'user_found'] = True
-            csv_df.loc[index,'user_id'] = user.id
-
-            ###########
-            # ARTISTS #
-            ###########
-            # Check if artist object is associated with user
-            try :
-                # Get the artist with matching user id
-                artist = Artist.objects.get(user__pk=user.id)
-                # print("Associated artist ! ", artist)
-                existing_artists += [artist]
-                # Check artist_found in csv
-                csv_df.loc[index,'artist_found'] = True
-                csv_df.loc[index,'artist_id'] = artist.id
-
-            except:
-                csv_df.loc[index,'artist_found'] = False
-                missing_artists += [artist_obj]
-                pass
-
-            ############
-            # STUDENTS #
-            ############
-            # Check if student object is associated with user
-            try :
-                # Get the student with matching user and artist ids
-                student = Student.objects.get(user__pk=user.id, artist__pk=artist.id)
-                # print("Associated student ! ", student)
-                existing_students += [student]
-                # Check student_found in csv
-                csv_df.loc[index,'student_found'] = True
-                csv_df.loc[index,'student_id'] = student.id
-
-            except:
-                csv_df.loc[index,'student_found'] = False
-                missing_students += [student_obj]
-                pass
-
-        else : # if no user match in Kart
-            csv_df.loc[index,'user_found'] = False
-            csv_df.loc[index,'artist_found'] = False
-            csv_df.loc[index,'student_found'] = False
+            clean_df.loc[index,'user_found'] = True
+            clean_df.loc[index,'user_id'] = user.id
+        else :
+            # if no user match in Kart, create it
+            clean_df.loc[index,'user_found'] = False
+            clean_df.loc[index,'artist_found'] = False
+            clean_df.loc[index,'student_found'] = False
             logger.info("Not found in Kart, add to create list.")
             # Add the index of the row to the list of users to create
             missing_users += [user]
 
-            # Username from fist and last names
-            username = usernamize(firstname, lastname)
-            i = 2
+            # Username from first and last names
+            username = usernamize(firstname, lastname, check_duplicate=True)
 
-            # Check if username is already taken, add 2, 3, 4 ... until its unique
-            while objExist(User,default_index=None,username=username) :
-                username = usernamize(firstname, lastname) + f"{i}"
-                i+=1
+            # Assign username
+            user_dict['username'] = username
 
-            user_obj.username = username
-            user_obj.save()
+            user = User(**user_dict)
 
-            print("id ",user_obj.id)
-        continue
+            # Save user
+            if not DRY_RUN :
+                user.save()
+
+
+        ###########
+        # ARTISTS #
+        ###########
+
+        # Init
+        artist = None
+
+        ########################################
+        # TODO : script de recherche de doublons 
+        # Search by similarity with nickname
+        # nickname = row[kart2webf('artist', 'nickname')]
+        # 
+        # # Get the artist by closest nickname
+        # guessArtistNN = Artist.objects.annotate(
+        #     similarity=TrigramSimilarity('nickname__unaccent', nickname),
+        # ).filter(nickname=nickname, similarity__gt=0.8).order_by('-similarity')
+        # 
+        # # List potential duplicated artist (same nickname, diff user)
+        # potential_duplicates = list()
+        # 
+        # # If artists with close nickname is found
+        # if guessArtistNN : 
+        #     logger.info(f"guess nickname {row[kart2webf('artist', 'nickname')]} <--> {guessArtistNN[0].user.id} --------------- {user.id}")
+        #     # For each artist found with similar nicknames, check the associated user.id
+        #     for match in guessArtistNN :
+        #         potential_duplicates += [{'id_artist':match.id, 'id_user':user.id}]                    
+        #     # If more than 1 artist have the same nickname ...
+        #     if len(potential_duplicates)>1 :
+        #         # ... that means that 2 or more artists share the same nickname
+        #         logger.info(f"Houston we've got a problem {potential_duplicates}")
+        #         for dupli in potential_duplicates :
+        #             for dupli2 in potential_duplicates :
+        #                 if dupli['id_user'] == dupli2['id_user'] :
+        #                     logger.info(f" !! 1 user ({dupli['id_user']}) is 2 artists ({dupli2['id_artist']}) with same nickname ({nickname}) at the same time !!")
+        ##########################################
+
+        # Check if artist object is associated with user
+        try :
+            # Get the artist with matching user id
+            artist = Artist.objects.get(user__pk=user.id)
+
+            logger.info(f"Associated artist found {artist}")
+
+            # Add artist to existing artists list
+            existing_artists += [artist]
+
+            # Check artist_found in csv
+            clean_df.loc[index,'artist_found'] = True
+
+            # Fill artist_id in df
+            clean_df.loc[index,'artist_id'] = artist.id
+
+        except :  # If no associated artist found,
+            # Provide user.id to artist dict
+            artist_dict['user_id'] = user.id
+
+            # Create an artist from dict
+            artist = Artist(**artist_dict)
+
+            # Check artist_found in csv
+            clean_df.loc[index,'artist_found'] = False
+
+            #  Add artist to missing artists
+            missing_artists += [artist]
+
+        # Save artist
+        if not DRY_RUN :
+            artist.save()
+
+        ############
+        # STUDENTS #
+        ############
+
+        # Init
+        student = None
+        print("promotion", promotion)
+        print("user__pk=user.id", user.id, artist.id)
+        if promotion :  # Create a student only when promotion is defined (otherwise invited )
+            # Check if student object is associated with user
+            try :
+                # Get the student with matching user and artist ids
+                student = Student.objects.get(user__pk=user.id, artist__pk=artist.id)
+
+                logger.info(f"Associated student found {artist}")
+
+                # Add student to existing students list
+                existing_students += [student]
+
+                # Check student_found in csv
+                clean_df.loc[index,'student_found'] = True
+                clean_df.loc[index,'student_id'] = student.id
+
+            except :  # If no associated student found
+                
+                # Fill student_dict
+                student_dict['user']    =   user
+                student_dict['artist']  =   artist
+
+                # Create an student from dict
+                student = Student(**student_dict)
+
+                # Check student_found in csv
+                clean_df.loc[index,'student_found'] = False
+
+                #  Add student to missing students
+                missing_students += [student]
+
+                # Save student
+                if not DRY_RUN :
+                    student.save()
+            print("student.id", student.id)
 
         ############
         # ARTWORKS #
         ############
 
+        # init artwork
+        artwork = None
+
+
         # Check if aw not already in Kart (should not !)
         # Try to retrieve artworks from Kart with user in authors
-        if user :
-            try :
-                aw_kart = Artwork.objects.prefetch_related('authors__user').filter(authors__user=user.id)
-                # If an aw is found, we compare with the csv title
-                if dist2(aw.title, row[kart2webf('artwork','title')]) >.8 :
-                    for aw in aw_kart :
-                        print("\tAssociated artworks in Kart : ", aw.title)
-                        print("\t                     in csv : ", row[kart2webf('artwork','title')])
-                        print("---->" , dist2(aw.title, row[kart2webf('artwork','title')]))
-            except:
-                logger.info("No related artwork in Kart")
-                pass
-        print('\n')
 
-        # Get the type from csv
-        aw_type = row['type']
-        artwork_obj = ""
+        # Get the artworks associated to the current user
+        aw_kart = Artwork.objects.filter(authors=artist)
 
-        if "installation" == aw_type.lower() :
-                artwork_obj = Installation (
-                            title            =   row[kart2webf('artwork', 'title')],
-                            subtitle         =   row[kart2webf('artwork', 'subtitle')],
-                            description_fr   =   row[kart2webf('artwork', 'description_fr')],
-                            description_en   =   row[kart2webf('artwork', 'description_en')],
-                            thanks_fr        =   row[kart2webf('artwork', 'thanks_fr')],
-                )
+        if aw_kart :
+            # If an aw is found, we compare with the csv title
+            for aw in aw_kart :
+                aw_csv = row[kart2webf('artwork','title')]
 
-        if "film" == aw_type.lower() :
-                artwork_obj = Film (
-                            title            =   row[kart2webf('artwork', 'title')],
-                            subtitle         =   row[kart2webf('artwork', 'subtitle')],
-                            duration         =   row[kart2webf('artwork', 'duration')],
-                            description_fr   =   row[kart2webf('artwork', 'description_fr')],
-                            description_en   =   row[kart2webf('artwork', 'description_en')],
-                            thanks_fr        =   row[kart2webf('artwork', 'thanks_fr')],
-                )
-        # print("ARTWORK", artwork_obj)
+                logger.info(f" simi {aw.title}, aw_csv : {aw_csv}" )
+
+                if dist2(aw.title, aw_csv ) >.8 :
+                    logger.info(f"\tAssociated artworks in Kart : {aw.title}")
+                    logger.info(f"\t                     in csv : {row[kart2webf('artwork','title')]}")
+                    logger.info(f"----> {dist2(aw.title, row[kart2webf('artwork','title')])}")
+                    artwork = aw
+                    # Check artwork_found in csv
+                    clean_df.loc[index,'artwork_found'] = True
+                    clean_df.loc[index,'artwork_id'] = artwork.id
+                    break
+
+        if not artwork :
+            logger.info("No related artwork in Kart")
+
+            # Timetag the aw as today
+            now = datetime.now()
+            artwork_dict['production_date'] = now
+
+            # Romano : " je mets le 01/01/2021"
+
+            # Get the type from csv
+            aw_type = row['type']
+
+            if "installation" == aw_type.lower() or "performance" == aw_type.lower() :
+                    print("installation")
+                    artwork = Installation (**artwork_dict)
+
+            if "film" == aw_type.lower() :
+                    
+                    duration = str(row[kart2webf('artwork', 'duration')])
+                    
+                    if 'nan' == duration : duration = None
+                    artwork_dict['duration'] = duration
+                    artwork = Film (**artwork_dict)
+
+
+            
+
+            # Save artwork
+            if not DRY_RUN :
+                artwork.save()
+
+            # Add author to the artwork
+            artwork.authors.add(artist)
+
+            # Save artwork
+            if not DRY_RUN :
+                artwork.save()
+
+        print("duration", row[kart2webf('artwork', 'duration')])
 
         # Dream theme -> external json file
-        dream_l += [{'id':'', 'theme':row['dream_theme']}]
+        dream_l += [{artwork.id :row['dream_theme']}]
 
+        # Remove potential html tags
+        partners_txt = clean_tags(row[kart2webf('artwork', 'partners_txt')])
+        partners_l += [{artwork.id : partners_txt}]
+
+
+    # Convert external data to json
+    json_export["dream_theme"] = dream_l
+    json_export["partners"] = partners_l
     # Store the dream themes in an external json file
-    with open('./dream_themes.json', 'w') as fout:
-        json.dump(dream_l, fout)
+    with open('./data.json', 'w') as fout:
+        json.dump(json_export, fout)
 
 
 
-
+    exit()
 
 
 
@@ -453,9 +562,9 @@ def clean_csv(csv_path, dest='./') :
     # print(csv_df)
     # cols containing "_id"
     cols = [col for col in csv_df.columns if '_id' in col]
-    csv_df[cols] = csv_df[cols].fillna(0)
-    csv_df[cols] = csv_df[cols].astype(int)
-    csv_df.to_csv('merged.csv',index=False)
+    clean_df[cols] = csv_df[cols].fillna(0)
+    clean_df[cols] = csv_df[cols].astype(int)
+    clean_df.to_csv('clean.csv',index=False)
     exit()
 
 
@@ -521,23 +630,39 @@ def clean_csv(csv_path, dest='./') :
 
 ################################################################
 
-def usernamize(fn="", ln="") :
-    ''' Return a username from first and lastname '''
+def usernamize(fn="", ln="", check_duplicate=False) :
+    """ Return a username from first and lastname """
+
     # Check if multipart firstname
     fn_l = re.split('\W+',fn)
+
     # Extract first letter of each fn part
     fn_l = [part[0].lower() for part in fn_l if part.isalpha()]
+
     # Lower lastname and remove non alpha chars
     ln_l = [letter.lower() for letter in ln if letter.isalnum()]
+
     # Concat strings
     username = "".join(fn_l) + "".join(ln_l)
+
     # Remove any special characters
     username = unidecode.unidecode(username)
+
     # Trim at 10 characters
-    return username[:10]
+    username = username[:10]
+
+    if check_duplicate :
+        # Check if username is already taken, add 2, 3, 4 ... until its unique
+        # Init suffix
+        i = 2
+        while objExist(User,default_index=None,username=username) :
+            username = usernamize(firstname, lastname) + f"{i}"
+            i+=1
+
+    return username
 
 def getPromoByName(promo_name="") :
-    ''' Return a promotion object from a promo name'''
+    """ Return a promotion object from a promo name"""
     # First filter by lastname similarity
     guessPromo = Promotion.objects.annotate(
                                         similarity=TrigramSimilarity('name', promo_name)
@@ -545,18 +670,17 @@ def getPromoByName(promo_name="") :
                                         similarity__gt=0.8
                                     ).order_by('-similarity')
     if guessPromo :
-        print(promo_name, "------------->",guessPromo[0])
         return guessPromo[0]
     print("Promo non trouvée", promo_name)
-    return False
+    return None
 
 def webf2kart(model="",field=""):
-    ''' Return the corresponding field name in Kart from Webform field name'''
+    """ Return the corresponding field name in Kart from Webform field name"""
     return wf2kart_mapping[model][field]
 
 
 def kart2webf(model="",field=""):
-    ''' Return the corresponding field name in Webform from Kart field name'''
+    """ Return the corresponding field name in Webform from Kart field name"""
     if model in wf2kart_mapping.keys() :
         for k, v in wf2kart_mapping[model].items():
             if v == field : return k
@@ -736,13 +860,14 @@ def getArtistByNames(firstname="", lastname="", pseudo="", listing=False): # TOD
     return False
 
 
-def getUserByNames(firstname="", lastname="", pseudo="", listing=False): # TODO remove pseudo from params
+def getUserByNames(firstname="", lastname="", pseudo="", listing=False, dist_min=False): # TODO remove pseudo from params
     """Retrieve the closest user from the first and last names given
 
     Parameters:
     - firstname: (str) Firstname to look for
     - lastname : (str) Lastname to look for
     - listing  : (bool) If True, return a list of matching artists (Default, return the closest)
+    - dist_min : (float) Maximum dist, return False if strinctly under
 
     Return:
     - artistObj    : (Django obj / bool) The closest user object found in Kart. False if no match.
@@ -915,7 +1040,11 @@ def getUserByNames(firstname="", lastname="", pseudo="", listing=False): # TODO 
             return users_l
         else:
             search_cache[fullkey] = [users_l[0]]
-            return users_l[0]
+            # Return the result if dist_min is respected (if required)
+            if (dist_min is not False and users_l[0]['dist']>dist_min) or (not dist_min) :
+                return users_l[0]
+            else :
+                return False
     else:
         # research failed
         search_cache[fullkey] = False
@@ -1476,8 +1605,64 @@ def createAwards():
 # TODO Database cleanings :
 # - strip : remove leading / trailing spaces in string fields
 
+def get_names_from_name(name) :
+    """ Extract and return first and lastname from webform string """
+
+    # Extract the uppercase string to get the lastname (TODO : should separate columns in webform)
+    # List from string with space separator
+    nn = [unkown for unkown in name.split(' ')]
+
+    # Init lists
+    firstname = list()
+    lastname = list()
+
+    # Set lastname when string is fully uppercased, firstname otherwise
+    # strip strings as leading space may occur
+    for unknown in nn :
+        is_all_uppercase = [letter.isupper() for letter in unknown if letter.isalpha()]
+        if all(is_all_uppercase) :
+            lastname += [unknown]
+        else :
+            firstname += [unknown]
+
+    # Convert lists to strings
+    firstname = (" ".join(firstname)).strip()
+    lastname = (" ".join(lastname)).strip()
+    return firstname, lastname
 
 
+import re, html
+def clean_tags(html_code="") :
+    """ Remove html tags from html_code and return the subsequent text"""
+
+    if 'nan' == str(html_code) : return None
+
+    tag_re = re.compile(r'(<!--.*?-->|<[^>]*>)')
+
+    # Remove well-formed tags, fixing mistakes by legitimate users
+    no_tags = tag_re.sub('', html_code)
+
+    # Clean up anything else by escaping
+    ready_for_web = html.escape(no_tags)
+
+    return ready_for_web
+
+def create_or_update(obj_type=None, properties=None, save=False) :
+    """ Return an object of type obj_type populated with properties.
+        If the object already exists, update it with, if not create it.
+
+        Parameters :
+        - obj_type          :    (str) type of kart obj to create
+        - properties        :    (str) associated properties
+        - save  (optional)  :    (str) If true, save the object in db - default : False
+    """
+
+    # -*- coding: utf-8 -*-
+    try :
+        obj = eval(f'{obj_type}({properties})')
+        print("obj ", obj)
+    except Exception as e :
+        print("e" ,e)
 
 if __name__ == "__main__" :
     run_import()
