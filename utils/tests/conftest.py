@@ -34,20 +34,37 @@ def joker(db_ready):
 
 @pytest.fixture
 def school_application_group(db_ready):
-    # FIXME: c'est ce que je comprends de la fixture groups.json
     # FIXME: amha ça mériterais une migration
     perms = [
-        'view_staff',
-        'delete_staff',
-        'add_itinerary',
-        'change_itinerary',
-        'delete_itinerary',
-        'view_itinerary',
-        'view_organizationtask',
-        'delete_organizationtask',
-        'add_production',
-        'add_taggeditem',
-        'change_taggeditem',
+        "add_corsmodel",
+        "add_filmgenre",
+        "add_gallery",
+        "add_medium",
+        "add_promotion",  # FIXME: a priori pas nécessaire
+        "add_stafftask",
+        "add_student",
+        "add_studentapplication",
+        "add_studentapplicationsetup",
+        "add_userobjectpermission",
+        "change_corsmodel",
+        "change_filmgenre",
+        "change_gallery",
+        "change_medium",
+        "change_promotion",
+        "change_stafftask",
+        "change_student",
+        "change_studentapplication",
+        "change_studentapplicationsetup",
+        "change_userobjectpermission",
+        "delete_corsmodel",
+        "delete_filmgenre",
+        "delete_gallery",
+        "delete_medium",
+        "delete_promotion",
+        "delete_student",
+        "delete_studentapplication",
+        "delete_studentapplicationsetup",
+        "delete_userobjectpermission",
     ]
 
     group = Group.objects.create(name='School Application')

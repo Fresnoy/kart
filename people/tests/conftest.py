@@ -11,13 +11,10 @@ def profile(db_ready):
 
 
 @pytest.fixture
-def artist(db_ready):
-    return factories.ArtistFactory()
-
-
-@pytest.fixture
-def andy(db_ready):
-    return factories.ArtistFactory(nickname="Andy Warhol")
+def artist(db_ready, school_application_group):
+    artist = factories.ArtistFactory()
+    school_application_group.user_set.add(artist.user)
+    return artist
 
 
 @pytest.fixture

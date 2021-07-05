@@ -42,6 +42,13 @@ def artwork(db_ready, artist):
 
 
 @pytest.fixture
+def film_keyword(db_ready, film):
+    tag = factories.TagFactory()
+    film.keywords.add(tag)
+    return tag
+
+
+@pytest.fixture
 def film_genre(db_ready):
     return factories.FilmGenreFactory()
 

@@ -2,6 +2,7 @@ import factory
 import factory.fuzzy
 
 from django.utils import timezone
+from taggit.models import Tag
 
 from diffusion.tests.factories_alt import PlaceFactory
 from people.tests.factories import StaffFactory, OrganizationFactory
@@ -65,6 +66,14 @@ class ArtworkFactory(ProductionFactory):
             # A list of authors were passed in, use them
             for author in extracted:
                 self.authors.add(author)
+
+
+class TagFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Tag
+
+    name = factory.Faker('word')
+    slug = factory.Faker('slug')
 
 
 class FilmGenreFactory(factory.django.DjangoModelFactory):

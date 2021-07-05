@@ -23,7 +23,7 @@ class TestVimeoUploadToken:
             jwt = obtain_jwt_token(user)
             if user_role == 'old_user':
                 user.delete()
-            response = client.get(url, HTTP_AUTHORIZATION='Bearer {}'.format(jwt['token']))
+            response = client.get(url, HTTP_AUTHORIZATION='JWT {}'.format(jwt['token']))
         else:
             response = client.get(url)
 

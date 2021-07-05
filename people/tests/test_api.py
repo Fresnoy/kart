@@ -15,7 +15,7 @@ def pytest_generate_tests(metafunc):
 
 @pytest.mark.django_db
 class TestUserRessource(HelpTestForReadOnlyModelRessource):
-    model = api.UserResource
+    resource = api.UserResource
 
     fixtures = ['user', 'profile']
 
@@ -23,9 +23,6 @@ class TestUserRessource(HelpTestForReadOnlyModelRessource):
     expected_fields = ['first_name']
 
     def target(self):
-        return self.user
-
-    def requestor(self):
         return self.user
 
 
@@ -39,53 +36,47 @@ class TestUserProfileRessource(TestUserRessource):
     def target(self):
         return self.profile.user
 
-    def requestor(self):
+    def requestor(self, role):
         return self.profile.user
 
 
 @pytest.mark.django_db
 class TestArtistRessource(HelpTestForReadOnlyModelRessource):
-    model = api.ArtistResource
+    resource = api.ArtistResource
 
     fixtures = ['artist', 'artist_profile', 'artist_website', 'artwork']
 
     expected_list_size = 1
     expected_fields = ['nickname', 'artworks', 'websites']
 
-    def target(self):
-        return self.artist
+    post_fields = ['user']
+    hyperlinked_fields = {'user': 'people/user'}
 
-    def requestor(self):
+    def requestor(self, role):
         return self.artist.user
 
 
 @pytest.mark.django_db
 class TestStaffRessource(HelpTestForReadOnlyModelRessource):
-    model = api.StaffResource
+    resource = api.StaffResource
 
     fixtures = ['staff', 'staff_profile']
 
     expected_list_size = 1
     expected_fields = ['user']
 
-    def target(self):
-        return self.staff
+    post_fields = ['user']
+    hyperlinked_fields = {'user': 'people/user'}
 
-    def requestor(self):
+    def requestor(self, role):
         return self.staff.user
 
 
 @pytest.mark.django_db
 class TestOrganizationRessource(HelpTestForReadOnlyModelRessource):
-    model = api.OrganizationResource
+    resource = api.OrganizationResource
 
     fixtures = ['organization', 'place', 'user']
 
     expected_list_size = 2
     expected_fields = ['name']
-
-    def target(self):
-        return self.organization
-
-    def requestor(self):
-        return self.user

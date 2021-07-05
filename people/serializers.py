@@ -62,7 +62,7 @@ class UserSerializer(serializers.ModelSerializer):
         return validated_data
 
     def update(self, instance, validated_data):
-        profile_data = validated_data.pop('profile')
+        profile_data = validated_data.pop('profile', {})
 
         # Update User data
         instance.username = validated_data.get('username', instance.username)
@@ -71,7 +71,7 @@ class UserSerializer(serializers.ModelSerializer):
         instance.email = validated_data.get('email', instance.email)
 
         # Update UserProfile data
-        if not instance.profile:
+        if not hasattr(instance, 'profile'):
             FresnoyProfile.objects.create(user=instance, **profile_data)
 
         # set Values for UserProfile
