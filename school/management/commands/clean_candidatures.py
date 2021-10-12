@@ -76,11 +76,11 @@ class Command(BaseCommand):
         print("Traitement des candidatures <= ", year)
         print("**** Total de : ")
         print("**** {} candidatures".format(StudentApplication.objects.all().count()))
-        print("**** {} candidatures non modifiables".format(len(keep_users)))
+        print("**** {} candidatures a garder (are Student or Staff)".format(len(keep_users)))
         print("**** {} étudiants".format(Student.objects.all().count()))
 
         print("Liste des informations qui vont être supprimées : ")
-        print("/!\\ Supression complète de {} candidatures".format(sa_expired.count()))
+        print("/!\\ Supression complète de {} candidatures expirées".format(sa_expired.count()))
         print("/!\\ Supression des informations critiques de {} candidatures".format(sa_all.count()))
         print("/!\\ Nettoyage, si besoin, des informations de {} anciennes candidatures".format(sa_olds.count()))
 
@@ -205,12 +205,17 @@ class Command(BaseCommand):
             model.__setattr__(field, None)
             model.save()
         elif value.__class__.__name__ in ('StudentApplication'):
-            artist = value.artist
-            # delete sa, artist, user
-            value.delete()
-            artist.user.delete()
-            artist.delete()
-            # not save
+            application = value
+            artist = application.artist
+            user = artist.user
+            # delete user if there is no other application
+            if artist.student_application.all().count == 1:
+                user.delete()
+                # artist is deleted : CASCADE deletion
+                # artist.delete()
+            # delete current application
+            application.delete()
+            # no save
             return
         else:
             # other model like Date
