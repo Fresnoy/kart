@@ -119,14 +119,14 @@ class TestUserActivation:
 class TestSendCustomEmails:
     @pytest.mark.parametrize(
         'user_role, method, expected_code, expected_email', [
-            (None, 'post', 403, 0),
+            (None, 'post', 401, 0),
             ('user', 'post', 401, 0),
             ('admin', 'post', 200, 1),
             ('staff', 'get', 406, 0),
             ('staff', 'post', 200, 1),
             ('staff_bad_request', 'post', 406, 0),
             ('staff_bad_email', 'post', 403, 0),
-            ('staff_old', 'post', 403, 0),
+            ('staff_old', 'post', 401, 0),
         ]
     )
     def test_send_custom_emails(

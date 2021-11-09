@@ -17,7 +17,7 @@ def obtain_jwt_token(user):
     url = reverse('obtain-jwt-token')
 
     response = c.post(url, {'username': user.username, 'password': 'p4ssw0rd'})
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert 'token' in response.json()
 
     return response.json()
@@ -217,12 +217,12 @@ class HelpTestForModelViewSet(AbstractHelpTestForAPI):
     url_prefix = "/v2"
 
     methods_behavior = {
-        'list': {None: 403, 'user': 200},
-        'get': {None: 403, 'user': 200},
-        'patch': {None: 403, 'user': 403},
-        'put': {None: 403, 'user': 403},
-        'post': {None: 403, 'user': 403},
-        'delete': {None: 403, 'user': 403},
+        'list': {None: 401, 'user': 200},
+        'get': {None: 401, 'user': 200},
+        'patch': {None: 401, 'user': 403},
+        'put': {None: 401, 'user': 403},
+        'post': {None: 401, 'user': 403},
+        'delete': {None: 401, 'user': 403},
     }
 
     @property
@@ -249,10 +249,10 @@ class IsAuthenticatedOrReadOnlyModelViewSetMixin:
     methods_behavior = {
         'list': 200,
         'get': 200,
-        'patch': {None: 403, 'user': 200},
-        'put': {None: 403, 'user': 200},
-        'post': {None: 403, 'user': 201},
-        'delete': {None: 403, 'user': 204},
+        'patch': {None: 401, 'user': 200},
+        'put': {None: 401, 'user': 200},
+        'post': {None: 401, 'user': 201},
+        'delete': {None: 401, 'user': 204},
     }
 
 
@@ -262,10 +262,10 @@ class IsArtistOrReadOnlyModelViewSetMixin:
     methods_behavior = {
         'list': 200,
         'get': 200,
-        'patch': {None: 403, 'user': 403, 'artist': 200},
-        'put': {None: 403, 'user': 403, 'artist': 200},
-        'post': {None: 403, 'user': 403, 'artist': 201},
-        'delete': {None: 403, 'user': 403, 'artist': 204},
+        'patch': {None: 401, 'user': 403, 'artist': 200},
+        'put': {None: 401, 'user': 403, 'artist': 200},
+        'post': {None: 401, 'user': 403, 'artist': 201},
+        'delete': {None: 401, 'user': 403, 'artist': 204},
     }
 
 
@@ -273,10 +273,10 @@ class ReadOnlyModelViewSetMixin:
     methods_behavior = {
         'list': 200,
         'get': 200,
-        'patch': 403,
-        'put': 403,
-        'post': 403,
-        'delete': 403,
+        'patch': {None: 401, 'user': 403},
+        'put': {None: 401, 'user': 403},
+        'post': {None: 401, 'user': 403},
+        'delete': {None: 401, 'user': 403},
     }
 
 
@@ -388,7 +388,6 @@ class HaystackSearchModelRessourceMixin:
         data = {self.search_param: getattr(self.target(), self.search_field)}
         kwargs = self.prepare_request(client, user_role, auth_method, data, json=False)
         response = client.get(self.base_url + self.search_suffix, **kwargs)
-
         if self.thats_all_folk('list', response, user_role):
             return
 
