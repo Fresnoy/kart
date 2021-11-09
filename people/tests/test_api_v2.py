@@ -100,7 +100,7 @@ class TestStaffViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestForMo
     put_fields = ['user']
     hyperlinked_fields = {'user': 'user'}
 
-    @pytest.mark.skip(reason="Posting seems impossible. DRF Bug?")
+    # @pytest.mark.skip(reason="Posting seems impossible. DRF Bug?")
     def test_post(self):
         return
 

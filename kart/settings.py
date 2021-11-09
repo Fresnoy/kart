@@ -24,6 +24,8 @@ PASSWORD_TOKEN = r'(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-
 
 site_name = "Kartel"
 DEFAULT_FROM_EMAIL = "Le Fresnoy <selection@lefresnoy.net>"
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 # Application definition
 
 INSTALLED_APPS = (
@@ -38,7 +40,7 @@ INSTALLED_APPS = (
     'guardian',
     'pagedown',
     'haystack',
-    'elasticstack',
+    # 'elasticstack',
     'polymorphic',
     'taggit',
     'taggit_serializer',
@@ -55,6 +57,8 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
+    'rest_framework_jwt',
+    'rest_framework_jwt.blacklist',
     'allauth',
     'allauth.account',
     'rest_auth.registration',
@@ -164,14 +168,15 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoObjectPermissions',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     ),
 }
 
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=15),
+    'JWT_AUTH_HEADER_PREFIX': 'JWT',
 }
 REST_USE_JWT = True
 
