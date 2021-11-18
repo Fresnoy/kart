@@ -1,5 +1,6 @@
 import pytest
 
+from django.core.management import call_command
 from django.db.models.constants import LOOKUP_SEP
 from django.test import Client
 from django.urls import reverse
@@ -384,6 +385,7 @@ class HaystackSearchModelRessourceMixin:
 
     def test_haystack_search(self, client, user_role, auth_method, request):
         self.setup_fixtures(request)
+        call_command('rebuild_index', verbosity=0, interactive=False)
 
         data = {self.search_param: getattr(self.target(), self.search_field)}
         kwargs = self.prepare_request(client, user_role, auth_method, data, json=False)
