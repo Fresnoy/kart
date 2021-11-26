@@ -71,7 +71,7 @@ class TestMetaEventViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestF
     mutate_fields = ['genres']
     put_fields = ['genres', 'keywords']
     built_fields = {
-        'keywords': lambda x: list(x.keywords.values_list('name', flat=True))
+        'keywords': lambda x: [x.keywords.name]
     }
 
     @pytest.mark.skip(reason="Posting seems impossible")

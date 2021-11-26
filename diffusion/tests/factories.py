@@ -2,7 +2,7 @@ import factory
 
 from django.utils import timezone
 
-from production.tests.factories import ArtworkFactory, EventFactory, StaffTaskFactory
+from production.tests.factories import ArtworkFactory, EventFactory, StaffTaskFactory, TagFactory
 from utils.tests.utils import first
 
 from .. import models
@@ -51,6 +51,7 @@ class MetaEventFactory(factory.django.DjangoModelFactory):
 
     event = factory.SubFactory(EventFactory, main_event=True)
     genres = factory.fuzzy.FuzzyChoice(models.MetaEvent.GENRES_CHOICES, getter=first)
+    keywords = factory.SubFactory(TagFactory)
 
 
 class DiffusionFactory(factory.django.DjangoModelFactory):
