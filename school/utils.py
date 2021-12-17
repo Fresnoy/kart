@@ -162,7 +162,7 @@ def send_interview_selection_email_to_candidat(request, candidat, application):
     return mail_sent
 
 
-def send_is_on_waitlist_for_interview_to_candidat(request, candidat, application):
+def send_interview_selection_on_waitlist_email_to_candidat(request, candidat, application):
     # set locale  interviews date
     interviews_dates = {'fr': '', "en": ''}
     # having name of day/month in rigth language
@@ -202,7 +202,61 @@ def send_is_on_waitlist_for_interview_to_candidat(request, candidat, application
     return mail_sent
 
 
-def send_not_selected_email_to_candidat(request, candidat, application):
+def send_selected_candidature_email_to_candidat(request, candidat, application):
+    # Send email : SELECTED
+    msg_plain = render_to_string(
+        'emails/send_selected_email_to_candidat.txt',
+        {
+            'application': application,
+            'user': candidat,
+        }
+    )
+    msg_html = render_to_string(
+        'emails/send_selected_email_to_candidat.html',
+        {
+            'application': application,
+            'user': candidat,
+        }
+    )
+    subject = 'Candidature | Le Fresnoy – Studio national des arts contemporains '
+
+    mail_sent = send_mail(subject,
+                          msg_plain,
+                          'selection@lefresnoy.net',
+                          [candidat.email],
+                          html_message=msg_html,
+                          )
+    return mail_sent
+
+
+def send_selected_on_waitlist_candidature_email_to_candidat(request, candidat, application):
+    # Send email : SELECTED IN WAITLIST
+    msg_plain = render_to_string(
+        'emails/send_on_waitlist_for_selection_to_candidat.txt',
+        {
+            'application': application,
+            'user': candidat,
+        }
+    )
+    msg_html = render_to_string(
+        'emails/send_on_waitlist_for_selection_to_candidat.html',
+        {
+            'application': application,
+            'user': candidat,
+        }
+    )
+    subject = 'Candidature | Le Fresnoy – Studio national des arts contemporains '
+
+    mail_sent = send_mail(subject,
+                          msg_plain,
+                          'selection@lefresnoy.net',
+                          [candidat.email],
+                          html_message=msg_html,
+                          )
+    return mail_sent
+
+
+def send_not_selected_candidature_email_to_candidat(request, candidat, application):
     # Send email : NOT SELECTED
     msg_plain = render_to_string(
         'emails/send_not_selected_email_to_candidat.txt',

@@ -18,8 +18,10 @@ from .utils import (send_candidature_completed_email_to_user,
                     send_candidature_completed_email_to_admin,
                     send_candidature_complete_email_to_candidat,
                     send_interview_selection_email_to_candidat,
-                    send_is_on_waitlist_for_interview_to_candidat,
-                    send_not_selected_email_to_candidat,
+                    send_interview_selection_on_waitlist_email_to_candidat,
+                    send_selected_candidature_email_to_candidat,
+                    send_selected_on_waitlist_candidature_email_to_candidat,
+                    send_not_selected_candidature_email_to_candidat,
                     candidature_close,
                     )
 
@@ -181,23 +183,35 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
             candidat = application.artist.user
             send_candidature_complete_email_to_candidat(request, candidat, application)
 
-        # send email to candidat when is on interview waiting list
+        # send email to candidat when on interview waiting list
         if(request.data.get('wait_listed_for_interview')):
             application = self.get_object()
             candidat = application.artist.user
-            send_is_on_waitlist_for_interview_to_candidat(request, candidat, application)
+            send_interview_selection_on_waitlist_email_to_candidat(request, candidat, application)
 
-        # send email to candidat when is select for intervieux
+        # send email to candidat when select for interviews
         if(request.data.get('selected_for_interview')):
             application = self.get_object()
             candidat = application.artist.user
             send_interview_selection_email_to_candidat(request, candidat, application)
 
+        # send email to candidat when selected
+        if(request.data.get('selected')):
+            application = self.get_object()
+            candidat = application.artist.user
+            send_selected_candidature_email_to_candidat(request, candidat, application)
+
+        # send email to candidat when is select on waiting list
+        if(request.data.get('wait_listed')):
+            application = self.get_object()
+            candidat = application.artist.user
+            send_selected_on_waitlist_candidature_email_to_candidat(request, candidat, application)
+
         # send email to candidat when is not selected
         if(request.data.get('unselected')):
             application = self.get_object()
             candidat = application.artist.user
-            send_not_selected_email_to_candidat(request, candidat, application)
+            send_not_selected_candidature_email_to_candidat(request, candidat, application)
 
         # basic update
         return super(self.__class__, self).update(request, *args, **kwargs)
