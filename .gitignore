@@ -9,6 +9,9 @@ kart/site_settings.py
 .tox
 littlechick_db
 static/
+# templates emails
+school/templates/emails/*.txt
+school/templates/emails/*.html
 
 # Created by https://www.gitignore.io
 
