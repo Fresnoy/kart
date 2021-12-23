@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from drf_haystack.serializers import HaystackSerializer
+from rest_auth.serializers import PasswordResetSerializer
 
 from .models import Promotion, Student, StudentApplication, StudentApplicationSetup
 from .search_indexes import StudentIndex
@@ -114,3 +115,12 @@ class StudentApplicationSetupSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_candidature_open(self, obj):
         return not candidature_close(obj)
+
+
+class StudentPasswordResetSerializer(PasswordResetSerializer):
+    def get_email_options(self):
+        return {
+            'subject_template_name': 'emails/account/password_reset_subject.txt',
+            'email_template_name': 'emails/account/password_reset_email.txt',
+            'html_email_template_name': 'emails/account/password_reset_email.html',
+        }
