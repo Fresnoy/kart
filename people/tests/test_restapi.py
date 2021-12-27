@@ -41,16 +41,14 @@ class UserEndPoint(TestCase):
         """
         Test user register link
         """
-        url = reverse('user-register')
-        user_registration = {'username': 'newuser', 'first_name': 'New', 'last_name': 'User', 'email': 'newuser@ac.art'}
+        url = reverse('rest_register')
+        user_registration = {'username': 'newuser', 'email': 'newuser@ac.art',
+                             'password1': 'zc7h88', 'password2': 'zc7h88'}
         response = self.client.post(url, user_registration)
-        self.assertEqual(response.status_code, 202)
+        self.assertEqual(response.status_code, 201)
         user_on_base = User.objects.get(email=user_registration.get('email'),
-                                        first_name=user_registration.get('first_name'),
-                                        last_name=user_registration.get('last_name'),
                                         username=user_registration.get('username'))
         assert user_on_base.pk > 0
-        assert user_on_base.profile is not None
 
     def test_user_exist(self):
         """

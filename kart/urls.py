@@ -7,6 +7,7 @@ from django.contrib import admin
 from tastypie.api import Api
 from rest_framework import routers
 from rest_framework_jwt.views import obtain_jwt_token
+from rest_auth.views import PasswordResetConfirmView
 
 from people.api import ArtistResource, StaffResource, OrganizationResource, UserResource
 from production.api import (
@@ -23,9 +24,11 @@ from people.views import (
 )
 from people import views as people_views
 from school.views import (
+    UserPasswordResetView,
     PromotionViewSet, StudentViewSet,
     StudentAutocompleteSearchViewSet, StudentApplicationViewSet, StudentApplicationSetupViewSet
 )
+from school import views as school_views
 from production.views import (
     ArtworkViewSet, FilmViewSet, InstallationViewSet,
     PerformanceViewSet, FilmGenreViewSet,
@@ -98,11 +101,17 @@ v2_api.register(r'assets/medium', MediumViewSet)
 urlpatterns = [
                        path('v2/', include(v2_api.urls)),
                        path('v2/auth/', obtain_jwt_token, name='obtain-jwt-token'),
-                       re_path(f'account/activate/{settings.PASSWORD_TOKEN}/',
-                               people_views.activate, name='user-activate'),
-                       # django user registration
+                       # basic context user registration
                        path('v2/rest-auth/', include('rest_auth.urls')),
                        path('v2/rest-auth/registration/', include('rest_auth.registration.urls')),
+                       re_path(f'v2/rest-auth/password/reset/confirm/{settings.PASSWORD_TOKEN}/',
+                               PasswordResetConfirmView.as_view(),
+                               name='password_reset_confirm'),
+                       # candidature context user creation
+                       re_path(f'school/student-application/account/activate/{settings.PASSWORD_TOKEN}/',
+                               school_views.user_activate, name='candidat-activate'),
+                       path('v2/school/student-application/account/password/reset/', UserPasswordResetView.as_view(),
+                            name='candidature_password_reset'),
                        # vimeo
                        path('v2/assets/vimeo/upload/token',
                             assets_views.vimeo_get_upload_token, name='vimeo-upload-token'),

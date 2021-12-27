@@ -1,7 +1,10 @@
 import json
 import datetime
-from django.utils import timezone
 # import time
+from django.utils import timezone
+
+from django.contrib.auth.models import User
+
 from rest_framework.test import APIClient
 from rest_framework import status
 
@@ -16,6 +19,7 @@ class TestApplicationEndPoint(TestCase):
     """
     Tests concernants le endpoint des Student Application
     """
+    fixtures = ['groups.json']
 
     def setUp(self):
         self.artist = ArtistFactory()
@@ -67,6 +71,21 @@ class TestApplicationEndPoint(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # info is accessible when user is auth
         assert candidature[0]['current_year_application_count'] is not None
+
+    def test_user_register(self):
+        """
+        Test user register link
+        """
+        url = reverse('studentapplication-user-register')
+        user_registration = {'username': 'newuser', 'first_name': 'New', 'last_name': 'User', 'email': 'newuser@ac.art'}
+        response = self.client.post(url, user_registration)
+        self.assertEqual(response.status_code, 202)
+        user_on_base = User.objects.get(email=user_registration.get('email'),
+                                        first_name=user_registration.get('first_name'),
+                                        last_name=user_registration.get('last_name'),
+                                        username=user_registration.get('username'))
+        assert user_on_base.pk > 0
+        assert user_on_base.profile is not None
 
     def test_create_student_application(self):
         """
