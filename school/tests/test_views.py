@@ -32,11 +32,11 @@ class TestUserActivation:
             self, use_case, expected_code, expected_email,
             expected_text, client, user, mailoutbox, student_application_setup):
 
-        uidb36 = int_to_base36(user.id)
+        uidb64 = int_to_base36(user.id)
         token = default_token_generator.make_token(user)
 
         if use_case == 'bad_uid':
-            uidb36 = self.munge(uidb36)
+            uidb64 = self.munge(uidb64)
         elif use_case == 'bad_token':
             token = self.munge(token)
         elif use_case == 'deleted_user':
@@ -49,7 +49,7 @@ class TestUserActivation:
             pass
 
         url = reverse('candidat-activate', kwargs={
-            'uidb36': uidb36,
+            'uidb64': uidb64,
             'token': token,
         })
         response = client.get(url)

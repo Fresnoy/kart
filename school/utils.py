@@ -17,10 +17,10 @@ from school.models import StudentApplicationSetup
 def send_activation_email(request, user):
 
     # Create activation token URL
-    uidb36 = int_to_base36(user.id)
+    uidb64 = int_to_base36(user.id)
     token = default_token_generator.make_token(user)
     url = reverse('candidat-activate', kwargs={
-        'uidb36': uidb36,
+        'uidb64': uidb64,
         'token': token,
     })
     absolute_url = request.build_absolute_uri(url)
