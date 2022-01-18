@@ -145,8 +145,17 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                 else:
                     # take the first one
                     user_artist = user_artist[0]
+                # get previous apps
+                last_applications = StudentApplication.objects.filter(artist__user=user.id) \
+                                                              .values_list('created_on__year', flat=True)
+                # transform all user previous app to string : "2001, 2002, xxxx"
+                last_applications_years = ", ".join(map(str, list(last_applications)))
+                # set application params
+                student_application = StudentApplication(artist=user_artist, campaign=campaign,
+                                                         first_time=not last_applications.exists(),
+                                                         last_applications_years=last_applications_years
+                                                         )
                 # create application
-                student_application = StudentApplication(artist=user_artist, campaign=campaign)
                 student_application.save()
                 return Response(status=status.HTTP_201_CREATED)
             else:
@@ -277,13 +286,13 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_403_FORBIDDEN)
 
 
-def user_activate(request, uidb36, token):
+def user_activate(request, uidb64, token):
     """
     Check activation token for newly registered users. If successful,
     mark as active and log them in. If not, show an error page
     """
     # Look up the user object
-    uid_int = base36_to_int(uidb36)
+    uid_int = base36_to_int(uidb64)
     try:
         user = User.objects.get(pk=uid_int)
     except User.DoesNotExist:
