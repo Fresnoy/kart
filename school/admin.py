@@ -20,7 +20,8 @@ class StudentApplicationAdmin(admin.ModelAdmin):
     search_fields = ['artist__user__first_name', 'artist__user__last_name', ]
 
     def _get_name(self, obj):
-        return obj.artist.user.get_full_name()
+        if obj.artist:
+            return obj.artist.user.get_full_name()
 
     _get_name.short_description = "Nom"
     list_display = (

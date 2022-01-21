@@ -1,11 +1,67 @@
 # -*- coding: utf-8 -*-
 import locale
 import pytz
+
+from django.urls import reverse
 from django.utils import timezone
+
+from django.utils.http import int_to_base36
+from django.contrib.auth.tokens import default_token_generator
+
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 
 from school.models import StudentApplicationSetup
+
+
+def send_activation_email(request, user):
+
+    # Create activation token URL
+    uidb64 = int_to_base36(user.id)
+    token = default_token_generator.make_token(user)
+    url = reverse('candidat-activate', kwargs={
+        'uidb64': uidb64,
+        'token': token,
+    })
+    absolute_url = request.build_absolute_uri(url)
+    # Send email
+    msg_plain = render_to_string('emails/account/send_activation_link.txt', {'url': absolute_url})
+    msg_html = render_to_string('emails/account/send_activation_link.html', {'url': absolute_url})
+
+    mail_sent = send_mail('Confirmation de votre inscription',
+                          msg_plain,
+                          'selection@lefresnoy.net',
+                          [user.email],
+                          html_message=msg_html,
+                          )
+    return mail_sent
+
+
+def send_account_information_email(user):
+
+    setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
+
+    recover_password_url = setup.recover_password_url
+    authentification_url = setup.authentification_url
+
+    # Send email
+    msg_plain = render_to_string('emails/account/account_infos.txt', {
+                                 'user': user,
+                                 'recover_password_url': recover_password_url,
+                                 'authentification_url': authentification_url
+                                 })
+    msg_html = render_to_string('emails/account/account_infos.html', {
+                                'user': user,
+                                'recover_password_url': recover_password_url,
+                                'authentification_url': authentification_url
+                                })
+    mail_sent = send_mail('Résumé de votre compte / Account information',
+                          msg_plain,
+                          'selection@lefresnoy.net',
+                          [user.email],
+                          html_message=msg_html,
+                          )
+    return mail_sent
 
 
 def send_candidature_completed_email_to_user(request, user, application):
@@ -162,7 +218,7 @@ def send_interview_selection_email_to_candidat(request, candidat, application):
     return mail_sent
 
 
-def send_is_on_waitlist_for_interview_to_candidat(request, candidat, application):
+def send_interview_selection_on_waitlist_email_to_candidat(request, candidat, application):
     # set locale  interviews date
     interviews_dates = {'fr': '', "en": ''}
     # having name of day/month in rigth language
@@ -202,7 +258,61 @@ def send_is_on_waitlist_for_interview_to_candidat(request, candidat, application
     return mail_sent
 
 
-def send_not_selected_email_to_candidat(request, candidat, application):
+def send_selected_candidature_email_to_candidat(request, candidat, application):
+    # Send email : SELECTED
+    msg_plain = render_to_string(
+        'emails/send_selected_email_to_candidat.txt',
+        {
+            'application': application,
+            'user': candidat,
+        }
+    )
+    msg_html = render_to_string(
+        'emails/send_selected_email_to_candidat.html',
+        {
+            'application': application,
+            'user': candidat,
+        }
+    )
+    subject = 'Candidature | Le Fresnoy – Studio national des arts contemporains '
+
+    mail_sent = send_mail(subject,
+                          msg_plain,
+                          'selection@lefresnoy.net',
+                          [candidat.email],
+                          html_message=msg_html,
+                          )
+    return mail_sent
+
+
+def send_selected_on_waitlist_candidature_email_to_candidat(request, candidat, application):
+    # Send email : SELECTED IN WAITLIST
+    msg_plain = render_to_string(
+        'emails/send_on_waitlist_for_selection_to_candidat.txt',
+        {
+            'application': application,
+            'user': candidat,
+        }
+    )
+    msg_html = render_to_string(
+        'emails/send_on_waitlist_for_selection_to_candidat.html',
+        {
+            'application': application,
+            'user': candidat,
+        }
+    )
+    subject = 'Candidature | Le Fresnoy – Studio national des arts contemporains '
+
+    mail_sent = send_mail(subject,
+                          msg_plain,
+                          'selection@lefresnoy.net',
+                          [candidat.email],
+                          html_message=msg_html,
+                          )
+    return mail_sent
+
+
+def send_not_selected_candidature_email_to_candidat(request, candidat, application):
     # Send email : NOT SELECTED
     msg_plain = render_to_string(
         'emails/send_not_selected_email_to_candidat.txt',
