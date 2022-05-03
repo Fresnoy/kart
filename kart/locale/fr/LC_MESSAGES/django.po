@@ -87,7 +87,7 @@ msgstr ""
 #: people/templates/accounts/reset_password/password_reset_email.html:4
 #: people/templates/accounts/reset_password/password_reset_email_txt.html:3
 msgid "Password Reset"
-msgstr "Réinitialer le mot de passe"
+msgstr "Réinitialisation du votre mot de passe"
 
 #: people/templates/accounts/reset_password/password_reset_email.html:7
 #: people/templates/accounts/reset_password/password_reset_email_txt.html:6
