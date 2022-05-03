@@ -1,0 +1,3 @@
+Le Fresnoy - Studio national des arts contemporains
+
+{% block content %}{% endblock %}
