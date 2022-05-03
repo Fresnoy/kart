@@ -1,0 +1,121 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-05-03 15:10+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: people/templates/accounts/reset_password/ask_for_email.html:6
+msgid "Password reset"
+msgstr "Réinitialer le mot de passe"
+
+#: people/templates/accounts/reset_password/ask_for_email.html:18
+msgid ""
+"Forgotten your password? Enter your email address below, and we'll email "
+"instructions for setting a new one."
+msgstr ""
+"Mot de passe oublié ? Entrez votre adresse e-mail ci-dessous "
+"et nous vous enverrons des instructions par e-mail pour en définir un nouveau."
+
+#: people/templates/accounts/reset_password/ask_for_email.html:21
+msgid "Email address:"
+msgstr "Adresse e-mail"
+
+#: people/templates/accounts/reset_password/ask_for_email.html:29
+#: people/templates/accounts/reset_password/password_reset_email.html:8
+msgid "Reset my password"
+msgstr "Réinitialiser mon mot de passe"
+
+#: people/templates/accounts/reset_password/password_reset_complete.html:6
+#: people/templates/accounts/reset_password/password_reset_sent.html:6
+msgid "Password reset successful"
+msgstr "Mot de passe réinitialiser avec succès"
+
+#: people/templates/accounts/reset_password/password_reset_complete.html:17
+msgid "Your password has been reset!"
+msgstr "Votre mot de passe a été réinitialisé !"
+
+#: people/templates/accounts/reset_password/password_reset_complete.html:18
+msgid "You can now close this window and resume where you left."
+msgstr "Vous pouvez maintenant fermer cette fenêtre et reprendre là où vous en étiez. "
+
+#: people/templates/accounts/reset_password/password_reset_confirm.html:19
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr ""
+"Veuillez entrer votre nouveau mot de passe deux fois afin que nous puissions "
+"vérifier que vous l'avez saisi correctement."
+
+#: people/templates/accounts/reset_password/password_reset_confirm.html:22
+msgid "New password:"
+msgstr "Nouveau mot de passe"
+
+#: people/templates/accounts/reset_password/password_reset_confirm.html:27
+msgid "Confirm password:"
+msgstr "Confirmer le mot de passe"
+
+#: people/templates/accounts/reset_password/password_reset_confirm.html:30
+msgid "Enter the same password as above, for verification."
+msgstr "Entrer le même mot de passe que ci-dessus, pour vérification."
+
+#: people/templates/accounts/reset_password/password_reset_confirm.html:36
+msgid "Change my password"
+msgstr "Changer mon mot de passe"
+
+#: people/templates/accounts/reset_password/password_reset_confirm.html:48
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used. Please request a new password reset."
+msgstr ""
+"Le lien de réinitialisation du mot de passe n'était pas valide, "
+"peut-être parce qu'il a déjà été utilisé. Veuillez demander une nouvelle réinitialisation du mot de passe."
+
+#: people/templates/accounts/reset_password/password_reset_email.html:4
+#: people/templates/accounts/reset_password/password_reset_email_txt.html:3
+msgid "Password Reset"
+msgstr "Réinitialer le mot de passe"
+
+#: people/templates/accounts/reset_password/password_reset_email.html:7
+#: people/templates/accounts/reset_password/password_reset_email_txt.html:6
+msgid "You asked for password reset for email"
+msgstr "Vous avez demandé la réinitialisation du mot de passe pour l'e-mail"
+
+#: people/templates/accounts/reset_password/password_reset_email.html:7
+#: people/templates/accounts/reset_password/password_reset_email_txt.html:6
+msgid "Follow the link below"
+msgstr "Suivez le lien ci-dessous"
+
+#: people/templates/accounts/reset_password/password_reset_email.html:10
+msgid "Your username, in case you've forgotten:"
+msgstr "Votre nom d'utilisateur, au cas où vous l'auriez oublié :"
+
+#: people/templates/accounts/reset_password/password_reset_sent.html:17
+msgid ""
+"We've emailed you instructions for setting your password, if an account "
+"exists with the email you entered. You should receive them shortly."
+msgstr ""
+"Nous vous avons envoyé par e-mail des instructions pour définir "
+"votre mot de passe, si un compte existe avec l'e-mail que vous avez saisi. "
+"Vous devriez les recevoir sous peu."
+
+#: people/templates/accounts/reset_password/password_reset_sent.html:18
+msgid ""
+"If you don't receive an email, please make sure you've entered the address "
+"you registered with, and check your spam folder."
+msgstr ""
+"Si vous ne recevez pas d'e-mail, assurez-vous d'avoir entré l'adresse avec "
+"laquelle vous vous êtes inscrit et vérifiez votre dossier spam."
