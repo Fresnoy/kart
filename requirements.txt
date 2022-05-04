@@ -9,8 +9,7 @@ django-graphql-jwt==0.3.1
 django-grappelli==2.15.3
 django-guardian==2.4.0
 django-haystack==3.0
-# django-language-field==0.0.3
-git+https://github.com/MartijnVerkleij/django-language-field.git@patch-1
+django-language-field==0.0.3
 django-markdown==0.8.4
 django-markdownx==3.0.1
 django-multiselectfield==0.1.12
