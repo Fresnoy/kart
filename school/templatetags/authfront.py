@@ -2,7 +2,7 @@ from django import template
 
 from rest_framework_jwt.settings import api_settings
 
-from ..models import User
+from people.models import User
 
 from school.models import StudentApplicationSetup
 
@@ -13,7 +13,6 @@ register = template.Library()
 def authfront_reset_password_link(token, email):
     setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
     url = ""
-    print(register)
 
     try:
         user = User.objects.get(email=email)

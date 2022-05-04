@@ -9,16 +9,59 @@ from django.urls import reverse
 
 from rest_framework.test import APIClient
 
-from school.utils import (send_candidature_completed_email_to_user,
+from people.tests.factories import ArtistFactory
+from utils.tests.factories import UserFactory
+
+from school.utils import (send_activation_email,
+                          send_account_information_email,
+                          send_candidature_completed_email_to_user,
                           send_candidature_completed_email_to_admin,
                           send_candidature_complete_email_to_candidat,
                           send_interview_selection_email_to_candidat,
-                          send_not_selected_email_to_candidat,
+                          send_interview_selection_on_waitlist_email_to_candidat,
+                          send_selected_on_waitlist_candidature_email_to_candidat,
+                          send_selected_candidature_email_to_candidat,
+                          send_not_selected_candidature_email_to_candidat,
                           )
-from people.tests.factories import ArtistFactory
 
 
-class SendSendEmail(TestCase):
+class TestSendAccountEmail(TestCase):
+    """
+    Tests concernants le endpoint des User
+    """
+    fixtures = ['groups.json']
+
+    def setUp(self):
+        self.user = UserFactory()
+
+        self.setup = StudentApplicationSetup(candidature_date_start=timezone.now() - datetime.timedelta(days=1),
+                                             candidature_date_end=timezone.now() + datetime.timedelta(days=1),
+                                             recover_password_url="",
+                                             authentification_url="",
+                                             is_current_setup=True)
+        self.setup.save()
+
+    def tearDown(self):
+        pass
+
+    def test_email_activation(self):
+        """
+        Test creat send an activation email
+        """
+        url = reverse('studentapplication-user-register')
+        request = RequestFactory().request(user=url, methods="POST")
+        mail_sent = send_activation_email(request, self.user)
+        self.assertEqual(mail_sent, True)
+
+    def test_email_account_information(self):
+        """
+        Test creat send an activation email
+        """
+        mail_sent = send_account_information_email(self.user)
+        self.assertEqual(mail_sent, True)
+
+
+class TestSendEmail(TestCase):
     """
     Tests concernants le endpoint des User
     """
@@ -79,10 +122,34 @@ class SendSendEmail(TestCase):
 
     def test_email_interview_selection_to_candidat(self):
         """
-        Test send an interveiw selection email to user
+        Test send an interview selection email to user
         """
         request = RequestFactory().request(url=self.studentapplication_detail_url, methods="PATCH")
         mail_sent = send_interview_selection_email_to_candidat(request, self.user, self.application)
+        self.assertEqual(mail_sent, True)
+
+    def test_email_interview_selection_on_waitlist_to_candidat(self):
+        """
+        Test send an interview selection waitlist email to user
+        """
+        request = RequestFactory().request(url=self.studentapplication_detail_url, methods="PATCH")
+        mail_sent = send_interview_selection_on_waitlist_email_to_candidat(request, self.user, self.application)
+        self.assertEqual(mail_sent, True)
+
+    def test_email_selection_on_waitlist_to_candidat(self):
+        """
+        Test send an selection waitlist email to user
+        """
+        request = RequestFactory().request(url=self.studentapplication_detail_url, methods="PATCH")
+        mail_sent = send_selected_on_waitlist_candidature_email_to_candidat(request, self.user, self.application)
+        self.assertEqual(mail_sent, True)
+
+    def test_send_selected_candidature_email_to_candidat(self):
+        """
+        Test send email selected to user
+        """
+        request = RequestFactory().request(url=self.studentapplication_detail_url, methods="PATCH")
+        mail_sent = send_selected_candidature_email_to_candidat(request, self.user, self.application)
         self.assertEqual(mail_sent, True)
 
     def test_send_not_selected_email_to_candidat(self):
@@ -90,5 +157,5 @@ class SendSendEmail(TestCase):
         Test send an not selected to user
         """
         request = RequestFactory().request(url=self.studentapplication_detail_url, methods="PATCH")
-        mail_sent = send_not_selected_email_to_candidat(request, self.user, self.application)
+        mail_sent = send_not_selected_candidature_email_to_candidat(request, self.user, self.application)
         self.assertEqual(mail_sent, True)

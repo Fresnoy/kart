@@ -1,0 +1,10 @@
+{% extends "base-candidature-email.txt" %}
+
+{% block title %}
+
+{% endblock %}
+
+{% block content %}
+
+
+{% endblock %}

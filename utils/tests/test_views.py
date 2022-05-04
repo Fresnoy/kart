@@ -10,8 +10,8 @@ class TestJWTToken:
     @pytest.mark.parametrize(
         'user_role, expected', [
             (None, 400),
-            ('user', 200),
-            ('admin', 200),
+            ('user', 201),
+            ('admin', 201),
             ('inactive_user', 400),
             ('joker', 400),
         ]

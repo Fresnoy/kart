@@ -3,10 +3,12 @@ from django.urls import path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 
 from tastypie.api import Api
 from rest_framework import routers
 from rest_framework_jwt.views import obtain_jwt_token
+from rest_auth.views import PasswordResetConfirmView
 
 from people.api import ArtistResource, StaffResource, OrganizationResource, UserResource
 from production.api import (
@@ -23,9 +25,11 @@ from people.views import (
 )
 from people import views as people_views
 from school.views import (
+    UserPasswordResetView,
     PromotionViewSet, StudentViewSet,
     StudentAutocompleteSearchViewSet, StudentApplicationViewSet, StudentApplicationSetupViewSet
 )
+from school import views as school_views
 from production.views import (
     ArtworkViewSet, FilmViewSet, InstallationViewSet,
     PerformanceViewSet, FilmGenreViewSet,
@@ -96,19 +100,52 @@ v2_api.register(r'assets/medium', MediumViewSet)
 
 
 urlpatterns = [
+                       # basic Django user account reset password
+                       path('account/reset_password/',
+                            auth_views.PasswordResetView.as_view(
+                                 template_name='accounts/reset_password/password_reset_form.html',
+                                 html_email_template_name="accounts/reset_password/password_reset_email.html",
+                                 email_template_name='accounts/reset_password/password_reset_email_txt.html',
+                                 subject_template_name="accounts/reset_password/password_reset_subject.txt",
+                            ),
+                            name="reset_password"),
+                       path('account/reset_password_sent/',
+                            auth_views.PasswordResetDoneView.as_view(
+                                 template_name="accounts/reset_password/password_reset_sent.html"
+                            ),
+                            name="password_reset_done"),
+                       path('account/reset_password_form/<uidb64>/<token>/',
+                            auth_views.PasswordResetConfirmView.as_view(
+                                 template_name="accounts/reset_password/password_reset_confirm.html"
+                            ),
+                            name="basic_password_reset_confirm"),
+                       path('account/reset_password_complete/',
+                            auth_views.PasswordResetCompleteView.as_view(
+                                 template_name="accounts/reset_password/password_reset_complete.html",
+                            ),
+                            name="password_reset_complete"),
+                       # REST API V2
                        path('v2/', include(v2_api.urls)),
                        path('v2/auth/', obtain_jwt_token, name='obtain-jwt-token'),
-                       re_path(f'account/activate/{settings.PASSWORD_TOKEN}/',
-                               people_views.activate, name='user-activate'),
-                       # django user registration
+                       # basic REST context user registration
                        path('v2/rest-auth/', include('rest_auth.urls')),
                        path('v2/rest-auth/registration/', include('rest_auth.registration.urls')),
+                       re_path(f'v2/rest-auth/password/reset/confirm/{settings.PASSWORD_TOKEN}/',
+                               PasswordResetConfirmView.as_view(),
+                               name='password_reset_confirm'),
+                       # candidature context user creation
+                       re_path(f'school/student-application/account/activate/{settings.PASSWORD_TOKEN}/',
+                               school_views.user_activate, name='candidat-activate'),
+                       path('v2/school/student-application/account/password/reset/', UserPasswordResetView.as_view(),
+                            name='candidature_password_reset'),
                        # vimeo
                        path('v2/assets/vimeo/upload/token',
                             assets_views.vimeo_get_upload_token, name='vimeo-upload-token'),
                        # send emails
                        path('v2/people/send-emails',
                             people_views.send_custom_emails, name='send-emails'),
+
+
 
                        # api v1
                        path('', include(v1_api.urls)),

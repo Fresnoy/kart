@@ -19,11 +19,12 @@ import os
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '$17%$7@*^nmx&(mb)5=o9v9if&_%s67-*^-skk!iaef3%16*12'
 
-# PASSWORD_TOKEN = r'(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})'
-PASSWORD_TOKEN = r'(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,40})'
+PASSWORD_TOKEN = r'(?P<uidb64>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,40})'
 
 site_name = "Kartel"
 DEFAULT_FROM_EMAIL = "Le Fresnoy <selection@lefresnoy.net>"
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 # Application definition
 
 INSTALLED_APPS = (
@@ -38,7 +39,7 @@ INSTALLED_APPS = (
     'guardian',
     'pagedown',
     'haystack',
-    'elasticstack',
+    # 'elasticstack',
     'polymorphic',
     'taggit',
     'taggit_serializer',
@@ -55,6 +56,8 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
+    'rest_framework_jwt',
+    'rest_framework_jwt.blacklist',
     'allauth',
     'allauth.account',
     'rest_auth.registration',
@@ -138,6 +141,8 @@ USE_L10N = True
 
 USE_TZ = True
 
+LOCALE_PATHS = (os.path.join(BASE_DIR, 'kart/locale'), )
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
@@ -164,14 +169,15 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoObjectPermissions',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     ),
 }
 
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=15),
+    'JWT_AUTH_HEADER_PREFIX': 'JWT',
 }
 REST_USE_JWT = True
 
