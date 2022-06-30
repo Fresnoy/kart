@@ -25,11 +25,10 @@ class ProductionChildAdmin(PolymorphicChildModelAdmin):
 
 class ArtworkChildAdmin(ProductionChildAdmin):
     base_model = Artwork
-    list_display = (ProductionChildAdmin.list_display + ('production_date',))
-    filter_horizontal = ('authors', 'beacons')
+    list_display = (ProductionChildAdmin.list_display + ('production_date',))    
 
 
-class FilmChildAdmin(ArtworkChildAdmin):
+class FilmChildAdmin(ArtworkChildAdmin, admin.ModelAdmin):
     pass
 
 
@@ -42,10 +41,13 @@ class InstallationChildAdmin(ArtworkChildAdmin):
 
 
 @admin.register(Production)
-class ProductionParentAdmin(PolymorphicChildModelAdmin):
+class ProductionParentAdmin(PolymorphicChildModelAdmin, admin.ModelAdmin):
     list_display = ('title', 'subtitle',)
     search_fields = ['title']
     inlines = (CollaboratorsInline, PartnersInline)
+    formfield_overrides = {
+        models.TextField: {'widget': AdminPagedownWidget},
+    }
 
     base_model = Production
     child_models = (
@@ -54,15 +56,18 @@ class ProductionParentAdmin(PolymorphicChildModelAdmin):
         (Performance, PerformanceChildAdmin),
     )
 
-    formfield_overrides = {
-        models.TextField: {'widget': AdminPagedownWidget},
-    }
+    
+    
 
 
 class ArtworkAdmin(admin.ModelAdmin):
     list_display = ('title', 'get_authors', 'get_diffusions', 'get_awards')
     search_fields = ['title', ]
     inlines = (CollaboratorsInline, PartnersInline)
+    filter_vertical = ('authors', 'beacons',)
+    formfield_overrides = {
+        models.TextField: {'widget': AdminPagedownWidget},
+    }
 
     def get_authors(self, obj):
         return ", ".join([author.__str__() for author in obj.authors.all()])
@@ -88,6 +93,7 @@ class InstallationAdmin(ArtworkAdmin):
 @admin.register(Film)
 class FilmAdmin(ArtworkAdmin):
     base_model = Film
+    filter_vertical = ('shooting_place', )
 
 
 @admin.register(Performance)

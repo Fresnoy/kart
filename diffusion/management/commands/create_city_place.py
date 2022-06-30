@@ -47,8 +47,10 @@ class Command(BaseCommand):
         try:
             # get or create duplicplaces (why?)
             place = Place.objects.get(name=city)
+
         except Exception:
             # Place doesnt'exist
+            
             address = u"{0} {1}".format(city, country)
             location = self.get_location(address)
             if location is None:
@@ -65,5 +67,4 @@ class Command(BaseCommand):
                           country=country_code,
                           )
             place.save()
-
-        print(place)
+            print("Place created : " + place)
