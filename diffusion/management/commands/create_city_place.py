@@ -66,5 +66,8 @@ class Command(BaseCommand):
                           city=city,
                           country=country_code,
                           )
+            
+
+
             place.save()
-            print("Place created : " + place)
+            print("Place created : " + place.__str__())
