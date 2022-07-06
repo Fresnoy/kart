@@ -52,6 +52,9 @@ class ProductionOrganizationTask(models.Model):
     production = models.ForeignKey('Production', related_name="organization_tasks", on_delete=models.PROTECT)
     task = models.ForeignKey(OrganizationTask, on_delete=models.PROTECT)
 
+    class Meta:
+        ordering = ['pk']
+
 
 class Production(PolymorphicModel):
     class Meta:
