@@ -25,7 +25,7 @@ class ProductionChildAdmin(PolymorphicChildModelAdmin):
 
 class ArtworkChildAdmin(ProductionChildAdmin):
     base_model = Artwork
-    list_display = (ProductionChildAdmin.list_display + ('production_date',))    
+    list_display = (ProductionChildAdmin.list_display + ('production_date',))
 
 
 class FilmChildAdmin(ArtworkChildAdmin, admin.ModelAdmin):
@@ -55,9 +55,6 @@ class ProductionParentAdmin(PolymorphicChildModelAdmin, admin.ModelAdmin):
         (Installation, InstallationChildAdmin),
         (Performance, PerformanceChildAdmin),
     )
-
-    
-    
 
 
 class ArtworkAdmin(admin.ModelAdmin):
@@ -107,6 +104,11 @@ class EventAdmin(ProductionChildAdmin):
     list_display = (ProductionChildAdmin.list_display + ('starting_date', 'type', 'main_event'))
     search_fields = ['title', 'parent_event__title']
     inlines = (CollaboratorsInline, PartnersInline)
+    filter_vertical = ('subevents', "films", "installations", "performances")
+
+    formfield_overrides = {
+        models.TextField: {'widget': AdminPagedownWidget},
+    }
 
     def get_ordering(self, request):
         return ['id']  # sort case insensitive

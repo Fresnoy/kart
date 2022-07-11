@@ -50,7 +50,6 @@ class Command(BaseCommand):
 
         except Exception:
             # Place doesnt'exist
-            
             address = u"{0} {1}".format(city, country)
             location = self.get_location(address)
             if location is None:
@@ -66,8 +65,5 @@ class Command(BaseCommand):
                           city=city,
                           country=country_code,
                           )
-            
-
-
             place.save()
             print("Place created : " + place.__str__())
