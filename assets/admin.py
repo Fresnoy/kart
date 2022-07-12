@@ -12,6 +12,7 @@ class MediumInline(admin.TabularInline):
 
 class GalleryAdmin(admin.ModelAdmin):
     list_display = ('label', 'description')
+    search_fields = ['label', 'description']
     exclude = ('media',)
     inlines = (MediumInline,)
 
