@@ -20,8 +20,8 @@ class Command(BaseCommand):
         parser.add_argument('lastname', type=arg_to_unicode, help='Set last name user')
 
     def handle(self, *args, **options):
-        first_name = options['firstname'].title()
-        last_name = options['lastname'].title()
+        first_name = options['firstname'].strip().title()
+        last_name = options['lastname'].strip().title()
 
         print("firstname: {0}".format(first_name))
         print("lastname: {0}".format(last_name))
