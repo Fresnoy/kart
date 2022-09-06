@@ -1,9 +1,9 @@
-from haystack.backends.elasticsearch7_backend import (Elasticsearch7SearchEngine, Elasticsearch7SearchBackend, 
-                                                     Elasticsearch7SearchQuery)
+from haystack.backends.elasticsearch7_backend import (Elasticsearch7SearchEngine, Elasticsearch7SearchBackend,
+                                                      Elasticsearch7SearchQuery)
 
 
 class Elasticsearch71SearchBackend(Elasticsearch7SearchBackend):
-     DEFAULT_SETTINGS = {
+    DEFAULT_SETTINGS = {
         "settings": {
             "index": {
                 "max_ngram_diff": 2,
