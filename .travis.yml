@@ -1,8 +1,6 @@
 language: python
 python:
   - "3.8"
-services:
-  - elasticsearch
 before_install:
   - curl https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.15.1-amd64.deb -o elasticsearch.deb
   - sudo dpkg -i --force-confnew elasticsearch.deb
