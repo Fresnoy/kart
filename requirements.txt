@@ -32,7 +32,7 @@ drf-jwt==1.19.2
 # git+https://github.com/mka142/drf-haystack.git@patch-2
 # drf-haystack for django4 :
 git+https://github.com/13KuntalRoy/drf-haystack
-elasticsearch==2.4.1
+elasticsearch==7.15.1
 geopy==2.2.0
 Pillow==9.2.0
 pytz==2022.2.1
