@@ -36,7 +36,8 @@ MEDIA_URL = '/media/'
 HAYSTACK_CONNECTIONS = {
     'default': {
         # 'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
-        'ENGINE': 'elasticstack.backends.ConfigurableElasticSearchEngine',
+        # 'ENGINE': 'elasticstack.backends.ConfigurableElasticSearchEngine',
+        'ENGINE': 'kart.elasticsearch-config.Elasticsearch71SearchEngine',
         'URL': 'http://127.0.0.1:9200/',
         'INDEX_NAME': 'example',
     },
