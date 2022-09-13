@@ -98,8 +98,8 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self, *args, **kwargs):
         """
-        This switch serializers
-        From Staff (and StudentApplication owner) to private and Other to public
+        This func switch serializers for AdminStaff and StudentApplication owner
+        to show private infos (and hide private infos for Anonymous user)
         """
         if (self.request.user.is_authenticated and
             (self.request.user.is_staff or
@@ -109,8 +109,8 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """
-        This query give all Application'user
-        for Staff Anonymous User and gave all application for the others
+        This query give all Application for Anonymous User or staff
+        and his owns apps for current user
         """
         user = self.request.user
         if user.is_authenticated and not user.is_staff:
@@ -121,6 +121,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
     def create(self, request):
         """
         This view create an application AND Artist for auth user
+        (and write some db info like pasts applications for user)
         """
         user = self.request.user
         # first of all test current campaign
@@ -136,15 +137,12 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                 campaign=campaign
             )
             if not current_year_application:
-                # take the artist
-                user_artist = Artist.objects.filter(user=user.id)
+                # take the (first) artist (from user id) on db
+                user_artist = Artist.objects.filter(user=user.id).first()
                 if not user_artist:
                     # if not, create it
                     user_artist = Artist(user=user)
                     user_artist.save()
-                else:
-                    # take the first one
-                    user_artist = user_artist[0]
                 # get previous apps
                 last_applications = StudentApplication.objects.filter(artist__user=user.id) \
                                                               .values_list('created_on__year', flat=True)
@@ -313,28 +311,33 @@ def user_activate(request, uidb64, token):
 
         change_password_link = "{0}/{1}/{2}".format(setup.reset_password_url, front_token, route)
 
-        # Is the token valid?
-        if default_token_generator.check_token(user, token):
+        token_is_valid = default_token_generator.check_token(user, token)
+
+        # valid user id is the user inactive and token valid
+        if (token_is_valid and not user.is_active):
             # Activate the user
             user.is_active = True
             password = User.objects.make_random_password()
             user.set_password(password)
             user.save()
-
+            # send account infos email
             send_account_information_email(user)
-
+            # redirect
             return HttpResponseRedirect(change_password_link)
-
-        else:
-            # FIXME: if activation is already_ok the previous branch is taken
-            # activation already ok
+        # activation already ok
+        if user.is_active:
             activation_already_ok = render_to_string('emails/account/activation_already_ok.html', {
                                                      'username': user.username,
                                                      'email': user.email,
                                                      'link_change_password': change_password_link})
             return HttpResponse(activation_already_ok)
 
-    # pas le bon token
+        # Error : token isnt valid (time elapsed > 3 days?) and user is not valid
+        activation_error_page = render_to_string('emails/account/activation_error.html',
+                                                 {'id': uid_int, 'user': user})
+        return HttpResponse(activation_error_page)
+
+    # user is NONE
     activation_error_page = render_to_string('emails/account/activation_error.html', {'id': uid_int})
     return HttpResponse(activation_error_page)
 

@@ -1,18 +1,12 @@
-<html>
-    <head>
-      <title>Le Fresnoy - Account is active</title>
-    </head>
-    <body style="color: black; background-color: #333;" bgcolor="#333">
-    <div class="page" style="max-width: 960px; width: 100%; background-color: white; margin: 50px 0px; padding: 50px;">
-          <div class="logo">
-            <img src="https://app.lefresnoy.net/candidatures/assets/logo-fresnoy.png" />
-          </div>
+{% extends "base-candidature-page.html" %}
+
+{% block title %} Le Fresnoy - Account Activation {% endblock %}
+
+{% block content %}
 
       <p>
-        L'utilisateur avec l'email {{ email }} a déjà été validé
+        L'utilisateur avec l'email {{ email }} a déjà été validé. <br/>
+        <a href='{{ link_change_password}}'> Suivez ce lien pour changer votre mot de passe</a>
       </p>
-      <p>
-      </p>
-    </div>
-  <body>
-</html>
+
+{% endblock %}

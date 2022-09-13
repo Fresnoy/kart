@@ -25,7 +25,7 @@ class TestUserActivation:
             ('bad_token', 200, 0, "a déjà été validé"),  # FIXME: actually it seems unexpected
             ('deleted_user', 200, 0, "Erreur d'activation"),
             ('secret_changed', 200, 0, "a déjà été validé"),
-            ('active_user', 302, 1, None),  # FIXME: actually it seems unexpected
+            ('active_user', 200, 0, None),  # FIXME: actually it seems unexpected
         ]
     )
     def test_activation_attempts(
