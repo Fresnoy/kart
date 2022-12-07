@@ -81,7 +81,7 @@ class StudentApplicationSetupViewSet(viewsets.ModelViewSet):
 class StudentApplicationViewSet(viewsets.ModelViewSet):
     queryset = StudentApplication.objects.all()
     # serializer_class = StudentApplicationSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
     filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter)
     search_fields = ('=artist__user__username', 'artist__user__last_name')
     filterset_fields = ('application_completed',
@@ -114,6 +114,17 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         """
         user = self.request.user
         if user.is_authenticated and not user.is_staff:
+            # verify user has SA group
+            # pbuteau bug : is in db (staff) but not created with Application UX : Can't applicate
+            try:
+                group = Group.objects.get(name='School Application')
+                if(not user.groups.filter(name=group.name).exists()):
+                    user.groups.add(group)
+                    user.save()
+            except Group.DoesNotExist:
+                errors = {'Group': 'Not implemented'}
+                return Response(errors, status=status.HTTP_403_FORBIDDEN)
+            # return user Applications
             return StudentApplication.objects.filter(artist__user=user.id)
         else:
             return StudentApplication.objects.all()
@@ -129,7 +140,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
             errors = {'candidature': 'expired'}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
         campaign = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
-        # user muse be auth
+        # user must be auth
         if user.is_authenticated:
             # is an current inscription
             current_year_application = StudentApplication.objects.filter(
@@ -160,10 +171,6 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                 # user can't create two application for this year
                 errors = {'candidature': 'you are not able to create another candidature this session'}
                 return Response(errors, status=status.HTTP_409_CONFLICT)
-        else:
-            # FIXME: dead code: handled by APIView.permission_denied which raise HTTP_403
-            errors = {'candidature': 'forbidden'}
-            return Response(errors, status=status.HTTP_403_FORBIDDEN)
 
     def update(self, request, *args, **kwargs):
         """
@@ -189,7 +196,6 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                 request.data.get('wait_listed_for_interview') or
                 request.data.get('position_in_waitlist') or
                 request.data.get('position_in_interview_waitlist') or
-                request.data.get('application_complete') or  # FIXME: complete or completed?
                 request.data.get('campaign'))
         ):
             errors = {'Error': 'Field permission denied'}
