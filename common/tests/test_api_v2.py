@@ -5,8 +5,11 @@ from uuid import uuid4
 from common.tests.conftest import *  # noqa
 from diffusion.tests.conftest import *  # noqa
 from production.tests.conftest import *  # noqa
+from people.tests.conftest import *  # noqa
+from school.tests.conftest import *  # noqa
 from utils.tests.utils import (
     IsAuthenticatedOrReadOnlyModelViewSetMixin,
+    IsArtistOrReadOnlyModelViewSetMixin,
     HelpTestForModelViewSet,
     parametrize_user_roles,
 )
@@ -32,10 +35,10 @@ class TestBTBeaconViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestFo
 
 
 @pytest.mark.django_db
-class TestWebsiteViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestForModelViewSet):
+class TestWebsiteViewSet(IsArtistOrReadOnlyModelViewSetMixin, HelpTestForModelViewSet):
     viewset_name = 'common/website'
 
-    fixtures = ['website', 'user']
+    fixtures = ['website', 'artist', 'user']
 
     expected_list_size = 1
     expected_fields = ['url', 'link', 'language', 'title_fr', 'title_en']

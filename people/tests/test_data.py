@@ -7,7 +7,7 @@ class GroupData(TestCase):
     Tests concernants les donnees des groupes
     """
 
-    fixtures = ['groups.json']
+    fixtures = ['people/fixtures/groups.json']
 
     def setUp(self):
         pass

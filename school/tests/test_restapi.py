@@ -3,7 +3,7 @@ import datetime
 # import time
 from django.utils import timezone
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
 
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -19,11 +19,14 @@ class TestApplicationEndPoint(TestCase):
     """
     Tests concernants le endpoint des Student Application
     """
-    fixtures = ['groups.json']
+    fixtures = ['people/fixtures/groups.json']
 
     def setUp(self):
         self.artist = ArtistFactory()
         self.user = self.artist.user
+        self.sa_group = Group.objects.first()
+        self.user.groups.add(self.sa_group)
+        self.user.save()
 
         # save generate token
         self.token = ""
@@ -87,16 +90,57 @@ class TestApplicationEndPoint(TestCase):
         assert user_on_base.pk > 0
         assert user_on_base.profile is not None
 
-    def test_create_student_application(self):
+    def test_user_has_createStudentApplication_permittion(self):
+        """
+        Test user permission
+        """
+        permission = Permission.objects.get(codename='add_studentapplication')
+        self.assertEqual(self.user.has_perm(permission.content_type.app_label + '.' + permission.codename), True)
+
+    def test_userWithoutGroup_create_student_application(self):
+        """
+        Test user without group create an studentapplication
+        """
+        self.assertEqual(self.user.groups.filter(name=self.sa_group.name).exists(), True)
+        # remove user from Group
+        self.sa_group.user_set.remove(self.user)
+        # test user has no Student Application group
+        self.assertEqual(self.user.groups.filter(name=self.sa_group.name).exists(), False)
+        # get uri
+        studentapplication_url = reverse('studentapplication-list')
+        # auth user
+        self.client_auth.force_authenticate(user=self.user)
+        # post method
+        response = self.client_auth.post(studentapplication_url)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_userWithgroup_create_student_application(self):
         """
         Test creating an studentapplication
         """
         self.client_auth.force_authenticate(user=self.user)
+        # test if user in group
+        self.assertEqual(self.user.groups.filter(name=self.sa_group.name).exists(), True)
+
         studentapplication_url = reverse('studentapplication-list')
         response = self.client_auth.post(studentapplication_url)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(StudentApplication.objects.count(), 1)
         self.assertEqual(StudentApplication.objects.last().artist.user.first_name, self.user.first_name)
+
+    def test_anonymUser_create_student_application(self):
+        """
+        Test creating an studentapplication
+        """
+        studentapplication_url = reverse('studentapplication-list')
+        response = self.client_auth.post(studentapplication_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        # get method (join user in group)
+        response = self.client_auth.get(studentapplication_url)
+        # post again
+        response = self.client_auth.post(studentapplication_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_update_student_application(self):
         """
