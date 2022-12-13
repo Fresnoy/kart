@@ -81,7 +81,7 @@ class StudentApplicationSetupViewSet(viewsets.ModelViewSet):
 class StudentApplicationViewSet(viewsets.ModelViewSet):
     queryset = StudentApplication.objects.all()
     # serializer_class = StudentApplicationSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
     filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter)
     search_fields = ('=artist__user__username', 'artist__user__last_name')
     filterset_fields = ('application_completed',
@@ -98,8 +98,8 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self, *args, **kwargs):
         """
-        This switch serializers
-        From Staff (and StudentApplication owner) to private and Other to public
+        This func switch serializers for AdminStaff and StudentApplication owner
+        to show private infos (and hide private infos for Anonymous user)
         """
         if (self.request.user.is_authenticated and
             (self.request.user.is_staff or
@@ -109,11 +109,22 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """
-        This query give all Application'user
-        for Staff Anonymous User and gave all application for the others
+        This query give all Application for Anonymous User or staff
+        and his owns apps for current user
         """
         user = self.request.user
         if user.is_authenticated and not user.is_staff:
+            # verify user has SA group
+            # pbuteau bug : is in db (staff) but not created with Application UX : Can't applicate
+            try:
+                group = Group.objects.get(name='School Application')
+                if(not user.groups.filter(name=group.name).exists()):
+                    user.groups.add(group)
+                    user.save()
+            except Group.DoesNotExist:
+                errors = {'Group': 'Not implemented'}
+                return Response(errors, status=status.HTTP_403_FORBIDDEN)
+            # return user Applications
             return StudentApplication.objects.filter(artist__user=user.id)
         else:
             return StudentApplication.objects.all()
@@ -121,6 +132,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
     def create(self, request):
         """
         This view create an application AND Artist for auth user
+        (and write some db info like pasts applications for user)
         """
         user = self.request.user
         # first of all test current campaign
@@ -128,7 +140,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
             errors = {'candidature': 'expired'}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
         campaign = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
-        # user muse be auth
+        # user must be auth
         if user.is_authenticated:
             # is an current inscription
             current_year_application = StudentApplication.objects.filter(
@@ -136,15 +148,12 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                 campaign=campaign
             )
             if not current_year_application:
-                # take the artist
-                user_artist = Artist.objects.filter(user=user.id)
+                # take the (first) artist (from user id) on db
+                user_artist = Artist.objects.filter(user=user.id).first()
                 if not user_artist:
                     # if not, create it
                     user_artist = Artist(user=user)
                     user_artist.save()
-                else:
-                    # take the first one
-                    user_artist = user_artist[0]
                 # get previous apps
                 last_applications = StudentApplication.objects.filter(artist__user=user.id) \
                                                               .values_list('created_on__year', flat=True)
@@ -162,10 +171,6 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                 # user can't create two application for this year
                 errors = {'candidature': 'you are not able to create another candidature this session'}
                 return Response(errors, status=status.HTTP_409_CONFLICT)
-        else:
-            # FIXME: dead code: handled by APIView.permission_denied which raise HTTP_403
-            errors = {'candidature': 'forbidden'}
-            return Response(errors, status=status.HTTP_403_FORBIDDEN)
 
     def update(self, request, *args, **kwargs):
         """
@@ -191,7 +196,6 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                 request.data.get('wait_listed_for_interview') or
                 request.data.get('position_in_waitlist') or
                 request.data.get('position_in_interview_waitlist') or
-                request.data.get('application_complete') or  # FIXME: complete or completed?
                 request.data.get('campaign'))
         ):
             errors = {'Error': 'Field permission denied'}
@@ -313,28 +317,33 @@ def user_activate(request, uidb64, token):
 
         change_password_link = "{0}/{1}/{2}".format(setup.reset_password_url, front_token, route)
 
-        # Is the token valid?
-        if default_token_generator.check_token(user, token):
+        token_is_valid = default_token_generator.check_token(user, token)
+
+        # valid user id is the user inactive and token valid
+        if (token_is_valid and not user.is_active):
             # Activate the user
             user.is_active = True
             password = User.objects.make_random_password()
             user.set_password(password)
             user.save()
-
+            # send account infos email
             send_account_information_email(user)
-
+            # redirect
             return HttpResponseRedirect(change_password_link)
-
-        else:
-            # FIXME: if activation is already_ok the previous branch is taken
-            # activation already ok
+        # activation already ok
+        if user.is_active:
             activation_already_ok = render_to_string('emails/account/activation_already_ok.html', {
                                                      'username': user.username,
                                                      'email': user.email,
                                                      'link_change_password': change_password_link})
             return HttpResponse(activation_already_ok)
 
-    # pas le bon token
+        # Error : token isnt valid (time elapsed > 3 days?) and user is not valid
+        activation_error_page = render_to_string('emails/account/activation_error.html',
+                                                 {'id': uid_int, 'user': user})
+        return HttpResponse(activation_error_page)
+
+    # user is NONE
     activation_error_page = render_to_string('emails/account/activation_error.html', {'id': uid_int})
     return HttpResponse(activation_error_page)
 

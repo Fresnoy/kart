@@ -97,10 +97,6 @@ def send_custom_emails(request, format=None):
         errors = {'error': "User : {} can't send email".format(user)}
         return Response(errors, status=status.HTTP_401_UNAUTHORIZED)
 
-    # FIXME: dead code: handled by APIView.permission_denied which raise HTTP_403
-    errors = {'error': "Not Authenticated"}
-    return Response(errors, status=status.HTTP_401_UNAUTHORIZED)
-
 
 class FresnoyProfileViewSet(viewsets.ModelViewSet):
     queryset = FresnoyProfile.objects.all()

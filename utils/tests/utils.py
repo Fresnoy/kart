@@ -91,6 +91,7 @@ class AbstractHelpTestForAPI:
             expected = self.methods_behavior[method]
             if not isinstance(expected, int):
                 expected = expected[user_role]
+            print("{} -- test code : {} / expected code : {}".format(method, response.status_code, expected))
             assert response.status_code == expected
             return response.status_code not in [200, 204]
         else:

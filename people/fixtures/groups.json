@@ -1,22 +1,67 @@
 [
-{
-    "fields": {
-        "name": "School Application",
-        "permissions": [
-            103,
-            104,
-            105,
-            106,
-            107,
-            108,
-            37,
-            38,
-            115,
-            116,
-            117
-        ]
-    },
-    "model": "auth.group",
-    "pk": 1
-}
-]
+    {
+        "fields": {
+            "name": "School Application",
+            "permissions": [
+                [
+                    "add_gallery",
+                    "assets",
+                    "gallery"
+                ],
+                [
+                    "change_gallery",
+                    "assets",
+                    "gallery"
+                ],
+                [
+                    "add_medium",
+                    "assets",
+                    "medium"
+                ],
+                [
+                    "change_medium",
+                    "assets",
+                    "medium"
+                ],
+                [
+                    "delete_medium",
+                    "assets",
+                    "medium"
+                ],
+                [
+                    "add_website",
+                    "common",
+                    "website"
+                ],
+                [
+                    "change_website",
+                    "common",
+                    "website"
+                ],
+                [
+                    "delete_website",
+                    "common",
+                    "website"
+                ],
+                [
+                    "change_student",
+                    "school",
+                    "student"
+                ],
+                [
+                    "add_studentapplication",
+                    "school",
+                    "studentapplication"
+                ],
+                [
+                    "change_studentapplication",
+                    "school",
+                    "studentapplication"
+                ]
+            ]
+        },
+        "model": "auth.group",
+        "pk": 1
+    }
+    ]
+    
