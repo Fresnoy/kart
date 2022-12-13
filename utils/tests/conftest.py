@@ -46,6 +46,7 @@ def school_application_group(db_ready):
         "add_studentapplication",
         "add_studentapplicationsetup",
         "add_userobjectpermission",
+        "add_website",
         "change_corsmodel",
         "change_filmgenre",
         "change_gallery",
@@ -56,6 +57,7 @@ def school_application_group(db_ready):
         "change_studentapplication",
         "change_studentapplicationsetup",
         "change_userobjectpermission",
+        "change_website",
         "delete_corsmodel",
         "delete_filmgenre",
         "delete_gallery",
@@ -65,6 +67,7 @@ def school_application_group(db_ready):
         "delete_studentapplication",
         "delete_studentapplicationsetup",
         "delete_userobjectpermission",
+        "delete_website",
     ]
 
     group = Group.objects.create(name='School Application')

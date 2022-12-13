@@ -1,7 +1,5 @@
 import pytest
 
-from datetime import date
-
 
 @pytest.mark.django_db
 class TestPromotion:
@@ -30,7 +28,8 @@ class TestStudentApplicationSetup:
     def test_default_birthdate(self, student_application_setup):
         student_application_setup.date_of_birth_max = None
         student_application_setup.save()
-        assert (date.today().year - student_application_setup.date_of_birth_max.year) == 36
+        assert (int(student_application_setup.promotion.starting_year) -
+                student_application_setup.date_of_birth_max.year) == 36
 
 
 @pytest.mark.django_db

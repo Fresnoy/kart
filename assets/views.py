@@ -1,12 +1,8 @@
-import json
-
-from django.http import HttpResponse
-
-from rest_framework import viewsets, permissions
-from rest_framework_jwt.settings import api_settings
+from rest_framework import status, viewsets, permissions
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
 
 from .models import Gallery, Medium
-from people.models import User
 from school.models import StudentApplicationSetup
 
 from .serializers import GallerySerializer, MediumSerializer
@@ -24,31 +20,23 @@ class MediumViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
 
 
+@api_view(['GET'])
+@permission_classes((permissions.IsAuthenticated,))
 def vimeo_get_upload_token(request):
-
-    # make sur user is auth
-    if(request.META.get('HTTP_AUTHORIZATION')):
-        # FIXME: on devrait filtrer la méthode d'autorisation
-        # et intercepter une exception de décodage
-        token = request.META['HTTP_AUTHORIZATION'].split(' ')[1]
-        jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
-        infos = jwt_decode_handler(token)
-
-        user = infos
-        try:
-            user = User.objects.get(pk=infos['user_id'])
-        except User.DoesNotExist:
-            user = None
-
-        if(user):
-            setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
-            # FIXME: setup peut être nul à ce stade
+    user = request.user
+    # send him infos
+    if(user):
+        # get setup infos
+        setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
+        if(setup):
+            # customize returned infos
             vimeo = {
                 'name': setup.video_service_name,
                 'url': setup.video_service_url,
                 'token': setup.video_service_token
             }
-
-            return HttpResponse(json.dumps(vimeo))
-
-    return HttpResponse("Not Authenticated")
+            return Response(vimeo, status=status.HTTP_200_OK)
+        # No setup
+        return Response("Setup Empty", status=status.HTTP_404_NOT_FOUND)
+    else:
+        return Response("User not found", status=status.HTTP_404_NOT_FOUND)

@@ -29,7 +29,7 @@ class TestSendAccountEmail(TestCase):
     """
     Tests concernants le endpoint des User
     """
-    fixtures = ['groups.json']
+    fixtures = ['people/fixtures/groups.json']
 
     def setUp(self):
         self.user = UserFactory()
@@ -65,7 +65,7 @@ class TestSendEmail(TestCase):
     """
     Tests concernants le endpoint des User
     """
-    fixtures = ['groups.json']
+    fixtures = ['people/fixtures/groups.json']
 
     def setUp(self):
         self.artist = ArtistFactory()

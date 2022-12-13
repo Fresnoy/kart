@@ -72,16 +72,24 @@ class StudentApplicationSetup(models.Model):
 
     def _make_default_birthdate_max(self):
         """
-            31 december currentyear - 36
+            31 december currentyear or next promo year minus 36
         """
         max_age = 36
         current_year = date.today().year
+        # current_year is the next promo start year if exist
+        campaign = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
+        if(campaign):
+            current_year = int(campaign.promotion.starting_year)
         return date(current_year-max_age, 12, 31)
 
     def save(self, *args, **kwargs):
-
+        # set default date of birth max (calulated)
         if not self.date_of_birth_max:
             self.date_of_birth_max = self._make_default_birthdate_max()
+        # set all current setups to False
+        # TODO : only one current setup can be true
+        if self.is_current_setup:
+            StudentApplicationSetup.objects.filter(is_current_setup=True).update(is_current_setup=False)
 
         super(StudentApplicationSetup, self).save(*args, **kwargs)
 
@@ -296,6 +304,10 @@ class StudentApplication(models.Model):
             Application number algorithm = year + increment_num
         """
         year = date.today().year
+        # settup app number with current campaign promo if exist
+        campaign = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
+        if(campaign):
+            year = campaign.promotion.starting_year
         carry_on = True
         default_number = 103
         inc = 0

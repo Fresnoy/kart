@@ -1,17 +1,22 @@
-<html>
-    <head>
-      <title>Le Fresnoy - Account activation Error</title>
-    </head>
-    <body style="color: black; background-color: #333;" bgcolor="#333">
-    <div class="page" style="max-width: 960px; width: 100%; background-color: white; margin: 50px 0px; padding: 50px;">
-          <div class="logo">
-            <img src="https://app.lefresnoy.net/candidatures/assets/logo-fresnoy.png" />
-          </div>
-      <p>
-        Erreur d'activation : utilisateur avec l'ID Activation {{id}}
-      </p>
-      <p>
-      </p>
-    </div>
-  <body>
-</html>
+{% extends "base-candidature-page.html" %}
+
+{% block title %} Le Fresnoy - Account Activation {% endblock %}
+
+{% block content %}
+
+      <h3>Erreur d'activation</h3>
+      {% if user %}
+        
+      <p>L'utilisateur <u>{{user}}</u> rencontre un problème.</p>
+      
+      {% else %}
+
+        <p>L'utilisateur avec le numéro d'activation {{id}} rencontre un problème</p>
+
+      {% endif %}
+
+      <p>Veillez envoyer un email à selection@lefresnoy.net pour vous aider à réinitialiser votre compte.</p>
+
+
+
+{% endblock %}

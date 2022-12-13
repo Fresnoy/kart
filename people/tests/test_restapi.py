@@ -15,7 +15,6 @@ class UserEndPoint(TestCase):
     """
     Tests concernants le endpoint des User
     """
-    fixtures = ['groups.json']
 
     def setUp(self):
         self.user = UserFactory()

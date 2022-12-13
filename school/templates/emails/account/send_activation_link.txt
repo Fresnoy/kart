@@ -1,8 +1,7 @@
 Bonjour,
 
-Vous êtes sur le point de créer un compte sur notre base de données, veuillez
-suivre ce lien : {{url}} pour créer votre mot de passe et pouvoir ainsi continuer la procédure d'inscription.
-En cas de problèmes pour vous inscrire, vous pouvez nous contacter en répondant à ce message.
+Afin de poursuivre votre procédure de candidature au Fresnoy, merci de confirmer votre email en suivant
+ce lien : {{url}}.
 
 Bien cordialement,
 
@@ -12,9 +11,8 @@ L'équipe du Fresnoy
 
 Hello,
 
-You are about to create an account on our database.
-Please click on this link : {{url}} to create your password and go on with your enrolment process.
-If you have a problem with this, you can contact us by answering this message.
+To continue your application procedure at Le Fresnoy, please confirm your email by follow the link : {{url}}.
+For any question, feel free to contact us  by replying to the present email.
 
 Kind regards,
 
