@@ -32,13 +32,11 @@ django-tastypie-swagger==0.1.4
 django-unused-media==0.2.2
 djangorestframework==3.12.4
 djangorestframework-simplejwt==5.2.2
-# djangorestframework-jwt==1.11.0
 drf-jwt==1.19.2
 # drf-haystack
 # drf-haystack==1.8.11
 # master of repo (not released)
 git+https://github.com/rhblind/drf-haystack.git
-
 elasticsearch==7.15.1
 geopy==2.3.0
 Pillow==9.3.0
