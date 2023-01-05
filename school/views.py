@@ -14,7 +14,7 @@ from rest_framework_jwt.settings import api_settings
 from drf_haystack.filters import HaystackAutocompleteFilter
 from drf_haystack.viewsets import HaystackViewSet
 
-from rest_auth.views import PasswordResetView
+from dj_rest_auth.views import PasswordResetView
 
 from guardian.shortcuts import assign_perm
 

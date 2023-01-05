@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from drf_haystack.serializers import HaystackSerializer
-from rest_auth.serializers import PasswordResetSerializer
+from dj_rest_auth.serializers import PasswordResetSerializer
 
 from .models import Promotion, Student, StudentApplication, StudentApplicationSetup
 from .search_indexes import StudentIndex
