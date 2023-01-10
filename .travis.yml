@@ -3,6 +3,7 @@ python:
   - "3.8"
 services:
   - elasticsearch
+  - postgresql
 before_script:
   - sleep 10
 install:
