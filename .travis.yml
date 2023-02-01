@@ -8,6 +8,7 @@ services:
   - postgresql
 before_script:
   - sleep 10
+  - psql -c 'create database test.db.pg;' -U postgres
 install:
   - pip install tox==3.28.0 tox-travis==0.13
 script:
