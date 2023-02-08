@@ -21,6 +21,8 @@ class ArtworkViewSet(viewsets.ModelViewSet):
     queryset = Artwork.objects.all()
     serializer_class = ArtworkPolymorphicSerializer
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('authors',)
 
 
 class TagsFilter(filters.CharFilter):
@@ -67,6 +69,8 @@ class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('installations__authors', 'films__authors', 'performances__authors',)
 
 
 class ItineraryViewSet(viewsets.ModelViewSet):
