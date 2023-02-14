@@ -1,6 +1,7 @@
 from django.db.models import Prefetch
 
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, pagination
+from rest_framework.response import Response
 from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -17,12 +18,47 @@ from .serializers import (ArtworkPolymorphicSerializer, FilmSerializer, Installa
                           )
 
 
-class ArtworkViewSet(viewsets.ModelViewSet):
+class CustomPagination(pagination.PageNumberPagination):
+    """
+    Customize Pagination
+    """
+    # no limit when page_size not set
+    page_size = 100000
+    page_size_query_param = 'page_size'
+    max_page_size = 20
+    page_query_param = 'page'
+
+    def get_paginated_response(self, data):
+        response = Response(data)
+        # pagination on headers
+        response['count'] = self.page.paginator.count
+        response['next'] = self.get_next_link()
+        response['previous'] = self.get_previous_link()
+        return response
+
+
+class ArtworkFilterSet(filters.FilterSet):
+    """
+    Customize Filters for Artwork
+    """
+    # transform date to year
+    production_year = filters.NumberFilter(field_name="production_date", lookup_expr='year__exact')
+
+    class Meta:
+        model = Artwork
+        fields = {
+            "authors",
+            "production_date",
+        }
+
+
+class ArtworkViewSet(viewsets.ModelViewSet,):
     queryset = Artwork.objects.all()
     serializer_class = ArtworkPolymorphicSerializer
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('authors',)
+    filterset_class = ArtworkFilterSet
+    pagination_class = CustomPagination
 
 
 class TagsFilter(filters.CharFilter):
