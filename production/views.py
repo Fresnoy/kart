@@ -2,6 +2,10 @@ from django.db.models import Prefetch
 
 from rest_framework import viewsets, permissions, pagination
 from rest_framework.response import Response
+
+from drf_haystack.filters import HaystackAutocompleteFilter
+from drf_haystack.viewsets import HaystackViewSet
+
 from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -10,7 +14,8 @@ from .models import (Artwork, Film, Installation, Performance,
                      Itinerary, ProductionStaffTask, ProductionOrganizationTask,
                      OrganizationTask)
 
-from .serializers import (ArtworkPolymorphicSerializer, FilmSerializer, InstallationSerializer, KeywordsSerializer,
+from .serializers import (ArtworkPolymorphicSerializer, ArtworkAutocompleteSerializer,
+                          FilmSerializer, InstallationSerializer, KeywordsSerializer,
                           PerformanceSerializer, FilmGenreSerializer,
                           InstallationGenreSerializer, EventSerializer,
                           ItinerarySerializer, ProductionStaffTaskSerializer,
@@ -78,6 +83,13 @@ class ArtworkFilter(filters.FilterSet):
     class Meta:
         model = Film
         fields = ['genres', 'keywords']
+
+
+class ArtworkAutocompleteSearchViewSet(HaystackViewSet):
+    index_models = [Film, Installation]
+    serializer_class = ArtworkAutocompleteSerializer
+    filter_backends = [HaystackAutocompleteFilter]
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class FilmViewSet(viewsets.ModelViewSet):

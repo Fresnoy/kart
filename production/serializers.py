@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_polymorphic.serializers import PolymorphicSerializer
+from drf_haystack.serializers import HaystackSerializerMixin
 from taggit_serializer.serializers import (TagListSerializerField,
                                            TaggitSerializer)
 from taggit.models import Tag
@@ -11,6 +12,7 @@ from .models import (
     ProductionStaffTask, ProductionOrganizationTask,
     Artwork
 )
+from .search_indexes import InstallationIndex, PerformanceIndex, FilmIndex  # ArtworkIndex
 from people.serializers import StaffSerializer
 
 
@@ -115,6 +117,23 @@ class ArtworkPolymorphicSerializer(PolymorphicSerializer):
         Installation: InstallationSerializer,
         Performance: PerformanceSerializer
     }
+
+
+class ArtworkAutocompleteSerializer(HaystackSerializerMixin, ArtworkSerializer):
+    class Meta(ArtworkSerializer.Meta):
+        index_classes = [FilmIndex, InstallationIndex, PerformanceIndex]
+        search_fields = ("content_auto", "polymorphic_ctype")
+        # fields = ('title', 'url', 'type')
+        fields = ('title', 'url', 'type')
+        field_aliases = {
+            "q": "content_auto"
+        }
+        depth = 1
+
+    type = serializers.SerializerMethodField()
+
+    def get_type(self, obj):
+        return obj.__class__.__name__
 
 
 class FilmGenreSerializer(serializers.HyperlinkedModelSerializer):

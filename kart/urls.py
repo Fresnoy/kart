@@ -31,7 +31,8 @@ from school.views import (
 )
 from school import views as school_views
 from production.views import (
-    ArtworkViewSet, FilmViewSet, InstallationViewSet,
+    ArtworkViewSet, ArtworkAutocompleteSearchViewSet,
+    FilmViewSet, InstallationViewSet,
     PerformanceViewSet, FilmGenreViewSet,
     InstallationGenreViewSet, EventViewSet,
     ItineraryViewSet, FilmKeywordsViewSet,
@@ -78,6 +79,7 @@ v2_api.register(r'school/student-application', StudentApplicationViewSet)
 v2_api.register(r'school/student-application-setup', StudentApplicationSetupViewSet)
 v2_api.register(r'school/student-search', StudentAutocompleteSearchViewSet, basename="school-student-search")
 v2_api.register(r'production/artwork', ArtworkViewSet)
+v2_api.register(r'production/artwork-search', ArtworkAutocompleteSearchViewSet, basename="production-artwork-search")
 v2_api.register(r'production/film', FilmViewSet)
 v2_api.register(r'production/film-keywords', FilmKeywordsViewSet)
 v2_api.register(r'production/event', EventViewSet)
