@@ -86,7 +86,7 @@ class ArtworkFilter(filters.FilterSet):
 
 
 class ArtworkAutocompleteSearchViewSet(HaystackViewSet):
-    index_models = [Film, Installation]
+    index_models = [Film, Installation, Performance]
     serializer_class = ArtworkAutocompleteSerializer
     filter_backends = [HaystackAutocompleteFilter]
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
