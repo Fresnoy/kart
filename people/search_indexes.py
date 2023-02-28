@@ -11,7 +11,7 @@ class ArtistIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare_nationality(self, obj):
         if obj.user.profile:
-            if type(obj.user.profile.nationality) == str
+            if type(obj.user.profile.nationality) == str:
                 return obj.user.profile.nationality.split(",")
         return None
 
