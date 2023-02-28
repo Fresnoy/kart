@@ -10,7 +10,7 @@ class ArtistIndex(indexes.SearchIndex, indexes.Indexable):
     content_auto = indexes.EdgeNgramField(use_template=True)
 
     def prepare_nationality(self, obj):
-        if obj.user.profile:
+        if obj.user.profile and obj.user.profile.nationality:
             return obj.user.profile.nationality.split(",")
         return None
 
