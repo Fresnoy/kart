@@ -12,14 +12,14 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import (Artwork, Film, Installation, Performance,
                      FilmGenre, InstallationGenre, Event,
                      Itinerary, ProductionStaffTask, ProductionOrganizationTask,
-                     OrganizationTask)
+                     OrganizationTask, StaffTask)
 
 from .serializers import (ArtworkPolymorphicSerializer, ArtworkAutocompleteSerializer,
                           FilmSerializer, InstallationSerializer, KeywordsSerializer,
                           PerformanceSerializer, FilmGenreSerializer,
                           InstallationGenreSerializer, EventSerializer,
                           ItinerarySerializer, ProductionStaffTaskSerializer,
-                          PartnerSerializer, OrganizationTaskSerializer
+                          PartnerSerializer, OrganizationTaskSerializer, StaffTaskSerializer
                           )
 
 
@@ -164,4 +164,10 @@ class OrganizationTaskViewSet(viewsets.ModelViewSet):
 class FilmKeywordsViewSet(viewsets.ModelViewSet):
     queryset = Film.keywords.all()
     serializer_class = KeywordsSerializer
+    permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
+
+
+class StaffTaskViewSet(viewsets.ModelViewSet):
+    queryset = StaffTask.objects.all()
+    serializer_class = StaffTaskSerializer
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)

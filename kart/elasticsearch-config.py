@@ -35,13 +35,14 @@ class Elasticsearch71SearchBackend(Elasticsearch7SearchBackend):
                     },
                     "haystack_edgengram": {
                         "type": "edge_ngram",
-                        "min_gram": 3,
+                        "min_gram": 2,
                         "max_gram": 15,
                     },
                 },
             },
         },
     }
+
 
 
 class Elasticsearch71SearchEngine(Elasticsearch7SearchEngine):

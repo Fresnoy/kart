@@ -55,7 +55,7 @@ def send_custom_emails(request, format=None):
             from, to, bcc, subject, message
     """
     user = request.user
-    if(user.is_staff):
+    if (user.is_staff):
         items_need_list = ('from', 'to', 'bcc', 'subject', 'message',)
         verify_email = ('from', 'to', 'bcc',)
         email = {}

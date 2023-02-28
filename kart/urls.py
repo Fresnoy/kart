@@ -36,7 +36,8 @@ from production.views import (
     PerformanceViewSet, FilmGenreViewSet,
     InstallationGenreViewSet, EventViewSet,
     ItineraryViewSet, FilmKeywordsViewSet,
-    CollaboratorViewSet, PartnerViewSet, OrganizationTaskViewSet
+    CollaboratorViewSet, PartnerViewSet,
+    OrganizationTaskViewSet, StaffTaskViewSet
 )
 from diffusion.views import PlaceViewSet, AwardViewSet, MetaAwardViewSet, MetaEventViewSet, DiffusionViewSet
 from common.views import BTBeaconViewSet, WebsiteViewSet
@@ -90,6 +91,7 @@ v2_api.register(r'production/installation-genre', InstallationGenreViewSet)
 v2_api.register(r'production/performance', PerformanceViewSet)
 v2_api.register(r'production/collaborator', CollaboratorViewSet)
 v2_api.register(r'production/partner', PartnerViewSet)
+v2_api.register(r'production/task', StaffTaskViewSet)
 v2_api.register(r'diffusion/place', PlaceViewSet)
 v2_api.register(r'diffusion/meta-award', MetaAwardViewSet)
 v2_api.register(r'diffusion/award', AwardViewSet)

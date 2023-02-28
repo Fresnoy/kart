@@ -109,12 +109,25 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
         )
 
 
-class StaffSerializer(serializers.HyperlinkedModelSerializer):
+class StaffSimpleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Staff
         fields = ('user',)
 
+    # user = PublicUserSerializer()
     user = serializers.HyperlinkedRelatedField(view_name='user-detail', read_only=True)
+
+
+class StaffSerializer(serializers.ModelSerializer):
+    # import here prevent circular imports
+    from production.serializers import ProductionTaskSerializer
+
+    class Meta:
+        model = Staff
+        fields = ('user', 'production_task')
+
+    user = PublicUserSerializer()
+    production_task = ProductionTaskSerializer(source="productionstafftask_set", many=True, read_only=True)
 
 
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):

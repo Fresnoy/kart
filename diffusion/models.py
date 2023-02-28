@@ -1,6 +1,7 @@
 from django.db.models import Q
 from django.db import models
 from django_countries.fields import CountryField
+from django.contrib.gis.geos import Point
 
 from taggit.managers import TaggableManager
 from multiselectfield import MultiSelectField
@@ -8,8 +9,6 @@ from multiselectfield import MultiSelectField
 from people.models import User, Organization
 
 # TODO: Add field is_city - is_country
-
-
 class Place(models.Model):
     """
     Some place belonging to an organization
@@ -40,6 +39,10 @@ class Place(models.Model):
             return f'{self.name} {self.city} ({extra_info})'
         else:
             return f'{self.name} {address} ({extra_info})'
+
+    @property
+    def coordinates(self):
+        return Point(self.longitude, self.latitude)
 
 
 def main_event_true():
