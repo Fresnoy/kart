@@ -6,14 +6,15 @@ class ArtistIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     firstname = indexes.CharField(model_attr='user__first_name')
     lastname = indexes.CharField(model_attr='user__last_name')
-    nationality = indexes.MultiValueField(null=True,)
+    nationality = indexes.MultiValueField(model_attr='user__profile__nationality', null=True,)
     content_auto = indexes.EdgeNgramField(use_template=True)
 
     def prepare_nationality(self, obj):
-        if obj.user.profile:
-            if type(obj.user.profile.nationality) == str:
-                return obj.user.profile.nationality.split(",")
-        return None
+        try:
+            nationality = obj.user.profile.nationality
+            return nationality.split(",")
+        except Exception:
+            return None
 
     def get_model(self):
         return Artist
