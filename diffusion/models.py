@@ -1,7 +1,6 @@
 from django.db.models import Q
 from django.db import models
 from django_countries.fields import CountryField
-from django.contrib.gis.geos import Point
 
 from taggit.managers import TaggableManager
 from multiselectfield import MultiSelectField
