@@ -6,7 +6,7 @@ class ArtistIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     firstname = indexes.CharField(model_attr='user__first_name')
     lastname = indexes.CharField(model_attr='user__last_name')
-    nationality = indexes.MultiValueField(model_attr='user__profile__nationality', null=True,)
+    nationality = indexes.MultiValueField(null=True,)
     content_auto = indexes.EdgeNgramField(use_template=True)
 
     def prepare_nationality(self, obj):
