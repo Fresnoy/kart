@@ -20,7 +20,8 @@ from diffusion.api import PlaceResource, AwardResource, MetaAwardResource
 from school.api import PromotionResource, StudentResource, StudentApplicationResource
 
 from people.views import (
-    ArtistViewSet, UserViewSet, FresnoyProfileViewSet,
+    ArtistViewSet, ArtistAutocompleteSearchViewSet, 
+    UserViewSet, FresnoyProfileViewSet,
     StaffViewSet, OrganizationViewSet,
 )
 from people import views as people_views
@@ -71,6 +72,7 @@ v2_api = routers.DefaultRouter(trailing_slash=False)
 v2_api.register(r'people/user', UserViewSet)
 v2_api.register(r'people/userprofile', FresnoyProfileViewSet)
 v2_api.register(r'people/artist', ArtistViewSet)
+v2_api.register(r'people/artist-search', ArtistAutocompleteSearchViewSet, basename="people-artist-search")
 v2_api.register(r'people/staff', StaffViewSet)
 v2_api.register(r'people/organization', OrganizationViewSet)
 v2_api.register(r'people/organization-staff', OrganizationTaskViewSet)

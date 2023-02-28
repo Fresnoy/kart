@@ -1,9 +1,11 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from drf_haystack.serializers import HaystackSerializerMixin
 
 from django_countries.serializer_fields import CountryField
 
 from .models import Artist, Staff, Organization, FresnoyProfile
+from .search_indexes import ArtistIndex
 
 
 class FresnoyProfileSerializer(serializers.ModelSerializer):
@@ -42,6 +44,22 @@ class FresnoyProfileSerializer(serializers.ModelSerializer):
     birthplace_country = CountryField(default="", allow_blank=True)
     homeland_country = CountryField(default="", allow_blank=True)
     residence_country = CountryField(default="", allow_blank=True)
+
+
+class PublicFresnoyProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FresnoyProfile
+        # exclude = ('user',)
+        fields = (
+            "id",
+            "photo",            
+            "nationality",
+            "is_artist",
+            "is_staff",
+            "is_student",
+        )
+
+    id = serializers.ReadOnlyField()
 
 
 class UserRegisterSerializer(serializers.Serializer):
@@ -88,7 +106,9 @@ class UserSerializer(serializers.ModelSerializer):
 class PublicUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'url', 'username', 'first_name', 'last_name')
+        fields = ('id', 'url', 'username', 'first_name', 'last_name', 'profile')
+
+    profile = PublicFresnoyProfileSerializer(required=False)
 
 
 class ArtistSerializer(serializers.HyperlinkedModelSerializer):
@@ -109,6 +129,19 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
         )
 
 
+class ArtistAutocompleteSerializer(HaystackSerializerMixin, ArtistSerializer):
+    class Meta(ArtistSerializer.Meta):
+        index_classes = [ArtistIndex]
+        search_fields = ("text", "content_auto", "nationality" )
+        fields = ["nickname", "user"]
+        field_aliases = {
+            "q": "content_auto"
+        }
+        depth = 1
+
+    user = PublicUserSerializer()
+
+
 class StaffSimpleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Staff
@@ -125,8 +158,9 @@ class StaffSerializer(serializers.ModelSerializer):
     class Meta:
         model = Staff
         fields = ('user', 'production_task')
+        # fields = ('user',)
 
-    user = PublicUserSerializer()
+    user = serializers.HyperlinkedRelatedField(view_name='user-detail', read_only=True)
     production_task = ProductionTaskSerializer(source="productionstafftask_set", many=True, read_only=True)
 
 
