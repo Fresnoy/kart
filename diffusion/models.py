@@ -8,6 +8,7 @@ from multiselectfield import MultiSelectField
 
 from people.models import User, Organization
 
+
 # TODO: Add field is_city - is_country
 class Place(models.Model):
     """

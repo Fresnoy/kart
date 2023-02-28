@@ -20,7 +20,7 @@ from diffusion.api import PlaceResource, AwardResource, MetaAwardResource
 from school.api import PromotionResource, StudentResource, StudentApplicationResource
 
 from people.views import (
-    ArtistViewSet, ArtistAutocompleteSearchViewSet, 
+    ArtistViewSet, ArtistAutocompleteSearchViewSet,
     UserViewSet, FresnoyProfileViewSet,
     StaffViewSet, OrganizationViewSet,
 )

@@ -13,7 +13,7 @@ class ArtistIndex(indexes.SearchIndex, indexes.Indexable):
         if obj.user.profile.nationality:
             return obj.user.profile.nationality.split(",")
         return None
-    
+
     def get_model(self):
         return Artist
 
@@ -21,7 +21,6 @@ class ArtistIndex(indexes.SearchIndex, indexes.Indexable):
         """
         Used when the entire index for model is updated.
         Artists are with an arwork or is student
-        """        
-        from django.db.models import Q       
+        """
+        from django.db.models import Q
         return self.get_model().objects.filter(Q(artworks__isnull=False) | Q(student__isnull=False)).distinct()
-        

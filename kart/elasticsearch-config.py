@@ -44,7 +44,6 @@ class Elasticsearch71SearchBackend(Elasticsearch7SearchBackend):
     }
 
 
-
 class Elasticsearch71SearchEngine(Elasticsearch7SearchEngine):
     backend = Elasticsearch71SearchBackend
     query = Elasticsearch7SearchQuery

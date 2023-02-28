@@ -13,6 +13,8 @@ class StudentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Student
         fields = '__all__'
+        # depth = 1
+    # user = PublicUserSerializer()
 
 
 class PromotionSerializer(serializers.HyperlinkedModelSerializer):

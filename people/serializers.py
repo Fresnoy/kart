@@ -52,7 +52,7 @@ class PublicFresnoyProfileSerializer(serializers.ModelSerializer):
         # exclude = ('user',)
         fields = (
             "id",
-            "photo",            
+            "photo",
             "nationality",
             "is_artist",
             "is_staff",
@@ -132,7 +132,7 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
 class ArtistAutocompleteSerializer(HaystackSerializerMixin, ArtistSerializer):
     class Meta(ArtistSerializer.Meta):
         index_classes = [ArtistIndex]
-        search_fields = ("text", "content_auto", "nationality" )
+        search_fields = ("text", "content_auto", "nationality")
         fields = ["nickname", "user"]
         field_aliases = {
             "q": "content_auto"

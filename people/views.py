@@ -106,7 +106,6 @@ class FresnoyProfileViewSet(viewsets.ModelViewSet):
     serializer_class = FresnoyProfileSerializer
 
 
-
 class CustomPagination(pagination.PageNumberPagination):
     """
     Customize Pagination
@@ -124,16 +123,16 @@ class CustomPagination(pagination.PageNumberPagination):
         response['next'] = self.get_next_link()
         response['previous'] = self.get_previous_link()
         return response
-    
+
 
 class ArtistViewSet(viewsets.ModelViewSet):
     queryset = Artist.objects.all()
     serializer_class = ArtistSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    filter_backends = (filters.SearchFilter,filters.OrderingFilter)
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('=user__username',)
     pagination_class = CustomPagination
-    ordering_fields = ('user__last_name','user__profile__nationality',)
+    ordering_fields = ('user__last_name', 'user__profile__nationality',)
 
 
 class ArtistAutocompleteSearchViewSet(HaystackViewSet):
