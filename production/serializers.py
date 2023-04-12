@@ -160,7 +160,7 @@ class ArtworkAutocompleteSerializer(HaystackSerializerMixin, ArtworkSerializer):
             return [PlaceSerializer(place, context=self.context).data for place in obj.shooting_place.all()]
         return None
     
-    def get_artworks(self, obj):
+    def get_authors(self, obj):
         # prevent circular import
         from people.serializers import ArtistUserSerializer
         return ArtistUserSerializer(obj.authors.all(), many=True, context=self.context).data
