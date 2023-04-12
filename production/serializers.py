@@ -13,7 +13,7 @@ from .models import (
     Artwork
 )
 from .search_indexes import InstallationIndex, PerformanceIndex, FilmIndex  # ArtworkIndex
-from people.serializers import StaffSimpleSerializer
+from people.serializers import StaffSimpleSerializer, ArtistUserSerializer
 
 
 class OrganizationTaskSerializer(serializers.HyperlinkedModelSerializer):
@@ -133,7 +133,7 @@ class ArtworkAutocompleteSerializer(HaystackSerializerMixin, ArtworkSerializer):
     class Meta(ArtworkSerializer.Meta):
         index_classes = [FilmIndex, InstallationIndex, PerformanceIndex]
         search_fields = ("content_auto", 'type', 'genres', 'keywords', "shooting_place",)
-        fields = ('title', 'url', 'type', 'genres', 'keywords', "shooting_place")
+        fields = ('title', 'url', 'type', 'genres', 'keywords', "shooting_place", "authors")
         field_aliases = {
             "q": "content_auto",
         }
@@ -143,12 +143,12 @@ class ArtworkAutocompleteSerializer(HaystackSerializerMixin, ArtworkSerializer):
     genres = serializers.SerializerMethodField()
     keywords = TagListSerializerField()
     shooting_place = serializers.SerializerMethodField()
+    authors = ArtistUserSerializer(many=True)
 
     def get_type(self, obj):
         return obj.__class__.__name__
 
     def get_genres(self, obj):
-        print('get genres')
         if obj.__class__.__name__ in {'Film', 'Installation'}:
             return [genre.label for genre in obj.genres.all()]
         return None

@@ -127,6 +127,24 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
             'user',
             'websites',
         )
+    
+class ArtistUserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Artist
+        fields = (
+            'id',
+            'url',
+            'nickname',
+            'bio_short_fr',
+            'bio_short_en',
+            'bio_fr',
+            'bio_en',
+            'twitter_account',
+            'facebook_profile',
+            'user',
+            'websites',
+        )
+    user = UserSerializer()
 
 
 class ArtistAutocompleteSerializer(HaystackSerializerMixin, ArtistSerializer):
