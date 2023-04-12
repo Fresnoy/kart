@@ -151,13 +151,19 @@ class ArtistAutocompleteSerializer(HaystackSerializerMixin, ArtistSerializer):
     class Meta(ArtistSerializer.Meta):
         index_classes = [ArtistIndex]
         search_fields = ("text", "content_auto", "nationality")
-        fields = ["nickname", "user"]
+        fields = ["nickname", "user", "artworks"]
         field_aliases = {
             "q": "content_auto"
         }
         depth = 1
 
     user = PublicUserSerializer()
+    artworks = serializers.SerializerMethodField()
+    
+    def get_artworks(self, obj):
+        # prevent circular import 
+        from production.serializers import ProductionSerializer
+        return ProductionSerializer(obj.artworks.all(), many=True, context=self.context).data
 
 
 class StaffSimpleSerializer(serializers.ModelSerializer):

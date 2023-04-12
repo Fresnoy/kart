@@ -13,7 +13,7 @@ from .models import (
     Artwork
 )
 from .search_indexes import InstallationIndex, PerformanceIndex, FilmIndex  # ArtworkIndex
-from people.serializers import StaffSimpleSerializer, ArtistUserSerializer
+from people.serializers import StaffSimpleSerializer
 
 
 class OrganizationTaskSerializer(serializers.HyperlinkedModelSerializer):
@@ -143,7 +143,7 @@ class ArtworkAutocompleteSerializer(HaystackSerializerMixin, ArtworkSerializer):
     genres = serializers.SerializerMethodField()
     keywords = TagListSerializerField()
     shooting_place = serializers.SerializerMethodField()
-    authors = ArtistUserSerializer(many=True)
+    authors = serializers.SerializerMethodField()
 
     def get_type(self, obj):
         return obj.__class__.__name__
@@ -159,6 +159,11 @@ class ArtworkAutocompleteSerializer(HaystackSerializerMixin, ArtworkSerializer):
             from diffusion.serializers import PlaceSerializer
             return [PlaceSerializer(place, context=self.context).data for place in obj.shooting_place.all()]
         return None
+    
+    def get_artworks(self, obj):
+        # prevent circular import
+        from people.serializers import ArtistUserSerializer
+        return ArtistUserSerializer(obj.authors.all(), many=True, context=self.context).data
 
 
 class FilmGenreSerializer(serializers.HyperlinkedModelSerializer):
