@@ -38,7 +38,8 @@ from production.views import (
     InstallationGenreViewSet, EventViewSet,
     ItineraryViewSet, FilmKeywordsViewSet,
     CollaboratorViewSet, PartnerViewSet,
-    OrganizationTaskViewSet, StaffTaskViewSet
+    OrganizationTaskViewSet, StaffTaskViewSet,
+    ArtworkKeywordsViewSet
 )
 from diffusion.views import PlaceViewSet, AwardViewSet, MetaAwardViewSet, MetaEventViewSet, DiffusionViewSet
 from common.views import BTBeaconViewSet, WebsiteViewSet
@@ -82,6 +83,7 @@ v2_api.register(r'school/student-application', StudentApplicationViewSet)
 v2_api.register(r'school/student-application-setup', StudentApplicationSetupViewSet)
 v2_api.register(r'school/student-search', StudentAutocompleteSearchViewSet, basename="school-student-search")
 v2_api.register(r'production/artwork', ArtworkViewSet)
+v2_api.register(r'production/artwork-keywords', ArtworkKeywordsViewSet)
 v2_api.register(r'production/artwork-search', ArtworkAutocompleteSearchViewSet, basename="production-artwork-search")
 v2_api.register(r'production/film', FilmViewSet)
 v2_api.register(r'production/film-keywords', FilmKeywordsViewSet)

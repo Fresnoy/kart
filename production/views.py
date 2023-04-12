@@ -1,6 +1,6 @@
 from django.db.models import Prefetch
 
-from rest_framework import viewsets, permissions, pagination
+from rest_framework import viewsets, permissions, pagination, filters as drf_filters
 from rest_framework.response import Response
 
 from drf_haystack.filters import HaystackAutocompleteFilter
@@ -15,7 +15,7 @@ from .models import (Artwork, Film, Installation, Performance,
                      OrganizationTask, StaffTask)
 
 from .serializers import (ArtworkPolymorphicSerializer, ArtworkAutocompleteSerializer,
-                          FilmSerializer, InstallationSerializer, KeywordsSerializer,
+                          FilmSerializer, InstallationSerializer, KeywordsSerializer, ArtworkKeywordsSerializer,
                           PerformanceSerializer, FilmGenreSerializer,
                           InstallationGenreSerializer, EventSerializer,
                           ItinerarySerializer, ProductionStaffTaskSerializer,
@@ -42,30 +42,6 @@ class CustomPagination(pagination.PageNumberPagination):
         return response
 
 
-class ArtworkFilterSet(filters.FilterSet):
-    """
-    Customize Filters for Artwork
-    """
-    # transform date to year
-    production_year = filters.NumberFilter(field_name="production_date", lookup_expr='year__exact')
-
-    class Meta:
-        model = Artwork
-        fields = {
-            "authors",
-            "production_date",
-        }
-
-
-class ArtworkViewSet(viewsets.ModelViewSet,):
-    queryset = Artwork.objects.all()
-    serializer_class = ArtworkPolymorphicSerializer
-    permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = ArtworkFilterSet
-    pagination_class = CustomPagination
-
-
 class TagsFilter(filters.CharFilter):
 
     def filter(self, qs, value):
@@ -75,6 +51,50 @@ class TagsFilter(filters.CharFilter):
             qs = qs.filter(**{lookup_field: tags}).distinct()
 
         return qs
+
+
+class TypeFilter(filters.CharFilter):
+
+    def filter(self, qs, value):
+        if value:
+            value = value.lower()
+            # find maching Artwok subclass
+            selected_type = [subclass for subclass in Artwork.__subclasses__()
+                             if value in subclass.__name__.lower()]
+            if selected_type:
+                # update query
+                qs = qs.instance_of(*selected_type)
+
+        return qs
+
+
+class ArtworkFilterSet(filters.FilterSet):
+    """
+    Customize Filters for Artwork
+    """
+    # transform date to year
+    production_year = filters.NumberFilter(field_name="production_date", lookup_expr='year__exact')
+    # filter by keywords
+    keywords = TagsFilter(field_name="keywords")
+    # filter by Artwork type (ex: Film, Installation, ...)
+    type = TypeFilter(label="Type")
+
+    class Meta:
+        model = Artwork
+        fields = {
+            "keywords",
+        }
+
+
+class ArtworkViewSet(viewsets.ModelViewSet,):
+    queryset = Artwork.objects.all()
+    serializer_class = ArtworkPolymorphicSerializer
+    permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
+    filter_backends = (DjangoFilterBackend, drf_filters.SearchFilter, drf_filters.OrderingFilter)
+    search_fields = ('title',)
+    filterset_class = ArtworkFilterSet
+    pagination_class = CustomPagination
+    ordering_fields = ('title', "production_year", )
 
 
 class ArtworkFilter(filters.FilterSet):
@@ -158,6 +178,12 @@ class PartnerViewSet(viewsets.ModelViewSet):
 class OrganizationTaskViewSet(viewsets.ModelViewSet):
     queryset = OrganizationTask.objects.all()
     serializer_class = OrganizationTaskSerializer
+    permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
+
+
+class ArtworkKeywordsViewSet(viewsets.ModelViewSet):
+    queryset = Artwork.keywords.all()
+    serializer_class = ArtworkKeywordsSerializer
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
 
 

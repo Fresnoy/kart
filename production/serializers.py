@@ -185,6 +185,12 @@ class KeywordsSerializer(TaggitSerializer, serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ArtworkKeywordsSerializer(TaggitSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = '__all__'
+
+
 class ProductionTaskSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ProductionStaffTask
