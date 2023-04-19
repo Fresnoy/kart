@@ -82,6 +82,7 @@ class ArtworkFilterSet(filters.FilterSet):
     class Meta:
         model = Artwork
         fields = {
+            "authors",
             "keywords",
         }
 
