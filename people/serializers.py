@@ -151,7 +151,7 @@ class ArtistAutocompleteSerializer(HaystackSerializerMixin, ArtistSerializer):
     class Meta(ArtistSerializer.Meta):
         index_classes = [ArtistIndex]
         search_fields = ("text", "content_auto", "nationality")
-        fields = ["nickname", "user", "artworks"]
+        fields = ["nickname", "user", "artworks", "url", "student",]
         field_aliases = {
             "q": "content_auto"
         }
