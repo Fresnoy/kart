@@ -3,6 +3,8 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
+from django_filters.rest_framework import DjangoFilterBackend
+
 from rest_framework import viewsets, permissions, status, filters, pagination
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -129,8 +131,9 @@ class ArtistViewSet(viewsets.ModelViewSet):
     queryset = Artist.objects.all()
     serializer_class = ArtistSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend)
     search_fields = ('=user__username',)
+    filterset_fields = {'artworks': ['isnull'], 'student': ['isnull']}
     pagination_class = CustomPagination
     ordering_fields = ('user__last_name', 'user__profile__nationality',)
 

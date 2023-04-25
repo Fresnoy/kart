@@ -126,7 +126,15 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
             'facebook_profile',
             'user',
             'websites',
+            'artworks',
         )
+    artworks = serializers.SerializerMethodField()
+    
+    def get_artworks(self, obj):
+        # prevent circular import 
+        from production.serializers import ProductionSerializer
+        return ProductionSerializer(obj.artworks.all(), many=True, context=self.context).data
+
     
 class ArtistUserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -158,12 +166,6 @@ class ArtistAutocompleteSerializer(HaystackSerializerMixin, ArtistSerializer):
         depth = 1
 
     user = PublicUserSerializer()
-    artworks = serializers.SerializerMethodField()
-    
-    def get_artworks(self, obj):
-        # prevent circular import 
-        from production.serializers import ProductionSerializer
-        return ProductionSerializer(obj.artworks.all(), many=True, context=self.context).data
 
 
 class StaffSimpleSerializer(serializers.ModelSerializer):
