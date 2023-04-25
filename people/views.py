@@ -128,7 +128,7 @@ class CustomPagination(pagination.PageNumberPagination):
 
 
 class ArtistViewSet(viewsets.ModelViewSet):
-    queryset = Artist.objects.all()
+    queryset = Artist.objects.all().distinct()
     serializer_class = ArtistSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = (filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend)
