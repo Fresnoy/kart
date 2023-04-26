@@ -143,6 +143,7 @@ class ArtistAutocompleteSearchViewSet(HaystackViewSet):
     serializer_class = ArtistAutocompleteSerializer
     filter_backends = [HaystackAutocompleteFilter]
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    pagination_class = CustomPagination
 
 
 class StaffViewSet(viewsets.ModelViewSet):

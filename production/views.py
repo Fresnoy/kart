@@ -111,6 +111,7 @@ class ArtworkAutocompleteSearchViewSet(HaystackViewSet):
     serializer_class = ArtworkAutocompleteSerializer
     filter_backends = [HaystackAutocompleteFilter]
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    pagination_class = CustomPagination
 
 
 class FilmViewSet(viewsets.ModelViewSet):
