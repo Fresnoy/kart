@@ -129,13 +129,13 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
             'artworks',
         )
     artworks = serializers.SerializerMethodField()
-    
+
     def get_artworks(self, obj):
-        # prevent circular import 
+        # prevent circular import
         from production.serializers import ProductionSerializer
         return ProductionSerializer(obj.artworks.all(), many=True, context=self.context).data
 
-    
+
 class ArtistUserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Artist

@@ -40,10 +40,6 @@ class Place(models.Model):
         else:
             return f'{self.name} {address} ({extra_info})'
 
-    @property
-    def coordinates(self):
-        return Point(self.longitude, self.latitude)
-
 
 def main_event_true():
     from production.models import Event
