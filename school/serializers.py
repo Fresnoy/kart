@@ -27,7 +27,7 @@ class StudentAutocompleteSerializer(HaystackSerializerMixin, StudentSerializer):
     class Meta(StudentSerializer.Meta):
         index_classes = [StudentIndex]
         search_fields = ("content_auto", )
-        fields = ["url", "number", "graduate", "promotion", "artist", "user",]
+        fields = ["url", "number", "graduate", "promotion", "artist", "user", ]
         field_aliases = {
             "q": "content_auto"
         }

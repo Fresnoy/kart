@@ -43,7 +43,7 @@ class Command(BaseCommand):
             return
         #
         mail_sent = send_candidature_not_finalized_to_candidats(self, campaign, list_emails)
-        if(mail_sent):
+        if mail_sent:
             print("Emails envoyés")
         else:
             print("Erreur email ")
