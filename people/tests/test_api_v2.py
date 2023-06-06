@@ -94,7 +94,7 @@ class TestStaffViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestForMo
     fixtures = ['staff', 'staff_profile']
 
     expected_list_size = 1
-    expected_fields = ['user']
+    expected_fields = ['user', 'production_task']
 
     mutate_fields = ['user']
     put_fields = ['user']

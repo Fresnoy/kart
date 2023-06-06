@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth.models import User
 
 from django.test import TestCase
@@ -102,7 +104,6 @@ class ArtistEndPoint(TestCase):
     """
     def setUp(self):
         self.artist = ArtistFactory()
-
         self.response = None
 
     def tearDown(self):
@@ -115,3 +116,79 @@ class ArtistEndPoint(TestCase):
         url = reverse('artist-list')
         self.response = self.client.get(url)
         self.assertEqual(self.response.status_code, 200)
+
+    def test_filter_by_nationality(self):
+        """
+        Test filter by Nationality for artist endpoint
+        """
+        url = reverse('artist-list')
+        filter = {'user__profile__nationality__icontains': 'fr'}
+        self.response = self.client.get(url, filter)
+        # load json
+        artists = json.loads(self.response.content)
+        self.assertEqual(len(artists), 0)
+
+    def test_filter_by_artwork__isnull(self):
+        """
+        Test filter by Artwork for artist endpoint
+        """
+        url = reverse('artist-list')
+        filter = {'artworks__isnull': False}
+        self.response = self.client.get(url, filter)
+        # load json
+        artists = json.loads(self.response.content)
+        self.assertEqual(len(artists), 0)
+
+    def test_filter_by_student__isnull(self):
+        """
+        Test filter by student for artist endpoint
+        """
+        url = reverse('artist-list')
+        filter = {'student__isnull': False}
+        self.response = self.client.get(url, filter)
+        # load json
+        artists = json.loads(self.response.content)
+        self.assertEqual(len(artists), 0)
+
+    def test_pagination(self):
+        """
+        Test filter by student for artist endpoint
+        """
+        url = reverse('artist-list')
+        pagination = {'page_size': 20}
+        self.response = self.client.get(url, pagination)
+        headers = self.response.headers
+        self.assertEqual(headers['count'], '1')
+
+    def test_list_fields(self):
+        url = reverse('artist-list')
+        self.response = self.client.get(url)
+        # load json
+        artists = json.loads(self.response.content)
+        artist = artists[0]
+        self.assertIn("id", artist)
+        self.assertIn("url", artist)
+        self.assertIn("nickname", artist)
+        self.assertIn("user", artist)
+        self.assertIn("websites", artist)
+        self.assertIn("artworks", artist)
+
+
+class ArtistSearchEndPoint(TestCase):
+    """
+    Tests Artist Search endpoint
+    TODO: Dont find how test with elasticseach/drf-haystack <-> test env
+          => elasticsearch doesnt have acces to the env test
+    """
+    def test_pagination(self):
+        """
+        Paging improves result response time
+        """
+        pass
+
+    def test_result_fields(self):
+        """
+        Test field by artist search endpoint
+        Must have "nickname", "user", "artworks", "url", "student"
+        """
+        pass

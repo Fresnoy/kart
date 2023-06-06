@@ -20,7 +20,8 @@ from diffusion.api import PlaceResource, AwardResource, MetaAwardResource
 from school.api import PromotionResource, StudentResource, StudentApplicationResource
 
 from people.views import (
-    ArtistViewSet, UserViewSet, FresnoyProfileViewSet,
+    ArtistViewSet, ArtistAutocompleteSearchViewSet,
+    UserViewSet, FresnoyProfileViewSet,
     StaffViewSet, OrganizationViewSet,
 )
 from people import views as people_views
@@ -31,11 +32,14 @@ from school.views import (
 )
 from school import views as school_views
 from production.views import (
-    ArtworkViewSet, FilmViewSet, InstallationViewSet,
+    ArtworkViewSet, ArtworkAutocompleteSearchViewSet,
+    FilmViewSet, InstallationViewSet,
     PerformanceViewSet, FilmGenreViewSet,
     InstallationGenreViewSet, EventViewSet,
     ItineraryViewSet, FilmKeywordsViewSet,
-    CollaboratorViewSet, PartnerViewSet, OrganizationTaskViewSet
+    CollaboratorViewSet, PartnerViewSet,
+    OrganizationTaskViewSet, StaffTaskViewSet,
+    ArtworkKeywordsViewSet
 )
 from diffusion.views import PlaceViewSet, AwardViewSet, MetaAwardViewSet, MetaEventViewSet, DiffusionViewSet
 from common.views import BTBeaconViewSet, WebsiteViewSet
@@ -69,6 +73,7 @@ v2_api = routers.DefaultRouter(trailing_slash=False)
 v2_api.register(r'people/user', UserViewSet)
 v2_api.register(r'people/userprofile', FresnoyProfileViewSet)
 v2_api.register(r'people/artist', ArtistViewSet)
+v2_api.register(r'people/artist-search', ArtistAutocompleteSearchViewSet, basename="people-artist-search")
 v2_api.register(r'people/staff', StaffViewSet)
 v2_api.register(r'people/organization', OrganizationViewSet)
 v2_api.register(r'people/organization-staff', OrganizationTaskViewSet)
@@ -78,6 +83,8 @@ v2_api.register(r'school/student-application', StudentApplicationViewSet)
 v2_api.register(r'school/student-application-setup', StudentApplicationSetupViewSet)
 v2_api.register(r'school/student-search', StudentAutocompleteSearchViewSet, basename="school-student-search")
 v2_api.register(r'production/artwork', ArtworkViewSet)
+v2_api.register(r'production/artwork-keywords', ArtworkKeywordsViewSet, basename="artwork-keywords")
+v2_api.register(r'production/artwork-search', ArtworkAutocompleteSearchViewSet, basename="production-artwork-search")
 v2_api.register(r'production/film', FilmViewSet)
 v2_api.register(r'production/film-keywords', FilmKeywordsViewSet)
 v2_api.register(r'production/event', EventViewSet)
@@ -88,6 +95,7 @@ v2_api.register(r'production/installation-genre', InstallationGenreViewSet)
 v2_api.register(r'production/performance', PerformanceViewSet)
 v2_api.register(r'production/collaborator', CollaboratorViewSet)
 v2_api.register(r'production/partner', PartnerViewSet)
+v2_api.register(r'production/task', StaffTaskViewSet)
 v2_api.register(r'diffusion/place', PlaceViewSet)
 v2_api.register(r'diffusion/meta-award', MetaAwardViewSet)
 v2_api.register(r'diffusion/award', AwardViewSet)
