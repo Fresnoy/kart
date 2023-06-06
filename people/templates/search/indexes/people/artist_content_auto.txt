@@ -1,0 +1,6 @@
+{% if object.nickname %}
+    {{ object.nickname }}
+{% else %}
+    {{ object.user.first_name }} {{ object.user.last_name }}
+{% endif %}
+    

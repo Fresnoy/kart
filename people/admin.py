@@ -47,7 +47,7 @@ class FresnoyProfileAdmin(UserAdmin):
 
 class StaffAdmin(GuardedModelAdmin):
     search_fields = ['user__username', 'user__last_name', 'user__first_name']
-    list_display = ("user", "artist")
+    list_display = ("user", "artist",)
 
     def artist(self, obj):
         return obj.user.profile.is_artist

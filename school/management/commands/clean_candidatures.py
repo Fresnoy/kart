@@ -93,7 +93,7 @@ class Command(BaseCommand):
             # add critical identity infos
             a.extend(self.list_critical_identity_infos(sa))
             # not empty list
-            if(a):
+            if a:
                 list_delete.extend(a)
         # OLDS candidatures : delete no need infos
         for sa in sa_olds:
@@ -102,7 +102,7 @@ class Command(BaseCommand):
             # add critical infos
             a.extend(self.list_infos(sa))
             # not empty list
-            if(a):
+            if a:
                 list_delete.extend(a)
         # Expired candidat/ure : delete all ()
         for sa in sa_expired:

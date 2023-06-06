@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from drf_haystack.serializers import HaystackSerializer
+from drf_haystack.serializers import HaystackSerializerMixin
 from rest_auth.serializers import PasswordResetSerializer
+
+from people.serializers import PublicUserSerializer
 
 from .models import Promotion, Student, StudentApplication, StudentApplicationSetup
 from .search_indexes import StudentIndex
@@ -11,6 +13,8 @@ class StudentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Student
         fields = '__all__'
+        # depth = 1
+    # user = PublicUserSerializer()
 
 
 class PromotionSerializer(serializers.HyperlinkedModelSerializer):
@@ -19,19 +23,17 @@ class PromotionSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
-class StudentAutocompleteSerializer(HaystackSerializer):
-    class Meta:
+class StudentAutocompleteSerializer(HaystackSerializerMixin, StudentSerializer):
+    class Meta(StudentSerializer.Meta):
         index_classes = [StudentIndex]
-        # fields = ["firstname", "lastname"]
-        ignore_fields = ["autocomplete"]
-
-        # The `field_aliases` attribute can be used in order to alias a
-        # query parameter to a field attribute. In this case a query like
-        # /search/?q=oslo would alias the `q` parameter to the `autocomplete`
-        # field on the index.
+        search_fields = ("content_auto", )
+        fields = ["url", "number", "graduate", "promotion", "artist", "user", ]
         field_aliases = {
-            "q": "autocomplete"
+            "q": "content_auto"
         }
+        depth = 1
+
+    user = PublicUserSerializer()
 
 
 class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):

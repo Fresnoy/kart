@@ -3,15 +3,20 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
-from rest_framework import viewsets, permissions, status, filters
+from django_filters.rest_framework import DjangoFilterBackend
+
+from rest_framework import viewsets, permissions, status, filters, pagination
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
+
+from drf_haystack.filters import HaystackAutocompleteFilter
+from drf_haystack.viewsets import HaystackViewSet
 
 from .models import (
     Artist, User, FresnoyProfile, Staff, Organization
 )
 from .serializers import (
-    ArtistSerializer, UserSerializer, PublicUserSerializer,
+    ArtistSerializer, ArtistAutocompleteSerializer, UserSerializer, PublicUserSerializer,
     FresnoyProfileSerializer, StaffSerializer,
     OrganizationSerializer
 )
@@ -55,7 +60,7 @@ def send_custom_emails(request, format=None):
             from, to, bcc, subject, message
     """
     user = request.user
-    if(user.is_staff):
+    if (user.is_staff):
         items_need_list = ('from', 'to', 'bcc', 'subject', 'message',)
         verify_email = ('from', 'to', 'bcc',)
         email = {}
@@ -103,12 +108,42 @@ class FresnoyProfileViewSet(viewsets.ModelViewSet):
     serializer_class = FresnoyProfileSerializer
 
 
+class CustomPagination(pagination.PageNumberPagination):
+    """
+    Customize Pagination
+    """
+    # no limit when page_size not set
+    page_size = 100000
+    page_size_query_param = 'page_size'
+    max_page_size = 20
+    page_query_param = 'page'
+
+    def get_paginated_response(self, data):
+        response = Response(data)
+        # pagination on headers
+        response['count'] = self.page.paginator.count
+        response['next'] = self.get_next_link()
+        response['previous'] = self.get_previous_link()
+        return response
+
+
 class ArtistViewSet(viewsets.ModelViewSet):
-    queryset = Artist.objects.all()
+    queryset = Artist.objects.all().distinct()
     serializer_class = ArtistSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    filter_backends = (filters.SearchFilter,)
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend)
     search_fields = ('=user__username',)
+    filterset_fields = {'artworks': ['isnull'], 'student': ['isnull'], 'user__profile__nationality': ['icontains']}
+    pagination_class = CustomPagination
+    ordering_fields = ('user__last_name', 'user__profile__nationality',)
+
+
+class ArtistAutocompleteSearchViewSet(HaystackViewSet):
+    index_models = [Artist]
+    serializer_class = ArtistAutocompleteSerializer
+    filter_backends = [HaystackAutocompleteFilter]
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    pagination_class = CustomPagination
 
 
 class StaffViewSet(viewsets.ModelViewSet):
