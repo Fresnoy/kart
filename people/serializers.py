@@ -127,13 +127,33 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
             'user',
             'websites',
             'artworks',
+            'professor',
+            'student',
         )
     artworks = serializers.SerializerMethodField()
+    professor = serializers.SerializerMethodField()
+    student = serializers.SerializerMethodField()
 
     def get_artworks(self, obj):
         # prevent circular import
         from production.serializers import ProductionSerializer
         return ProductionSerializer(obj.artworks.all(), many=True, context=self.context).data
+
+    def get_professor(self, obj):
+        try:
+            # prevent circular import
+            from school.serializers import ArtistProfessorSerializer
+            return ArtistProfessorSerializer(obj.professor, context=self.context).data
+        except Exception:
+            return None
+
+    def get_student(self, obj):
+        try:
+            # prevent circular import
+            from school.serializers import StudentSerializer
+            return StudentSerializer(obj.student, context=self.context).data
+        except Exception:
+            return None
 
 
 class ArtistUserSerializer(serializers.HyperlinkedModelSerializer):

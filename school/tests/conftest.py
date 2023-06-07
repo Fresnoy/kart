@@ -16,6 +16,21 @@ def student(db_ready):
 
 
 @pytest.fixture
+def scientificstudent(db_ready):
+    return factories.ScientificStudentFactory()
+
+
+@pytest.fixture
+def phdstudent(db_ready):
+    return factories.PhdStudentFactory()
+
+
+@pytest.fixture
+def artistprofessor(db_ready):
+    return factories.ArtistProfessorFactory()
+
+
+@pytest.fixture
 def student_application_setup(db_ready, school_application_group):
     return factories.StudentApplicationSetupFactory()
 

@@ -21,10 +21,12 @@ from guardian.shortcuts import assign_perm
 from people.models import User, FresnoyProfile, Artist
 from people.serializers import UserRegisterSerializer
 
-from .models import Promotion, Student, StudentApplication, StudentApplicationSetup
+from .models import (Promotion, Student, PhdStudent, ScientificStudent, ArtistProfessor,
+                     StudentApplication, StudentApplicationSetup)
+
 from .serializers import (StudentPasswordResetSerializer,
-                          PromotionSerializer, StudentSerializer,
-                          StudentAutocompleteSerializer,
+                          PromotionSerializer, StudentSerializer, PhdStudentSerializer, ScientificStudentSerializer,
+                          ArtistProfessorSerializer, StudentAutocompleteSerializer,
                           PublicStudentApplicationSerializer, StudentApplicationSerializer,
                           StudentApplicationSetupSerializer
                           )
@@ -60,6 +62,39 @@ class StudentViewSet(viewsets.ModelViewSet):
     filterset_fields = ('artist',
                         'user',
                         'promotion',)
+
+
+class PhdStudentViewSet(viewsets.ModelViewSet):
+    queryset = PhdStudent.objects.all()
+    serializer_class = PhdStudentSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter,)
+    search_fields = ('student__user__username',)
+    ordering_fields = ('student__user__last_name',)
+    filterset_fields = ('student__artist',
+                        'student__user',)
+
+
+class ScientificStudentViewSet(viewsets.ModelViewSet):
+    queryset = ScientificStudent.objects.all()
+    serializer_class = ScientificStudentSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter,)
+    search_fields = ('student__user__username',)
+    ordering_fields = ('student__user__last_name',)
+    filterset_fields = ('student__artist',
+                        'student__user',)
+
+
+class ArtistProfessorViewSet(viewsets.ModelViewSet):
+    queryset = ArtistProfessor.objects.all()
+    serializer_class = ArtistProfessorSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter,)
+    search_fields = ('artist__user__username',)
+    ordering_fields = ('artist__user__last_name',)
+    filterset_fields = ('artist',
+                        'artist__user',)
 
 
 class StudentAutocompleteSearchViewSet(HaystackViewSet):

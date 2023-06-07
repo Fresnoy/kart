@@ -2,7 +2,7 @@ import factory
 
 from django.utils import timezone
 
-from people.tests.factories import ArtistFactory
+from people.tests.factories import ArtistFactory, OrganizationFactory, UserFactory
 
 from .. import models
 
@@ -24,6 +24,30 @@ class StudentFactory(factory.django.DjangoModelFactory):
     promotion = factory.SubFactory(PromotionFactory)
     artist = factory.SubFactory(ArtistFactory)
     user = factory.SelfAttribute('artist.user')
+
+
+class PhdStudentFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.PhdStudent
+    student = factory.SubFactory(StudentFactory)
+    university = factory.SubFactory(OrganizationFactory)
+    director = factory.SubFactory(UserFactory)
+    thesis_object = factory.Faker('word')
+
+
+class ScientificStudentFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.ScientificStudent
+    student = factory.SubFactory(StudentFactory)
+    discipline = factory.Faker('word')
+
+
+class ArtistProfessorFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.ArtistProfessor
+    artist = factory.SubFactory(ArtistFactory)
+    presentation_text_fr = factory.Faker('word')
+    presentation_text_en = factory.Faker('word')
 
 
 class StudentApplicationSetupFactory(factory.django.DjangoModelFactory):

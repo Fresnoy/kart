@@ -4,7 +4,8 @@ from django.db import models
 
 from pagedown.widgets import AdminPagedownWidget
 
-from .models import Promotion, Student, StudentApplication, StudentApplicationSetup
+from .models import (Promotion, Student, StudentApplication, StudentApplicationSetup,
+                     PhdStudent, ScientificStudent, ArtistProfessor)
 
 
 class StudentAdmin(admin.ModelAdmin):
@@ -49,3 +50,6 @@ admin.site.register(Promotion)
 admin.site.register(StudentApplication, StudentApplicationAdmin)
 admin.site.register(StudentApplicationSetup, StudentApplicationSetupAdmin)
 admin.site.register(Student, StudentAdmin)
+admin.site.register(PhdStudent)
+admin.site.register(ScientificStudent)
+admin.site.register(ArtistProfessor)
