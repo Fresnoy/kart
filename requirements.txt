@@ -22,12 +22,9 @@ django-polymorphic==3.1.0
 dj-rest-auth==2.2.6
 django-rest-polymorphic==0.1.10
 django-sortedm2m==3.1.1
-django-taggit==3.1.0
-# django-taggit-serializer
-dj-taggit-serializer==0.1.7
+django-taggit==4.0.0
 #django-tastypie
-#django-tastypie==0.14.4
-git+https://github.com/django-tastypie/django-tastypie
+django-tastypie==0.14.5
 django-tastypie-swagger==0.1.4
 django-unused-media==0.2.2
 djangorestframework==3.12.4

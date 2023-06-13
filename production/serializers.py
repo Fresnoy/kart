@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_polymorphic.serializers import PolymorphicSerializer
-from taggit_serializer.serializers import (TagListSerializerField,
-                                           TaggitSerializer)
+from taggit.serializers import (TagListSerializerField,
+                                TaggitSerializer)
 from taggit.models import Tag
 
 from .models import (

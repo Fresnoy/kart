@@ -42,7 +42,6 @@ INSTALLED_APPS = (
     # 'elasticstack',
     'polymorphic',
     'taggit',
-    'taggit_serializer',
     'multiselectfield',
     'django_filters',
     'grappelli',

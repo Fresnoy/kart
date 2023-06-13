@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django_countries.serializers import CountryFieldMixin
-from taggit_serializer.serializers import (TagListSerializerField,
-                                           TaggitSerializer)
+from taggit.serializers import (TagListSerializerField,
+                                TaggitSerializer)
 
 from .models import Place, Award, MetaAward, MetaEvent, Diffusion
 from production.serializers import StaffTaskSerializer
