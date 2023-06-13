@@ -11,7 +11,8 @@ from .models import (
     ProductionStaffTask, ProductionOrganizationTask,
     Artwork
 )
-from people.serializers import StaffSerializer
+from .search_indexes import InstallationIndex, PerformanceIndex, FilmIndex  # ArtworkIndex
+from people.serializers import StaffSimpleSerializer
 
 
 class OrganizationTaskSerializer(serializers.HyperlinkedModelSerializer):
@@ -20,18 +21,19 @@ class OrganizationTaskSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
-class StaffTaskSerializer(serializers.HyperlinkedModelSerializer):
+class StaffTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = StaffTask
         fields = ('label', 'description')
 
 
-class ProductionStaffTaskSerializer(serializers.HyperlinkedModelSerializer):
+class ProductionStaffTaskSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = ProductionStaffTask
         fields = ('url', 'staff', 'task')
 
-    staff = StaffSerializer()
+    staff = StaffSimpleSerializer()
     task = StaffTaskSerializer()
 
 
@@ -39,6 +41,12 @@ class PartnerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ProductionOrganizationTask
         fields = ('organization', 'task')
+
+
+class ProductionSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Artwork
+        fields = ('url', 'title',)
 
 
 class ArtworkSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer):
@@ -65,6 +73,7 @@ class InstallationSerializer(serializers.HyperlinkedModelSerializer):
                                                     read_only=True,
                                                     many=True)
     award = serializers.HyperlinkedRelatedField(view_name='award-detail', read_only=True, many=True)
+    keywords = TagListSerializerField()
 
 
 class FilmSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer):
@@ -105,6 +114,7 @@ class PerformanceSerializer(serializers.HyperlinkedModelSerializer):
                                                     read_only=True,
                                                     many=True)
     award = serializers.HyperlinkedRelatedField(view_name='metaaward-detail', read_only=True, many=True)
+    keywords = TagListSerializerField()
 
 
 class ArtworkPolymorphicSerializer(PolymorphicSerializer):
@@ -115,6 +125,44 @@ class ArtworkPolymorphicSerializer(PolymorphicSerializer):
         Installation: InstallationSerializer,
         Performance: PerformanceSerializer
     }
+
+
+class ArtworkAutocompleteSerializer(HaystackSerializerMixin, ArtworkSerializer):
+
+    class Meta(ArtworkSerializer.Meta):
+        index_classes = [FilmIndex, InstallationIndex, PerformanceIndex]
+        search_fields = ("content_auto", 'type', 'genres', 'keywords', "shooting_place",)
+        fields = ('title', 'url', 'type', 'genres', 'keywords', "shooting_place", "authors")
+        field_aliases = {
+            "q": "content_auto",
+        }
+        depth = 1
+
+    type = serializers.SerializerMethodField()
+    genres = serializers.SerializerMethodField()
+    keywords = TagListSerializerField()
+    shooting_place = serializers.SerializerMethodField()
+    authors = serializers.SerializerMethodField()
+
+    def get_type(self, obj):
+        return obj.__class__.__name__
+
+    def get_genres(self, obj):
+        if obj.__class__.__name__ in {'Film', 'Installation'}:
+            return [genre.label for genre in obj.genres.all()]
+        return None
+
+    def get_shooting_place(self, obj):
+        if (obj.__class__.__name__ == "Film"):
+            # prevent circular import
+            from diffusion.serializers import PlaceSerializer
+            return [PlaceSerializer(place, context=self.context).data for place in obj.shooting_place.all()]
+        return None
+
+    def get_authors(self, obj):
+        # prevent circular import
+        from people.serializers import ArtistUserSerializer
+        return ArtistUserSerializer(obj.authors.all(), many=True, context=self.context).data
 
 
 class FilmGenreSerializer(serializers.HyperlinkedModelSerializer):
@@ -139,3 +187,12 @@ class KeywordsSerializer(TaggitSerializer, serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = '__all__'
+
+
+class ProductionTaskSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ProductionStaffTask
+        fields = ('production', 'task')
+
+    production = ProductionSerializer()
+    task = StaffTaskSerializer()

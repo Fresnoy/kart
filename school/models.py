@@ -78,7 +78,7 @@ class StudentApplicationSetup(models.Model):
         current_year = date.today().year
         # current_year is the next promo start year if exist
         campaign = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
-        if(campaign):
+        if campaign:
             current_year = int(campaign.promotion.starting_year)
         return date(current_year-max_age, 12, 31)
 
@@ -306,7 +306,7 @@ class StudentApplication(models.Model):
         year = date.today().year
         # settup app number with current campaign promo if exist
         campaign = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
-        if(campaign):
+        if campaign:
             year = campaign.promotion.starting_year
         carry_on = True
         default_number = 103

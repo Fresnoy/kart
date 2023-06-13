@@ -118,7 +118,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
             # pbuteau bug : is in db (staff) but not created with Application UX : Can't applicate
             try:
                 group = Group.objects.get(name='School Application')
-                if(not user.groups.filter(name=group.name).exists()):
+                if (not user.groups.filter(name=group.name).exists()):
                     user.groups.add(group)
                     user.save()
             except Group.DoesNotExist:
@@ -203,43 +203,43 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
 
         # FIXME: dead code since it never pass througth the previous test
         # send email to admin and USER (who click) is completed
-        if(request.data.get('application_completed')):
+        if (request.data.get('application_completed')):
             application = self.get_object()
             send_candidature_completed_email_to_user(request, user, application)
             send_candidature_completed_email_to_admin(request, user, application)
 
         # send email to candidat when candidature is complete (admin valid infos)
-        if(request.data.get('application_complete')):
+        if (request.data.get('application_complete')):
             application = self.get_object()
             candidat = application.artist.user
             send_candidature_complete_email_to_candidat(request, candidat, application)
 
         # send email to candidat when on interview waiting list
-        if(request.data.get('wait_listed_for_interview')):
+        if (request.data.get('wait_listed_for_interview')):
             application = self.get_object()
             candidat = application.artist.user
             send_interview_selection_on_waitlist_email_to_candidat(request, candidat, application)
 
         # send email to candidat when select for interviews
-        if(request.data.get('selected_for_interview')):
+        if (request.data.get('selected_for_interview')):
             application = self.get_object()
             candidat = application.artist.user
             send_interview_selection_email_to_candidat(request, candidat, application)
 
         # send email to candidat when selected
-        if(request.data.get('selected')):
+        if (request.data.get('selected')):
             application = self.get_object()
             candidat = application.artist.user
             send_selected_candidature_email_to_candidat(request, candidat, application)
 
         # send email to candidat when is select on waiting list
-        if(request.data.get('wait_listed')):
+        if (request.data.get('wait_listed')):
             application = self.get_object()
             candidat = application.artist.user
             send_selected_on_waitlist_candidature_email_to_candidat(request, candidat, application)
 
         # send email to candidat when is not selected
-        if(request.data.get('unselected')):
+        if (request.data.get('unselected')):
             application = self.get_object()
             candidat = application.artist.user
             send_not_selected_candidature_email_to_candidat(request, candidat, application)

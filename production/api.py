@@ -198,8 +198,7 @@ class EventResource(ProductionResource):
         queryset = Event.objects.all()
         resource_name = 'production/event'
 
-    # FIXME: place should be with null=True in accordance with Event definition
-    place = fields.ForeignKey(PlaceResource, 'place', full=True)
+    place = fields.ForeignKey(PlaceResource, 'place', full=True, null=True)
 
     installations = fields.ToManyField(InstallationResource, 'installations',
                                        full=True, full_list=False, full_detail=True)
