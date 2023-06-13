@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from drf_haystack.serializers import HaystackSerializer
+from drf_haystack.serializers import HaystackSerializerMixin
 from dj_rest_auth.serializers import PasswordResetSerializer
 
 from people.serializers import PublicUserSerializer
