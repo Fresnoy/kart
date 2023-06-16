@@ -43,7 +43,7 @@ class Student(models.Model):
 
 class TeachingArtist(models.Model):
     """
-    An artist accompany a student for artwork
+    Senior artist mentoring a student in the production of an artwork. Can also produce and exhibit a personal artwork.
     """
     artist = models.OneToOneField(Artist, related_name='teacher', null=True, on_delete=models.SET_NULL)
     presentation_text_fr = models.TextField(null=True,
@@ -64,7 +64,7 @@ class TeachingArtist(models.Model):
 
 class ScienceStudent(models.Model):
     """
-    An scientific with a field, studying at least one year and make artwork.
+    Scientist specialized in a field. Attends Le Fresnoy at least one year. Produces artworks.
     """
     student = models.OneToOneField(Student, related_name='science_student', on_delete=models.PROTECT)
     field = models.CharField(max_length=50, null=True, blank=True)
@@ -75,7 +75,7 @@ class ScienceStudent(models.Model):
 
 class PhdStudent(models.Model):
     """
-    An Phd student follows the course in 3 years and produces a thesis
+    At Le Fresnoy, a PhD student accomplishes an extra year (2+1). Their artworks are part of their thesis.
     """
     student = models.OneToOneField(Student, related_name='phd_student', on_delete=models.PROTECT)
     university = models.ForeignKey(Organization, related_name='phd_student', on_delete=models.PROTECT, blank=True)
