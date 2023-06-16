@@ -26,7 +26,7 @@ from people.views import (
 )
 from people import views as people_views
 from school.views import (UserPasswordResetView, PromotionViewSet, StudentViewSet, PhdStudentViewSet,
-                          ScientificStudentViewSet, StudentAutocompleteSearchViewSet, TeachingArtistViewSet,
+                          ScienceStudentViewSet, StudentAutocompleteSearchViewSet, TeachingArtistViewSet,
                           StudentApplicationViewSet, StudentApplicationSetupViewSet
                           )
 
@@ -81,7 +81,7 @@ v2_api.register(r'people/organization-staff', OrganizationTaskViewSet)
 v2_api.register(r'school/promotion', PromotionViewSet)
 v2_api.register(r'school/student', StudentViewSet)
 v2_api.register(r'school/phd-student', PhdStudentViewSet)
-v2_api.register(r'school/scientific-student', ScientificStudentViewSet)
+v2_api.register(r'school/scientific-student', ScienceStudentViewSet)
 v2_api.register(r'school/student-application', StudentApplicationViewSet)
 v2_api.register(r'school/student-application-setup', StudentApplicationSetupViewSet)
 v2_api.register(r'school/student-search', StudentAutocompleteSearchViewSet, basename="school-student-search")

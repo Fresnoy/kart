@@ -26,7 +26,7 @@ class TestPhdStudent:
 
 
 @pytest.mark.django_db
-class TestScientificStudent:
+class TestScienceStudent:
     def test_str(self, scientificstudent):
         scientificstudent_str = str(scientificstudent)
         assert str(scientificstudent.student.user) in scientificstudent_str
