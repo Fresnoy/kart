@@ -41,11 +41,11 @@ class Student(models.Model):
         return '{0} ({1})'.format(self.user, self.number)
 
 
-class ArtistProfessor(models.Model):
+class TeachingArtist(models.Model):
     """
     An artist accompany a student for artwork
     """
-    artist = models.OneToOneField(Artist, related_name='professor', null=True, on_delete=models.SET_NULL)
+    artist = models.OneToOneField(Artist, related_name='teacher', null=True, on_delete=models.SET_NULL)
     presentation_text_fr = models.TextField(null=True,
                                             blank=True,
                                             help_text="General orientation text (not only bio) in FRENCH"
@@ -55,8 +55,8 @@ class ArtistProfessor(models.Model):
                                             help_text="General orientation text (not only bio) in ENGLISH"
                                             )
     pictures_gallery = models.OneToOneField(
-        Gallery, blank=True, null=True, related_name='artistprofessor_pictures', on_delete=models.CASCADE)
-    artworks_supervision = models.ManyToManyField(Artwork, related_name='accompaniement', blank=True)
+        Gallery, blank=True, null=True, related_name='teachingartist_pictures', on_delete=models.CASCADE)
+    artworks_supervision = models.ManyToManyField(Artwork, related_name='mentoring', blank=True)
 
     def __str__(self):
         return '{0}'.format(self.artist)

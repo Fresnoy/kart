@@ -33,10 +33,10 @@ class TestScientificStudent:
 
 
 @pytest.mark.django_db
-class TestArtistProfessor:
-    def test_str(self, artistprofessor):
-        artistprofessor_str = str(artistprofessor)
-        assert str(artistprofessor.artist) in artistprofessor_str
+class TestTeachingArtist:
+    def test_str(self, teachingartist):
+        teachingartist_str = str(teachingartist)
+        assert str(teachingartist.artist) in teachingartist_str
 
 
 @pytest.mark.django_db

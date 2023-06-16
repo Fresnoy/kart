@@ -47,14 +47,14 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='ArtistProfessor',
+            name='TeachingArtist',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('presentation_text_fr', models.TextField(blank=True, help_text='General orientation text (not only bio) in FRENCH', null=True)),
                 ('presentation_text_en', models.TextField(blank=True, help_text='General orientation text (not only bio) in ENGLISH', null=True)),
-                ('artist', models.OneToOneField(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='professor', to='people.artist')),
-                ('artworks_supervision', models.ManyToManyField(blank=True, related_name='accompaniement', to='production.Artwork')),
-                ('pictures_gallery', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='artistprofessor_pictures', to='assets.gallery')),
+                ('artist', models.OneToOneField(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='teacher', to='people.artist')),
+                ('artworks_supervision', models.ManyToManyField(blank=True, related_name='mentoring', to='production.Artwork')),
+                ('pictures_gallery', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='teachingartist_pictures', to='assets.gallery')),
             ],
         ),
     ]

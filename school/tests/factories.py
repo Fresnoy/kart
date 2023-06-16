@@ -42,9 +42,9 @@ class ScientificStudentFactory(factory.django.DjangoModelFactory):
     discipline = factory.Faker('word')
 
 
-class ArtistProfessorFactory(factory.django.DjangoModelFactory):
+class TeachingArtistFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = models.ArtistProfessor
+        model = models.TeachingArtist
     artist = factory.SubFactory(ArtistFactory)
     presentation_text_fr = factory.Faker('word')
     presentation_text_en = factory.Faker('word')

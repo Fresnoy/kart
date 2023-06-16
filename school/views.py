@@ -21,12 +21,12 @@ from guardian.shortcuts import assign_perm
 from people.models import User, FresnoyProfile, Artist
 from people.serializers import UserRegisterSerializer
 
-from .models import (Promotion, Student, PhdStudent, ScientificStudent, ArtistProfessor,
+from .models import (Promotion, Student, PhdStudent, ScientificStudent, TeachingArtist,
                      StudentApplication, StudentApplicationSetup)
 
 from .serializers import (StudentPasswordResetSerializer,
                           PromotionSerializer, StudentSerializer, PhdStudentSerializer, ScientificStudentSerializer,
-                          ArtistProfessorSerializer, StudentAutocompleteSerializer,
+                          TeachingArtistSerializer, StudentAutocompleteSerializer,
                           PublicStudentApplicationSerializer, StudentApplicationSerializer,
                           StudentApplicationSetupSerializer
                           )
@@ -86,9 +86,9 @@ class ScientificStudentViewSet(viewsets.ModelViewSet):
                         'student__user',)
 
 
-class ArtistProfessorViewSet(viewsets.ModelViewSet):
-    queryset = ArtistProfessor.objects.all()
-    serializer_class = ArtistProfessorSerializer
+class TeachingArtistViewSet(viewsets.ModelViewSet):
+    queryset = TeachingArtist.objects.all()
+    serializer_class = TeachingArtistSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter,)
     search_fields = ('artist__user__username',)
