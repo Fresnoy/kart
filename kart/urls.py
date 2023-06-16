@@ -26,7 +26,7 @@ from people.views import (
 )
 from people import views as people_views
 from school.views import (UserPasswordResetView, PromotionViewSet, StudentViewSet, PhdStudentViewSet,
-                          ScientificStudentViewSet, StudentAutocompleteSearchViewSet, ArtistProfessorViewSet,
+                          ScientificStudentViewSet, StudentAutocompleteSearchViewSet, TeachingArtistViewSet,
                           StudentApplicationViewSet, StudentApplicationSetupViewSet
                           )
 
@@ -74,7 +74,7 @@ v2_api.register(r'people/user', UserViewSet)
 v2_api.register(r'people/userprofile', FresnoyProfileViewSet)
 v2_api.register(r'people/artist', ArtistViewSet)
 v2_api.register(r'people/artist-search', ArtistAutocompleteSearchViewSet, basename="people-artist-search")
-v2_api.register(r'school/artist-professor', ArtistProfessorViewSet)
+v2_api.register(r'school/artist-teacher', TeachingArtistViewSet)
 v2_api.register(r'people/staff', StaffViewSet)
 v2_api.register(r'people/organization', OrganizationViewSet)
 v2_api.register(r'people/organization-staff', OrganizationTaskViewSet)

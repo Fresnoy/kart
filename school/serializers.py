@@ -4,7 +4,7 @@ from rest_auth.serializers import PasswordResetSerializer
 
 from people.serializers import PublicUserSerializer
 
-from .models import (Promotion, Student, PhdStudent, ScientificStudent, ArtistProfessor,
+from .models import (Promotion, Student, PhdStudent, ScientificStudent, TeachingArtist,
                      StudentApplication, StudentApplicationSetup)
 
 from .search_indexes import StudentIndex
@@ -33,9 +33,9 @@ class StudentSerializer(serializers.HyperlinkedModelSerializer):
     scientific_student = ScientificStudentSerializer(required=False,)
 
 
-class ArtistProfessorSerializer(serializers.HyperlinkedModelSerializer):
+class TeachingArtistSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = ArtistProfessor
+        model = TeachingArtist
         fields = '__all__'
 
 
