@@ -39,7 +39,7 @@ class ScienceStudentFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.ScienceStudent
     student = factory.SubFactory(StudentFactory)
-    discipline = factory.Faker('word')
+    field = factory.Faker('word')
 
 
 class TeachingArtistFactory(factory.django.DjangoModelFactory):
