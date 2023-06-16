@@ -62,11 +62,11 @@ class TeachingArtist(models.Model):
         return '{0}'.format(self.artist)
 
 
-class ScientificStudent(models.Model):
+class ScienceStudent(models.Model):
     """
     An scientific with a discipline, studying at least one year and make artwork.
     """
-    student = models.OneToOneField(Student, related_name='scientific_student', on_delete=models.PROTECT)
+    student = models.OneToOneField(Student, related_name='science_student', on_delete=models.PROTECT)
     discipline = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):

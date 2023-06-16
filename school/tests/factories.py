@@ -35,9 +35,9 @@ class PhdStudentFactory(factory.django.DjangoModelFactory):
     thesis_object = factory.Faker('word')
 
 
-class ScientificStudentFactory(factory.django.DjangoModelFactory):
+class ScienceStudentFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = models.ScientificStudent
+        model = models.ScienceStudent
     student = factory.SubFactory(StudentFactory)
     discipline = factory.Faker('word')
 

@@ -17,7 +17,7 @@ def student(db_ready):
 
 @pytest.fixture
 def scientificstudent(db_ready):
-    return factories.ScientificStudentFactory()
+    return factories.ScienceStudentFactory()
 
 
 @pytest.fixture
