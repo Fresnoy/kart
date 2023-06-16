@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
             name='ScienceStudent',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('discipline', models.CharField(blank=True, max_length=50, null=True)),
+                ('field', models.CharField(blank=True, max_length=50, null=True)),
                 ('student', models.OneToOneField(on_delete=django.db.models.deletion.PROTECT, related_name='science_student', to='school.student')),
             ],
         ),
