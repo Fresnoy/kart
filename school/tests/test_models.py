@@ -40,6 +40,13 @@ class TestTeachingArtist:
 
 
 @pytest.mark.django_db
+class TestVisitingStudent:
+    def test_str(self, visitingstudent):
+        visitingstudent_str = str(visitingstudent)
+        assert str(visitingstudent.student.user) in visitingstudent_str
+
+
+@pytest.mark.django_db
 class TestStudentApplicationSetup:
     def test_str(self, student_application_setup):
         student_application_setup_str = str(student_application_setup)

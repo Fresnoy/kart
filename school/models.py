@@ -87,6 +87,19 @@ class PhdStudent(models.Model):
         return '{0}'.format(self.student)
 
 
+class VisitingStudent(models.Model):
+    """
+    Visiting student included in a promotion but not eligible for degree.
+    """
+    number = models.CharField(max_length=50, null=True, blank=True)
+    promotion = models.ForeignKey(Promotion, null=True, on_delete=models.SET_NULL)
+    user = models.OneToOneField(User, on_delete=models.PROTECT)
+    artist = models.OneToOneField(Artist, related_name='student', on_delete=models.PROTECT)
+
+    def __str__(self):
+        return '{0} ({1})'.format(self.user, self.number)
+
+
 class StudentApplicationSetup(models.Model):
     """
     Setup Student Application

@@ -50,6 +50,16 @@ class TeachingArtistFactory(factory.django.DjangoModelFactory):
     presentation_text_en = factory.Faker('word')
 
 
+class VisitingStudentFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.VisitingStudent
+
+    number = factory.Faker('random_int')
+    promotion = factory.SubFactory(PromotionFactory)
+    artist = factory.SubFactory(ArtistFactory)
+    user = factory.SelfAttribute('artist.user')
+
+
 class StudentApplicationSetupFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.StudentApplicationSetup

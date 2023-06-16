@@ -31,6 +31,11 @@ def teachingartist(db_ready):
 
 
 @pytest.fixture
+def visitingstudent(db_ready):
+    return factories.VisitingStudentFactory()
+
+
+@pytest.fixture
 def student_application_setup(db_ready, school_application_group):
     return factories.StudentApplicationSetupFactory()
 

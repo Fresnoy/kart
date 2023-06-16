@@ -22,11 +22,11 @@ from people.models import User, FresnoyProfile, Artist
 from people.serializers import UserRegisterSerializer
 
 from .models import (Promotion, Student, PhdStudent, ScienceStudent, TeachingArtist,
-                     StudentApplication, StudentApplicationSetup)
+                     VisitingStudent, StudentApplication, StudentApplicationSetup)
 
 from .serializers import (StudentPasswordResetSerializer,
                           PromotionSerializer, StudentSerializer, PhdStudentSerializer, ScienceStudentSerializer,
-                          TeachingArtistSerializer, StudentAutocompleteSerializer,
+                          TeachingArtistSerializer, VisitingStudentSerializer, StudentAutocompleteSerializer,
                           PublicStudentApplicationSerializer, StudentApplicationSerializer,
                           StudentApplicationSetupSerializer
                           )
@@ -95,6 +95,18 @@ class TeachingArtistViewSet(viewsets.ModelViewSet):
     ordering_fields = ('artist__user__last_name',)
     filterset_fields = ('artist',
                         'artist__user',)
+
+
+class VisitingStudentViewSet(viewsets.ModelViewSet):
+    queryset = VisitingStudent.objects.all()
+    serializer_class = VisitingStudentSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter,)
+    search_fields = ('user__username',)
+    ordering_fields = ('user__last_name',)
+    filterset_fields = ('artist',
+                        'user',
+                        'promotion',)
 
 
 class StudentAutocompleteSearchViewSet(HaystackViewSet):
