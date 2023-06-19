@@ -25,7 +25,7 @@ from people.views import (
     StaffViewSet, OrganizationViewSet,
 )
 from people import views as people_views
-from school.views import (UserPasswordResetView, PromotionViewSet, StudentViewSet, PhdStudentViewSet,
+from school.views import (UserPasswordResetView, PromotionViewSet, StudentViewSet, PhdStudentViewSet, VisitingStudentViewSet,
                           ScienceStudentViewSet, StudentAutocompleteSearchViewSet, TeachingArtistViewSet,
                           StudentApplicationViewSet, StudentApplicationSetupViewSet
                           )
