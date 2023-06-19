@@ -35,16 +35,16 @@ class PhdStudentFactory(factory.django.DjangoModelFactory):
     thesis_object = factory.Faker('word')
 
 
-class ScientificStudentFactory(factory.django.DjangoModelFactory):
+class ScienceStudentFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = models.ScientificStudent
+        model = models.ScienceStudent
     student = factory.SubFactory(StudentFactory)
-    discipline = factory.Faker('word')
+    field = factory.Faker('word')
 
 
-class ArtistProfessorFactory(factory.django.DjangoModelFactory):
+class TeachingArtistFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = models.ArtistProfessor
+        model = models.TeachingArtist
     artist = factory.SubFactory(ArtistFactory)
     presentation_text_fr = factory.Faker('word')
     presentation_text_en = factory.Faker('word')

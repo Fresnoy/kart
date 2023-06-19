@@ -16,8 +16,8 @@ def student(db_ready):
 
 
 @pytest.fixture
-def scientificstudent(db_ready):
-    return factories.ScientificStudentFactory()
+def sciencestudent(db_ready):
+    return factories.ScienceStudentFactory()
 
 
 @pytest.fixture
@@ -26,8 +26,8 @@ def phdstudent(db_ready):
 
 
 @pytest.fixture
-def artistprofessor(db_ready):
-    return factories.ArtistProfessorFactory()
+def teachingartist(db_ready):
+    return factories.TeachingArtistFactory()
 
 
 @pytest.fixture

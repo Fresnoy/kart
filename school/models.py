@@ -41,11 +41,11 @@ class Student(models.Model):
         return '{0} ({1})'.format(self.user, self.number)
 
 
-class ArtistProfessor(models.Model):
+class TeachingArtist(models.Model):
     """
-    An artist accompany a student for artwork
+    Senior artist mentoring a student in the production of an artwork. Can also produce and exhibit a personal artwork.
     """
-    artist = models.OneToOneField(Artist, related_name='professor', null=True, on_delete=models.SET_NULL)
+    artist = models.OneToOneField(Artist, related_name='teacher', null=True, on_delete=models.SET_NULL)
     presentation_text_fr = models.TextField(null=True,
                                             blank=True,
                                             help_text="General orientation text (not only bio) in FRENCH"
@@ -55,19 +55,19 @@ class ArtistProfessor(models.Model):
                                             help_text="General orientation text (not only bio) in ENGLISH"
                                             )
     pictures_gallery = models.OneToOneField(
-        Gallery, blank=True, null=True, related_name='artistprofessor_pictures', on_delete=models.CASCADE)
-    artworks_supervision = models.ManyToManyField(Artwork, related_name='accompaniement', blank=True)
+        Gallery, blank=True, null=True, related_name='teachingartist_pictures', on_delete=models.CASCADE)
+    artworks_supervision = models.ManyToManyField(Artwork, related_name='mentoring', blank=True)
 
     def __str__(self):
         return '{0}'.format(self.artist)
 
 
-class ScientificStudent(models.Model):
+class ScienceStudent(models.Model):
     """
-    An scientific with a discipline, studying at least one year and make artwork.
+    Scientist specialized in a field. Attends Le Fresnoy at least one year. Produces artworks.
     """
-    student = models.OneToOneField(Student, related_name='scientific_student', on_delete=models.PROTECT)
-    discipline = models.CharField(max_length=50, null=True, blank=True)
+    student = models.OneToOneField(Student, related_name='science_student', on_delete=models.PROTECT)
+    field = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
         return '{0}'.format(self.student)
@@ -75,7 +75,7 @@ class ScientificStudent(models.Model):
 
 class PhdStudent(models.Model):
     """
-    An Phd student follows the course in 3 years and produces a thesis
+    At Le Fresnoy, a PhD student accomplishes an extra year (2+1). Their artworks are part of their thesis.
     """
     student = models.OneToOneField(Student, related_name='phd_student', on_delete=models.PROTECT)
     university = models.ForeignKey(Organization, related_name='phd_student', on_delete=models.PROTECT, blank=True)
