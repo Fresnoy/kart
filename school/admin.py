@@ -46,6 +46,14 @@ class StudentApplicationSetupAdmin(admin.ModelAdmin):
     )
 
 
+
+@admin.register(TeachingArtist)
+class TeachingArtistAdmin(admin.ModelAdmin):
+    filter_vertical = ("artworks_supervision",)
+
+
+
+
 admin.site.register(Promotion)
 admin.site.register(StudentApplication, StudentApplicationAdmin)
 admin.site.register(StudentApplicationSetup, StudentApplicationSetupAdmin)
@@ -53,4 +61,3 @@ admin.site.register(Student, StudentAdmin)
 admin.site.register(PhdStudent)
 admin.site.register(ScienceStudent)
 admin.site.register(VisitingStudent)
-admin.site.register(TeachingArtist)
