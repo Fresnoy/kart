@@ -36,7 +36,6 @@ class StudentSerializer(serializers.HyperlinkedModelSerializer):
     # user = PublicUserSerializer()
     phd_student = PhdStudentSerializer(required=False,)
     science_student = ScienceStudentSerializer(required=False,)
-    visiting_student = VisitingStudentSerializer(required=False,)
 
 
 class TeachingArtistSerializer(serializers.HyperlinkedModelSerializer):

@@ -87,7 +87,7 @@ class ScienceStudentViewSet(viewsets.ModelViewSet):
 
 
 class TeachingArtistViewSet(viewsets.ModelViewSet):
-    queryset = TeachingArtist.objects.all()
+    queryset = TeachingArtist.objects.all().distinct()
     serializer_class = TeachingArtistSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter,)

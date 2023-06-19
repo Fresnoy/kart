@@ -129,10 +129,12 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
             'artworks',
             'teacher',
             'student',
+            'visiting_student',
         )
     artworks = serializers.SerializerMethodField()
     teacher = serializers.SerializerMethodField()
     student = serializers.SerializerMethodField()
+    visiting_student = serializers.SerializerMethodField()
 
     def get_artworks(self, obj):
         # prevent circular import
@@ -152,6 +154,14 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
             # prevent circular import
             from school.serializers import StudentSerializer
             return StudentSerializer(obj.student, context=self.context).data
+        except Exception:
+            return None
+
+    def get_visiting_student(self, obj):
+        try:
+            # prevent circular import
+            from school.serializers import VisitingStudentSerializer
+            return VisitingStudentSerializer(obj.visiting_student, context=self.context).data
         except Exception:
             return None
 
