@@ -94,7 +94,8 @@ class TeachingArtistViewSet(viewsets.ModelViewSet):
     search_fields = ('artist__user__username',)
     ordering_fields = ('artist__user__last_name',)
     filterset_fields = ('artist',
-                        'artist__user',)
+                        'artist__user',
+                        'artworks_supervision__authors__student__promotion')
 
 
 class VisitingStudentViewSet(viewsets.ModelViewSet):
