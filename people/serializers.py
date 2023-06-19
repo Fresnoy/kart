@@ -174,7 +174,6 @@ class ArtistUserSerializer(serializers.HyperlinkedModelSerializer):
         )
     user = UserSerializer()
 
-    user = PublicUserSerializer()
 
 class ArtistAutocompleteSerializer(HaystackSerializerMixin, ArtistSerializer):
     class Meta(ArtistSerializer.Meta):
