@@ -6,7 +6,6 @@ from people.serializers import PublicUserSerializer
 
 from .models import (Promotion, Student, PhdStudent, ScienceStudent, TeachingArtist,
                      VisitingStudent, StudentApplication, StudentApplicationSetup)
-
 from .search_indexes import StudentIndex
 from .utils import candidature_close
 
