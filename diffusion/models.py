@@ -31,7 +31,7 @@ class Place(models.Model):
         Organization, blank=True, null=True, related_name='places', on_delete=models.CASCADE)
 
 
-   def __str__(self):
+    def __str__(self):
         extra_info = self.organization if self.organization else self.country
 
         if self.address :
