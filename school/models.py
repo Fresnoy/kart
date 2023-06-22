@@ -33,7 +33,7 @@ class Student(models.Model):
     number = models.CharField(max_length=50, null=True, blank=True)
     promotion = models.ForeignKey(Promotion, null=True, on_delete=models.SET_NULL)
     graduate = models.BooleanField(default=False)
-    mention = models.TextField(null=True, blank=True, help_text="Mention")
+    diploma_mention = models.CharField(max_length=150, null=True, blank=True, help_text="Diploma mention")
     user = models.OneToOneField(User, on_delete=models.PROTECT)
     artist = models.OneToOneField(Artist, related_name='student', on_delete=models.PROTECT)
 

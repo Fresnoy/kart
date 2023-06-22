@@ -24,8 +24,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='student',
-            name='mention',
-            field=models.TextField(blank=True, help_text='Mention', null=True),
+            name='diploma_mention',
+            field=models.CharField(blank=True, max_length=150, help_text='Diploma mention', null=True),
         ),
         migrations.CreateModel(
             name='ScienceStudent',
