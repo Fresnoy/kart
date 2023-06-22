@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.utils.http import base36_to_int
 
+import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import viewsets, permissions, filters, status
@@ -86,16 +87,21 @@ class ScienceStudentViewSet(viewsets.ModelViewSet):
                         'student__user',)
 
 
+class TeachingArtistFilterSet(django_filters.FilterSet):
+    year = django_filters.NumberFilter(field_name="artworks_supervision__production_date", lookup_expr='year__exact')
+    class Meta:
+        model = TeachingArtist
+        fields = ['artist',]
+
+
 class TeachingArtistViewSet(viewsets.ModelViewSet):
     queryset = TeachingArtist.objects.all().distinct()
     serializer_class = TeachingArtistSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter,)
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter,)
     search_fields = ('artist__user__username',)
     ordering_fields = ('artist__user__last_name',)
-    filterset_fields = ('artist',
-                        'artist__user',
-                        'artworks_supervision__authors__student__promotion')
+    filterset_class = TeachingArtistFilterSet
 
 
 class VisitingStudentViewSet(viewsets.ModelViewSet):
