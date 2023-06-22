@@ -19,6 +19,34 @@ class TestStudent:
 
 
 @pytest.mark.django_db
+class TestPhdStudent:
+    def test_str(self, phdstudent):
+        phdstudent_str = str(phdstudent)
+        assert str(phdstudent.student.user) in phdstudent_str
+
+
+@pytest.mark.django_db
+class TestScienceStudent:
+    def test_str(self, sciencestudent):
+        sciencestudent_str = str(sciencestudent)
+        assert str(sciencestudent.student.user) in sciencestudent_str
+
+
+@pytest.mark.django_db
+class TestTeachingArtist:
+    def test_str(self, teachingartist):
+        teachingartist_str = str(teachingartist)
+        assert str(teachingartist.artist) in teachingartist_str
+
+
+@pytest.mark.django_db
+class TestVisitingStudent:
+    def test_str(self, visitingstudent):
+        visitingstudent_str = str(visitingstudent)
+        assert str(visitingstudent.artist.user) in visitingstudent_str
+
+
+@pytest.mark.django_db
 class TestStudentApplicationSetup:
     def test_str(self, student_application_setup):
         student_application_setup_str = str(student_application_setup)
