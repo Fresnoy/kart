@@ -25,11 +25,11 @@ from people.views import (
     StaffViewSet, OrganizationViewSet,
 )
 from people import views as people_views
-from school.views import (
-    UserPasswordResetView,
-    PromotionViewSet, StudentViewSet,
-    StudentAutocompleteSearchViewSet, StudentApplicationViewSet, StudentApplicationSetupViewSet
-)
+from school.views import (UserPasswordResetView, PromotionViewSet, StudentViewSet, PhdStudentViewSet,
+                          VisitingStudentViewSet, ScienceStudentViewSet, StudentAutocompleteSearchViewSet,
+                          TeachingArtistViewSet, StudentApplicationViewSet, StudentApplicationSetupViewSet
+                          )
+
 from school import views as school_views
 from production.views import (
     ArtworkViewSet, ArtworkAutocompleteSearchViewSet,
@@ -74,11 +74,15 @@ v2_api.register(r'people/user', UserViewSet)
 v2_api.register(r'people/userprofile', FresnoyProfileViewSet)
 v2_api.register(r'people/artist', ArtistViewSet)
 v2_api.register(r'people/artist-search', ArtistAutocompleteSearchViewSet, basename="people-artist-search")
+v2_api.register(r'school/artist-teacher', TeachingArtistViewSet)
 v2_api.register(r'people/staff', StaffViewSet)
 v2_api.register(r'people/organization', OrganizationViewSet)
 v2_api.register(r'people/organization-staff', OrganizationTaskViewSet)
 v2_api.register(r'school/promotion', PromotionViewSet)
 v2_api.register(r'school/student', StudentViewSet)
+v2_api.register(r'school/phd-student', PhdStudentViewSet)
+v2_api.register(r'school/science-student', ScienceStudentViewSet)
+v2_api.register(r'school/visiting-student', VisitingStudentViewSet)
 v2_api.register(r'school/student-application', StudentApplicationViewSet)
 v2_api.register(r'school/student-application-setup', StudentApplicationSetupViewSet)
 v2_api.register(r'school/student-search', StudentAutocompleteSearchViewSet, basename="school-student-search")
