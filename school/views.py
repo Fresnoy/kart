@@ -89,9 +89,10 @@ class ScienceStudentViewSet(viewsets.ModelViewSet):
 
 class TeachingArtistFilterSet(django_filters.FilterSet):
     year = django_filters.NumberFilter(field_name="artworks_supervision__production_date", lookup_expr='year__exact')
+
     class Meta:
         model = TeachingArtist
-        fields = ['artist',]
+        fields = ['artist', ]
 
 
 class TeachingArtistViewSet(viewsets.ModelViewSet):
