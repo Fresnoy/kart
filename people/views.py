@@ -133,9 +133,9 @@ class ArtistViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = (filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend)
     search_fields = ('=user__username',)
-    filterset_fields = {'artworks': ['isnull'], 
+    filterset_fields = {'artworks': ['isnull'],
                         'teacher': ['isnull'],
-                        'student': ['isnull'], 
+                        'student': ['isnull'],
                         'visiting_student': ['isnull'],
                         'student__science_student': ['isnull'],
                         'user__profile__nationality': ['icontains']}

@@ -15,11 +15,11 @@ def first(items):
 
 def obtain_jwt_token(user):
     c = Client()
-    url = reverse('obtain-jwt-token')
+    url = reverse('rest_login')
 
     response = c.post(url, {'username': user.username, 'password': 'p4ssw0rd'})
-    assert response.status_code == 201
-    assert 'token' in response.json()
+    assert response.status_code == 200
+    assert 'access' in response.json()
 
     return response.json()
 
@@ -114,7 +114,7 @@ class AbstractHelpTestForAPI:
                 client.force_login(self.requestor(user_role))
             elif auth_method == 'jwt':
                 jwt = obtain_jwt_token(self.requestor(user_role))
-                kwargs['HTTP_AUTHORIZATION'] = 'JWT {}'.format(jwt['token'])
+                kwargs['HTTP_AUTHORIZATION'] = 'JWT {}'.format(jwt['access'])
 
         if json:
             kwargs['content_type'] = 'application/json'

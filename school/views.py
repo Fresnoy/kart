@@ -10,7 +10,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, permissions, filters, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework_jwt.settings import api_settings
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -363,13 +362,6 @@ def user_activate(request, uidb64, token):
 
         setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
 
-        # jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-        # jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-
-        # custom_infos = user
-
-        # payload = jwt_payload_handler(custom_infos)
-        # front_token = jwt_encode_handler(payload)
         route = "candidature.account.login"
 
         refresh = RefreshToken.for_user(user)
@@ -410,4 +402,3 @@ def user_activate(request, uidb64, token):
 
 class UserPasswordResetView(PasswordResetView):
     serializer_class = StudentPasswordResetSerializer
-

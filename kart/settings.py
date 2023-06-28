@@ -163,7 +163,6 @@ TASTYPIE_DEFAULT_FORMATS = ['json']
 TASTYPIE_SWAGGER_API_MODULE = 'kart.urls.v1_api'
 
 
-
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.DjangoObjectPermissions',
@@ -180,7 +179,7 @@ REST_FRAMEWORK = {
 
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(days=15),    
+    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(days=15),
     "AUTH_HEADER_TYPES": ("JWT",),
 }
 REST_AUTH = {
