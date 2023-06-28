@@ -56,9 +56,10 @@ INSTALLED_APPS = (
     'rest_framework.authtoken',
     'rest_framework_jwt',
     'rest_framework_jwt.blacklist',
+    'rest_framework_simplejwt',
+    'dj_rest_auth',
     'allauth',
     'allauth.account',
-    'dj_rest_auth',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.twitter',
@@ -162,6 +163,7 @@ TASTYPIE_DEFAULT_FORMATS = ['json']
 TASTYPIE_SWAGGER_API_MODULE = 'kart.urls.v1_api'
 
 
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.DjangoObjectPermissions',
@@ -171,12 +173,16 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     ),
 }
 
-JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=15),
-    'JWT_AUTH_HEADER_PREFIX': 'JWT',
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(days=15),    
+    "AUTH_HEADER_TYPES": ("JWT",),
 }
-REST_USE_JWT = True
+REST_AUTH = {
+    'USE_JWT': True,
+}

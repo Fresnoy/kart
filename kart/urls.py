@@ -148,6 +148,7 @@ urlpatterns = [
                        # candidature context user creation
                        re_path(f'school/student-application/account/activate/{settings.PASSWORD_TOKEN}/',
                                school_views.user_activate, name='candidat-activate'),
+                       # Send candidat email to valid infos
                        path('v2/school/student-application/account/password/reset/', UserPasswordResetView.as_view(),
                             name='candidature_password_reset'),
                        # vimeo

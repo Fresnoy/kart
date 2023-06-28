@@ -2,6 +2,8 @@ from rest_framework import serializers
 from drf_haystack.serializers import HaystackSerializerMixin
 from dj_rest_auth.serializers import PasswordResetSerializer
 
+from django.contrib.auth.forms import PasswordResetForm
+
 from people.serializers import PublicUserSerializer
 
 from .models import (Promotion, Student, PhdStudent, ScienceStudent, TeachingArtist,
@@ -33,7 +35,7 @@ class StudentSerializer(serializers.HyperlinkedModelSerializer):
         model = Student
         fields = '__all__'
         # depth = 1
-    # user = PublicUserSerializer()
+    user = PublicUserSerializer()
     phd_student = PhdStudentSerializer(required=False,)
     science_student = ScienceStudentSerializer(required=False,)
 
@@ -147,6 +149,11 @@ class StudentApplicationSetupSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class StudentPasswordResetSerializer(PasswordResetSerializer):
+
+    @property
+    def password_reset_form_class(self):
+        return PasswordResetForm
+
     def get_email_options(self):
         return {
             'subject_template_name': 'emails/account/password_reset_subject.txt',

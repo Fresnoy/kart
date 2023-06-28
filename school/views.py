@@ -12,6 +12,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework_jwt.settings import api_settings
 
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from drf_haystack.filters import HaystackAutocompleteFilter
 from drf_haystack.viewsets import HaystackViewSet
 
@@ -361,16 +363,19 @@ def user_activate(request, uidb64, token):
 
         setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
 
-        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+        # jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        # jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
-        custom_infos = user
+        # custom_infos = user
 
-        payload = jwt_payload_handler(custom_infos)
-        front_token = jwt_encode_handler(payload)
+        # payload = jwt_payload_handler(custom_infos)
+        # front_token = jwt_encode_handler(payload)
         route = "candidature.account.login"
 
-        change_password_link = "{0}/{1}/{2}".format(setup.reset_password_url, front_token, route)
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+
+        change_password_link = "{0}/{1}/{2}".format(setup.reset_password_url, access_token, route)
 
         token_is_valid = default_token_generator.check_token(user, token)
 
@@ -405,3 +410,4 @@ def user_activate(request, uidb64, token):
 
 class UserPasswordResetView(PasswordResetView):
     serializer_class = StudentPasswordResetSerializer
+
