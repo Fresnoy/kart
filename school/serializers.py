@@ -3,6 +3,7 @@ from drf_haystack.serializers import HaystackSerializerMixin
 from dj_rest_auth.serializers import PasswordResetSerializer
 
 from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth.models import User
 
 from people.serializers import PublicUserSerializer
 
@@ -35,9 +36,12 @@ class StudentSerializer(serializers.HyperlinkedModelSerializer):
         model = Student
         fields = '__all__'
         # depth = 1
-    user = PublicUserSerializer()
+    user_infos = PublicUserSerializer(source='user', read_only=True)
     phd_student = PhdStudentSerializer(required=False,)
     science_student = ScienceStudentSerializer(required=False,)
+
+    user = serializers.HyperlinkedRelatedField(view_name="user-detail",
+                                               queryset=User.objects.all(), write_only=True)
 
 
 class TeachingArtistSerializer(serializers.HyperlinkedModelSerializer):
