@@ -10,12 +10,13 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, permissions, filters, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework_jwt.settings import api_settings
+
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from drf_haystack.filters import HaystackAutocompleteFilter
 from drf_haystack.viewsets import HaystackViewSet
 
-from rest_auth.views import PasswordResetView
+from dj_rest_auth.views import PasswordResetView
 
 from guardian.shortcuts import assign_perm
 
@@ -89,9 +90,10 @@ class ScienceStudentViewSet(viewsets.ModelViewSet):
 
 class TeachingArtistFilterSet(django_filters.FilterSet):
     year = django_filters.NumberFilter(field_name="artworks_supervision__production_date", lookup_expr='year__exact')
+
     class Meta:
         model = TeachingArtist
-        fields = ['artist',]
+        fields = ['artist', ]
 
 
 class TeachingArtistViewSet(viewsets.ModelViewSet):
@@ -360,16 +362,12 @@ def user_activate(request, uidb64, token):
 
         setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
 
-        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-
-        custom_infos = user
-
-        payload = jwt_payload_handler(custom_infos)
-        front_token = jwt_encode_handler(payload)
         route = "candidature.account.login"
 
-        change_password_link = "{0}/{1}/{2}".format(setup.reset_password_url, front_token, route)
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+
+        change_password_link = "{0}/{1}/{2}".format(setup.reset_password_url, access_token, route)
 
         token_is_valid = default_token_generator.check_token(user, token)
 
