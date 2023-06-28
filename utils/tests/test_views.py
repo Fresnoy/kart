@@ -29,9 +29,9 @@ class TestJWTToken:
         assert response.status_code == expected
         if expected == 200:
             json_response = response.json()
-            assert 'token' in json_response
-            assert validate_jwt_token(json_response['token'], user)
+            assert 'access' in json_response
+            assert validate_jwt_token(json_response['access'], user)
 
     def test_obtain_jwt_token(self, client, user):
-        jwt = obtain_jwt_token(user)['token']
+        jwt = obtain_jwt_token(user)['access']
         assert validate_jwt_token(jwt, user)

@@ -2,7 +2,7 @@ from datetime import date
 
 from django.contrib.auth.models import User
 from django.db import models
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from common.utils import make_filepath
 from people.models import Artist, Organization

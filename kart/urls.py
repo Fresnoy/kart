@@ -8,7 +8,7 @@ from django.contrib.auth import views as auth_views
 from tastypie.api import Api
 from rest_framework import routers
 from rest_framework_jwt.views import obtain_jwt_token
-from rest_auth.views import PasswordResetConfirmView
+from dj_rest_auth.views import PasswordResetConfirmView
 
 from people.api import ArtistResource, StaffResource, OrganizationResource, UserResource
 from production.api import (
@@ -140,14 +140,15 @@ urlpatterns = [
                        path('v2/', include(v2_api.urls)),
                        path('v2/auth/', obtain_jwt_token, name='obtain-jwt-token'),
                        # basic REST context user registration
-                       path('v2/rest-auth/', include('rest_auth.urls')),
-                       path('v2/rest-auth/registration/', include('rest_auth.registration.urls')),
+                       path('v2/rest-auth/', include('dj_rest_auth.urls')),
+                       path('v2/rest-auth/registration/', include('dj_rest_auth.registration.urls')),
                        re_path(f'v2/rest-auth/password/reset/confirm/{settings.PASSWORD_TOKEN}/',
                                PasswordResetConfirmView.as_view(),
                                name='password_reset_confirm'),
                        # candidature context user creation
                        re_path(f'school/student-application/account/activate/{settings.PASSWORD_TOKEN}/',
                                school_views.user_activate, name='candidat-activate'),
+                       # Send candidat email to valid infos
                        path('v2/school/student-application/account/password/reset/', UserPasswordResetView.as_view(),
                             name='candidature_password_reset'),
                        # vimeo
