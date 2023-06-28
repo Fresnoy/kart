@@ -1,12 +1,34 @@
 from rest_framework import serializers
 from drf_haystack.serializers import HaystackSerializerMixin
-from rest_auth.serializers import PasswordResetSerializer
+from dj_rest_auth.serializers import PasswordResetSerializer
+
+from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth.models import User
 
 from people.serializers import PublicUserSerializer
 
-from .models import Promotion, Student, StudentApplication, StudentApplicationSetup
+from .models import (Promotion, Student, PhdStudent, ScienceStudent, TeachingArtist,
+                     VisitingStudent, StudentApplication, StudentApplicationSetup)
 from .search_indexes import StudentIndex
 from .utils import candidature_close
+
+
+class PhdStudentSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = PhdStudent
+        fields = '__all__'
+
+
+class ScienceStudentSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ScienceStudent
+        fields = '__all__'
+
+
+class VisitingStudentSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = VisitingStudent
+        fields = '__all__'
 
 
 class StudentSerializer(serializers.HyperlinkedModelSerializer):
@@ -14,7 +36,18 @@ class StudentSerializer(serializers.HyperlinkedModelSerializer):
         model = Student
         fields = '__all__'
         # depth = 1
-    # user = PublicUserSerializer()
+    user_infos = PublicUserSerializer(source='user', read_only=True)
+    phd_student = PhdStudentSerializer(required=False,)
+    science_student = ScienceStudentSerializer(required=False,)
+
+    user = serializers.HyperlinkedRelatedField(view_name="user-detail",
+                                               queryset=User.objects.all(), write_only=True)
+
+
+class TeachingArtistSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = TeachingArtist
+        fields = '__all__'
 
 
 class PromotionSerializer(serializers.HyperlinkedModelSerializer):
@@ -120,6 +153,11 @@ class StudentApplicationSetupSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class StudentPasswordResetSerializer(PasswordResetSerializer):
+
+    @property
+    def password_reset_form_class(self):
+        return PasswordResetForm
+
     def get_email_options(self):
         return {
             'subject_template_name': 'emails/account/password_reset_subject.txt',

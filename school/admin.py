@@ -4,7 +4,8 @@ from django.db import models
 
 from pagedown.widgets import AdminPagedownWidget
 
-from .models import Promotion, Student, StudentApplication, StudentApplicationSetup
+from .models import (Promotion, Student, StudentApplication, StudentApplicationSetup,
+                     PhdStudent, ScienceStudent, VisitingStudent, TeachingArtist)
 
 
 class StudentAdmin(admin.ModelAdmin):
@@ -45,7 +46,15 @@ class StudentApplicationSetupAdmin(admin.ModelAdmin):
     )
 
 
+@admin.register(TeachingArtist)
+class TeachingArtistAdmin(admin.ModelAdmin):
+    filter_vertical = ("artworks_supervision",)
+
+
 admin.site.register(Promotion)
 admin.site.register(StudentApplication, StudentApplicationAdmin)
 admin.site.register(StudentApplicationSetup, StudentApplicationSetupAdmin)
 admin.site.register(Student, StudentAdmin)
+admin.site.register(PhdStudent)
+admin.site.register(ScienceStudent)
+admin.site.register(VisitingStudent)

@@ -32,9 +32,16 @@ class Place(models.Model):
 
     def __str__(self):
         extra_info = self.organization if self.organization else self.country
-        address = self.address[0:20] + \
-            "..." if len(self.address) > 30 else " - " + self.address
-        address += ", " + self.city
+        if self.address:
+            address = self.address[0:20] + \
+                "..." if len(self.address) > 30 else " - " + self.address
+        else:
+            address = ""
+
+        # Concat with the city
+        if self.city:
+            address += ", " + self.city
+
         if not address.lower().find(self.name.lower()):
             return f'{self.name} {self.city} ({extra_info})'
         else:

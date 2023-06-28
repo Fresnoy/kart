@@ -1,6 +1,6 @@
 from django import template
 
-from rest_framework_jwt.settings import api_settings
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from people.models import User
 
@@ -20,16 +20,13 @@ def authfront_reset_password_link(token, email):
         user = None
 
     if user is not None:
-        custom_infos = user
 
-        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
 
-        payload = jwt_payload_handler(custom_infos)
-        front_token = jwt_encode_handler(payload)
         route = "candidature.account.login"
 
         # reverse('password-reset')
-        url = "{0}/{1}/{2}".format(setup.reset_password_url, front_token, route)
+        url = "{0}/{1}/{2}".format(setup.reset_password_url, access_token, route)
 
     return url

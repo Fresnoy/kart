@@ -150,6 +150,17 @@ class ArtistEndPoint(TestCase):
         artists = json.loads(self.response.content)
         self.assertEqual(len(artists), 0)
 
+    def test_filter_by_teacher__isnull(self):
+        """
+        Test filter by student for artist endpoint
+        """
+        url = reverse('artist-list')
+        filter = {'teacher__isnull': False}
+        self.response = self.client.get(url, filter)
+        # load json
+        artists = json.loads(self.response.content)
+        self.assertEqual(len(artists), 0)
+
     def test_pagination(self):
         """
         Test filter by student for artist endpoint
@@ -172,6 +183,8 @@ class ArtistEndPoint(TestCase):
         self.assertIn("user", artist)
         self.assertIn("websites", artist)
         self.assertIn("artworks", artist)
+        self.assertIn("teacher", artist)
+        self.assertIn("student", artist)
 
 
 class ArtistSearchEndPoint(TestCase):

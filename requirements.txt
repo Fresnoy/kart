@@ -1,40 +1,42 @@
-Django==3.2.15
+Django==4.1
 django-allauth==0.51.0
 django-cleanup==6.0.0
 django-cors-headers==3.13.0
-django-countries==7.3.2
-django-extensions==3.2.0
+django-countries==7.5
+django-extensions==3.2.1
 django-filter==22.1
 django-graphql-jwt==0.3.4
 django-grappelli==3.0.3
 django-guardian==2.4.0
-django-haystack==3.1.1
+django-haystack==3.2.0
 # django-language-field==0.0.3
-git+https://github.com/dellsystem/django-language-field
+# git+https://github.com/dellsystem/django-language-field
+# git+https://github.com/vporton/django-language-field
+git+https://github.com/audiolion/django-language-field
 django-markdown==0.8.4
 django-markdownx==3.0.1
-django-multiselectfield==0.1.12
+# django-multiselectfield==0.1.12
+git+https://github.com/macmichael01/django-multiselectfield
 django-pagedown==2.2.1
 django-polymorphic==3.1.0
-django-rest-auth==0.9.5
+dj-rest-auth==4.0.1
 django-rest-polymorphic==0.1.10
 django-sortedm2m==3.1.1
-django-taggit==3.0.0
-django-taggit-serializer==0.1.7
-django-tastypie==0.14.4
+django-taggit==4.0.0
+#django-tastypie
+django-tastypie==0.14.5
 django-tastypie-swagger==0.1.4
 django-unused-media==0.2.2
 djangorestframework==3.12.4
-# djangorestframework-jwt==1.11.0
+djangorestframework-simplejwt==5.2.2
 drf-jwt==1.19.2
 # drf-haystack
 # drf-haystack==1.8.11
-# git+https://github.com/mka142/drf-haystack.git@patch-2
-# drf-haystack for django4 :
-git+https://github.com/13KuntalRoy/drf-haystack
+# master of repo (not released)
+git+https://github.com/rhblind/drf-haystack.git
 elasticsearch==7.15.1
-geopy==2.2.0
-Pillow==9.2.0
+geopy==2.3.0
+Pillow==9.3.0
 pytz==2022.2.1
-psycopg2==2.9.3
-pyjwt==2.4.0
+psycopg2==2.9.5
+pyjwt==2.6.0

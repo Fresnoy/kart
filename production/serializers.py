@@ -1,9 +1,9 @@
 from rest_framework import serializers
 from rest_polymorphic.serializers import PolymorphicSerializer
-from drf_haystack.serializers import HaystackSerializerMixin
-from taggit_serializer.serializers import (TagListSerializerField,
-                                           TaggitSerializer)
+from taggit.serializers import (TagListSerializerField,
+                                TaggitSerializer)
 from taggit.models import Tag
+from drf_haystack.serializers import HaystackSerializerMixin
 
 from .models import (
     Film, FilmGenre, Installation,
