@@ -36,7 +36,7 @@ class Command(BaseCommand):
             user = User.objects.create_user(first_name=first_name,
                                             last_name=last_name,
                                             username=username,
-                                            password=get_random_string())
+                                            password=get_random_string(length=8))
             FresnoyProfile.objects.create(user=user)
             created = True
             print("User {0} created".format(user))
