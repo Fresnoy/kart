@@ -10,6 +10,8 @@ from rest_framework import routers
 from rest_framework_jwt.views import obtain_jwt_token
 from dj_rest_auth.views import PasswordResetConfirmView
 
+from graphene_django.views import GraphQLView
+
 from people.api import ArtistResource, StaffResource, OrganizationResource, UserResource
 from production.api import (
     InstallationResource, FilmResource,
@@ -171,7 +173,11 @@ urlpatterns = [
                        # path('static/<path>.*',
                        #     django_views.static.serve,
                        #     {'document_root': settings.STATIC_ROOT}),
-                       path('admin/', admin.site.urls) \
+                       path('admin/', admin.site.urls),
+
+                       # Graphene
+                       path("graphql", GraphQLView.as_view(graphiql=True)),
+
                        ] \
                        + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
                        + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
