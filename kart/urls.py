@@ -11,6 +11,7 @@ from rest_framework_jwt.views import obtain_jwt_token
 from dj_rest_auth.views import PasswordResetConfirmView
 
 from graphene_django.views import GraphQLView
+from django.views.decorators.csrf import csrf_exempt
 
 from people.api import ArtistResource, StaffResource, OrganizationResource, UserResource
 from production.api import (
@@ -176,7 +177,7 @@ urlpatterns = [
                        path('admin/', admin.site.urls),
 
                        # Graphene
-                       path("graphql", GraphQLView.as_view(graphiql=True)),
+                       path("graphql", csrf_exempt(GraphQLView.as_view(graphiql=True))),
 
                        ] \
                        + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
