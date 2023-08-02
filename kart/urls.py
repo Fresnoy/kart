@@ -49,6 +49,8 @@ from common.views import BTBeaconViewSet, WebsiteViewSet
 from assets.views import GalleryViewSet, MediumViewSet
 from assets import views as assets_views
 
+# Graphene
+from school.schema_views import PromotionViewGQL
 
 admin.autodiscover()
 
@@ -76,7 +78,8 @@ v2_api = routers.DefaultRouter(trailing_slash=False)
 v2_api.register(r'people/user', UserViewSet)
 v2_api.register(r'people/userprofile', FresnoyProfileViewSet)
 v2_api.register(r'people/artist', ArtistViewSet)
-v2_api.register(r'people/artist-search', ArtistAutocompleteSearchViewSet, basename="people-artist-search")
+v2_api.register(r'people/artist-search',
+                ArtistAutocompleteSearchViewSet, basename="people-artist-search")
 v2_api.register(r'school/artist-teacher', TeachingArtistViewSet)
 v2_api.register(r'people/staff', StaffViewSet)
 v2_api.register(r'people/organization', OrganizationViewSet)
@@ -87,11 +90,15 @@ v2_api.register(r'school/phd-student', PhdStudentViewSet)
 v2_api.register(r'school/science-student', ScienceStudentViewSet)
 v2_api.register(r'school/visiting-student', VisitingStudentViewSet)
 v2_api.register(r'school/student-application', StudentApplicationViewSet)
-v2_api.register(r'school/student-application-setup', StudentApplicationSetupViewSet)
-v2_api.register(r'school/student-search', StudentAutocompleteSearchViewSet, basename="school-student-search")
+v2_api.register(r'school/student-application-setup',
+                StudentApplicationSetupViewSet)
+v2_api.register(r'school/student-search',
+                StudentAutocompleteSearchViewSet, basename="school-student-search")
 v2_api.register(r'production/artwork', ArtworkViewSet)
-v2_api.register(r'production/artwork-keywords', ArtworkKeywordsViewSet, basename="artwork-keywords")
-v2_api.register(r'production/artwork-search', ArtworkAutocompleteSearchViewSet, basename="production-artwork-search")
+v2_api.register(r'production/artwork-keywords',
+                ArtworkKeywordsViewSet, basename="artwork-keywords")
+v2_api.register(r'production/artwork-search',
+                ArtworkAutocompleteSearchViewSet, basename="production-artwork-search")
 v2_api.register(r'production/film', FilmViewSet)
 v2_api.register(r'production/film-keywords', FilmKeywordsViewSet)
 v2_api.register(r'production/event', EventViewSet)
@@ -115,70 +122,76 @@ v2_api.register(r'assets/medium', MediumViewSet)
 
 
 urlpatterns = [
-                       # basic Django user account reset password
-                       path('account/reset_password/',
-                            auth_views.PasswordResetView.as_view(
-                                 template_name='accounts/reset_password/password_reset_form.html',
-                                 html_email_template_name="accounts/reset_password/password_reset_email.html",
-                                 email_template_name='accounts/reset_password/password_reset_email_txt.html',
-                                 subject_template_name="accounts/reset_password/password_reset_subject.txt",
-                            ),
-                            name="reset_password"),
-                       path('account/reset_password_sent/',
-                            auth_views.PasswordResetDoneView.as_view(
-                                 template_name="accounts/reset_password/password_reset_sent.html"
-                            ),
-                            name="password_reset_done"),
-                       path('account/reset_password_form/<uidb64>/<token>/',
-                            auth_views.PasswordResetConfirmView.as_view(
-                                 template_name="accounts/reset_password/password_reset_confirm.html"
-                            ),
-                            name="basic_password_reset_confirm"),
-                       path('account/reset_password_complete/',
-                            auth_views.PasswordResetCompleteView.as_view(
-                                 template_name="accounts/reset_password/password_reset_complete.html",
-                            ),
-                            name="password_reset_complete"),
-                       # REST API V2
-                       path('v2/', include(v2_api.urls)),
-                       path('v2/auth/', obtain_jwt_token, name='obtain-jwt-token'),
-                       # basic REST context user registration
-                       path('v2/rest-auth/', include('dj_rest_auth.urls')),
-                       path('v2/rest-auth/registration/', include('dj_rest_auth.registration.urls')),
-                       re_path(f'v2/rest-auth/password/reset/confirm/{settings.PASSWORD_TOKEN}/',
-                               PasswordResetConfirmView.as_view(),
-                               name='password_reset_confirm'),
-                       # candidature context user creation
-                       re_path(f'school/student-application/account/activate/{settings.PASSWORD_TOKEN}/',
-                               school_views.user_activate, name='candidat-activate'),
-                       # Send candidat email to valid infos
-                       path('v2/school/student-application/account/password/reset/', UserPasswordResetView.as_view(),
-                            name='candidature_password_reset'),
-                       # vimeo
-                       path('v2/assets/vimeo/upload/token',
-                            assets_views.vimeo_get_upload_token, name='vimeo-upload-token'),
-                       # send emails
-                       path('v2/people/send-emails',
-                            people_views.send_custom_emails, name='send-emails'),
+    # basic Django user account reset password
+    path('account/reset_password/',
+         auth_views.PasswordResetView.as_view(
+             template_name='accounts/reset_password/password_reset_form.html',
+             html_email_template_name="accounts/reset_password/password_reset_email.html",
+             email_template_name='accounts/reset_password/password_reset_email_txt.html',
+             subject_template_name="accounts/reset_password/password_reset_subject.txt",
+         ),
+         name="reset_password"),
+    path('account/reset_password_sent/',
+         auth_views.PasswordResetDoneView.as_view(
+             template_name="accounts/reset_password/password_reset_sent.html"
+         ),
+         name="password_reset_done"),
+    path('account/reset_password_form/<uidb64>/<token>/',
+         auth_views.PasswordResetConfirmView.as_view(
+             template_name="accounts/reset_password/password_reset_confirm.html"
+         ),
+         name="basic_password_reset_confirm"),
+    path('account/reset_password_complete/',
+         auth_views.PasswordResetCompleteView.as_view(
+             template_name="accounts/reset_password/password_reset_complete.html",
+         ),
+         name="password_reset_complete"),
+    # REST API V2
+    path('v2/', include(v2_api.urls)),
+    path('v2/auth/', obtain_jwt_token,
+         name='obtain-jwt-token'),
+    # basic REST context user registration
+    path('v2/rest-auth/', include('dj_rest_auth.urls')),
+    path('v2/rest-auth/registration/',
+         include('dj_rest_auth.registration.urls')),
+    re_path(f'v2/rest-auth/password/reset/confirm/{settings.PASSWORD_TOKEN}/',
+            PasswordResetConfirmView.as_view(),
+            name='password_reset_confirm'),
+    # candidature context user creation
+    re_path(f'school/student-application/account/activate/{settings.PASSWORD_TOKEN}/',
+            school_views.user_activate, name='candidat-activate'),
+    # Send candidat email to valid infos
+    path('v2/school/student-application/account/password/reset/', UserPasswordResetView.as_view(),
+         name='candidature_password_reset'),
+    # vimeo
+    path('v2/assets/vimeo/upload/token',
+         assets_views.vimeo_get_upload_token, name='vimeo-upload-token'),
+    # send emails
+    path('v2/people/send-emails',
+         people_views.send_custom_emails, name='send-emails'),
 
 
 
-                       # api v1
-                       path('', include(v1_api.urls)),
-                       path('grappelli/', include('grappelli.urls')),
-                       # path('markdown/', include('django_markdown.urls')),
-                       # path('v1/doc/',
-                       #     include('tastypie_swagger.urls', namespace='kart_tastypie_swagger'),
-                       #     kwargs={"tastypie_api_module": "kart.urls.v1_api",
-                       #             "namespace": "kart_tastypie_swagger"}),
-                       # path('static/<path>.*',
-                       #     django_views.static.serve,
-                       #     {'document_root': settings.STATIC_ROOT}),
-                       path('admin/', admin.site.urls),
+    # api v1
+    path('', include(v1_api.urls)),
+    path('grappelli/', include('grappelli.urls')),
+    # path('markdown/', include('django_markdown.urls')),
+    # path('v1/doc/',
+    #     include('tastypie_swagger.urls', namespace='kart_tastypie_swagger'),
+    #     kwargs={"tastypie_api_module": "kart.urls.v1_api",
+    #             "namespace": "kart_tastypie_swagger"}),
+    # path('static/<path>.*',
+    #     django_views.static.serve,
+    #     {'document_root': settings.STATIC_ROOT}),
+    path('admin/', admin.site.urls),
 
-                       # Graphene
-                       path("graphql", csrf_exempt(GraphQLView.as_view(graphiql=True))),
+    # Graphene
+    path("graphql", csrf_exempt(
+        GraphQLView.as_view(graphiql=True))),
+    path(
+        "page/promotionGQL/", csrf_exempt(PromotionViewGQL.as_view()), name='promotion_gql'),
 
-                       ] \
-                       + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
-                       + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+] \
+    + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
+    + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
