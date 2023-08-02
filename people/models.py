@@ -19,9 +19,11 @@ class FresnoyProfile(models.Model):
         ('O', 'Other'),
     )
 
-    user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User, related_name='profile', on_delete=models.CASCADE)
     photo = models.ImageField(upload_to=make_filepath, blank=True, null=True)
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
+    gender = models.CharField(
+        max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
 
     nationality = models.CharField(max_length=24, null=True, blank=True)
     birthdate = models.DateField(null=True, blank=True)
