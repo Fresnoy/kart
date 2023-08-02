@@ -44,6 +44,17 @@ class ArtworkType(DjangoObjectType):
 
     authors = graphene.List(ArtistType)
 
+    type = graphene.String()
+
+    def resolve_type(self, info):
+        if isinstance(self, Film):
+            return "Film"
+        if isinstance(self, Performance):
+            return "Performance"
+        if isinstance(self, Installation):
+            return "Installation"
+        return "coucou"
+
     def resolve_authors(self, info):
         # Récupérer les auteurs liés à cette Performance
         return self.authors.all()

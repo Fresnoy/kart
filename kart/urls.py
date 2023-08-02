@@ -10,9 +10,6 @@ from rest_framework import routers
 from rest_framework_jwt.views import obtain_jwt_token
 from dj_rest_auth.views import PasswordResetConfirmView
 
-from graphene_django.views import GraphQLView
-from django.views.decorators.csrf import csrf_exempt
-
 from people.api import ArtistResource, StaffResource, OrganizationResource, UserResource
 from production.api import (
     InstallationResource, FilmResource,
@@ -50,7 +47,10 @@ from assets.views import GalleryViewSet, MediumViewSet
 from assets import views as assets_views
 
 # Graphene
-from school.schema_views import PromotionViewGQL
+from school.schema_views import PromotionViewGQL, StudentViewGQL
+from graphene_django.views import GraphQLView
+from django.views.decorators.csrf import csrf_exempt
+
 
 admin.autodiscover()
 
@@ -186,10 +186,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Graphene
-    path("graphql", csrf_exempt(
-        GraphQLView.as_view(graphiql=True))),
-    path(
-        "page/promotionGQL/", csrf_exempt(PromotionViewGQL.as_view()), name='promotion_gql'),
+    path("graphql", csrf_exempt(GraphQLView.as_view(graphiql=True))),
+    path("page/promotionGQL/", csrf_exempt(PromotionViewGQL.as_view()),
+         name='promotion_gql'),
+    path("page/studentGQL/", csrf_exempt(StudentViewGQL.as_view()),
+         name='student_gql'),
 
 
 ] \
