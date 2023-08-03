@@ -52,13 +52,13 @@ class StudentViewGQL(View):
             birthplace
             birthplaceCountry
             cursus
-            bioShortFr 
-            bioShortEn 
-            bioFr 
-            bioEn 
+            bioShortFr
+            bioShortEn
+            bioFr
+            bioEn
             promotion{
-            name
-            startingYear 
+                name
+                startingYear
             }
             websites {
             titleFr
