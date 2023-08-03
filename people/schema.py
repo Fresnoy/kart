@@ -4,11 +4,9 @@ from graphene_django import DjangoObjectType
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
-from django.db import models
 
 from .models import Artist, FresnoyProfile
 
-from common.models import Website
 from common.schema import WebsiteType
 
 # Types embedding a user field
@@ -70,60 +68,32 @@ class UserType(DjangoObjectType):
         model = get_user_model()
         interfaces = (UserInterface,)
 
-    firstName = graphene.String()
-    lastName = graphene.String()
-
-    photo = graphene.String()
-    gender = graphene.String()
-
-    nationality = graphene.String()
-    birthdate = graphene.String()
-    birthplace = graphene.String()
-    birthplaceCountry = graphene.String()
-    homelandAddress = graphene.String()
-    homelandZipcode = graphene.String()
-    homelandTown = graphene.String()
-    homelandCountry = graphene.String()
-    residenceAddress = graphene.String()
-    residenceZipcode = graphene.String()
-    residenceTown = graphene.String()
-    residenceCountry = graphene.String()
-    homelandPhone = graphene.String()
-    residencePhone = graphene.String()
-    socialInsuranceNumber = graphene.String()
-    familyStatus = graphene.String()
-    motherTongue = graphene.String()
-    otherLanguage = graphene.String()
-    cursus = graphene.String()
-
-    resolve_firstName = DynNameResolver()
-    resolve_lastName = DynNameResolver()
-    resolve_photo = DynNameResolver()
-    resolve_gender = DynNameResolver()
-    resolve_nationality = DynNameResolver()
-    resolve_birthdate = DynNameResolver()
-    resolve_birthplace = DynNameResolver()
-    resolve_birthplaceCountry = DynNameResolver()
-    resolve_homelandAddress = DynNameResolver()
-    resolve_homelandZipcode = DynNameResolver()
-    resolve_homelandTown = DynNameResolver()
-    resolve_homelandCountry = DynNameResolver()
-    resolve_residenceAddress = DynNameResolver()
-    resolve_residenceZipcode = DynNameResolver()
-    resolve_residenceTown = DynNameResolver()
-    resolve_residenceCountry = DynNameResolver()
-    resolve_homelandPhone = DynNameResolver()
-    resolve_residencePhone = DynNameResolver()
-    resolve_socialInsuranceNumber = DynNameResolver()
-    resolve_familyStatus = DynNameResolver()
-    resolve_otherTongue = DynNameResolver()
-    resolve_otherLanguage = DynNameResolver()
-    resolve_cursus = DynNameResolver()
+    firstName = graphene.String(resolver=DynNameResolver())
+    lastName = graphene.String(resolver=DynNameResolver())
+    photo = graphene.String(resolver=DynNameResolver())
+    gender = graphene.String(resolver=DynNameResolver())
+    nationality = graphene.String(resolver=DynNameResolver())
+    birthdate = graphene.String(resolver=DynNameResolver())
+    birthplace = graphene.String(resolver=DynNameResolver())
+    birthplaceCountry = graphene.String(resolver=DynNameResolver())
+    homelandAddress = graphene.String(resolver=DynNameResolver())
+    homelandZipcode = graphene.String(resolver=DynNameResolver())
+    homelandTown = graphene.String(resolver=DynNameResolver())
+    homelandCountry = graphene.String(resolver=DynNameResolver())
+    residenceAddress = graphene.String(resolver=DynNameResolver())
+    residenceZipcode = graphene.String(resolver=DynNameResolver())
+    residenceTown = graphene.String(resolver=DynNameResolver())
+    residenceCountry = graphene.String(resolver=DynNameResolver())
+    homelandPhone = graphene.String(resolver=DynNameResolver())
+    residencePhone = graphene.String(resolver=DynNameResolver())
+    socialInsuranceNumber = graphene.String(resolver=DynNameResolver())
+    familyStatus = graphene.String(resolver=DynNameResolver())
+    motherTongue = graphene.String(resolver=DynNameResolver())
+    otherLanguage = graphene.String(resolver=DynNameResolver())
+    cursus = graphene.String(resolver=DynNameResolver())
 
 
 # FresnoProfile
-
-
 class FresnoyProfileInterface(graphene.Interface):
     user = graphene.Field(UserType, id=graphene.Int())
 

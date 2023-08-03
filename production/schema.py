@@ -8,24 +8,12 @@ from .models import Production, Artwork, Film, Installation, \
     Performance, Event, Task
 
 from people.schema import ArtistType
+from assets.schema import GalleryType
+from diffusion.schema import OrganizationType, DiffusionType
 
 
-class FilmType(DjangoObjectType):
-    class Meta:
-        model = Film
-        interfaces = (graphene.relay.Node,)
-
-
-class InstallationType(DjangoObjectType):
-    class Meta:
-        model = Installation
-        interfaces = (graphene.relay.Node,)
-
-
-class PerformanceType(DjangoObjectType):
-    class Meta:
-        model = Performance
-        interfaces = (graphene.relay.Node,)
+class ProductionInterface(graphene.Interface):
+    id = graphene.ID(required=True)
 
 
 class ProductionType(DjangoObjectType):
@@ -36,15 +24,45 @@ class ProductionType(DjangoObjectType):
     def is_type_of(cls, root, info):
         return isinstance(root, Production)
 
+    @classmethod
+    def resolve_type(cls, instance, info):
+        if isinstance(instance, Film):
+            return FilmType
+        elif isinstance(instance, Performance):
+            return PerformanceType
+        elif isinstance(instance, Artwork):
+            return ArtworkType
+        # Ajoutez d'autres conditions pour les autres sous-types d'Artwork ici
+        else:
+            return None  #
 
-class ArtworkType(DjangoObjectType):
+    __typename = graphene.String()
+    def resolve___typename():
+        return "coucou"
+    
+
+    partners = graphene.List(OrganizationType)
+
+
+class ArtworkType(ProductionType):
     class Meta:
         model = Artwork
-        interfaces = (graphene.relay.Node,)
+        interfaces = (graphene.relay.Node, ProductionInterface)
 
     authors = graphene.List(ArtistType)
 
+    # The type of artwork (Film, Performance, ...)
     type = graphene.String()
+
+    # Galleries
+    process_galleries = graphene.List(GalleryType)
+    mediation_galleries = graphene.List(GalleryType)
+    in_situ_galleries = graphene.List(GalleryType)
+    press_galleries = graphene.List(GalleryType)
+    teaser_galleries = graphene.List(GalleryType)
+
+    # Diffusions
+    diffusions = graphene.List(DiffusionType)
 
     def resolve_type(self, info):
         if isinstance(self, Film):
@@ -53,7 +71,6 @@ class ArtworkType(DjangoObjectType):
             return "Performance"
         if isinstance(self, Installation):
             return "Installation"
-        return "coucou"
 
     def resolve_authors(self, info):
         # Récupérer les auteurs liés à cette Performance
@@ -68,6 +85,24 @@ class ArtworkType(DjangoObjectType):
         return graphene.List(graphene.String, source='get_tags')
 
 
+class FilmType(ArtworkType):
+    class Meta:
+        model = Film
+        interfaces = (graphene.relay.Node,)
+
+
+class InstallationType(ArtworkType):
+    class Meta:
+        model = Installation
+        interfaces = (graphene.relay.Node,)
+
+
+class PerformanceType(ArtworkType):
+    class Meta:
+        model = Performance
+        interfaces = (graphene.relay.Node,)
+
+
 class EventType(DjangoObjectType):
     class Meta:
         model = Event
@@ -79,27 +114,42 @@ class TaskType(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
+
     production = graphene.Field(ProductionType, id=graphene.Int())
-    productions = graphene.List(ProductionType)
+    productions = graphene.List(
+        ProductionType, titleStartsWith=graphene.String())
+
     artwork = graphene.Field(ArtworkType, id=graphene.Int())
     artworks = graphene.List(ArtworkType)
+
     film = graphene.Field(FilmType, id=graphene.Int())
     films = graphene.List(FilmType)
+
     installation = graphene.Field(InstallationType, id=graphene.Int())
     installations = graphene.List(InstallationType)
+
     performance = graphene.Field(PerformanceType, id=graphene.Int())
     performances = graphene.List(PerformanceType)
+
     event = graphene.Field(EventType, id=graphene.Int())
     events = graphene.List(EventType)
+
     task = graphene.Field(TaskType, id=graphene.Int())
     tasks = graphene.List(TaskType)
 
     # Production
-    def resolve_productions(self, info, **kwargs):
-        return Production.objects.all()
+    def resolve_productions(self, info, titleStartsWith=None, **kwargs):
+        productions = Production.objects.all()
+
+        if titleStartsWith:
+            productions = productions.filter(
+                title__istartswith=titleStartsWith)
+            return productions
+        return productions
 
     def resolve_production(self, info, **kwargs):
         id = kwargs.get('id')
+
         if id is not None:
             return Production.objects.get(pk=id)
         return None
