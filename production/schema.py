@@ -15,7 +15,26 @@ from assets.schema import GalleryType
 from common.schema import WebsiteType
 
 from diffusion.models import Diffusion
-from diffusion.schema import OrganizationType, DiffusionType
+from diffusion.schema import DiffusionType
+
+
+class TaskType(DjangoObjectType):
+    class Meta:
+        model = Task
+
+
+class PartnerType(DjangoObjectType):
+    class Meta:
+        model = ProductionOrganizationTask
+    name = graphene.String()
+    tasks = graphene.Field(TaskType)
+
+    def resolve_name(self, info):
+        return self.organization.name
+
+    def resolve_tasks(self, info):
+        self.task.label
+        return TaskType(label=self.task.label, description=self.task.description)
 
 
 class ProductionInterface(graphene.Interface):
@@ -27,11 +46,11 @@ class ProductionInterface(graphene.Interface):
     picture = graphene.String()
     websites = graphene.List(WebsiteType)
     collaborators = graphene.List(StaffType)
-    partners = graphene.List(OrganizationType)
     description_short_fr = graphene.String()
     description_short_en = graphene.String()
     description_fr = graphene.String()
     description_en = graphene.String()
+    partners = graphene.List(PartnerType)
 
     @classmethod
     def resolve_type(cls, instance, info):
@@ -41,6 +60,10 @@ class ProductionInterface(graphene.Interface):
             return ArtworkType
         else:
             return None  #
+
+    def resolve_partners(self, info, **kwargs):
+        pots = ProductionOrganizationTask.objects.all().filter(production=self)
+        return pots
 
 
 class ArtworkInterface(ProductionInterface):
@@ -60,7 +83,7 @@ class ArtworkInterface(ProductionInterface):
         if isinstance(instance, Installation):
             return InstallationType
         else:
-            return None  #
+            return None
 
 
 class ProductionType(DjangoObjectType):
@@ -71,11 +94,6 @@ class ProductionType(DjangoObjectType):
     @classmethod
     def is_type_of(cls, root, info):
         return isinstance(root, Production)
-
-    def resolve_partners(self, info, **kwargs):
-        pots = ProductionOrganizationTask.objects.all().filter(production=self)
-        partners = [pp.organization for pp in pots]
-        return partners
 
 
 class ArtworkType(ProductionType):
@@ -220,11 +238,6 @@ class ExhibitionType(EventType):
         model = Event
 
 
-class TaskType(DjangoObjectType):
-    class Meta:
-        model = Task
-
-
 class Query(graphene.ObjectType):
 
     production = graphene.Field(ProductionType, id=graphene.Int())
@@ -248,6 +261,9 @@ class Query(graphene.ObjectType):
 
     exhibition = graphene.Field(EventType, id=graphene.Int())
     exhibitions = graphene.List(EventType)
+
+    partners = graphene.Field(PartnerType, id=graphene.Int())
+    partnerss = graphene.List(PartnerType)
 
     task = graphene.Field(TaskType, id=graphene.Int())
     tasks = graphene.List(TaskType)
