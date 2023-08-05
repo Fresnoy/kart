@@ -3,9 +3,11 @@ from graphene_django import DjangoObjectType
 # from graphql import GraphQLError
 # from graphene_django.rest_framework.mutation import SerializerMutation
 
+from datetime import datetime
+
 from school.models import Student, Promotion, TeachingArtist, ScienceStudent, PhdStudent, VisitingStudent
-from people.schema import ArtistType
-from people.schema import UserEmbeddedInterface, ArtistEmbeddedInterface
+from people.schema import ArtistType, DynNameResolver
+from people.schema import ArtistEmbeddedInterface
 from production.schema import Artwork, ArtworkType
 
 
@@ -13,7 +15,7 @@ class StudentType(ArtistType):
     class Meta:
         model = Student
         filterset_fields = ['number', 'promotion__name']
-        interfaces = (UserEmbeddedInterface, ArtistEmbeddedInterface)
+        interfaces = (ArtistEmbeddedInterface,)
 
     id = graphene.ID(required=True, source='pk')
     artworks = graphene.List(ArtworkType)
@@ -22,11 +24,14 @@ class StudentType(ArtistType):
         return Artwork.objects.filter(authors=self.artist)
 
 
-# INTERFACES
-# interfaces for objects embedding a user/artist field (indirect polymorphism)
 class StudentEmbeddedInterface(graphene.Interface):
-    '''Interface of models embedding an artist field (indirect polymorphism)'''
+    '''Interface of models embedding a student field (indirect polymorphism)'''
+
     student = graphene.Field(StudentType)
+    number = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    promotion = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    graduate = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    diploma_mention = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
 
     def resolve_number(self, info):
         return self.student.number
@@ -35,8 +40,26 @@ class StudentEmbeddedInterface(graphene.Interface):
 class TeachingArtistType(DjangoObjectType):
     class Meta:
         model = TeachingArtist
-        interfaces = (UserEmbeddedInterface, ArtistEmbeddedInterface)
+        interfaces = (ArtistEmbeddedInterface,)
     id = graphene.ID(required=True, source='pk')
+
+    # The years during which the TA was active
+    years = graphene.List(graphene.String)
+
+    def resolve_years(self, info):
+        # Extract the year of production of each artwork mentored by the TA
+        aws = self.artworks_supervision.all()
+        # Set to remove duplicates dates
+        dates = list(set([aw.production_date.year for aw in aws]))
+        return dates
+
+
+class TeachingArtistsItemType(DjangoObjectType):
+    class Meta:
+        model = TeachingArtist
+
+    year = graphene.String()
+    teachers = graphene.List(TeachingArtistType)
 
 
 class ScienceStudentType(DjangoObjectType):
@@ -49,12 +72,14 @@ class ScienceStudentType(DjangoObjectType):
 class PhdStudentType(DjangoObjectType):
     class Meta:
         model = PhdStudent
+        interfaces = (StudentEmbeddedInterface,)
     id = graphene.ID(required=True, source='pk')
 
 
 class VisitingStudentType(DjangoObjectType):
     class Meta:
         model = VisitingStudent
+        interfaces = (StudentEmbeddedInterface,)
     id = graphene.ID(required=True, source='pk')
 
 
@@ -68,10 +93,9 @@ class PromoType(DjangoObjectType):
 
     def resolve_students(self, info):
         return Student.objects.filter(promotion=self)
-    
+
     picture = graphene.String()
     # def resolve_picture(self, info):
-
 
 
 class Query(graphene.ObjectType):
@@ -83,6 +107,7 @@ class Query(graphene.ObjectType):
 
     teachingArtist = graphene.Field(TeachingArtistType, id=graphene.Int())
     teachingArtists = graphene.List(TeachingArtistType)
+    teachingArtistsList = graphene.List(TeachingArtistsItemType)
 
     scienceStudent = graphene.Field(ScienceStudentType, id=graphene.Int())
     scienceStudents = graphene.List(ScienceStudentType)
@@ -104,6 +129,19 @@ class Query(graphene.ObjectType):
 
     def resolve_teachingArtists(self, info, **kwargs):
         return TeachingArtist.objects.all()
+
+    def resolve_teachingArtistsList(self, info, **kwargs):
+        """ A list of teaching artists grouped by year """
+        tal = []
+        for ye in range(1997, datetime.now().year):
+            tai = TeachingArtistsItemType()
+            tai.year = ye
+            # Get the TA that mentored artworks for that year
+            tai.teachers = set(TeachingArtist.objects.all().filter(
+                artworks_supervision__production_date__year=ye))
+            tal += [tai]
+
+        return tal
 
     # Teaching artists
     def resolve_teachingArtist(self, info, **kwargs):
