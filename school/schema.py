@@ -68,6 +68,10 @@ class PromoType(DjangoObjectType):
 
     def resolve_students(self, info):
         return Student.objects.filter(promotion=self)
+    
+    picture = graphene.String()
+    # def resolve_picture(self, info):
+
 
 
 class Query(graphene.ObjectType):
