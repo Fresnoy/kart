@@ -47,7 +47,7 @@ from assets.views import GalleryViewSet, MediumViewSet
 from assets import views as assets_views
 
 # Graphene
-from school.schema_views import PromotionViewGQL, StudentViewGQL
+from school.schema_views import PromotionViewGQL, StudentViewGQL, TeachinArtistListViewGQL
 from production.schema_views import Artworks25ViewGQL
 from graphene_django.views import GraphQLView
 from django.views.decorators.csrf import csrf_exempt
@@ -200,6 +200,8 @@ urlpatterns = [
          name='artwork_gql'),
     path("page/artworkPano25", csrf_exempt((Artworks25ViewGQL.as_view())),
          name='artwork_gql'),
+    path("page/teachingArtistsList", csrf_exempt((TeachinArtistListViewGQL.as_view())),
+         name='teachingArtistsList_gql'),
 
 ] \
     + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \

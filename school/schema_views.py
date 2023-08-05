@@ -96,3 +96,29 @@ class StudentViewGQL(View):
             return JsonResponse({'errors': [str(error) for error in result.errors]}, status=400)
 
         return JsonResponse(result.data, status=200)
+
+
+class TeachinArtistListViewGQL(View):
+
+    def get(self, request, *args, **kwargs):
+        query = '''
+        query teachingArtistList{
+            teachingArtistsList{
+                year
+                teachers{
+                id
+                firstName
+                lastName
+                nickname
+                photo
+                }
+            },
+        }
+        '''
+
+        result = schema.execute(query)
+
+        if result.errors:
+            return JsonResponse({'errors': [str(error) for error in result.errors]}, status=400)
+
+        return JsonResponse(result.data, status=200)

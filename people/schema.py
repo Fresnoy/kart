@@ -19,7 +19,6 @@ FPROFILE_FIELDS = [ff.name for ff in FresnoyProfile._meta.get_fields()]
 # Artist Fields
 ARTIST_FIELDS = [ff.name for ff in Artist._meta.get_fields()]
 
-
 # Camel to snake case
 camSnakPat = re.compile(r'(?<!^)(?=[A-Z])')
 
@@ -29,18 +28,28 @@ def cam2snake(cam):
 
 
 class DynNameResolver:
+
+    def __init__(self, interface=None):
+        self.interface = interface
+
     def __call__(self, instance, info, **kwargs):
 
         # For GraphQLList, a list is expected to be returned
         listReturn = "GraphQLList" in str(type(info.return_type))
         field_name = cam2snake(info.field_name)
-        parent_type = str(info.parent_type)
+        parent_type = self.interface if self.interface else str(
+            info.parent_type)
 
+        # print("parent_type", parent_type)
         if parent_type == "UserType":
             if field_name in USER_FIELDS:
                 return getattr(instance, field_name)
             if field_name in FPROFILE_FIELDS:
-                return getattr(instance.profile, field_name) if instance.profile else None
+                try:
+                    profile = FresnoyProfile.objects.get(user=instance)
+                    return getattr(profile, field_name) if profile else None
+                except Exception:
+                    return None
 
         if parent_type in USER_EMBEDDED_TYPES:
             if field_name in USER_FIELDS:
@@ -48,7 +57,14 @@ class DynNameResolver:
             if field_name in FPROFILE_FIELDS:
                 return getattr(instance.user.profile, field_name) if instance.user.profile else None
 
-        if parent_type in ARTIST_EMBEDDED_TYPES:
+        if parent_type == "ArtistEmbedded":
+            if field_name in USER_FIELDS:
+                return getattr(instance.artist.user, field_name)
+
+            if field_name in FPROFILE_FIELDS:
+                profile = FresnoyProfile.objects.get(user=instance.artist.user)
+                return getattr(profile, field_name) if profile else None
+
             if field_name in ARTIST_FIELDS:
                 if listReturn:
                     return getattr(instance.artist, field_name).all()
@@ -194,18 +210,39 @@ class UserEmbeddedInterface(graphene.Interface):
     '''Interface of models embedding a user field (indirect polymorphism)'''
     user = graphene.Field(UserType)
 
-    firstName = graphene.String()
-    lasttName = graphene.String()
+    firstName = graphene.String(resolver=DynNameResolver())
+    lastName = graphene.String()
+    photo = graphene.String()
 
 
 class ArtistEmbeddedInterface(graphene.Interface):
     '''Interface of models embedding an artist field (indirect polymorphism)'''
-    nickname = graphene.String()
-    bioShortFr = graphene.String()
-    bioShortEn = graphene.String()
-    bioFr = graphene.String()
-    bioEn = graphene.String()
-    updatedOn = graphene.String()
-    twitterAccount = graphene.String()
-    facebookProfile = graphene.String()
+
+    # User fields
+    firstName = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    lastName = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+
+    # FresnoyProfile fields
+    photo = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+
+    # Artist fields
+    nickname = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    bioShortFr = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    bioShortEn = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    bioFr = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    bioEn = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    updatedOn = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    twitterAccount = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    facebookProfile = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
     websites = graphene.List(WebsiteType)
