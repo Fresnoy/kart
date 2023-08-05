@@ -5,7 +5,7 @@ from graphene_django import DjangoObjectType
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 
-from .models import Artist, FresnoyProfile
+from .models import Artist, FresnoyProfile, Staff
 
 from common.schema import WebsiteType
 
@@ -16,8 +16,9 @@ ARTIST_EMBEDDED_TYPES = ["StudentType"]
 USER_FIELDS = [ff.name for ff in get_user_model()._meta.get_fields()]
 # FresnoyProfile fields
 FPROFILE_FIELDS = [ff.name for ff in FresnoyProfile._meta.get_fields()]
-# print("FPROFILE_FIELDS", FPROFILE_FIELDS)
+# Artist Fields
 ARTIST_FIELDS = [ff.name for ff in Artist._meta.get_fields()]
+
 
 # Camel to snake case
 camSnakPat = re.compile(r'(?<!^)(?=[A-Z])')
@@ -30,9 +31,11 @@ def cam2snake(cam):
 class DynNameResolver:
     def __call__(self, instance, info, **kwargs):
 
+        # For GraphQLList, a list is expected to be returned
         listReturn = "GraphQLList" in str(type(info.return_type))
         field_name = cam2snake(info.field_name)
         parent_type = str(info.parent_type)
+
         if parent_type == "UserType":
             if field_name in USER_FIELDS:
                 return getattr(instance, field_name)
@@ -51,16 +54,16 @@ class DynNameResolver:
                     return getattr(instance.artist, field_name).all()
                 else:
                     return getattr(instance.artist, field_name)
-            if parent_type == "ArtistType":
-                if listReturn:
-                    return getattr(instance, field_name).all()
-                else:
-                    return getattr(instance, field_name)
+        if parent_type == "ArtistType":
+            if listReturn:
+                return getattr(instance, field_name).all()
+            else:
+                return getattr(instance, field_name)
 
 
 # User
 class UserInterface(graphene.Interface):
-    id = graphene.ID(required=True)
+    id = graphene.ID(required=True, source='pk')
 
 
 class UserType(DjangoObjectType):
@@ -106,7 +109,7 @@ class FresnoyProfileType(DjangoObjectType):
 
 
 class ArtistInterface(graphene.Interface):
-    id = graphene.ID(required=True)
+    id = graphene.ID(required=True, source='pk')
     # bioFr = graphene.String()
 
 
@@ -116,7 +119,7 @@ class ArtistType(UserType):
         model = Artist
         interfaces = (graphene.relay.Node, ArtistInterface)
 
-    id = graphene.ID(required=True)
+    id = graphene.ID(required=True, source='pk')
     nickname = graphene.String()
     bioShortFr = graphene.String()
     bioShortEn = graphene.String()
@@ -127,7 +130,6 @@ class ArtistType(UserType):
     facebookProfile = graphene.String()
     websites = graphene.List(WebsiteType)
 
-    resolve_id = DynNameResolver()
     resolve_nickname = DynNameResolver()
     resolve_bioShortFr = DynNameResolver()
     resolve_bioShortEn = DynNameResolver()
@@ -140,6 +142,11 @@ class ArtistType(UserType):
 
     # def resolve_websites(self, info, **kwargs):
     #     return self.websites.all() if self.websites else None
+
+
+class StaffType(UserType):
+    class Meta:
+        model = Staff
 
 
 class Query(graphene.ObjectType):
@@ -178,3 +185,27 @@ class Query(graphene.ObjectType):
         if id is not None:
             return FresnoyProfile.objects.get(pk=id)
         return None
+
+
+# INTERFACES
+# interfaces for objects embedding a user/artist field (indirect polymorphism)
+
+class UserEmbeddedInterface(graphene.Interface):
+    '''Interface of models embedding a user field (indirect polymorphism)'''
+    user = graphene.Field(UserType)
+
+    firstName = graphene.String()
+    lasttName = graphene.String()
+
+
+class ArtistEmbeddedInterface(graphene.Interface):
+    '''Interface of models embedding an artist field (indirect polymorphism)'''
+    nickname = graphene.String()
+    bioShortFr = graphene.String()
+    bioShortEn = graphene.String()
+    bioFr = graphene.String()
+    bioEn = graphene.String()
+    updatedOn = graphene.String()
+    twitterAccount = graphene.String()
+    facebookProfile = graphene.String()
+    websites = graphene.List(WebsiteType)
