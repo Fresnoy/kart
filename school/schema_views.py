@@ -102,21 +102,48 @@ class TeachinArtistListViewGQL(View):
 
     def get(self, request, *args, **kwargs):
         query = '''
-        query teachingArtistList{
-            teachingArtistsList{
-                year
-                teachers{
+            query teachingArtistList{
+                teachingArtistsList{
+                    year
+                    teachers{
+                    id
+                    firstName
+                    lastName
+                    nickname
+                    photo
+                    }
+                },
+            }
+            '''
+
+        result = schema.execute(query)
+
+        if result.errors:
+            return JsonResponse({'errors': [str(error) for error in result.errors]}, status=400)
+
+        return JsonResponse(result.data, status=200)
+
+
+class TeachingArtistGQL(View):
+
+    def get(self, request, *args, **kwargs):
+        id = kwargs.get('id')
+
+        query = '''
+        query teachingArtist($id: Int) {
+            teachingArtist(id: $id){
                 id
                 firstName
                 lastName
                 nickname
                 photo
-                }
             },
         }
         '''
 
-        result = schema.execute(query)
+        context = {}
+        result = schema.execute(
+            query, variables={'id': id}, context=context)
 
         if result.errors:
             return JsonResponse({'errors': [str(error) for error in result.errors]}, status=400)

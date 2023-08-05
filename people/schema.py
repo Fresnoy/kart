@@ -6,78 +6,205 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 
 from .models import Artist, FresnoyProfile, Staff
+from school.models import Student
 
 from common.schema import WebsiteType
 
-# Types embedding a user field
-USER_EMBEDDED_TYPES = ["StudentType", "ArtistType"]
-ARTIST_EMBEDDED_TYPES = ["StudentType"]
 # User fields
 USER_FIELDS = [ff.name for ff in get_user_model()._meta.get_fields()]
 # FresnoyProfile fields
 FPROFILE_FIELDS = [ff.name for ff in FresnoyProfile._meta.get_fields()]
 # Artist Fields
 ARTIST_FIELDS = [ff.name for ff in Artist._meta.get_fields()]
+# Student fields
+STUDENT_FIELDS = [ff.name for ff in Student._meta.get_fields()]
 
-# Camel to snake case
-camSnakPat = re.compile(r'(?<!^)(?=[A-Z])')
 
-
-def cam2snake(cam):
+def camel2snake(cam):
+    # Camel to snake case
+    camSnakPat = re.compile(r'(?<!^)(?=[A-Z])')
     return camSnakPat.sub('_', cam).lower()
 
 
 class DynNameResolver:
 
-    def __init__(self, interface=None):
+    def __init__(self, interface=""):
         self.interface = interface
 
     def __call__(self, instance, info, **kwargs):
 
         # For GraphQLList, a list is expected to be returned
         listReturn = "GraphQLList" in str(type(info.return_type))
-        field_name = cam2snake(info.field_name)
-        parent_type = self.interface if self.interface else str(
-            info.parent_type)
+        # Back convert camelCase to sn_ake to match django's syntax
+        field_name = camel2snake(info.field_name)
+        # The type of the targeted object
+        parent_type = str(info.parent_type)
 
-        # print("parent_type", parent_type)
-        if parent_type == "UserType":
-            if field_name in USER_FIELDS:
-                return getattr(instance, field_name)
-            if field_name in FPROFILE_FIELDS:
-                try:
-                    profile = FresnoyProfile.objects.get(user=instance)
-                    return getattr(profile, field_name) if profile else None
-                except Exception:
-                    return None
+        user = artist = profile = student = obj = None
 
-        if parent_type in USER_EMBEDDED_TYPES:
-            if field_name in USER_FIELDS:
-                return getattr(instance.user, field_name)
-            if field_name in FPROFILE_FIELDS:
-                return getattr(instance.user.profile, field_name) if instance.user.profile else None
+        if self.interface == "ProfileEmbedded":
+            profile = self.profile
 
-        if parent_type == "ArtistEmbedded":
-            if field_name in USER_FIELDS:
-                return getattr(instance.artist.user, field_name)
+        if self.interface == "StudentEmbedded":
+            user = instance.student.user
+            artist = instance.student.artist
+            student = instance
 
-            if field_name in FPROFILE_FIELDS:
-                profile = FresnoyProfile.objects.get(user=instance.artist.user)
-                return getattr(profile, field_name) if profile else None
+        if self.interface == "ArtistEmbedded":
+            user = instance.artist.user
+            artist = instance
 
-            if field_name in ARTIST_FIELDS:
-                if listReturn:
-                    return getattr(instance.artist, field_name).all()
-                else:
-                    return getattr(instance.artist, field_name)
+        if self.interface == "UserEmbedded":
+            user = instance.user
+
         if parent_type == "ArtistType":
-            if listReturn:
-                return getattr(instance, field_name).all()
-            else:
-                return getattr(instance, field_name)
+            user = instance.user
+            artist = instance
 
+        if parent_type == "StudentType":
+            student = instance
+            user = instance.user
+
+        if parent_type == "UserType":
+            user = instance
+
+        try:
+            profile = FresnoyProfile.objects.get(user=user)
+        except Exception:
+            profile = None
+
+        if field_name in STUDENT_FIELDS:
+            obj = student
+        elif field_name in ARTIST_FIELDS:
+            obj = artist
+        elif field_name in USER_FIELDS:
+            obj = user
+        elif field_name in FPROFILE_FIELDS:
+            obj = profile
+        else:
+            print("fieldname not found", field_name)
+
+        # print("parent_type", parent_type, "OBJ", obj, "FIELD NAME",
+        #       field_name, "interface", self.interface)
+
+        if hasattr(obj, field_name):
+            if listReturn:
+                return getattr(obj, field_name).all()
+            else:
+                return getattr(obj, field_name)
+        else:
+            return None
+
+# INTERFACES
+# interfaces for objects embedding a user/artist field (indirect polymorphism)
+
+
+class UserEmbeddedInterface(graphene.Interface):
+    '''Interface of models embedding a user field (indirect polymorphism)'''
+    firstName = graphene.String(resolver=DynNameResolver())
+    lastName = graphene.String()
+    photo = graphene.String()
+
+
+class ArtistEmbeddedInterface(graphene.Interface):
+    '''Interface of models embedding an artist field (indirect polymorphism)'''
+
+    # User fields
+    firstName = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    lastName = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+
+    # FresnoyProfile fields
+    photo = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    gender = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    nationality = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    birthdate = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    birthplace = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    birthplace_country = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    homeland_address = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    homeland_zipcode = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    homeland_town = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    homeland_country = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    residence_address = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    residence_zipcode = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    residence_town = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    residence_country = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    homeland_phone = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    residence_phone = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    social_insurance_number = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    family_status = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    mother_tongue = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    other_language = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    cursus = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+
+    # Artist fields
+    nickname = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    bioShortFr = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    bioShortEn = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    bioFr = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    bioEn = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    updatedOn = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    twitterAccount = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    facebookProfile = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    websites = graphene.List(WebsiteType)
+
+
+class ProfileEmbeddedInterface(graphene.Interface):
+    '''Interface of models embedding an artist field (indirect polymorphism)'''
+    gender = graphene.String()
+    nationality = graphene.String()
+    birthdate = graphene.String()
+    birthplace = graphene.String()
+    birthplace_country = graphene.String()
+    homeland_address = graphene.String()
+    homeland_zipcode = graphene.String()
+    homeland_town = graphene.String()
+    homeland_country = graphene.String()
+    residence_address = graphene.String()
+    residence_zipcode = graphene.String()
+    residence_town = graphene.String()
+    residence_country = graphene.String()
+    homeland_phone = graphene.String()
+    residence_phone = graphene.String()
+    social_insurance_number = graphene.String()
+    family_status = graphene.String()
+    mother_tongue = graphene.String()
+    other_language = graphene.String()
+    cursus = graphene.String()
 
 # User
+
+
 class UserInterface(graphene.Interface):
     id = graphene.ID(required=True, source='pk')
 
@@ -126,7 +253,6 @@ class FresnoyProfileType(DjangoObjectType):
 
 class ArtistInterface(graphene.Interface):
     id = graphene.ID(required=True, source='pk')
-    # bioFr = graphene.String()
 
 
 class ArtistType(UserType):
@@ -136,33 +262,26 @@ class ArtistType(UserType):
         interfaces = (graphene.relay.Node, ArtistInterface)
 
     id = graphene.ID(required=True, source='pk')
-    nickname = graphene.String()
-    bioShortFr = graphene.String()
-    bioShortEn = graphene.String()
-    bioFr = graphene.String()
-    bioEn = graphene.String()
-    updatedOn = graphene.String()
-    twitterAccount = graphene.String()
-    facebookProfile = graphene.String()
-    websites = graphene.List(WebsiteType)
 
-    resolve_nickname = DynNameResolver()
-    resolve_bioShortFr = DynNameResolver()
-    resolve_bioShortEn = DynNameResolver()
-    resolve_bioFr = DynNameResolver()
-    resolve_bioEn = DynNameResolver()
-    resolve_updatedOn = DynNameResolver()
-    resolve_twitterAccount = DynNameResolver()
-    resolve_facebookProfile = DynNameResolver()
-    resolve_websites = DynNameResolver()
-
-    # def resolve_websites(self, info, **kwargs):
-    #     return self.websites.all() if self.websites else None
+    nickname = graphene.String(resolver=DynNameResolver())
+    bioShortFr = graphene.String(resolver=DynNameResolver())
+    bioShortEn = graphene.String(resolver=DynNameResolver())
+    bioFr = graphene.String(resolver=DynNameResolver())
+    bioEn = graphene.String(resolver=DynNameResolver())
+    updatedOn = graphene.String(resolver=DynNameResolver())
+    twitterAccount = graphene.String(resolver=DynNameResolver())
+    facebookProfile = graphene.String(resolver=DynNameResolver())
+    websites = graphene.List(WebsiteType, resolver=DynNameResolver())
 
 
 class StaffType(UserType):
     class Meta:
         model = Staff
+
+
+class ProfileType(DjangoObjectType):
+    class Meta:
+        model = FresnoyProfile
 
 
 class Query(graphene.ObjectType):
@@ -201,48 +320,3 @@ class Query(graphene.ObjectType):
         if id is not None:
             return FresnoyProfile.objects.get(pk=id)
         return None
-
-
-# INTERFACES
-# interfaces for objects embedding a user/artist field (indirect polymorphism)
-
-class UserEmbeddedInterface(graphene.Interface):
-    '''Interface of models embedding a user field (indirect polymorphism)'''
-    user = graphene.Field(UserType)
-
-    firstName = graphene.String(resolver=DynNameResolver())
-    lastName = graphene.String()
-    photo = graphene.String()
-
-
-class ArtistEmbeddedInterface(graphene.Interface):
-    '''Interface of models embedding an artist field (indirect polymorphism)'''
-
-    # User fields
-    firstName = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    lastName = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-
-    # FresnoyProfile fields
-    photo = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-
-    # Artist fields
-    nickname = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    bioShortFr = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    bioShortEn = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    bioFr = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    bioEn = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    updatedOn = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    twitterAccount = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    facebookProfile = graphene.String(
-        resolver=DynNameResolver(interface="ArtistEmbedded"))
-    websites = graphene.List(WebsiteType)

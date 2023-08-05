@@ -1,12 +1,10 @@
 import graphene
 from graphene_django import DjangoObjectType
-# from graphql import GraphQLError
-# from graphene_django.rest_framework.mutation import SerializerMutation
 
 from datetime import datetime
-
+from people.models import FresnoyProfile
 from school.models import Student, Promotion, TeachingArtist, ScienceStudent, PhdStudent, VisitingStudent
-from people.schema import ArtistType, DynNameResolver
+from people.schema import ArtistType, ProfileType, DynNameResolver
 from people.schema import ArtistEmbeddedInterface
 from production.schema import Artwork, ArtworkType
 
@@ -14,12 +12,11 @@ from production.schema import Artwork, ArtworkType
 class StudentType(ArtistType):
     class Meta:
         model = Student
-        filterset_fields = ['number', 'promotion__name']
-        interfaces = (ArtistEmbeddedInterface,)
 
     id = graphene.ID(required=True, source='pk')
     artworks = graphene.List(ArtworkType)
 
+    # Retrieve the student's artworks
     def resolve_artworks(self, info):
         return Artwork.objects.filter(authors=self.artist)
 
@@ -27,11 +24,68 @@ class StudentType(ArtistType):
 class StudentEmbeddedInterface(graphene.Interface):
     '''Interface of models embedding a student field (indirect polymorphism)'''
 
-    student = graphene.Field(StudentType)
-    number = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
-    promotion = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
-    graduate = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
-    diploma_mention = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    # User fields
+    firstName = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    lastName = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+
+    # FresnoyProfile fields
+    photo = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    gender = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    nationality = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    birthdate = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    birthplace = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    birthplace_country = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    homeland_address = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    homeland_zipcode = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    homeland_town = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    homeland_country = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    residence_address = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    residence_zipcode = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    residence_town = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    residence_country = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    homeland_phone = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    residence_phone = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    social_insurance_number = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    family_status = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    mother_tongue = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    other_language = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    cursus = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+
+    # Student fields
+    number = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    promotion = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    graduate = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    diploma_mention = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+
+    def resolve_firstName(self, info):
+        return self.student.artist.user.first_name
 
     def resolve_number(self, info):
         return self.student.number
@@ -46,6 +100,11 @@ class TeachingArtistType(DjangoObjectType):
     # The years during which the TA was active
     years = graphene.List(graphene.String)
 
+    profile = graphene.Field(ProfileType)
+
+    def resolve_profile(self, info):
+        return FresnoyProfile.objects.get(user=self.artist.user)
+
     def resolve_years(self, info):
         # Extract the year of production of each artwork mentored by the TA
         aws = self.artworks_supervision.all()
@@ -55,6 +114,7 @@ class TeachingArtistType(DjangoObjectType):
 
 
 class TeachingArtistsItemType(DjangoObjectType):
+    """ Object dedicated to TeachingArtistsList"""
     class Meta:
         model = TeachingArtist
 
@@ -79,7 +139,7 @@ class PhdStudentType(DjangoObjectType):
 class VisitingStudentType(DjangoObjectType):
     class Meta:
         model = VisitingStudent
-        interfaces = (StudentEmbeddedInterface,)
+        interfaces = (ArtistEmbeddedInterface,)
     id = graphene.ID(required=True, source='pk')
 
 
@@ -140,7 +200,6 @@ class Query(graphene.ObjectType):
             tai.teachers = set(TeachingArtist.objects.all().filter(
                 artworks_supervision__production_date__year=ye))
             tal += [tai]
-
         return tal
 
     # Teaching artists
