@@ -2,13 +2,16 @@ from django.http import JsonResponse
 from kart.schema import schema
 from django.views import View
 
+# Exhibs ids
+idPano24 = 1949
+idPano25 = 1952
+
 
 class Artworks25ViewGQL(View):
 
     def get(self, request, *args, **kwargs):
         # artwork id
         id = kwargs.get('id')
-        id = 1927
         query = '''
         query exhib($idExhib: Int)
             { exhibition(id: $idExhib) {
@@ -22,6 +25,7 @@ class Artworks25ViewGQL(View):
             query += "artworks"
 
         query += ''' {
+              id
               title
               picture
               #audioLink
@@ -72,11 +76,11 @@ class Artworks25ViewGQL(View):
           }
           }
         '''
-        print("query", query)
-        # context = super().get_context_data(**kwargs)
+        # print("query", query)
+
         context = {}
         result = schema.execute(
-            query,  variables={'idExhib': 1949}, context=context)
+            query,  variables={'idExhib': idPano24}, context=context)
 
         if result.errors:
             return JsonResponse(
