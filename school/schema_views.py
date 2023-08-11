@@ -19,6 +19,7 @@ class PromotionViewGQL(View):
 
         query += '''
             {
+                id
                 name
                 startingYear
                 endingYear
@@ -55,6 +56,7 @@ class StudentViewGQL(View):
             query = "{ students"
 
         query += '''{
+            id
             firstName
             lastName
             photo
@@ -73,6 +75,7 @@ class StudentViewGQL(View):
             bioFr
             bioEn
             promotion{
+                id
                 name
                 startingYear
             }
@@ -99,6 +102,7 @@ class StudentViewGQL(View):
 
 
 class TeachinArtistListViewGQL(View):
+    """ List the teaching artists by year"""
 
     def get(self, request, *args, **kwargs):
         query = '''
@@ -106,11 +110,11 @@ class TeachinArtistListViewGQL(View):
                 teachingArtistsList{
                     year
                     teachers{
-                    id
-                    firstName
-                    lastName
-                    nickname
-                    photo
+                        id
+                        firstName
+                        lastName
+                        nickname
+                        photo
                     }
                 },
             }
