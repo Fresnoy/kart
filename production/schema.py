@@ -214,6 +214,12 @@ class EventType(DjangoObjectType):
     artwork = graphene.Field(ArtworkType, id=graphene.ID(
     ))
 
+    def resolve_artwork(self, info, **kwargs):
+        id = kwargs.get('id')
+        if id is not None:
+            return Artwork.objects.get(pk=id)
+        return None
+
     def resolve_artworks(self, info, orderby=None, **kwargs):
 
         # Collect all artworks
@@ -259,8 +265,8 @@ class Query(graphene.ObjectType):
     event = graphene.Field(EventType, id=graphene.Int())
     events = graphene.List(EventType)
 
-    exhibition = graphene.Field(EventType, id=graphene.Int())
-    exhibitions = graphene.List(EventType)
+    exhibition = graphene.Field(ExhibitionType, id=graphene.Int())
+    exhibitions = graphene.List(ExhibitionType)
 
     partners = graphene.Field(PartnerType, id=graphene.Int())
     partnerss = graphene.List(PartnerType)
