@@ -20,8 +20,8 @@ class StudentType(DjangoObjectType):
     artworks = graphene.List(ArtworkType)
 
     # Retrieve the student's artworks
-    def resolve_artworks(self, info):
-        return Artwork.objects.filter(authors=self.artist)
+    def resolve_artworks(parent, info):
+        return Artwork.objects.filter(authors=parent.artist)
 
 
 class StudentEmbeddedInterface(graphene.Interface):
@@ -87,11 +87,11 @@ class StudentEmbeddedInterface(graphene.Interface):
     diploma_mention = graphene.String(
         resolver=DynNameResolver(interface="StudentEmbedded"))
 
-    def resolve_firstName(self, info):
-        return self.student.artist.user.first_name
+    def resolve_firstName(parent, info):
+        return parent.student.artist.user.first_name
 
-    def resolve_number(self, info):
-        return self.student.number
+    def resolve_number(parent, info):
+        return parent.student.number
 
 
 class TeachingArtistType(DjangoObjectType):
@@ -108,12 +108,12 @@ class TeachingArtistType(DjangoObjectType):
 
     profile = graphene.Field(ProfileType)
 
-    def resolve_profile(self, info):
-        return FresnoyProfile.objects.get(user=self.artist.user)
+    def resolve_profile(parent, info):
+        return FresnoyProfile.objects.get(user=parent.artist.user)
 
-    def resolve_years(self, info):
+    def resolve_years(parent, info):
         # Extract the year of production of each artwork mentored by the TA
-        aws = self.artworks_supervision.all()
+        aws = parent.artworks_supervision.all()
         # Set to remove duplicates dates
         dates = list(set([aw.production_date.year for aw in aws]))
         return dates
@@ -157,11 +157,11 @@ class PromoType(DjangoObjectType):
     id = graphene.ID(required=True, source='pk')
     students = graphene.List(StudentType)
 
-    def resolve_students(self, info):
-        return Student.objects.filter(promotion=self)
+    def resolve_students(parent, info):
+        return Student.objects.filter(promotion=parent)
 
     picture = graphene.String()
-    # def resolve_picture(self, info):
+    # def resolve_picture(parent, info):
 
 
 class Query(graphene.ObjectType):
@@ -184,19 +184,19 @@ class Query(graphene.ObjectType):
     visitingStudent = graphene.Field(VisitingStudentType, id=graphene.Int())
     visitingStudents = graphene.List(VisitingStudentType)
 
-    def resolve_students(self, info, **kwargs):
+    def resolve_students(root, info, **kwargs):
         return Student.objects.all()
 
-    def resolve_student(self, info, **kwargs):
+    def resolve_student(root, info, **kwargs):
         id = kwargs.get('id')
         if id is not None:
             return Student.objects.get(pk=id)
         return None
 
-    def resolve_teachingArtists(self, info, **kwargs):
+    def resolve_teachingArtists(root, info, **kwargs):
         return TeachingArtist.objects.all()
 
-    def resolve_teachingArtistsList(self, info, **kwargs):
+    def resolve_teachingArtistsList(root, info, **kwargs):
         """ A list of teaching artists grouped by year """
         tal = []
         for ye in range(1997, datetime.now().year):
@@ -209,47 +209,47 @@ class Query(graphene.ObjectType):
         return tal
 
     # Teaching artists
-    def resolve_teachingArtist(self, info, **kwargs):
+    def resolve_teachingArtist(root, info, **kwargs):
         id = kwargs.get('id')
         if id is not None:
             return TeachingArtist.objects.get(pk=id)
         return None
 
     # ScienceStudent
-    def resolve_scienceStudents(self, info, **kwargs):
+    def resolve_scienceStudents(root, info, **kwargs):
         return ScienceStudent.objects.all()
 
-    def resolve_scienceStudent(self, info, **kwargs):
+    def resolve_scienceStudent(root, info, **kwargs):
         id = kwargs.get('id')
         if id is not None:
             return ScienceStudent.objects.get(pk=id)
         return None
 
     # Phd Students
-    def resolve_PhdStudents(self, info, **kwargs):
+    def resolve_PhdStudents(root, info, **kwargs):
         return PhdStudent.objects.all()
 
-    def resolve_PhdStudent(self, info, **kwargs):
+    def resolve_PhdStudent(root, info, **kwargs):
         id = kwargs.get('id')
         if id is not None:
             return PhdStudent.objects.get(pk=id)
         return None
 
     # Visiting Students
-    def resolve_visitingStudents(self, info, **kwargs):
+    def resolve_visitingStudents(root, info, **kwargs):
         return VisitingStudent.objects.all()
 
-    def resolve_visitingStudent(self, info, **kwargs):
+    def resolve_visitingStudent(root, info, **kwargs):
         id = kwargs.get('id')
         if id is not None:
             return VisitingStudent.objects.get(pk=id)
         return None
 
     # Promotions
-    def resolve_promotions(self, info, **kwargs):
+    def resolve_promotions(root, info, **kwargs):
         return Promotion.objects.all()
 
-    def resolve_promotion(self, info, **kwargs):
+    def resolve_promotion(root, info, **kwargs):
         id = kwargs.get('id')
         if id is not None:
             return Promotion.objects.get(pk=id)
