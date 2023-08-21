@@ -87,9 +87,6 @@ class DynNameResolver:
         else:
             print("fieldname not found", field_name)
 
-        # print("parent_type", parent_type, "OBJ", type(obj), "FIELD NAME",
-        #       field_name, "interface", self.interface)
-
         if hasattr(obj, field_name):
             if listReturn:
                 return getattr(obj, field_name).all()
@@ -183,8 +180,8 @@ class ArtistEmbeddedInterface(graphene.Interface):
 
     diffusions = graphene.List(DiffusionType)
 
-    def resolve_diffusions(self, info):
-        diffs = Diffusion.objects.filter(artwork__authors=self.artist)
+    def resolve_diffusions(parent, info):
+        diffs = Diffusion.objects.filter(artwork__authors=parent.artist)
         return diffs
 
 
@@ -303,28 +300,28 @@ class Query(graphene.ObjectType):
     profile = graphene.Field(FresnoyProfileType, id=graphene.Int())
     profiles = graphene.List(FresnoyProfileType)
 
-    def resolve_users(self, info, **kwargs):
+    def resolve_users(root, info, **kwargs):
         return get_user_model().objects.all()
 
-    def resolve_user(self, info, **kwargs):
+    def resolve_user(root, info, **kwargs):
         id = kwargs.get('id')
         if id is not None:
             return User.objects.get(pk=id)
         return None
 
-    def resolve_artists(self, info, **kwargs):
+    def resolve_artists(root, info, **kwargs):
         return Artist.objects.all()
 
-    def resolve_artist(self, info, **kwargs):
+    def resolve_artist(root, info, **kwargs):
         id = kwargs.get('id')
         if id is not None:
             return Artist.objects.get(pk=id)
         return None
 
-    def resolve_profiles(self, info, **kwargs):
+    def resolve_profiles(root, info, **kwargs):
         return FresnoyProfile.objects.all()
 
-    def resolve_profile(self, info, **kwargs):
+    def resolve_profile(root, info, **kwargs):
         id = kwargs.get('id')
         if id is not None:
             return FresnoyProfile.objects.get(pk=id)
