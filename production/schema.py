@@ -162,7 +162,7 @@ class ArtworkType(ProductionType):
             if aw_context == "authors":
                 auth = parent.authors.all()
                 aws = Artwork.objects.all().filter(authors__in=auth)
-                return [aw.id for aw in aws if aw is not parent]
+                return [aw.id for aw in aws if aw.id != parent.id]
         return None
 
     @classmethod
