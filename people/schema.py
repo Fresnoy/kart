@@ -91,7 +91,6 @@ class DynNameResolver:
             if listReturn:
                 return getattr(obj, field_name).all()
             else:
-
                 return getattr(obj, field_name)
         else:
             return None
