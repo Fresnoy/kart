@@ -4,14 +4,15 @@ from graphene_django import DjangoObjectType
 from datetime import datetime
 from people.models import FresnoyProfile
 from school.models import Student, Promotion, TeachingArtist, ScienceStudent, PhdStudent, VisitingStudent
-from people.schema import ArtistType, ProfileType, DynNameResolver
+from people.schema import ProfileType, DynNameResolver
 from people.schema import ArtistEmbeddedInterface
 from production.schema import Artwork, ArtworkType
 
 
-class StudentType(ArtistType):
+class StudentType(DjangoObjectType):
     class Meta:
         model = Student
+        interfaces = (ArtistEmbeddedInterface,)
 
     id = graphene.ID(required=True, source='pk')
     artworks = graphene.List(ArtworkType)

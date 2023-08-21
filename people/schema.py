@@ -52,7 +52,7 @@ class DynNameResolver:
 
         if self.interface == "ArtistEmbedded":
             user = instance.artist.user
-            artist = instance
+            artist = instance.artist
 
         if self.interface == "UserEmbedded":
             user = instance.user
@@ -84,13 +84,14 @@ class DynNameResolver:
         else:
             print("fieldname not found", field_name)
 
-        # print("parent_type", parent_type, "OBJ", obj, "FIELD NAME",
+        # print("parent_type", parent_type, "OBJ", type(obj), "FIELD NAME",
         #       field_name, "interface", self.interface)
 
         if hasattr(obj, field_name):
             if listReturn:
                 return getattr(obj, field_name).all()
             else:
+
                 return getattr(obj, field_name)
         else:
             return None
