@@ -19,63 +19,140 @@ class Artworks25ViewGQL(View):
 
         # if an id is provided, get data for that artwork ...
         if id:
-            query += "artwork(id: " + str(id) + ")"
+            query += "artworkExhib(id: " + str(id) + "){"
+            query += '''
+                      artwork {
+                        id
+                        title
+                        picture
+                        type
+                        descriptionShortFr
+                        descriptionShortEn
+                        descriptionFr
+                        descriptionEn
+                        thanksFr
+                        thanksEn
+                        processGalleries {
+                          media {
+                            label
+                            picture
+                          }
+                        }
+                        inSituGalleries {
+                          media {
+                            label
+                            picture
+                          }
+                        }
+                        authors {
+                          id
+                          firstName
+                          lastName
+                          nickname
+                          bioShortFr
+                          bioShortEn
+                          bioFr
+                          bioEn
+                        }
+                        diffusion {
+                          id
+                          event {
+                            title
+                          }
+                        }
+                        relArtworks
+                        partners {
+                          name
+                        }
+                      }
+                      nextAlpha {
+                        id
+                        authors {
+                          lastName
+                        }
+                        title
+                      }
+                      prevAlpha {
+                        id
+                        authors {
+                          lastName
+                        }
+                        title
+                      }
+                      nextAuthor {
+                        id
+                        authors {
+                          lastName
+                        }
+                        title
+                      }
+                      prevAuthor {
+                        id
+                        authors {
+                          lastName
+                        }
+                        title
+                      }
+                    }
+                  }
+                }
+            '''
         # ... otherwise display all artworks
         else:
             query += "artworks"
 
-        query += ''' {
-              id
-              title
-              picture
-              #audioLink
-              #videoLink
-              type
-              descriptionShortFr
-              descriptionShortEn
-              descriptionFr
-              descriptionEn
-              thanksFr
-              thanksEn
-              processGalleries{
-                media {
-                  label
-                  picture
-                }
-              }
-              inSituGalleries{
-                media {
-                  label
-                  picture
-                }
-              }
-              authors {
-                id
-                firstName
-                lastName
-                nickname
-                bioShortFr
-                bioShortEn
-                bioFr
-                bioEn
-              }
-              diffusion {
-                id
-                event {
-                  title
-                }
-              }
-              relArtworks
-              partners {
-                name
-                #taskLabel
-              }
-              #prevArtwork
-              #nextArtwork
-            }
-          }
-          }
-        '''
+            query += ''' {
+                      id
+                      title
+                      picture
+                      #audioLink
+                      #videoLink
+                      type
+                      descriptionShortFr
+                      descriptionShortEn
+                      descriptionFr
+                      descriptionEn
+                      thanksFr
+                      thanksEn
+                      processGalleries{
+                        media {
+                          label
+                          picture
+                        }
+                      }
+                      inSituGalleries{
+                        media {
+                          label
+                          picture
+                        }
+                      }
+                      authors {
+                        id
+                        firstName
+                        lastName
+                        nickname
+                        bioShortFr
+                        bioShortEn
+                        bioFr
+                        bioEn
+                      }
+                      diffusion {
+                        id
+                        event {
+                          title
+                        }
+                      }
+                      relArtworks
+                      partners {
+                        name
+                        #taskLabel
+                      }
+                      #prevArtwork
+                      #nextArtwork
+                    }
+                  }
+                  }
+                '''
         # print("query", query)
 
         context = {}
