@@ -1,5 +1,5 @@
 from graphene_django import DjangoObjectType
-from .models import Organization, Diffusion
+from .models import Organization, Diffusion, Place
 import graphene
 
 
@@ -13,6 +13,11 @@ class DiffusionType(DjangoObjectType):
     class Meta:
         model = Diffusion
     id = graphene.ID(required=True, source='pk')
+
+
+class PlaceType(DjangoObjectType):
+    class Meta:
+        model = Place
 
 
 class Query(graphene.ObjectType):

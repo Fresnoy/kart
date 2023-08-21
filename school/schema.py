@@ -2,11 +2,13 @@ import graphene
 from graphene_django import DjangoObjectType
 
 from datetime import datetime
+
+# from diffusion.models import Diffusion
 from people.models import FresnoyProfile
 from school.models import Student, Promotion, TeachingArtist, ScienceStudent, PhdStudent, VisitingStudent
-from people.schema import ProfileType, DynNameResolver
-from people.schema import ArtistEmbeddedInterface
+from people.schema import ProfileType, DynNameResolver, ArtistEmbeddedInterface
 from production.schema import Artwork, ArtworkType
+from diffusion.schema import DiffusionType
 
 
 class StudentType(DjangoObjectType):
@@ -96,7 +98,10 @@ class TeachingArtistType(DjangoObjectType):
     class Meta:
         model = TeachingArtist
         interfaces = (ArtistEmbeddedInterface,)
+
     id = graphene.ID(required=True, source='pk')
+
+    diffusions = graphene.List(DiffusionType)
 
     # The years during which the TA was active
     years = graphene.List(graphene.String)

@@ -7,8 +7,11 @@ from django.contrib.auth.models import User
 
 from .models import Artist, FresnoyProfile, Staff
 from school.models import Student
+from diffusion.models import Diffusion
 
 from common.schema import WebsiteType
+from diffusion.schema import DiffusionType
+
 
 # User fields
 USER_FIELDS = [ff.name for ff in get_user_model()._meta.get_fields()]
@@ -177,6 +180,12 @@ class ArtistEmbeddedInterface(graphene.Interface):
     facebookProfile = graphene.String(
         resolver=DynNameResolver(interface="ArtistEmbedded"))
     websites = graphene.List(WebsiteType)
+
+    diffusions = graphene.List(DiffusionType)
+
+    def resolve_diffusions(self, info):
+        diffs = Diffusion.objects.filter(artwork__authors=self.artist)
+        return diffs
 
 
 class ProfileEmbeddedInterface(graphene.Interface):

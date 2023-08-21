@@ -15,7 +15,7 @@ from assets.schema import GalleryType
 from common.schema import WebsiteType
 
 from diffusion.models import Diffusion
-from diffusion.schema import DiffusionType
+from diffusion.schema import DiffusionType, PlaceType
 
 
 class TaskType(DjangoObjectType):
@@ -214,6 +214,8 @@ class EventType(DjangoObjectType):
     artwork = graphene.Field(ArtworkType, id=graphene.ID(
     ))
 
+    place = graphene.Field(PlaceType)
+
     def resolve_artwork(self, info, **kwargs):
         id = kwargs.get('id')
         if id is not None:
@@ -225,7 +227,7 @@ class EventType(DjangoObjectType):
         # Collect all artworks
         aws = list(chain(self.installations.all(),
                    self.films.all(), self.performances.all()))
- 
+
         if orderby:
             # Sort the artworks
             def tt(x):

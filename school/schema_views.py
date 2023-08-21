@@ -149,6 +149,21 @@ class TeachingArtistGQL(View):
                 bioShortEn
                 bioFr
                 bioEn
+                diffusions {
+                id
+                artwork {
+                    title
+                }
+                event {
+                    title
+                    startingDate
+                    place {
+                    name
+                    city
+                    country
+                    }
+                }
+                }
             },
         }
         '''
