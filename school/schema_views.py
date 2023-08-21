@@ -78,6 +78,7 @@ class StudentViewGQL(View):
                 id
                 name
                 startingYear
+                endingYear
             }
             websites {
             titleFr
