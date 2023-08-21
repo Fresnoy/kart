@@ -225,14 +225,18 @@ class EventType(DjangoObjectType):
         # Collect all artworks
         aws = list(chain(self.installations.all(),
                    self.films.all(), self.performances.all()))
-
+ 
         if orderby:
             # Sort the artworks
             def tt(x):
                 if orderby == "author":
                     art = x.authors.all().order_by('user__last_name').first().user.last_name
-                if orderby == "title":
+                elif orderby == "title":
                     art = x.title
+                elif orderby == "id":
+                    art = x.id
+                else:
+                    raise Exception("orderby value is undefined or unknown")
                 return (art)
 
             aws = sorted(aws, key=lambda x: tt(x))
