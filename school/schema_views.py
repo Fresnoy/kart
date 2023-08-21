@@ -142,6 +142,13 @@ class TeachingArtistGQL(View):
                 lastName
                 nickname
                 photo
+                birthdate
+                birthplace
+                birthplaceCountry
+                bioShortFr
+                bioShortEn
+                bioFr
+                bioEn
             },
         }
         '''
