@@ -157,7 +157,7 @@ class Artworks25ViewGQL(View):
 
         context = {}
         result = schema.execute(
-            query,  variables={'idExhib': idPano24}, context=context)
+            query,  variables={'idExhib': idPano25}, context=context)
 
         if result.errors:
             return JsonResponse(
