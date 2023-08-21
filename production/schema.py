@@ -29,12 +29,12 @@ class PartnerType(DjangoObjectType):
     name = graphene.String()
     tasks = graphene.Field(TaskType)
 
-    def resolve_name(self, info):
-        return self.organization.name
+    def resolve_name(parent, info):
+        return parent.organization.name
 
-    def resolve_tasks(self, info):
-        self.task.label
-        return TaskType(label=self.task.label, description=self.task.description)
+    def resolve_tasks(parent, info):
+        parent.task.label
+        return TaskType(label=parent.task.label, description=parent.task.description)
 
 
 class ProductionInterface(graphene.Interface):
@@ -61,8 +61,8 @@ class ProductionInterface(graphene.Interface):
         else:
             return None  #
 
-    def resolve_partners(self, info, **kwargs):
-        pots = ProductionOrganizationTask.objects.all().filter(production=self)
+    def resolve_partners(parent, info, **kwargs):
+        pots = ProductionOrganizationTask.objects.all().filter(production=parent)
         return pots
 
 
@@ -107,17 +107,17 @@ class ArtworkType(ProductionType):
     type = graphene.String()
 
     # Galleries
-    def resolve_gallery(self, info, galType=None):
+    def resolve_gallery(parent, info, galType=None):
         if galType == "process":
-            return self.process_galleries.all()
+            return parent.process_galleries.all()
         if galType == "mediation":
-            return self.mediation_galleries.all()
+            return parent.mediation_galleries.all()
         if galType == "insitu":
-            return self.in_situ_galleries.all()
+            return parent.in_situ_galleries.all()
         if galType == "press":
-            return self.press_galleries.all()
+            return parent.press_galleries.all()
         if galType == "teaser":
-            return self.teaser_galleries.all()
+            return parent.teaser_galleries.all()
         return None
 
     processGalleries = graphene.List(
@@ -139,30 +139,30 @@ class ArtworkType(ProductionType):
     diffusions = graphene.List(DiffusionType)
 
     # Resolvers
-    def resolve_type(self, info):
-        if isinstance(self, Film):
+    def resolve_type(parent, info):
+        if isinstance(parent, Film):
             return "Film"
-        if isinstance(self, Performance):
+        if isinstance(parent, Performance):
             return "Performance"
-        if isinstance(self, Installation):
+        if isinstance(parent, Installation):
             return "Installation"
 
-    def resolve_authors(self, info):
-        return self.authors.all()
+    def resolve_authors(parent, info):
+        return parent.authors.all()
 
-    def resolve_diffusions(self, info):
-        return Diffusion.objects.all().filter(artwork=self)
+    def resolve_diffusions(parent, info):
+        return Diffusion.objects.all().filter(artwork=parent)
 
     # Artworks by the same authors
     relArtworks = graphene.List(graphene.Int, aw_context=graphene.String())
 
-    def resolve_relArtworks(self, info, aw_context="authors", **kwargs):
+    def resolve_relArtworks(parent, info, aw_context="authors", **kwargs):
         ''' Related Artworks are artworks from same author'''
         if aw_context:
             if aw_context == "authors":
-                auth = self.authors.all()
+                auth = parent.authors.all()
                 aws = Artwork.objects.all().filter(authors__in=auth)
-                return [aw.id for aw in aws if aw is not self]
+                return [aw.id for aw in aws if aw is not parent]
         return None
 
     @classmethod
@@ -204,6 +204,30 @@ class PerformanceType(ArtworkType):
                       ProductionInterface, ArtworkInterface)
 
 
+def order(aws, orderby):
+    # Sort the artworks
+    def tt(x):
+        if orderby == "author":
+            art = x.authors.all().order_by('user__last_name').first().user.last_name
+        elif orderby == "title":
+            art = x.title
+        elif orderby == "id":
+            art = x.id
+        else:
+            raise Exception("orderby value is undefined or unknown")
+        return (art)
+
+    return sorted(aws, key=lambda x: tt(x))
+
+
+class ArtworkEventType(graphene.ObjectType):
+    artwork = graphene.Field(ArtworkType)
+    next_alpha = graphene.Field(ArtworkType)
+    prev_alpha = graphene.Field(ArtworkType)
+    next_author = graphene.Field(ArtworkType)
+    prev_author = graphene.Field(ArtworkType)
+
+
 class EventType(DjangoObjectType):
     class Meta:
         model = Event
@@ -211,37 +235,62 @@ class EventType(DjangoObjectType):
 
     artworks = graphene.List(
         ArtworkType, orderby=graphene.String(default_value="author"))
-    artwork = graphene.Field(ArtworkType, id=graphene.ID(
-    ))
+    # artwork = graphene.Field(ArtworkType, id=graphene.ID())
+    artworkExhib = graphene.Field(ArtworkEventType, id=graphene.ID())
 
     place = graphene.Field(PlaceType)
 
-    def resolve_artwork(self, info, **kwargs):
+    def resolve_artworkExhib(parent, info, **kwargs):
         id = kwargs.get('id')
+
+        aws = list(chain(parent.installations.all(),
+                         parent.films.all(), parent.performances.all()))
+
         if id is not None:
-            return Artwork.objects.get(pk=id)
+            aw = Artwork.objects.get(pk=id)
+            if aw not in aws:
+                raise Exception(
+                    "The artwork is not programmed in the current event")
+
+            awsByAlpha = order(aws, "title")
+            awsByAuthor = order(aws, "author")
+
+            ind = awsByAlpha.index(aw)+1
+            #  if out of maximmum bound, restart from 1st index
+            if ind == len(awsByAlpha):
+                ind = 0
+            next_alpha = awsByAlpha[ind]
+
+            ind = awsByAlpha.index(aw)-1
+            if ind < -len(awsByAlpha):
+                # if out of minium bound, restart from last index
+                ind = len(awsByAlpha) - 1
+            prev_alpha = awsByAlpha[ind]
+
+            ind = awsByAuthor.index(aw)+1
+            #  if out of maximmum bound, restart from 1st index
+            if ind == len(awsByAuthor):
+                ind = 0
+            next_author = awsByAuthor[ind]
+
+            ind = awsByAuthor.index(aw)-1
+            if ind < -len(awsByAuthor):
+                # if out of minium bound, restart from last index
+                ind = len(awsByAuthor) - 1
+            prev_author = awsByAuthor[ind]
+
+            return ArtworkEventType(artwork=aw, next_alpha=next_alpha, prev_alpha=prev_alpha,
+                                    prev_author=prev_author, next_author=next_author)
         return None
 
-    def resolve_artworks(self, info, orderby=None, **kwargs):
+    def resolve_artworks(parent, info, orderby=None, **kwargs):
 
         # Collect all artworks
-        aws = list(chain(self.installations.all(),
-                   self.films.all(), self.performances.all()))
+        aws = list(chain(parent.installations.all(),
+                   parent.films.all(), parent.performances.all()))
 
         if orderby:
-            # Sort the artworks
-            def tt(x):
-                if orderby == "author":
-                    art = x.authors.all().order_by('user__last_name').first().user.last_name
-                elif orderby == "title":
-                    art = x.title
-                elif orderby == "id":
-                    art = x.id
-                else:
-                    raise Exception("orderby value is undefined or unknown")
-                return (art)
-
-            aws = sorted(aws, key=lambda x: tt(x))
+            return order(aws, orderby)
         return aws
 
 
@@ -281,7 +330,7 @@ class Query(graphene.ObjectType):
     tasks = graphene.List(TaskType)
 
     # Production
-    def resolve_productions(self, info, titleStartsWith=None, **kwargs):
+    def resolve_productions(root, info, titleStartsWith=None, **kwargs):
         productions = Production.objects.all()
 
         if titleStartsWith:
@@ -290,7 +339,7 @@ class Query(graphene.ObjectType):
             return productions
         return productions
 
-    def resolve_production(self, info, **kwargs):
+    def resolve_production(root, info, **kwargs):
         id = kwargs.get('id')
 
         if id is not None:
@@ -298,60 +347,60 @@ class Query(graphene.ObjectType):
         return None
 
     # Artwork
-    def resolve_artworks(self, info, **kwargs):
+    def resolve_artworks(root, info, **kwargs):
         return Artwork.objects.order_by('authors__last_name').all()
 
-    def resolve_artwork(self, info, **kwargs):
+    def resolve_artwork(root, info, **kwargs):
         id = kwargs.get('id')
         if id is not None:
             return Artwork.objects.get(pk=id)
         return None
 
     # Film
-    def resolve_films(self, info, **kwargs):
+    def resolve_films(root, info, **kwargs):
         return Film.objects.all()
 
-    def resolve_film(self, info, **kwargs):
+    def resolve_film(root, info, **kwargs):
         id = kwargs.get('id')
         if id is not None:
             return Film.objects.get(pk=id)
         return None
 
     # Installation
-    def resolve_installations(self, info, **kwargs):
+    def resolve_installations(root, info, **kwargs):
         return Installation.objects.all()
 
-    def resolve_installation(self, info, **kwargs):
+    def resolve_installation(root, info, **kwargs):
         id = kwargs.get('id')
         if id is not None:
             return Installation.objects.get(pk=id)
         return None
 
     # Performance
-    def resolve_performances(self, info, **kwargs):
+    def resolve_performances(root, info, **kwargs):
         return Performance.objects.all()
 
-    def resolve_performance(self, info, **kwargs):
+    def resolve_performance(root, info, **kwargs):
         id = kwargs.get('id')
         if id is not None:
             return Performance.objects.get(pk=id)
         return None
 
     # Event
-    def resolve_events(self, info, **kwargs):
+    def resolve_events(root, info, **kwargs):
         return Event.objects.all()
 
-    def resolve_event(self, info, **kwargs):
+    def resolve_event(root, info, **kwargs):
         id = kwargs.get('id')
         if id is not None:
             return Event.objects.get(pk=id)
         return None
 
     # Exhibition
-    def resolve_exhibitions(self, info, **kwargs):
+    def resolve_exhibitions(root, info, **kwargs):
         return Event.objects.all()
 
-    def resolve_exhibition(self, info, **kwargs):
+    def resolve_exhibition(root, info, **kwargs):
 
         id = kwargs.get('id')
         if id is not None:
@@ -359,10 +408,10 @@ class Query(graphene.ObjectType):
         return None
 
     # Task
-    def resolve_tasks(self, info, **kwargs):
+    def resolve_tasks(root, info, **kwargs):
         return Task.objects.all()
 
-    def resolve_task(self, info, **kwargs):
+    def resolve_task(root, info, **kwargs):
         id = kwargs.get('id')
         if id is not None:
             return Task.objects.get(pk=id)
