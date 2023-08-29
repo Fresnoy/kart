@@ -5,7 +5,6 @@ django-cors-headers==3.13.0
 django-countries==7.5
 django-extensions==3.2.1
 django-filter==22.1
-django-graphql-jwt==0.3.4
 django-grappelli==3.0.3
 django-guardian==2.4.0
 django-haystack==3.2.0
