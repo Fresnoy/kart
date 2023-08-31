@@ -279,6 +279,16 @@ class ArtistType(UserType):
     facebookProfile = graphene.String(resolver=DynNameResolver())
     websites = graphene.List(WebsiteType, resolver=DynNameResolver())
 
+    # Display Name
+    displayName = graphene.String()
+
+    def resolve_displayName(parent, info):
+        '''Return nickname if exists, first + last name otherwise'''
+        if parent.nickname != "":
+            return parent.nickname
+        else:
+            return f"{parent.user.first_name} {parent.user.last_name}"
+
 
 class StaffType(UserType):
     class Meta:
