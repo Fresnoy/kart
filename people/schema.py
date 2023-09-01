@@ -23,6 +23,22 @@ ARTIST_FIELDS = [ff.name for ff in Artist._meta.get_fields()]
 STUDENT_FIELDS = [ff.name for ff in Student._meta.get_fields()]
 
 
+def order(artists, orderby):
+    # Sort the artists
+
+    def tt(x):
+        if orderby == "displayName":
+            if x.nickname:
+                art = x.nickname
+            else:
+                art = x.user.last_name
+        else:
+            raise Exception("orderby value is undefined or unknown")
+        return (art)
+
+    return sorted(artists, key=lambda x: tt(x))
+
+
 def camel2snake(cam):
     # Camel to snake case
     camSnakPat = re.compile(r'(?<!^)(?=[A-Z])')
@@ -162,6 +178,7 @@ class ArtistEmbeddedInterface(graphene.Interface):
     # Artist fields
     nickname = graphene.String(
         resolver=DynNameResolver(interface="ArtistEmbedded"))
+    displayName = graphene.String()
     bioShortFr = graphene.String(
         resolver=DynNameResolver(interface="ArtistEmbedded"))
     bioShortEn = graphene.String(
@@ -183,6 +200,12 @@ class ArtistEmbeddedInterface(graphene.Interface):
     def resolve_diffusions(parent, info):
         diffs = Diffusion.objects.filter(artwork__authors=parent.artist)
         return diffs
+
+    def resolve_displayName(parent, info):
+        if parent.artist.nickname:
+            return parent.artist.nickname
+        else:
+            return f"{parent.user.first_name} {parent.user.last_name}"
 
 
 class ProfileEmbeddedInterface(graphene.Interface):
@@ -320,7 +343,9 @@ class Query(graphene.ObjectType):
         return None
 
     def resolve_artists(root, info, **kwargs):
-        return Artist.objects.all()
+        artists = Artist.objects.all()
+        # order by displayName by default
+        return order(artists, "displayName")
 
     def resolve_artist(root, info, **kwargs):
         id = kwargs.get('id')

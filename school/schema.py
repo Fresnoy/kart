@@ -11,6 +11,22 @@ from production.schema import Artwork, ArtworkType
 from diffusion.schema import DiffusionType
 
 
+def order(students, orderby):
+    # Sort the students
+
+    def tt(x):
+        if orderby == "displayName":
+            if x.artist.nickname:
+                art = x.artist.nickname
+            else:
+                art = x.user.last_name
+        else:
+            raise Exception("orderby value is undefined or unknown")
+        return (art)
+
+    return sorted(students, key=lambda x: tt(x))
+
+
 class StudentType(DjangoObjectType):
     class Meta:
         model = Student
@@ -77,6 +93,9 @@ class StudentEmbeddedInterface(graphene.Interface):
     cursus = graphene.String(
         resolver=DynNameResolver(interface="StudentEmbedded"))
 
+    # Artist fields
+    displayName = graphene.String()
+
     # Student fields
     number = graphene.String(
         resolver=DynNameResolver(interface="StudentEmbedded"))
@@ -87,8 +106,11 @@ class StudentEmbeddedInterface(graphene.Interface):
     diploma_mention = graphene.String(
         resolver=DynNameResolver(interface="StudentEmbedded"))
 
-    def resolve_firstName(parent, info):
-        return parent.student.artist.user.first_name
+    def resolve_displayName(parent, info):
+        if parent.student.artist.nickname:
+            return parent.student.artist.nickname
+        else:
+            return f"{parent.student.user.first_name} {parent.student.user.last_name}"
 
     def resolve_number(parent, info):
         return parent.student.number
@@ -185,7 +207,9 @@ class Query(graphene.ObjectType):
     visitingStudents = graphene.List(VisitingStudentType)
 
     def resolve_students(root, info, **kwargs):
-        return Student.objects.all()
+        students = Student.objects.all()
+        # order by displayName by default
+        return order(students, "displayName")
 
     def resolve_student(root, info, **kwargs):
         id = kwargs.get('id')
