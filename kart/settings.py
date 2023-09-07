@@ -70,6 +70,8 @@ INSTALLED_APPS = (
     'diffusion',
     'school',
     'assets',
+    # Graphene
+    "graphene_django",
 )
 
 MIDDLEWARE = (
@@ -184,4 +186,9 @@ SIMPLE_JWT = {
 }
 REST_AUTH = {
     'USE_JWT': True,
+}
+
+# Graphene
+GRAPHENE = {
+    "SCHEMA": "kart.schema.schema"
 }
