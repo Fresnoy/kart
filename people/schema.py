@@ -7,8 +7,11 @@ from django.contrib.auth.models import User
 
 from .models import Artist, FresnoyProfile, Staff
 from school.models import Student
+from diffusion.models import Diffusion
 
 from common.schema import WebsiteType
+from diffusion.schema import DiffusionType
+
 
 # User fields
 USER_FIELDS = [ff.name for ff in get_user_model()._meta.get_fields()]
@@ -18,6 +21,22 @@ FPROFILE_FIELDS = [ff.name for ff in FresnoyProfile._meta.get_fields()]
 ARTIST_FIELDS = [ff.name for ff in Artist._meta.get_fields()]
 # Student fields
 STUDENT_FIELDS = [ff.name for ff in Student._meta.get_fields()]
+
+
+def order(artists, orderby):
+    # Sort the artists
+
+    def tt(x):
+        if orderby == "displayName":
+            if x.nickname:
+                art = x.nickname
+            else:
+                art = x.user.last_name
+        else:
+            raise Exception("orderby value is undefined or unknown")
+        return (art)
+
+    return sorted(artists, key=lambda x: tt(x))
 
 
 def camel2snake(cam):
@@ -52,7 +71,7 @@ class DynNameResolver:
 
         if self.interface == "ArtistEmbedded":
             user = instance.artist.user
-            artist = instance
+            artist = instance.artist
 
         if self.interface == "UserEmbedded":
             user = instance.user
@@ -83,9 +102,6 @@ class DynNameResolver:
             obj = profile
         else:
             print("fieldname not found", field_name)
-
-        # print("parent_type", parent_type, "OBJ", obj, "FIELD NAME",
-        #       field_name, "interface", self.interface)
 
         if hasattr(obj, field_name):
             if listReturn:
@@ -162,6 +178,7 @@ class ArtistEmbeddedInterface(graphene.Interface):
     # Artist fields
     nickname = graphene.String(
         resolver=DynNameResolver(interface="ArtistEmbedded"))
+    displayName = graphene.String()
     bioShortFr = graphene.String(
         resolver=DynNameResolver(interface="ArtistEmbedded"))
     bioShortEn = graphene.String(
@@ -177,6 +194,18 @@ class ArtistEmbeddedInterface(graphene.Interface):
     facebookProfile = graphene.String(
         resolver=DynNameResolver(interface="ArtistEmbedded"))
     websites = graphene.List(WebsiteType)
+
+    diffusions = graphene.List(DiffusionType)
+
+    def resolve_diffusions(parent, info):
+        diffs = Diffusion.objects.filter(artwork__authors=parent.artist)
+        return diffs
+
+    def resolve_displayName(parent, info):
+        if parent.artist.nickname:
+            return parent.artist.nickname
+        else:
+            return f"{parent.user.first_name} {parent.user.last_name}"
 
 
 class ProfileEmbeddedInterface(graphene.Interface):
@@ -273,6 +302,16 @@ class ArtistType(UserType):
     facebookProfile = graphene.String(resolver=DynNameResolver())
     websites = graphene.List(WebsiteType, resolver=DynNameResolver())
 
+    # Display Name
+    displayName = graphene.String()
+
+    def resolve_displayName(parent, info):
+        '''Return nickname if exists, first + last name otherwise'''
+        if parent.nickname != "":
+            return parent.nickname
+        else:
+            return f"{parent.user.first_name} {parent.user.last_name}"
+
 
 class StaffType(UserType):
     class Meta:
@@ -294,28 +333,30 @@ class Query(graphene.ObjectType):
     profile = graphene.Field(FresnoyProfileType, id=graphene.Int())
     profiles = graphene.List(FresnoyProfileType)
 
-    def resolve_users(self, info, **kwargs):
+    def resolve_users(root, info, **kwargs):
         return get_user_model().objects.all()
 
-    def resolve_user(self, info, **kwargs):
+    def resolve_user(root, info, **kwargs):
         id = kwargs.get('id')
         if id is not None:
             return User.objects.get(pk=id)
         return None
 
-    def resolve_artists(self, info, **kwargs):
-        return Artist.objects.all()
+    def resolve_artists(root, info, **kwargs):
+        artists = Artist.objects.all()
+        # order by displayName by default
+        return order(artists, "displayName")
 
-    def resolve_artist(self, info, **kwargs):
+    def resolve_artist(root, info, **kwargs):
         id = kwargs.get('id')
         if id is not None:
             return Artist.objects.get(pk=id)
         return None
 
-    def resolve_profiles(self, info, **kwargs):
+    def resolve_profiles(root, info, **kwargs):
         return FresnoyProfile.objects.all()
 
-    def resolve_profile(self, info, **kwargs):
+    def resolve_profile(root, info, **kwargs):
         id = kwargs.get('id')
         if id is not None:
             return FresnoyProfile.objects.get(pk=id)
