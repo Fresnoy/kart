@@ -151,6 +151,7 @@ class TeachingArtistGQL(View):
                 bioEn
                 presentationTextFr
                 presentationTextEn
+                years
                 picturesGallery {
                     media {
                         label

@@ -143,8 +143,6 @@ class TeachingArtistType(DjangoObjectType):
         dates = list(set([aw.production_date.year for aw in aws]))
         return dates
 
-    
-
 
 class TeachingArtistsItemType(DjangoObjectType):
     """ Object dedicated to TeachingArtistsList"""
