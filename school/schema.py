@@ -132,7 +132,7 @@ class TeachingArtistType(DjangoObjectType):
     profile = graphene.Field(ProfileType)
 
     pictures_gallery = graphene.Field(GalleryType)
-    
+
     def resolve_profile(parent, info):
         return FresnoyProfile.objects.get(user=parent.artist.user)
 
@@ -228,7 +228,7 @@ class Query(graphene.ObjectType):
     def resolve_teachingArtistsList(root, info, **kwargs):
         """ A list of teaching artists grouped by year """
         tal = []
-        for ye in range(1997, datetime.now().year):
+        for ye in range(1997, datetime.now().year + 2):
             tai = TeachingArtistsItemType()
             tai.year = ye
             # Get the TA that mentored artworks for that year
