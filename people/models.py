@@ -95,6 +95,11 @@ class Staff(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
 
     def __str__(self):
+        # display artist name if any
+        if (self.user.artist_set.count() > 0 and
+                self.user.artist_set.all().first().nickname != ''):
+            return "{} ({})".format(self.user.artist_set.all().first().__str__(), self.user)
+
         return '{0}'.format(self.user)
 
     class Meta:
