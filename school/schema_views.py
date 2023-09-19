@@ -149,6 +149,14 @@ class TeachingArtistGQL(View):
                 bioShortEn
                 bioFr
                 bioEn
+                presentationTextFr
+                presentationTextEn
+                picturesGallery {
+                    media {
+                        label
+                        picture
+                    }
+                }
                 diffusions {
                 id
                 artwork {

@@ -9,6 +9,7 @@ from school.models import Student, Promotion, TeachingArtist, ScienceStudent, Ph
 from people.schema import ProfileType, DynNameResolver, ArtistEmbeddedInterface
 from production.schema import Artwork, ArtworkType
 from diffusion.schema import DiffusionType
+from assets.schema import GalleryType
 
 
 def order(students, orderby):
@@ -130,6 +131,8 @@ class TeachingArtistType(DjangoObjectType):
 
     profile = graphene.Field(ProfileType)
 
+    pictures_gallery = graphene.Field(GalleryType)
+    
     def resolve_profile(parent, info):
         return FresnoyProfile.objects.get(user=parent.artist.user)
 
@@ -139,6 +142,8 @@ class TeachingArtistType(DjangoObjectType):
         # Set to remove duplicates dates
         dates = list(set([aw.production_date.year for aw in aws]))
         return dates
+
+    
 
 
 class TeachingArtistsItemType(DjangoObjectType):
