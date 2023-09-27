@@ -28,6 +28,8 @@ class PromotionViewGQL(View):
                     id
                     firstName
                     lastName
+                    nickname
+                    displayName
                     nationality
                 }
             }
@@ -115,6 +117,7 @@ class TeachinArtistListViewGQL(View):
                         firstName
                         lastName
                         nickname
+                        displayName
                         photo
                     }
                 },
