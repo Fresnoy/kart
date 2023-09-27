@@ -205,7 +205,7 @@ class ArtistEmbeddedInterface(graphene.Interface):
         if parent.artist.nickname:
             return parent.artist.nickname
         else:
-            return f"{parent.user.first_name} {parent.user.last_name}"
+            return f"{parent.artist.user.first_name} {parent.artist.user.last_name}"
 
 
 class ProfileEmbeddedInterface(graphene.Interface):
