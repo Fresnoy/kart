@@ -9,6 +9,7 @@ from school.models import Student, Promotion, TeachingArtist, ScienceStudent, Ph
 from people.schema import ProfileType, DynNameResolver, ArtistEmbeddedInterface
 from production.schema import Artwork, ArtworkType
 from diffusion.schema import DiffusionType
+from assets.schema import GalleryType
 
 
 def order(students, orderby):
@@ -127,6 +128,8 @@ class TeachingArtistType(DjangoObjectType):
 
     # The years during which the TA was active
     years = graphene.List(graphene.String)
+
+    pictures_gallery = graphene.Field(GalleryType)
 
     profile = graphene.Field(ProfileType)
 
