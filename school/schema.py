@@ -20,7 +20,7 @@ def order(students, orderby):
             if x.artist.nickname:
                 art = x.artist.nickname
             else:
-                art = x.user.last_name
+                art = x.artist.user.last_name
         else:
             raise Exception("orderby value is undefined or unknown")
         return (art)
@@ -183,7 +183,8 @@ class PromoType(DjangoObjectType):
     students = graphene.List(StudentType)
 
     def resolve_students(parent, info):
-        return Student.objects.filter(promotion=parent)
+        students = Student.objects.filter(promotion=parent)
+        return order(students, "displayName")
 
     picture = graphene.String()
     # def resolve_picture(parent, info):
@@ -232,6 +233,7 @@ class Query(graphene.ObjectType):
             # Get the TA that mentored artworks for that year
             tai.teachers = set(TeachingArtist.objects.all().filter(
                 artworks_supervision__production_date__year=ye))
+            tai.teachers = order(tai.teachers, "displayName")
             tal += [tai]
         return tal
 
