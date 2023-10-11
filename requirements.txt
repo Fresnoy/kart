@@ -39,3 +39,5 @@ Pillow==9.3.0
 pytz==2022.2.1
 psycopg2==2.9.5
 pyjwt==2.6.0
+# Graphene
+graphene-django==3.1.3
