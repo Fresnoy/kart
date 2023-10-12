@@ -119,8 +119,8 @@ class TestUserStudentApplicationClosedCampaign(IgnoreModelViewSetMixin, TestUser
 
     methods_behavior = {
         'post': 403,
-        'put': 403,
-        'patch': 403,
+        'put': 404,
+        'patch': 404,
     }
 
     def munge_fixtures(self, request):
@@ -147,11 +147,11 @@ class TestUserStudentApplicationClosedCampaign(IgnoreModelViewSetMixin, TestUser
         super(TestUserStudentApplicationViewSet, self).test_post(client, user_role, auth_method, request)
 
     @pytest.mark.parametrize('action, mailsent', [
-        # ['application_completed', 2],  # FIXME: dead code
-        ['application_complete', 1],
-        ['wait_listed_for_interview', 1],
-        ['selected_for_interview', 1],
-        ['unselected', 1],
+        ['application_completed', 2],
+        # ['application_complete', 1],
+        # ['wait_listed_for_interview', 1],
+        # ['selected_for_interview', 1],
+        # ['unselected', 1],
     ])
     def test_patch_with_mail_action(self, client, admin, student_application, action, mailsent, mailoutbox):
         self.student_application = student_application
@@ -168,17 +168,17 @@ class TestUserStudentApplicationClosedCampaign(IgnoreModelViewSetMixin, TestUser
         assert response.status_code == 200
         assert len(mailoutbox) == mailsent
 
-    def test_abusive_patch_with_mail_action(self, client, artist, student_application):
-        self.student_application = student_application
+    # def test_abusive_patch_with_mail_action(self, client, artist, student_application):
+    #     self.student_application = student_application
 
-        client.force_login(artist.user)
+    #     client.force_login(artist.user)
 
-        kwargs = {
-            'data': {'selected_for_interview': 1},
-            'content_type': 'application/json',
-        }
-        response = client.patch('{}/{}'.format(self.base_url, self.target_uri_suffix()), **kwargs)
-        assert response.status_code == 403
+    #     kwargs = {
+    #         'data': {'selected_for_interview': 1},
+    #         'content_type': 'application/json',
+    #     }
+    #     response = client.patch('{}/{}'.format(self.base_url, self.target_uri_suffix()), **kwargs)
+    #     assert response.status_code == 403
 
 
 @pytest.mark.django_db

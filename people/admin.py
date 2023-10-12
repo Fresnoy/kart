@@ -43,6 +43,7 @@ class FresnoyProfileAdmin(UserAdmin):
     list_display = ('username', 'first_name', 'last_name', 'email', 'is_staff')
     add_form = UserCreateForm
     add_fieldsets = ((None, {'fields': ('username', 'password1', 'password2', 'first_name', 'last_name', 'email'), }), )
+    ordering = ('first_name',)
 
 
 class StaffAdmin(GuardedModelAdmin):

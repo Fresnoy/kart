@@ -49,3 +49,6 @@ HAYSTACK_CONNECTIONS = {
         'INDEX_NAME': 'example',
     },
 }
+
+
+FROM_EMAIL = ''

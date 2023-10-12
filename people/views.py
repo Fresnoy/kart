@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.conf import settings
 
 from django.core.mail import EmailMultiAlternatives
@@ -11,6 +12,8 @@ from rest_framework.decorators import api_view, permission_classes
 
 from drf_haystack.filters import HaystackAutocompleteFilter
 from drf_haystack.viewsets import HaystackViewSet
+
+from school.models import StudentApplication
 
 from .models import (
     Artist, User, FresnoyProfile, Staff, Organization
@@ -29,11 +32,26 @@ except AttributeError:
     ANONYMOUS_USER_NAME = "AnonymousUser"
 
 
+class IsOwnerOrReadOnly(permissions.IsAuthenticatedOrReadOnly):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return obj == request.user or request.user.is_staff
+
+
+class UserIsArtistOrReadOnly(permissions.IsAuthenticatedOrReadOnly):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return obj.user == request.user or request.user.is_staff
+
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.exclude(username=ANONYMOUS_USER_NAME)
     # serializer_class = UserSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    filter_backends = (filters.SearchFilter,)
+    permission_classes = (IsOwnerOrReadOnly,)
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend)
+    filterset_fields = ('artist__student_application__campaign__is_current_setup',)
     search_fields = ('=username', '=email')
 
     def get_serializer_class(self, *args, **kwargs):
@@ -43,6 +61,35 @@ class UserViewSet(viewsets.ModelViewSet):
            ):
             return UserSerializer
         return PublicUserSerializer
+
+    def update(self, request, *args, **kwargs):
+        """
+        Update by imself
+        """
+        # user applying this session was not born before the date
+        data = request.data
+        if (data.get('profile') and data.get('profile').get('birthdate')):
+            birthdate = data.get('profile').get('birthdate')
+            user = request.user
+            # select current year application for current user
+            user_application = StudentApplication.objects.filter(
+                campaign__is_current_setup=True,
+                artist__user=user
+                ).first()
+            # if any compare update and max date of born
+            if(user_application and birthdate):
+                # uniformize dates
+                update_birthdate = datetime.strptime(birthdate, '%Y-%m-%d').date()
+                min_birthdate = user_application.campaign.date_of_birth_max
+                # compare date
+                if (update_birthdate < min_birthdate):
+                    # throw error
+                    errors = {'birthdate': ['{} : date of birth max reached ({})'
+                                            .format(update_birthdate, min_birthdate)]}
+                    return Response(errors, status=status.HTTP_403_FORBIDDEN)
+
+        # basic update
+        return super(self.__class__, self).update(request, *args, **kwargs)
 
 
 def verif_user_by_property(array, property):
@@ -130,7 +177,7 @@ class CustomPagination(pagination.PageNumberPagination):
 class ArtistViewSet(viewsets.ModelViewSet):
     queryset = Artist.objects.all().distinct()
     serializer_class = ArtistSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (UserIsArtistOrReadOnly,)
     filter_backends = (filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend)
     search_fields = ('=user__username',)
     filterset_fields = {'artworks': ['isnull'],

@@ -22,7 +22,7 @@ SECRET_KEY = '$17%$7@*^nmx&(mb)5=o9v9if&_%s67-*^-skk!iaef3%16*12'
 PASSWORD_TOKEN = r'(?P<uidb64>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,40})'
 
 site_name = "Kartel"
-DEFAULT_FROM_EMAIL = "Le Fresnoy <selection@lefresnoy.net>"
+DEFAULT_FROM_EMAIL = FROM_EMAIL
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # Application definition
@@ -83,7 +83,6 @@ MIDDLEWARE = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-
     'corsheaders.middleware.CorsMiddleware',
 
 )
@@ -120,6 +119,7 @@ TEMPLATES = [
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  # this is default
     'guardian.backends.ObjectPermissionBackend',
+    'graphql_jwt.backends.JSONWebTokenBackend',
 )
 
 ROOT_URLCONF = 'kart.urls'
@@ -183,12 +183,16 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": datetime.timedelta(days=15),
     "AUTH_HEADER_TYPES": ("JWT",),
+
 }
 REST_AUTH = {
     'USE_JWT': True,
+    'JWT_TOKEN_CLAIMS_SERIALIZER': 'kart.utils.CustomTokenObtainPairSerializer',
 }
-
 # Graphene
 GRAPHENE = {
-    "SCHEMA": "kart.schema.schema"
+    "SCHEMA": "kart.schema.schema",
+    "MIDDLEWARE": [
+        'graphql_jwt.middleware.JSONWebTokenMiddleware',
+    ],
 }
