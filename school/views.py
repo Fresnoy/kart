@@ -211,7 +211,8 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                     user_artist = Artist(user=user)
                     user_artist.save()
                 # get previous apps
-                last_applications = StudentApplication.objects.filter(artist__user=user.id) \
+                last_applications = StudentApplication.objects.filter(artist__user=user.id, 
+                                                                      application_completed=True) \
                                                               .values_list('created_on__year', flat=True)
                 # transform all user previous app to string : "2001, 2002, xxxx"
                 last_applications_years = ", ".join(map(str, list(last_applications)))
