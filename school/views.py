@@ -24,13 +24,13 @@ from people.models import User, FresnoyProfile, Artist
 from people.serializers import UserRegisterSerializer
 
 from .models import (Promotion, Student, PhdStudent, ScienceStudent, TeachingArtist,
-                     VisitingStudent, StudentApplication, StudentApplicationSetup)
+                     VisitingStudent, StudentApplication, StudentApplicationSetup, AdminStudentApplication)
 
 from .serializers import (StudentPasswordResetSerializer,
                           PromotionSerializer, StudentSerializer, PhdStudentSerializer, ScienceStudentSerializer,
                           TeachingArtistSerializer, VisitingStudentSerializer, StudentAutocompleteSerializer,
                           PublicStudentApplicationSerializer, StudentApplicationSerializer,
-                          StudentApplicationSetupSerializer
+                          StudentApplicationSetupSerializer, AdminStudentApplicationSerializer,
                           )
 
 from .utils import (
@@ -134,8 +134,8 @@ class StudentApplicationSetupViewSet(viewsets.ModelViewSet):
     filterset_fields = ('is_current_setup',)
 
 
-class StudentApplicationViewSet(viewsets.ModelViewSet):
-    queryset = StudentApplication.objects.all()
+class AdminStudentApplicationViewSet(viewsets.ModelViewSet):
+    queryset = AdminStudentApplication.objects.all()
     # serializer_class = StudentApplicationSerializer
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
     filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter)
@@ -151,6 +151,92 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                        'artist__user__profile__nationality',
                        'position_in_interview_waitlist',
                        'position_in_waitlist',)
+
+    def create(self, request):
+        """
+        This view create an application AND Artist for auth user
+        (and write some db info like pasts applications for user)
+        """
+        
+
+    def update(self, request, *args, **kwargs):
+        """
+        This view update an application before expiration date - staff can pass through
+        """
+        user = self.request.user
+
+        # Only admin user can update selection's fields
+        if (
+            not user.is_staff and (
+                request.data.get('application_complete') or
+                request.data.get('selected_for_interview') or
+                request.data.get('selected') or
+                request.data.get('unselected') or
+                request.data.get('wait_listed') or
+                request.data.get('wait_listed_for_interview') or
+                request.data.get('position_in_waitlist') or
+                request.data.get('position_in_interview_waitlist') or
+                request.data.get('campaign'))
+        ):
+            errors = {'Error': 'Field permission denied'}
+            return Response(errors, status=status.HTTP_403_FORBIDDEN)
+
+        # send email to admin and USER (who click) is completed
+        if (request.data.get('application_completed')):
+            application = self.get_object()
+            send_candidature_completed_email_to_user(request, user, application)
+            send_candidature_completed_email_to_admin(request, user, application)
+
+        # send email to candidat when candidature is complete (admin valid infos)
+        if (request.data.get('application_complete')):
+            application = self.get_object()
+            candidat = application.artist.user
+            send_candidature_complete_email_to_candidat(request, candidat, application)
+
+        # send email to candidat when on interview waiting list
+        if (request.data.get('wait_listed_for_interview')):
+            application = self.get_object()
+            candidat = application.artist.user
+            send_interview_selection_on_waitlist_email_to_candidat(request, candidat, application)
+
+        # send email to candidat when select for interviews
+        if (request.data.get('selected_for_interview')):
+            application = self.get_object()
+            candidat = application.artist.user
+            send_interview_selection_email_to_candidat(request, candidat, application)
+
+        # send email to candidat when selected
+        if (request.data.get('selected')):
+            application = self.get_object()
+            candidat = application.artist.user
+            send_selected_candidature_email_to_candidat(request, candidat, application)
+
+        # send email to candidat when is select on waiting list
+        if (request.data.get('wait_listed')):
+            application = self.get_object()
+            candidat = application.artist.user
+            send_selected_on_waitlist_candidature_email_to_candidat(request, candidat, application)
+
+        # send email to candidat when is not selected
+        if (request.data.get('unselected')):
+            application = self.get_object()
+            candidat = application.artist.user
+            send_not_selected_candidature_email_to_candidat(request, candidat, application)
+
+
+
+
+
+class StudentApplicationViewSet(viewsets.ModelViewSet):
+    queryset = StudentApplication.objects.all()
+    # serializer_class = StudentApplicationSerializer
+    permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter)
+    search_fields = ('=artist__user__username', 'artist__user__last_name')
+    filterset_fields = ('application_complete', 'remote_interview', 'campaign__is_current_setup',)
+    ordering_fields = ('id',
+                       'artist__user__last_name',
+                       'artist__user__profile__nationality',)
 
     def get_serializer_class(self, *args, **kwargs):
         """
@@ -242,65 +328,6 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         if candidature_close() and not user.is_staff:
             errors = {'candidature': 'expired'}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
-        # Only admin user can update selection's fields
-        if (
-            not user.is_staff and (
-                request.data.get('application_complete') or
-                request.data.get('selected_for_interview') or
-                request.data.get('selected') or
-                request.data.get('unselected') or
-                request.data.get('wait_listed') or
-                request.data.get('wait_listed_for_interview') or
-                request.data.get('position_in_waitlist') or
-                request.data.get('position_in_interview_waitlist') or
-                request.data.get('campaign'))
-        ):
-            errors = {'Error': 'Field permission denied'}
-            return Response(errors, status=status.HTTP_403_FORBIDDEN)
-
-        # FIXME: dead code since it never pass througth the previous test
-        # send email to admin and USER (who click) is completed
-        if (request.data.get('application_completed')):
-            application = self.get_object()
-            send_candidature_completed_email_to_user(request, user, application)
-            send_candidature_completed_email_to_admin(request, user, application)
-
-        # send email to candidat when candidature is complete (admin valid infos)
-        if (request.data.get('application_complete')):
-            application = self.get_object()
-            candidat = application.artist.user
-            send_candidature_complete_email_to_candidat(request, candidat, application)
-
-        # send email to candidat when on interview waiting list
-        if (request.data.get('wait_listed_for_interview')):
-            application = self.get_object()
-            candidat = application.artist.user
-            send_interview_selection_on_waitlist_email_to_candidat(request, candidat, application)
-
-        # send email to candidat when select for interviews
-        if (request.data.get('selected_for_interview')):
-            application = self.get_object()
-            candidat = application.artist.user
-            send_interview_selection_email_to_candidat(request, candidat, application)
-
-        # send email to candidat when selected
-        if (request.data.get('selected')):
-            application = self.get_object()
-            candidat = application.artist.user
-            send_selected_candidature_email_to_candidat(request, candidat, application)
-
-        # send email to candidat when is select on waiting list
-        if (request.data.get('wait_listed')):
-            application = self.get_object()
-            candidat = application.artist.user
-            send_selected_on_waitlist_candidature_email_to_candidat(request, candidat, application)
-
-        # send email to candidat when is not selected
-        if (request.data.get('unselected')):
-            application = self.get_object()
-            candidat = application.artist.user
-            send_not_selected_candidature_email_to_candidat(request, candidat, application)
-
         # basic update
         return super(self.__class__, self).update(request, *args, **kwargs)
 

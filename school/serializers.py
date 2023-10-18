@@ -102,6 +102,14 @@ class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
                   'free_document',
                   'remark',
                   'application_completed',
+                  'created_on',
+                  'updated_on',)
+
+
+class AdminStudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = StudentApplication
+        fields = ('id',
                   'application_complete',
                   'wait_listed_for_interview',
                   'position_in_interview_waitlist',
@@ -111,9 +119,7 @@ class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
                   'unselected',
                   'wait_listed',
                   'position_in_waitlist',
-                  'observation',
-                  'created_on',
-                  'updated_on',)
+                  'observation',)
 
 
 class PublicStudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
