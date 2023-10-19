@@ -25,16 +25,12 @@ class StudentApplicationAdmin(admin.ModelAdmin):
             return obj.artist.user.get_full_name()
 
     _get_name.short_description = "Nom"
-    # selected
-    def selected(self, obj):
-        return obj.administration.selected
     
     list_display = (
         'campaign',
         '_get_name',
         'current_year_application_count',        
         'remark',
-        'selected',
     )
 
 
@@ -61,10 +57,10 @@ class AdminStudentApplicationAdmin(admin.ModelAdmin):
     ordering = ['-application__created_on__year', 'application__artist__user__last_name']
 
     def candidat(self, obj):
-        if obj.application.artist:
+        if obj.application and obj.application.artist:
             return obj.application.artist.__str__()
     def year(self, obj):
-        if obj.application.campaign:
+        if obj.application and obj.application.campaign:
             return obj.application.campaign.promotion.starting_year
 
     list_display = (

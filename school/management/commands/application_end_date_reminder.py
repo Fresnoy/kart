@@ -2,7 +2,7 @@
 from django.core.management.base import BaseCommand
 
 from school.utils import candidature_close, send_candidature_not_finalized_to_candidats
-from school.models import StudentApplication, StudentApplicationSetup
+from school.models import AdminStudentApplication, StudentApplicationSetup
 
 
 class Command(BaseCommand):
@@ -23,9 +23,9 @@ class Command(BaseCommand):
 
         all_applications = StudentApplication.objects.filter(campaign=campaign).count()
         # Candidat who havn't send application
-        query_applications_started__emails = StudentApplication.objects.filter(campaign=campaign,
+        query_applications_started__emails = AdminStudentApplication.objects.filter(application__campaign=campaign,
+                                                                               application__application_completed=False,
                                                                                application_complete=False,
-                                                                               application_completed=False,
                                                                                unselected=False,
                                                                                selected=False,
                                                                                ).values_list("artist__user__email",

@@ -372,7 +372,7 @@ class AdminStudentApplication(models.Model):
     Admin part of the Student Application
     """
     application = models.OneToOneField(StudentApplication, related_name='administration', 
-                                       null=True, on_delete=models.SET_NULL)
+                                       null=True, blank=False, on_delete=models.SET_NULL)
     # Administration
     observation = models.TextField(blank=True, null=True, help_text="Comments on the application")
 
