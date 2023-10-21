@@ -29,10 +29,17 @@ except AttributeError:
     ANONYMOUS_USER_NAME = "AnonymousUser"
 
 
+class IsOwnerOrReadOnly(permissions.IsAuthenticatedOrReadOnly):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return obj == request.user or request.user.is_staff
+
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.exclude(username=ANONYMOUS_USER_NAME)
     # serializer_class = UserSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsOwnerOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=username', '=email')
 
