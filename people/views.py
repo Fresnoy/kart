@@ -1,3 +1,5 @@
+
+from datetime import datetime
 from django.conf import settings
 
 from django.core.mail import EmailMultiAlternatives
@@ -11,6 +13,8 @@ from rest_framework.decorators import api_view, permission_classes
 
 from drf_haystack.filters import HaystackAutocompleteFilter
 from drf_haystack.viewsets import HaystackViewSet
+
+from school.models import StudentApplication
 
 from .models import (
     Artist, User, FresnoyProfile, Staff, Organization
@@ -50,6 +54,33 @@ class UserViewSet(viewsets.ModelViewSet):
            ):
             return UserSerializer
         return PublicUserSerializer
+
+    def update(self, request, *args, **kwargs):
+        """
+        Update by imself
+        """
+        # user applying this session was not born before the date
+        if (request.data.get('profile.birthdate')):
+            user = request.user
+            # select current year application for current user
+            user_application = StudentApplication.objects.filter(
+                campaign__is_current_setup=True,
+                artist__user=user
+                ).first()
+            # if any compare update and max date of born
+            if(user_application):
+                # uniformize dates
+                update_birthdate = datetime.strptime(request.data.get('profile.birthdate'), '%Y-%m-%d').date()
+                min_birthdate = user_application.campaign.date_of_birth_max
+                # compare date
+                if (update_birthdate < min_birthdate):
+                    # throw error
+                    errors = {'birthdate': ['{} : date of birth max reached ({})'
+                                            .format(update_birthdate, min_birthdate)]}
+                    return Response(errors, status=status.HTTP_403_FORBIDDEN)
+
+        # basic update
+        return super(self.__class__, self).update(request, *args, **kwargs)
 
 
 def verif_user_by_property(array, property):

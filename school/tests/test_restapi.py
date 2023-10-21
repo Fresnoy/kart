@@ -11,6 +11,7 @@ from rest_framework import status
 from django.test import TestCase
 from django.urls import reverse
 
+from people.models import FresnoyProfile
 from people.tests.factories import ArtistFactory
 from school.tests.factories import AdminStudentApplicationFactory, StudentApplicationFactory
 from school.models import StudentApplication, StudentApplicationSetup, Promotion
@@ -25,6 +26,7 @@ class TestApplicationEndPoint(TestCase):
     def setUp(self):
         self.artist = ArtistFactory()
         self.user = self.artist.user
+        FresnoyProfile.objects.create(user=self.user)
         self.sa_group = Group.objects.first()
         self.user.groups.add(self.sa_group)
         self.user.save()
@@ -178,6 +180,36 @@ class TestApplicationEndPoint(TestCase):
         response = self.client_auth.patch(studentapplication_url,
                                           data={'remote_interview': 'true'})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_birthdate_on_student_application(self):
+        """
+        Test creating an studentapplication
+        """
+        # set up a campaign
+        promotion = Promotion(starting_year=2000, ending_year=2001)
+        promotion.save()
+        campaign = StudentApplicationSetup(candidature_date_start=timezone.now(),
+                                           candidature_date_end=timezone.now() + datetime.timedelta(days=1),
+                                           promotion=promotion,
+                                           date_of_birth_max=datetime.date(1983, 12, 31),
+                                           is_current_setup=True,)
+        campaign.save()
+        # add a candidature
+        application = StudentApplication(artist=self.artist, campaign=campaign)
+        application.save()
+        # auth user
+        self.client_auth.force_authenticate(user=self.user)
+        user_url = reverse('user-detail', kwargs={'pk': self.user.pk})
+        # update bad info
+        response = self.client_auth.patch(user_url,
+                                          data={'profile.birthdate': '1983-12-30'})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertNotEqual(self.user.profile.birthdate, '1983-12-30')
+        # update OK info
+        response = self.client_auth.patch(user_url,
+                                          data={'profile.birthdate': '1983-12-31'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['profile']['birthdate'], '1983-12-31')
 
 
 class TestApplicationSetupEndPoint(TestCase):
