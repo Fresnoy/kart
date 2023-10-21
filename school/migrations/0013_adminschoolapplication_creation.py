@@ -120,4 +120,9 @@ class Migration(migrations.Migration):
             model_name='studentapplication',
             name='wait_listed_for_interview',
         ),
+        migrations.AddField(
+            model_name='studentapplicationsetup',
+            name='information_and_tour_date',
+            field=models.DateTimeField(help_text='Front : information and tour', null=True),
+        ),
     ]

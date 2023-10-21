@@ -53,7 +53,7 @@ class TeachingArtist(models.Model):
     """
     class Meta:
         ordering = ['artist']
-    
+
     artist = models.OneToOneField(Artist, related_name='teacher', null=True, on_delete=models.SET_NULL)
     presentation_text_fr = models.TextField(null=True,
                                             blank=True,
@@ -129,6 +129,7 @@ class StudentApplicationSetup(models.Model):
     candidature_date_start = models.DateTimeField(null=False, blank=False)
     candidature_date_end = models.DateTimeField(null=False, blank=False)
     # front text
+    information_and_tour_date = models.DateTimeField(null=True, blank=False, help_text="Front : information and tour")
     interviews_start_date = models.DateField(null=True, blank=False, help_text="Front : interviews start date")
     interviews_end_date = models.DateField(null=True, blank=False, help_text="Front : interviews end date")
     date_of_birth_max = models.DateField(null=True, blank=True, help_text="Maximum date of birth to apply")
@@ -371,7 +372,7 @@ class AdminStudentApplication(models.Model):
     """
     Admin part of the Student Application
     """
-    application = models.OneToOneField(StudentApplication, related_name='administration', 
+    application = models.OneToOneField(StudentApplication, related_name='administration',
                                        null=True, blank=False, on_delete=models.SET_NULL)
     # Administration
     observation = models.TextField(blank=True, null=True, help_text="Comments on the application")
