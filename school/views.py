@@ -136,95 +136,58 @@ class StudentApplicationSetupViewSet(viewsets.ModelViewSet):
 
 class AdminStudentApplicationViewSet(viewsets.ModelViewSet):
     queryset = AdminStudentApplication.objects.all()
-    # serializer_class = StudentApplicationSerializer
-    permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
+    serializer_class = AdminStudentApplicationSerializer
+    permission_classes = (permissions.IsAdminUser,)
     filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter)
     search_fields = ('=artist__user__username', 'artist__user__last_name')
-    filterset_fields = ('application_completed',
+    filterset_fields = ('application__application_completed',
                         'application_complete',
-                        'selected_for_interview', 'remote_interview', 'wait_listed_for_interview',
-                        'selected', 'unselected',
-                        'campaign__is_current_setup',
+                        'selected_for_interview', 'application__remote_interview',
+                        'wait_listed_for_interview', 'selected', 'unselected',
+                        'application__campaign__is_current_setup',
                         'wait_listed',)
     ordering_fields = ('id',
-                       'artist__user__last_name',
-                       'artist__user__profile__nationality',
+                       'application__artist__user__last_name',
+                       'application__artist__user__profile__nationality',
                        'position_in_interview_waitlist',
                        'position_in_waitlist',)
 
-    def create(self, request):
-        """
-        This view create an application AND Artist for auth user
-        (and write some db info like pasts applications for user)
-        """
-        
-
     def update(self, request, *args, **kwargs):
         """
-        This view update an application before expiration date - staff can pass through
+        Update by staff user only, see permissions
         """
-        user = self.request.user
+        admin_app = self.get_object()
+        application = admin_app.application
 
-        # Only admin user can update selection's fields
-        if (
-            not user.is_staff and (
-                request.data.get('application_complete') or
-                request.data.get('selected_for_interview') or
-                request.data.get('selected') or
-                request.data.get('unselected') or
-                request.data.get('wait_listed') or
-                request.data.get('wait_listed_for_interview') or
-                request.data.get('position_in_waitlist') or
-                request.data.get('position_in_interview_waitlist') or
-                request.data.get('campaign'))
-        ):
-            errors = {'Error': 'Field permission denied'}
-            return Response(errors, status=status.HTTP_403_FORBIDDEN)
-
-        # send email to admin and USER (who click) is completed
-        if (request.data.get('application_completed')):
-            application = self.get_object()
-            send_candidature_completed_email_to_user(request, user, application)
-            send_candidature_completed_email_to_admin(request, user, application)
+        # staff = self.request.user
+        candidat = application.artist.user
 
         # send email to candidat when candidature is complete (admin valid infos)
         if (request.data.get('application_complete')):
-            application = self.get_object()
-            candidat = application.artist.user
-            send_candidature_complete_email_to_candidat(request, candidat, application)
+            send_candidature_complete_email_to_candidat(request, candidat, admin_app)
 
         # send email to candidat when on interview waiting list
         if (request.data.get('wait_listed_for_interview')):
-            application = self.get_object()
-            candidat = application.artist.user
-            send_interview_selection_on_waitlist_email_to_candidat(request, candidat, application)
+            send_interview_selection_on_waitlist_email_to_candidat(request, candidat, admin_app)
 
         # send email to candidat when select for interviews
         if (request.data.get('selected_for_interview')):
-            application = self.get_object()
-            candidat = application.artist.user
-            send_interview_selection_email_to_candidat(request, candidat, application)
+            send_interview_selection_email_to_candidat(request, candidat, admin_app)
 
         # send email to candidat when selected
         if (request.data.get('selected')):
-            application = self.get_object()
-            candidat = application.artist.user
-            send_selected_candidature_email_to_candidat(request, candidat, application)
+            send_selected_candidature_email_to_candidat(request, candidat, admin_app)
 
         # send email to candidat when is select on waiting list
         if (request.data.get('wait_listed')):
-            application = self.get_object()
-            candidat = application.artist.user
-            send_selected_on_waitlist_candidature_email_to_candidat(request, candidat, application)
+            send_selected_on_waitlist_candidature_email_to_candidat(request, candidat, admin_app)
 
         # send email to candidat when is not selected
         if (request.data.get('unselected')):
-            application = self.get_object()
-            candidat = application.artist.user
-            send_not_selected_candidature_email_to_candidat(request, candidat, application)
+            send_not_selected_candidature_email_to_candidat(request, candidat, admin_app)
 
-
-
+        # basic update
+        return super(self.__class__, self).update(request, *args, **kwargs)
 
 
 class StudentApplicationViewSet(viewsets.ModelViewSet):
@@ -233,7 +196,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
     filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter)
     search_fields = ('=artist__user__username', 'artist__user__last_name')
-    filterset_fields = ('application_complete', 'remote_interview', 'campaign__is_current_setup',)
+    filterset_fields = ('application_completed', 'remote_interview', 'campaign__is_current_setup',)
     ordering_fields = ('id',
                        'artist__user__last_name',
                        'artist__user__profile__nationality',)
@@ -297,7 +260,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                     user_artist = Artist(user=user)
                     user_artist.save()
                 # get previous apps
-                last_applications = StudentApplication.objects.filter(artist__user=user.id, 
+                last_applications = StudentApplication.objects.filter(artist__user=user.id,
                                                                       application_completed=True) \
                                                               .values_list('created_on__year', flat=True)
                 # transform all user previous app to string : "2001, 2002, xxxx"
@@ -320,14 +283,24 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         This view update an application before expiration date - staff can pass through
         """
         user = self.request.user
+        application = self.get_object()
         # Must update one info at once
         if len(request.data) > 1 and not user.is_staff:
             errors = {'Error': 'Must update one info at once'}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
-        # candidate can't update candidature when she's expired, admin can !
+        # candidate can't update candidature when expired, admin can !
         if candidature_close() and not user.is_staff:
             errors = {'candidature': 'expired'}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
+
+        # send email to admin and USER (who click) is completed
+        if (request.data.get('application_completed')):
+            # create Admin application
+            admin_application, created = AdminStudentApplication.objects.get_or_create(application=application)
+            # send emails to admin & user
+            send_candidature_completed_email_to_user(request, user, application)
+            send_candidature_completed_email_to_admin(request, user, admin_application)
+
         # basic update
         return super(self.__class__, self).update(request, *args, **kwargs)
 

@@ -34,3 +34,8 @@ class CommandsTestCase(TestCase):
         " Test app end date reminder."
         call_command('application_end_date_reminder', stdout=self.out)
         self.assertTrue
+
+    def test_application_verify_send_email_templates(self):
+        " Test app end date reminder."
+        call_command('application_verify_send_email_templates', stdout=self.out)
+        self.assertTrue

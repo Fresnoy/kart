@@ -15,7 +15,7 @@ class TestStudent:
     def test_str(self, student):
         student_str = str(student)
         assert str(student.user) in student_str
-        assert str(student.number) in student_str
+        assert str(student.artist.nickname) in student_str
 
 
 @pytest.mark.django_db

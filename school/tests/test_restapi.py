@@ -12,6 +12,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from people.tests.factories import ArtistFactory
+from school.tests.factories import AdminStudentApplicationFactory, StudentApplicationFactory
 from school.models import StudentApplication, StudentApplicationSetup, Promotion
 
 
@@ -90,7 +91,7 @@ class TestApplicationEndPoint(TestCase):
         assert user_on_base.pk > 0
         assert user_on_base.profile is not None
 
-    def test_user_has_createStudentApplication_permittion(self):
+    def test_user_has_createStudentApplication_permission(self):
         """
         Test user permission
         """
@@ -157,16 +158,26 @@ class TestApplicationEndPoint(TestCase):
         # add a candidature
         application = StudentApplication(artist=self.artist, campaign=campaign)
         application.save()
+        # auth user
         self.client_auth.force_authenticate(user=self.user)
         studentapplication_url = reverse('studentapplication-detail', kwargs={'pk': application.pk})
         # update an info
         response = self.client_auth.patch(studentapplication_url,
                                           data={'remote_interview': 'true'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # update more than one info
+
+    def test_update_anotherstudent_application(self):
+        """
+        Test update an studentapplication
+        """
+        application = StudentApplicationFactory()
+
+        self.client_auth.force_authenticate(user=self.user)
+        studentapplication_url = reverse('studentapplication-detail', kwargs={'pk': application.pk})
+        # update an info
         response = self.client_auth.patch(studentapplication_url,
-                                          data={'remote_interview': 'true', 'remote_interview_type': 'Skype'})
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+                                          data={'remote_interview': 'true'})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
 class TestApplicationSetupEndPoint(TestCase):
@@ -218,3 +229,70 @@ class TestApplicationSetupEndPoint(TestCase):
         self.assertEqual(len(campaign), 1)
         # info is True
         self.assertTrue(campaign[0]['candidature_open'])
+
+
+class TestAdminApplicationEndPoint(TestCase):
+    """
+    Tests concernants le endpoint des Student Application
+    """
+    fixtures = ['people/fixtures/groups.json']
+
+    def setUp(self):
+        self.application_admin = AdminStudentApplicationFactory()
+
+        self.artist = ArtistFactory()
+        self.user = self.artist.user
+        self.sa_group = Group.objects.first()
+        self.user.groups.add(self.sa_group)
+        self.user.save()
+        self.client_auth = APIClient()
+
+    def tearDown(self):
+        pass
+
+    def test_anonymUser_list(self,):
+        adminstudentapplication_url = reverse('adminstudentapplication-list')
+        response = self.client_auth.post(adminstudentapplication_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_candidat_list(self,):
+        self.client_auth.force_authenticate(user=self.user)
+        # test if user in group
+        self.assertEqual(self.user.groups.filter(name=self.sa_group.name).exists(), True)
+
+        adminstudentapplication_url = reverse('adminstudentapplication-list')
+        response = self.client_auth.post(adminstudentapplication_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_candidat_update(self,):
+        self.client_auth.force_authenticate(user=self.user)
+
+        adminstudentapplication_url = reverse('adminstudentapplication-detail',
+                                              kwargs={'pk': self.application_admin.pk})
+        response = self.client_auth.put(adminstudentapplication_url, data={'selected': 'true'})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_staff_list(self,):
+        self.user.is_staff = True
+        self.client_auth.force_authenticate(user=self.user)
+
+        adminstudentapplication_url = reverse('adminstudentapplication-list')
+        response = self.client_auth.get(adminstudentapplication_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_staff_create(self,):
+        self.user.is_staff = True
+        self.client_auth.force_authenticate(user=self.user)
+
+        adminstudentapplication_url = reverse('adminstudentapplication-list')
+        response = self.client_auth.post(adminstudentapplication_url)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_staff_update(self,):
+        self.user.is_staff = True
+        self.client_auth.force_authenticate(user=self.user)
+
+        adminstudentapplication_url = reverse('adminstudentapplication-detail',
+                                              kwargs={'pk': self.application_admin.pk})
+        response = self.client_auth.put(adminstudentapplication_url, data={'selected': 'true'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
