@@ -46,7 +46,6 @@ class FresnoyProfileAdmin(UserAdmin):
     ordering = ('first_name',)
 
 
-
 class StaffAdmin(GuardedModelAdmin):
     search_fields = ['user__username', 'user__last_name', 'user__first_name', 'user__artist__nickname']
     list_display = ("name", "artist",)

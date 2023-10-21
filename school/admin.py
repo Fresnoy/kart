@@ -25,11 +25,11 @@ class StudentApplicationAdmin(admin.ModelAdmin):
             return obj.artist.user.get_full_name()
 
     _get_name.short_description = "Nom"
-    
+
     list_display = (
         'campaign',
         '_get_name',
-        'current_year_application_count',        
+        'current_year_application_count',
         'remark',
     )
 
@@ -52,24 +52,24 @@ class TeachingArtistAdmin(admin.ModelAdmin):
 
 @admin.register(AdminStudentApplication)
 class AdminStudentApplicationAdmin(admin.ModelAdmin):
-    search_fields = ['application__artist__user__first_name', 'application__artist__user__last_name', 
+    search_fields = ['application__artist__user__first_name', 'application__artist__user__last_name',
                      'application__artist__nickname']
     ordering = ['-application__created_on__year', 'application__artist__user__last_name']
 
     def candidat(self, obj):
         if obj.application and obj.application.artist:
             return obj.application.artist.__str__()
+
     def year(self, obj):
         if obj.application and obj.application.campaign:
             return obj.application.campaign.promotion.starting_year
 
     list_display = (
         'candidat',
-        'year', 
+        'year',
         'selected',
         'wait_listed',
     )
-    
 
 
 admin.site.register(Promotion)
