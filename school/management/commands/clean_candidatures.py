@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand
 
 from django.db.models import Q
 
-from school.models import StudentApplication, Student
+from school.models import StudentApplication, AdminStudentApplication, Student
 from people.models import Staff
 
 
@@ -25,7 +25,7 @@ class Command(BaseCommand):
         # expired user : user is too old to candidate (35 years): 35 + 1
         expired_user = year - 36
         # keep user's selected infos (when user postulate more than one time)
-        sa_keep_users = StudentApplication.objects.filter(
+        sa_keep_users = AdminStudentApplication.objects.filter(
                         Q(selected=True) |
                         Q(wait_listed=True) |
                         # Organisation staff
@@ -44,7 +44,7 @@ class Command(BaseCommand):
         sa_olds = StudentApplication.objects.filter(
                         # __lte : less than equal year
                         created_on__year__lte=year,
-                        selected=False,
+                        administration__selected=False,
                   ).exclude(
                             # exclude selected user (=Artist)
                             artist__user__in=keep_users,
