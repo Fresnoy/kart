@@ -40,6 +40,13 @@ class IsOwnerOrReadOnly(permissions.IsAuthenticatedOrReadOnly):
         return obj == request.user or request.user.is_staff
 
 
+class UserIsArtistOrReadOnly(permissions.IsAuthenticatedOrReadOnly):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return obj.user == request.user or request.user.is_staff
+
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.exclude(username=ANONYMOUS_USER_NAME)
     # serializer_class = UserSerializer
@@ -168,7 +175,7 @@ class CustomPagination(pagination.PageNumberPagination):
 class ArtistViewSet(viewsets.ModelViewSet):
     queryset = Artist.objects.all().distinct()
     serializer_class = ArtistSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (UserIsArtistOrReadOnly,)
     filter_backends = (filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend)
     search_fields = ('=user__username',)
     filterset_fields = {'artworks': ['isnull'],

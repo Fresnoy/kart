@@ -242,6 +242,55 @@ class ArtistEndPoint(TestCase):
         self.assertIn("teacher", artist)
         self.assertIn("student", artist)
 
+    def test_owner_put_artist_infos(self):
+        """
+        Test PUT user info
+        """
+        client_auth = APIClient()
+        client_auth.force_authenticate(user=self.artist.user)
+
+        # change the nickname of the artist (be sure)
+        self.artist.nickname = ""
+        self.artist.save()
+
+        url = reverse('artist-detail', kwargs={'pk': self.artist.pk})
+        # PUT : must send All info
+        artist_data = client_auth.get(url).data
+        # set new name
+        artist_data['nickname'] = "JR"
+        # Put request
+        response = client_auth.put(url, data=artist_data, format='json')
+        # test update ok
+        self.assertEqual(response.status_code, 200)
+        response = client_auth.get(url)
+        # test info maj
+        self.assertEqual(response.data['nickname'], "JR")
+
+    def test_anotheruser_put_artist_infos(self):
+        """
+        Test PUT another info
+        """
+        anotheruser = FresnoyProfileFactory()
+        client_auth = APIClient()
+        client_auth.force_authenticate(user=anotheruser.user)
+
+        # change the nickname of the artist (be sure)
+        self.artist.nickname = ""
+        self.artist.save()
+
+        url = reverse('artist-detail', kwargs={'pk': self.artist.pk})
+        # PUT : must send All info
+        artist_data = client_auth.get(url).data
+        # set new name
+        artist_data['nickname'] = "JR"
+        # Put request
+        response = client_auth.put(url, data=artist_data, format='json')
+        # test update
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        response = client_auth.get(url)
+        # test info maj
+        self.assertEqual(response.data['nickname'], "")
+
 
 class ArtistSearchEndPoint(TestCase):
     """
