@@ -140,6 +140,7 @@ class StudentApplicationSetupSerializer(serializers.HyperlinkedModelSerializer):
                   'candidature_date_start',
                   'candidature_date_end',
                   'candidature_open',
+                  'information_and_tour_date',
                   'interviews_publish_date',
                   'selected_publish_date',
                   'interviews_start_date',
