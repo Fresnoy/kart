@@ -1,8 +1,10 @@
-import factory
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from django.http import HttpRequest
+
+from people.models import Artist
+from django.contrib.auth.models import User
 
 from school.utils import (
                     send_activation_email,
@@ -17,7 +19,24 @@ from school.utils import (
                     send_not_selected_candidature_email_to_candidat,
                     send_candidature_not_finalized_to_candidats,
                     )
-from school.tests.factories import AdminStudentApplicationFactory
+from school.models import StudentApplication, AdminStudentApplication, StudentApplicationSetup
+
+
+
+
+def getTemporaryAdminApplication(email):
+        user, created = User.objects.get_or_create(username="XXX", email=email)
+        artist = Artist.objects.create(user=user)
+        campaign = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
+        application = StudentApplication.objects.create(artist=artist, campaign=campaign)
+        admin_application = AdminStudentApplication.objects.create(application=application)
+
+        return admin_application
+
+def deleteTemporaryAdminApplication(admin_application):
+    admin_application.application.artist.user.delete()
+    admin_application.application.delete()
+    admin_application.delete()
 
 
 class Command(BaseCommand):
@@ -31,7 +50,7 @@ class Command(BaseCommand):
 
         email = options['email'] if options['email'] else settings.EMAIL_HOST_USER
 
-        application_admin = AdminStudentApplicationFactory()
+        application_admin = getTemporaryAdminApplication(email=email)
         application = application_admin.application
 
         user = application.artist.user
@@ -40,7 +59,7 @@ class Command(BaseCommand):
 
         request = HttpRequest()
         request.META["SERVER_NAME"] = settings.ALLOWED_HOSTS[0]
-        request.META["SERVER_PORT"] = "80"
+        request.META["SERVER_PORT"] = "443"
 
         send_activation_email(request=request, user=user)
         send_account_information_email(user=user)
@@ -50,9 +69,7 @@ class Command(BaseCommand):
 
         # ITW
         application_admin.selected_for_interview = True
-        application_admin.interview_date = factory.Faker._get_faker().date_time_this_year(before_now=False,
-                                                                                          after_now=True,
-                                                                                          tzinfo=timezone.utc)
+        application_admin.interview_date = timezone.now()
 
         send_interview_selection_email_to_candidat(request=request, candidat=user, application_admin=application_admin)
 
@@ -82,5 +99,10 @@ class Command(BaseCommand):
         application_admin.completed = False
         send_candidature_not_finalized_to_candidats(request=request, application_setup=application.campaign,
                                                     list_candidats=[user.email])
-
+        
+        # delete info created
+        deleteTemporaryAdminApplication(application_admin)
+        
         print("DONE")
+
+
