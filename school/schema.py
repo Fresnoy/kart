@@ -1,11 +1,13 @@
 import graphene
 from graphene_django import DjangoObjectType
+from graphene_django.filter import DjangoFilterConnectionField
 
 from datetime import datetime
 
 # from diffusion.models import Diffusion
 from people.models import FresnoyProfile
-from school.models import Student, Promotion, TeachingArtist, ScienceStudent, PhdStudent, VisitingStudent
+from school.models import (Student, Promotion, TeachingArtist, ScienceStudent, PhdStudent, VisitingStudent,
+                           StudentApplication, AdminStudentApplication)
 from people.schema import ProfileType, DynNameResolver, ArtistEmbeddedInterface
 from production.schema import Artwork, ArtworkType
 from diffusion.schema import DiffusionType
@@ -190,6 +192,36 @@ class PromoType(DjangoObjectType):
     # def resolve_picture(parent, info):
 
 
+class StudentApplicationType(DjangoObjectType):
+    class Meta:
+        model = StudentApplication
+        filterset_fields = ("campaign__is_current_setup",)
+        # interfaces = (ArtistEmbeddedInterface,)
+
+    id = graphene.ID(required=True, source='pk')
+
+class StudentApplicationAdminInterface(graphene.Interface):
+    id = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    selected = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+
+class StudentApplicationAdminType(DjangoObjectType):
+    class Meta:
+        model = AdminStudentApplication
+        interfaces = (graphene.Node, )
+        fields = "__all__"
+        filter_fields = ('application__application_completed',
+                        'application_complete',
+                        'selected_for_interview', 'application__remote_interview',
+                        'wait_listed_for_interview', 'selected', 'unselected',
+                        'application__campaign__is_current_setup',
+                        'wait_listed',)
+        use_connection = True
+
+    id = graphene.ID(required=True, source='pk')
+
+
 class Query(graphene.ObjectType):
     student = graphene.Field(StudentType, id=graphene.Int())
     students = graphene.List(StudentType)
@@ -209,6 +241,12 @@ class Query(graphene.ObjectType):
 
     visitingStudent = graphene.Field(VisitingStudentType, id=graphene.Int())
     visitingStudents = graphene.List(VisitingStudentType)
+
+    studentApplication = graphene.Field(StudentApplicationType, id=graphene.Int())
+    studentApplications = graphene.List(StudentApplicationType)
+
+    studentApplicationAdmin = graphene.Field(StudentApplicationAdminType, id=graphene.Int())
+    studentApplicationAdmins = DjangoFilterConnectionField(StudentApplicationAdminType)
 
     def resolve_students(root, info, **kwargs):
         students = Student.objects.all()
@@ -282,4 +320,32 @@ class Query(graphene.ObjectType):
         id = kwargs.get('id')
         if id is not None:
             return Promotion.objects.get(pk=id)
+        return None
+    
+    # student applications
+    def resolve_studentApplications(root, info, **kwargs):
+        # only staff
+        if info.context.user.is_staff:
+            return StudentApplication.objects.all()
+        return None
+
+    def resolve_studentApplication(root, info, **kwargs):
+        # get id 
+        id = kwargs.get('id')
+        if id is not None and info.context.user.is_staff:
+            return StudentApplication.objects.get(pk=id)
+        return None
+    
+    # student applications admin
+    def resolve_studentApplicationAdmins(root, info, **kwargs):
+        if info.context.user.is_staff:
+            return AdminStudentApplication.objects.all()
+        return None
+
+    def resolve_studentApplicationAdmin(root, info, **kwargs):
+        print(info.context.user)
+        # get id 
+        id = kwargs.get('id')
+        if id is not None and info.context.user.is_staff:
+            return AdminStudentApplication.objects.get(pk=id)
         return None
