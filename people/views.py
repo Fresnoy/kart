@@ -68,8 +68,9 @@ class UserViewSet(viewsets.ModelViewSet):
         Update by imself
         """
         # user applying this session was not born before the date
-        birthdate = request.data.get('profile').get('birthdate')
-        if (birthdate):
+        profile = request.data.get('profile')
+        if (profile):
+            birthdate = profile.get('birthdate')
             user = request.user
             # select current year application for current user
             user_application = StudentApplication.objects.filter(
@@ -77,7 +78,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 artist__user=user
                 ).first()
             # if any compare update and max date of born
-            if(user_application):
+            if(user_application and birthdate):
                 # uniformize dates
                 update_birthdate = datetime.strptime(birthdate, '%Y-%m-%d').date()
                 min_birthdate = user_application.campaign.date_of_birth_max
