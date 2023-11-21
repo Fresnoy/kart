@@ -51,7 +51,8 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.exclude(username=ANONYMOUS_USER_NAME)
     # serializer_class = UserSerializer
     permission_classes = (IsOwnerOrReadOnly,)
-    filter_backends = (filters.SearchFilter,)
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend)
+    filterset_fields = ('artist__student_application__campaign__is_current_setup',)
     search_fields = ('=username', '=email')
 
     def get_serializer_class(self, *args, **kwargs):
