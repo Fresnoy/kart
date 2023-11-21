@@ -44,7 +44,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         # -- required
-        parser.add_argument("--email", type=str, help='Default : selection@lefresnoy.net')
+        parser.add_argument("--email", type=str, help='Default : selection@lefresnoy')
 
     def handle(self, *args, **options):
 

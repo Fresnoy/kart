@@ -1,4 +1,4 @@
-
+import json
 from datetime import datetime
 from django.conf import settings
 
@@ -68,7 +68,8 @@ class UserViewSet(viewsets.ModelViewSet):
         Update by imself
         """
         # user applying this session was not born before the date
-        if (request.data.get('profile.birthdate')):
+        birthdate = request.data.get('profile').get('birthdate')
+        if (birthdate):
             user = request.user
             # select current year application for current user
             user_application = StudentApplication.objects.filter(
@@ -78,7 +79,7 @@ class UserViewSet(viewsets.ModelViewSet):
             # if any compare update and max date of born
             if(user_application):
                 # uniformize dates
-                update_birthdate = datetime.strptime(request.data.get('profile.birthdate'), '%Y-%m-%d').date()
+                update_birthdate = datetime.strptime(birthdate, '%Y-%m-%d').date()
                 min_birthdate = user_application.campaign.date_of_birth_max
                 # compare date
                 if (update_birthdate < min_birthdate):
