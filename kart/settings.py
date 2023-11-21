@@ -83,7 +83,6 @@ MIDDLEWARE = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-
     'corsheaders.middleware.CorsMiddleware',
 
 )
@@ -120,6 +119,7 @@ TEMPLATES = [
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  # this is default
     'guardian.backends.ObjectPermissionBackend',
+    'graphql_jwt.backends.JSONWebTokenBackend',
 )
 
 ROOT_URLCONF = 'kart.urls'
@@ -183,12 +183,16 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": datetime.timedelta(days=15),
     "AUTH_HEADER_TYPES": ("JWT",),
+
 }
 REST_AUTH = {
     'USE_JWT': True,
+    'JWT_TOKEN_CLAIMS_SERIALIZER': 'kart.utils.CustomTokenObtainPairSerializer',
 }
-
 # Graphene
 GRAPHENE = {
-    "SCHEMA": "kart.schema.schema"
+    "SCHEMA": "kart.schema.schema",
+    "MIDDLEWARE": [
+        'graphql_jwt.middleware.JSONWebTokenMiddleware',
+    ],
 }
