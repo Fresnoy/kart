@@ -59,6 +59,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.CreateModel(
             name='AdminStudentApplication',
+            options={'verbose_name': 'Student application admin'},
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('observation', models.TextField(blank=True, help_text='Comments on the application', null=True)),

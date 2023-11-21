@@ -52,6 +52,7 @@ class TeachingArtistAdmin(admin.ModelAdmin):
 
 @admin.register(AdminStudentApplication)
 class AdminStudentApplicationAdmin(admin.ModelAdmin):
+    
     search_fields = ['application__artist__user__first_name', 'application__artist__user__last_name',
                      'application__artist__nickname']
     ordering = ['-application__created_on__year', 'application__artist__user__last_name']
@@ -65,6 +66,7 @@ class AdminStudentApplicationAdmin(admin.ModelAdmin):
             return obj.application.campaign.promotion.starting_year
 
     list_display = (
+        'id',
         'candidat',
         'year',
         'selected',
