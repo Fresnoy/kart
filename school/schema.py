@@ -200,23 +200,25 @@ class StudentApplicationType(DjangoObjectType):
 
     id = graphene.ID(required=True, source='pk')
 
+
 class StudentApplicationAdminInterface(graphene.Interface):
     id = graphene.String(
         resolver=DynNameResolver(interface="StudentEmbedded"))
     selected = graphene.String(
         resolver=DynNameResolver(interface="StudentEmbedded"))
 
+
 class StudentApplicationAdminType(DjangoObjectType):
     class Meta:
         model = AdminStudentApplication
-        interfaces = (graphene.Node, )
+        interfaces = (graphene.Node,)
         fields = "__all__"
         filter_fields = ('application__application_completed',
-                        'application_complete',
-                        'selected_for_interview', 'application__remote_interview',
-                        'wait_listed_for_interview', 'selected', 'unselected',
-                        'application__campaign__is_current_setup',
-                        'wait_listed',)
+                         'application_complete',
+                         'selected_for_interview', 'application__remote_interview',
+                         'wait_listed_for_interview', 'selected', 'unselected',
+                         'application__campaign__is_current_setup',
+                         'wait_listed',)
         use_connection = True
 
     id = graphene.ID(required=True, source='pk')
@@ -321,7 +323,7 @@ class Query(graphene.ObjectType):
         if id is not None:
             return Promotion.objects.get(pk=id)
         return None
-    
+
     # student applications
     def resolve_studentApplications(root, info, **kwargs):
         # only staff
@@ -330,12 +332,12 @@ class Query(graphene.ObjectType):
         return None
 
     def resolve_studentApplication(root, info, **kwargs):
-        # get id 
+        # get id
         id = kwargs.get('id')
         if id is not None and info.context.user.is_staff:
             return StudentApplication.objects.get(pk=id)
         return None
-    
+
     # student applications admin
     def resolve_studentApplicationAdmins(root, info, **kwargs):
         if info.context.user.is_staff:
@@ -344,7 +346,7 @@ class Query(graphene.ObjectType):
 
     def resolve_studentApplicationAdmin(root, info, **kwargs):
         print(info.context.user)
-        # get id 
+        # get id
         id = kwargs.get('id')
         if id is not None and info.context.user.is_staff:
             return AdminStudentApplication.objects.get(pk=id)

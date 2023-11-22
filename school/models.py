@@ -372,9 +372,9 @@ class AdminStudentApplication(models.Model):
     """
     Admin part of the Student Application
     """
-    class Meta: 
+    class Meta:
         verbose_name = 'Student application admin'
-    
+
     application = models.OneToOneField(StudentApplication, related_name='administration',
                                        null=True, blank=False, on_delete=models.SET_NULL)
     # Administration

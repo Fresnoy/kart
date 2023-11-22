@@ -22,16 +22,15 @@ from school.utils import (
 from school.models import StudentApplication, AdminStudentApplication, StudentApplicationSetup
 
 
-
-
 def getTemporaryAdminApplication(email):
-        user, created = User.objects.get_or_create(username="XXX", email=email)
-        artist = Artist.objects.create(user=user)
-        campaign = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
-        application = StudentApplication.objects.create(artist=artist, campaign=campaign)
-        admin_application = AdminStudentApplication.objects.create(application=application)
+    user, created = User.objects.get_or_create(username="XXX", email=email)
+    artist = Artist.objects.create(user=user)
+    campaign = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
+    application = StudentApplication.objects.create(artist=artist, campaign=campaign)
+    admin_application = AdminStudentApplication.objects.create(application=application)
 
-        return admin_application
+    return admin_application
+
 
 def deleteTemporaryAdminApplication(admin_application):
     admin_application.application.artist.user.delete()
@@ -99,10 +98,8 @@ class Command(BaseCommand):
         application_admin.completed = False
         send_candidature_not_finalized_to_candidats(request=request, application_setup=application.campaign,
                                                     list_candidats=[user.email])
-        
+
         # delete info created
         deleteTemporaryAdminApplication(application_admin)
-        
+
         print("DONE")
-
-
