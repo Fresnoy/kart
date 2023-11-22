@@ -7,7 +7,7 @@ from datetime import datetime
 # from diffusion.models import Diffusion
 from people.models import FresnoyProfile
 from school.models import (Student, Promotion, TeachingArtist, ScienceStudent, PhdStudent, VisitingStudent,
-                           StudentApplication, AdminStudentApplication)
+                           StudentApplication, StudentApplicationSetup, AdminStudentApplication)
 from people.schema import ProfileType, DynNameResolver, ArtistEmbeddedInterface
 from production.schema import Artwork, ArtworkType
 from diffusion.schema import DiffusionType
@@ -192,6 +192,13 @@ class PromoType(DjangoObjectType):
     # def resolve_picture(parent, info):
 
 
+class StudentApplicationSetupType(DjangoObjectType):
+    class Meta:
+        model = StudentApplicationSetup
+
+    id = graphene.ID(required=True, source='pk')
+
+
 class StudentApplicationType(DjangoObjectType):
     class Meta:
         model = StudentApplication
@@ -247,8 +254,11 @@ class Query(graphene.ObjectType):
     studentApplication = graphene.Field(StudentApplicationType, id=graphene.Int())
     studentApplications = graphene.List(StudentApplicationType)
 
+    studentApplicationSetup = graphene.Field(StudentApplicationSetupType, id=graphene.Int())
+    studentApplicationSetups = graphene.List(StudentApplicationSetupType)
+
     studentApplicationAdmin = graphene.Field(StudentApplicationAdminType, id=graphene.Int())
-    studentApplicationAdmins = DjangoFilterConnectionField(StudentApplicationAdminType)
+    studentApplicationAdmins = DjangoFilterConnectionField(StudentApplicationAdminType, max_limit=None)
 
     def resolve_students(root, info, **kwargs):
         students = Student.objects.all()
@@ -336,6 +346,11 @@ class Query(graphene.ObjectType):
         id = kwargs.get('id')
         if id is not None and info.context.user.is_staff:
             return StudentApplication.objects.get(pk=id)
+        return None
+    
+    def resolve_studentApplicationSetups(root, info, **kwargs):
+        if info.context.user.is_authenticated:            
+            return StudentApplicationSetup.objects.all()
         return None
 
     # student applications admin
