@@ -202,12 +202,14 @@ class TestApplicationEndPoint(TestCase):
         user_url = reverse('user-detail', kwargs={'pk': self.user.pk})
         # update bad info
         response = self.client_auth.patch(user_url,
-                                          data={'profile.birthdate': '1983-12-30'})
+                                          data={'profile': {'birthdate': '1983-12-30'}},
+                                          format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertNotEqual(self.user.profile.birthdate, '1983-12-30')
         # update OK info
         response = self.client_auth.patch(user_url,
-                                          data={'profile.birthdate': '1983-12-31'})
+                                          data={'profile': {'birthdate': '1983-12-31'}},
+                                          format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['profile']['birthdate'], '1983-12-31')
 
