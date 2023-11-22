@@ -1,4 +1,3 @@
-import json
 from datetime import datetime
 from django.conf import settings
 
@@ -68,9 +67,9 @@ class UserViewSet(viewsets.ModelViewSet):
         Update by imself
         """
         # user applying this session was not born before the date
-        profile = request.data.get('profile')
-        if (profile):
-            birthdate = profile.get('birthdate')
+        data = request.data
+        if (data.get('profile') and data.get('profile').get('birthdate')):
+            birthdate = data.get('profile').get('birthdate')
             user = request.user
             # select current year application for current user
             user_application = StudentApplication.objects.filter(
