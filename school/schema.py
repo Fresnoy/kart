@@ -254,7 +254,9 @@ class Query(graphene.ObjectType):
     studentApplication = graphene.Field(StudentApplicationType, id=graphene.Int())
     studentApplications = graphene.List(StudentApplicationType)
 
-    studentApplicationSetup = graphene.Field(StudentApplicationSetupType, id=graphene.Int())
+    # Setup can be filtered by id or by current_setup
+    studentApplicationSetup = graphene.Field(StudentApplicationSetupType, id=graphene.Int(),
+                                             is_current_setup=graphene.Boolean(required=False))
     studentApplicationSetups = graphene.List(StudentApplicationSetupType)
 
     studentApplicationAdmin = graphene.Field(StudentApplicationAdminType, id=graphene.Int())
@@ -347,9 +349,21 @@ class Query(graphene.ObjectType):
         if id is not None and info.context.user.is_staff:
             return StudentApplication.objects.get(pk=id)
         return None
-    
+
+    def resolve_studentApplicationSetup(root, info, **kwargs):
+        # get id
+        id = kwargs.get('id')
+        # get current (is_current_setup)
+        is_current_setup = kwargs.get('is_current_setup')
+        if info.context.user.is_authenticated:
+            if id:
+                return StudentApplicationSetup.objects.get(pk=id)
+            if is_current_setup is not None:
+                return StudentApplicationSetup.objects.filter(is_current_setup=is_current_setup).first()
+        return None
+
     def resolve_studentApplicationSetups(root, info, **kwargs):
-        if info.context.user.is_authenticated:            
+        if info.context.user.is_authenticated:
             return StudentApplicationSetup.objects.all()
         return None
 
