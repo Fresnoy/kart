@@ -6,8 +6,10 @@ from django.core.management.base import BaseCommand
 
 from django.db.models import Q
 
-from school.models import StudentApplication, AdminStudentApplication, Student
+from school.models import (StudentApplication, AdminStudentApplication, Student, ScienceStudent, 
+                           VisitingStudent, TeachingArtist)
 from people.models import Staff
+from production.models import Artwork
 
 
 class Command(BaseCommand):
@@ -29,16 +31,30 @@ class Command(BaseCommand):
                         Q(selected=True) |
                         Q(wait_listed=True) |
                         # Organisation staff
-                        Q(artist__user__is_staff=True) |
+                        Q(application__artist__user__is_staff=True) |
                         # in case of bad manipulation we keep current year's application infos
-                        Q(created_on__year=datetime.date.today().year)
-                       ).values_list("artist__user")
+                        Q(application__created_on__year=datetime.date.today().year)
+                       ).values_list("application__artist__user")
         # keep staff user (they may postulate)
         staff_keep_users = Staff.objects.all().values_list("user")
         # keep student
         student_keep_users = Student.objects.all().values_list("user")
+        # keep scientist
+        science_student_keep_users = ScienceStudent.objects.all().values_list("student__artist__user")
+        # keep visiting student
+        visiting_student_keep_users = VisitingStudent.objects.all().values_list("artist__user")
+        # keep teaching artist (why not?)
+        teaching_artist_keep_users = TeachingArtist.objects.all().values_list("artist__user")
+        # keep user making artworks
+        artwork_artist_keep_users = Artwork.objects.all().values_list("authors__user")
         # keep user
-        keep_users = list(chain(sa_keep_users, staff_keep_users, student_keep_users))
+        keep_users = list(chain(sa_keep_users,
+                                staff_keep_users,
+                                student_keep_users,
+                                science_student_keep_users,
+                                visiting_student_keep_users,
+                                teaching_artist_keep_users,
+                                artwork_artist_keep_users))
 
         # take olds application : last year exclude selected
         sa_olds = StudentApplication.objects.filter(
@@ -76,7 +92,9 @@ class Command(BaseCommand):
         print("Traitement des candidatures <= ", year)
         print("**** Total de : ")
         print("**** {} candidatures".format(StudentApplication.objects.all().count()))
-        print("**** {} candidatures a garder (are Student or Staff)".format(len(keep_users)))
+        print("**** {} candidature a garder (are Student, Staff, visiting Artist, Teaching, )"\
+              .format(StudentApplication.objects.all().count() - len(sa_expired)))
+        print("**** {} user a garder (are Student, Staff, visiting Artist, Teaching, )".format(len(keep_users)))
         print("**** {} étudiants".format(Student.objects.all().count()))
 
         print("Liste des informations qui vont être supprimées : ")
