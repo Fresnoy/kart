@@ -26,8 +26,8 @@ Hello,
   Email: {{user.email}}
 
 
-  You can connect  here {{authentification_url}}
-  To change your password, click  here: {{recover_password_url}}
+  You can connect  here {{authentification_url}}?language=en
+  To change your password, click  here: {{recover_password_url}}?language=en
 
 
   The teaching staff
