@@ -2,6 +2,7 @@
 import locale
 import pytz
 
+from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
 
@@ -30,7 +31,7 @@ def send_activation_email(request, user):
 
     mail_sent = send_mail('Confirmez la création de votre compte',
                           msg_plain,
-                          'selection@lefresnoy.net',
+                          settings.FROM_EMAIL,
                           [user.email],
                           html_message=msg_html,
                           )
@@ -57,7 +58,7 @@ def send_account_information_email(user):
                                 })
     mail_sent = send_mail('Résumé de votre compte / Account information',
                           msg_plain,
-                          'selection@lefresnoy.net',
+                          settings.FROM_EMAIL,
                           [user.email],
                           html_message=msg_html,
                           )
@@ -82,7 +83,7 @@ def send_candidature_completed_email_to_user(request, user, application):
     )
     mail_sent = send_mail('Réception de votre candidature / Application Received',
                           msg_plain,
-                          'selection@lefresnoy.net',
+                          settings.FROM_EMAIL,
                           [user.email],
                           html_message=msg_html,
                           )
@@ -113,7 +114,7 @@ def send_candidature_completed_email_to_admin(request, user, application_admin):
     )
     mail_sent = send_mail('Envoi d\'une candidature',
                           msg_plain,
-                          'selection@lefresnoy.net',
+                          settings.FROM_EMAIL,
                           ['selection@lefresnoy.net'],
                           html_message=msg_html,
                           )
@@ -161,7 +162,7 @@ def send_candidature_complete_email_to_candidat(request, candidat, application_a
     )
     mail_sent = send_mail('Votre candidature est complète / Candidature is complete',
                           msg_plain,
-                          'selection@lefresnoy.net',
+                          settings.FROM_EMAIL,
                           [candidat.email],
                           html_message=msg_html,
                           )
@@ -205,7 +206,7 @@ def send_interview_selection_email_to_candidat(request, candidat, application_ad
     )
     mail_sent = send_mail('Le Fresnoy présélection / preselection',
                           msg_plain,
-                          'selection@lefresnoy.net',
+                          settings.FROM_EMAIL,
                           [candidat.email],
                           html_message=msg_html,
                           )
@@ -246,7 +247,7 @@ def send_interview_selection_on_waitlist_email_to_candidat(request, candidat, ap
     )
     mail_sent = send_mail('Candidature | Le Fresnoy – Studio national des arts contemporains',
                           msg_plain,
-                          'selection@lefresnoy.net',
+                          settings.FROM_EMAIL,
                           [candidat.email],
                           html_message=msg_html,
                           )
@@ -271,7 +272,7 @@ def send_selected_candidature_email_to_candidat(request, candidat, application_a
 
     mail_sent = send_mail(subject,
                           msg_plain,
-                          'selection@lefresnoy.net',
+                          settings.FROM_EMAIL,
                           [candidat.email],
                           html_message=msg_html,
                           )
@@ -298,7 +299,7 @@ def send_selected_on_waitlist_candidature_email_to_candidat(request, candidat, a
 
     mail_sent = send_mail(subject,
                           msg_plain,
-                          'selection@lefresnoy.net',
+                          settings.FROM_EMAIL,
                           [candidat.email],
                           html_message=msg_html,
                           )
@@ -325,7 +326,7 @@ def send_not_selected_candidature_email_to_candidat(request, candidat, applicati
 
     mail_sent = send_mail(subject,
                           msg_plain,
-                          'selection@lefresnoy.net',
+                          settings.FROM_EMAIL,
                           [candidat.email],
                           html_message=msg_html,
                           )
@@ -362,7 +363,7 @@ def send_candidature_not_finalized_to_candidats(request, application_setup, list
     )
     mail = EmailMultiAlternatives('Finalisez votre candidature / Finalize your application ',
                                   msg_plain,
-                                  'selection@lefresnoy.net',
+                                  settings.FROM_EMAIL,
                                   ['selection@lefresnoy.net', ],
                                   bcc=list_candidats,  # bcc
                                   reply_to=['selection@lefresnoy.net'],
