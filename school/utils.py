@@ -29,7 +29,7 @@ def send_activation_email(request, user):
     msg_plain = render_to_string('emails/account/send_activation_link.txt', {'url': absolute_url})
     msg_html = render_to_string('emails/account/send_activation_link.html', {'url': absolute_url})
 
-    mail_sent = send_mail('Confirmez la création de votre compte',
+    mail_sent = send_mail('Confirmez la création de votre compte / Confirm your account ',
                           msg_plain,
                           settings.FROM_EMAIL,
                           [user.email],
@@ -204,7 +204,7 @@ def send_interview_selection_email_to_candidat(request, candidat, application_ad
             'interview_date': interview_date,
         }
     )
-    mail_sent = send_mail('Le Fresnoy présélection / preselection',
+    mail_sent = send_mail('Candidature présélectionnée / Shortlisted application',
                           msg_plain,
                           settings.FROM_EMAIL,
                           [candidat.email],
@@ -245,7 +245,8 @@ def send_interview_selection_on_waitlist_email_to_candidat(request, candidat, ap
             'interviews_dates': interviews_dates
         }
     )
-    mail_sent = send_mail('Candidature | Le Fresnoy – Studio national des arts contemporains',
+    subject = 'Candidature en liste d\'attente pour l\'entretien / Application on waiting list for interview'
+    mail_sent = send_mail(subject,
                           msg_plain,
                           settings.FROM_EMAIL,
                           [candidat.email],
@@ -268,7 +269,7 @@ def send_selected_candidature_email_to_candidat(request, candidat, application_a
             'user': candidat,
         }
     )
-    subject = 'Candidature | Le Fresnoy – Studio national des arts contemporains '
+    subject = 'Candidature Sélectionnée / Application selected'
 
     mail_sent = send_mail(subject,
                           msg_plain,
@@ -295,7 +296,7 @@ def send_selected_on_waitlist_candidature_email_to_candidat(request, candidat, a
             'user': candidat,
         }
     )
-    subject = 'Candidature | Le Fresnoy – Studio national des arts contemporains '
+    subject = 'Candidature en liste d\'attente / Application on waiting list'
 
     mail_sent = send_mail(subject,
                           msg_plain,
@@ -322,7 +323,7 @@ def send_not_selected_candidature_email_to_candidat(request, candidat, applicati
             'user': candidat,
         }
     )
-    subject = 'Candidature | Le Fresnoy – Studio national des arts contemporains '
+    subject = 'Candidature non sélectionée / Application not selected'
 
     mail_sent = send_mail(subject,
                           msg_plain,
