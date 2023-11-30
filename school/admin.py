@@ -54,7 +54,7 @@ class TeachingArtistAdmin(admin.ModelAdmin):
 class AdminStudentApplicationAdmin(admin.ModelAdmin):
     search_fields = ['application__artist__user__first_name', 'application__artist__user__last_name',
                      'application__artist__nickname']
-    ordering = ['-application__created_on__year', 'application__artist__user__last_name']
+    ordering = ['-id', '-application__created_on__year', 'application__artist__user__last_name']
 
     def candidat(self, obj):
         if obj.application and obj.application.artist:
