@@ -1,6 +1,7 @@
 import graphene
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
+from graphql_jwt.decorators import staff_member_required
 
 from datetime import datetime
 
@@ -218,7 +219,7 @@ class StudentApplicationAdminInterface(graphene.Interface):
 class StudentApplicationAdminType(DjangoObjectType):
     class Meta:
         model = AdminStudentApplication
-        interfaces = (graphene.Node,)
+        interfaces = (graphene.relay.Node,)
         fields = "__all__"
         filter_fields = ('application__application_completed',
                          'application_complete',
@@ -226,9 +227,12 @@ class StudentApplicationAdminType(DjangoObjectType):
                          'wait_listed_for_interview', 'selected', 'unselected',
                          'application__campaign__is_current_setup',
                          'wait_listed',)
-        use_connection = True
 
     id = graphene.ID(required=True, source='pk')
+    interview_date2 = graphene.types.datetime.DateTime()
+
+    def resolve_interview_date2(self, info):
+      return self.interview_date
 
 
 class Query(graphene.ObjectType):
@@ -367,16 +371,10 @@ class Query(graphene.ObjectType):
             return StudentApplicationSetup.objects.all()
         return None
 
-    # student applications admin
+    @staff_member_required
     def resolve_studentApplicationAdmins(root, info, **kwargs):
-        if info.context.user.is_staff:
-            return AdminStudentApplication.objects.all()
-        return None
+        return AdminStudentApplication.objects.all()
 
+    @staff_member_required
     def resolve_studentApplicationAdmin(root, info, **kwargs):
-        print(info.context.user)
-        # get id
-        id = kwargs.get('id')
-        if id is not None and info.context.user.is_staff:
-            return AdminStudentApplication.objects.get(pk=id)
-        return None
+        return AdminStudentApplication.objects.get(pk=id)
