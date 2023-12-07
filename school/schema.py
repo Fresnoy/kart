@@ -229,10 +229,10 @@ class StudentApplicationAdminType(DjangoObjectType):
                          'wait_listed',)
 
     id = graphene.ID(required=True, source='pk')
-    interview_date2 = graphene.types.datetime.DateTime()
 
-    def resolve_interview_date2(self, info):
-      return self.interview_date
+    def resolve_interview_date(self, info):
+      # why ?
+      return self.interview_date.astimezone()
 
 
 class Query(graphene.ObjectType):
