@@ -231,8 +231,8 @@ class StudentApplicationAdminType(DjangoObjectType):
     id = graphene.ID(required=True, source='pk')
 
     def resolve_interview_date(self, info):
-      # why ?
-      return self.interview_date.astimezone()
+        # why ?
+        return self.interview_date.astimezone()
 
 
 class Query(graphene.ObjectType):
