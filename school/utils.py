@@ -137,9 +137,9 @@ def send_candidature_complete_email_to_candidat(request, candidat, application_a
     interviews_dates = {'fr': '', "en": ''}
     # having name of day/month in rigth language
     setLocale('fr_FR.utf8')
-    interviews_dates['fr'] = "du {0} au {1}".format(setup.interviews_start_date.strftime("%A %d %B"),
-                                                    setup.interviews_end_date.strftime("%A %d %B %Y")
-                                                    )
+    interviews_dates['fr'] = "entre le {0} et le {1}".format(setup.interviews_start_date.strftime("%A %d %B"),
+                                                             setup.interviews_end_date.strftime("%A %d %B %Y")
+                                                             )
     setLocale('en_US.utf8')
     interviews_dates['en'] = "from {0} to {1}".format(setup.interviews_start_date.strftime("%A %d %B"),
                                                       setup.interviews_end_date.strftime("%A %d %B %Y")
@@ -348,7 +348,7 @@ def send_candidature_not_finalized_to_candidats(request, application_setup, list
         candidature_date_end.strftime("%Hh%M")
     )
     setLocale('en_US.utf8')
-    application_end['en'] = candidature_date_end.strftime("%I %p/%H.%M (Paris time) on %A %d %B %Y")
+    application_end['en'] = candidature_date_end.strftime("%-I %p (Paris time) on %A %d %B %Y")
     # Send email : NOT SELECTED
     msg_plain = render_to_string(
         'emails/send_candidature_not_finalized_to_candidat.txt',

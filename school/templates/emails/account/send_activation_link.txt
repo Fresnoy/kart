@@ -1,19 +1,20 @@
 Bonjour,
 
-Afin de poursuivre votre procédure de candidature au Fresnoy, merci de confirmer votre email en suivant
+Afin de poursuivre votre procédure de candidature au Fresnoy – Studio national, merci de confirmer votre email en suivant
 ce lien : {{url}}.
 
 Bien cordialement,
 
-L'équipe du Fresnoy
+L'équipe du Fresnoy – Studio national des arts contemporains
 
 ==  English version below ==
 
 Hello,
 
-To continue your application procedure at Le Fresnoy, please confirm your email by follow the link : {{url}}.
+To continue your application procedure at Le Fresnoy – Studio national, please confirm your email by follow the 
+link : {{url}}.
 For any question, feel free to contact us  by replying to the present email.
 
 Kind regards,
 
-The team at Le Fresnoy
+The team at Le Fresnoy – Studio national des arts contemporains
