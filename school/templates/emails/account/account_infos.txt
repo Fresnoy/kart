@@ -3,14 +3,14 @@ Bonjour,
   Prénom : {{user.first_name}}
   Nom : {{user.last_name}}
   Nom d'utilisateur : {{user.username}}
-  Email : {{user.email}}
+  E-mail : {{user.email}}
 </ul>
 
   Connectez vous via ce lien : {{authentification_url}}.
   Vous pouvez changer votre mot de passe en utilisant ce lien : {{recover_password_url}} .
 
 
-  L'équipe du Fresnoy
+  L'équipe du Fresnoy  des arts contemporains
 
 
 ==  English version below ==
@@ -26,8 +26,8 @@ Hello,
   Email: {{user.email}}
 
 
-  You can connect  here {{authentification_url}}
-  To change your password, click  here: {{recover_password_url}}
+  You can connect  here {{authentification_url}}?language=en
+  To change your password, click  here: {{recover_password_url}}?language=en
 
 
-  The teaching staff
+The team at Le Fresnoy – Studio national des arts contemporains

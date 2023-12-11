@@ -11,6 +11,8 @@ from common.models import Website
 
 
 class FresnoyProfile(models.Model):
+    class Meta:
+        ordering = ['user__first_name']
 
     GENDER_CHOICES = (
         ('M', 'Male'),

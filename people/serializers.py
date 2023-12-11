@@ -58,6 +58,7 @@ class PublicFresnoyProfileSerializer(serializers.ModelSerializer):
             "is_staff",
             "is_student",
         )
+        read_only_fields = ("id", "photo", "nationality", "is_artist", "is_staff", "is_student",)
 
     id = serializers.ReadOnlyField()
 
@@ -107,8 +108,9 @@ class PublicUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'url', 'username', 'first_name', 'last_name', 'profile')
+        read_only_fields = ('id', 'url', 'username', 'first_name', 'last_name', 'profile')
 
-    profile = PublicFresnoyProfileSerializer(required=False)
+    profile = PublicFresnoyProfileSerializer(required=False, read_only=True)
 
 
 class ArtistSerializer(serializers.HyperlinkedModelSerializer):

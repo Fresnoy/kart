@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from people.serializers import PublicUserSerializer
 
 from .models import (Promotion, Student, PhdStudent, ScienceStudent, TeachingArtist,
-                     VisitingStudent, StudentApplication, StudentApplicationSetup)
+                     VisitingStudent, StudentApplication, StudentApplicationSetup, AdminStudentApplication)
 from .search_indexes import StudentIndex
 from .utils import candidature_close
 
@@ -102,6 +102,15 @@ class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
                   'free_document',
                   'remark',
                   'application_completed',
+                  'created_on',
+                  'updated_on',)
+
+
+class AdminStudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = AdminStudentApplication
+        fields = ('id',
+                  'application',
                   'application_complete',
                   'wait_listed_for_interview',
                   'position_in_interview_waitlist',
@@ -111,9 +120,7 @@ class StudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
                   'unselected',
                   'wait_listed',
                   'position_in_waitlist',
-                  'observation',
-                  'created_on',
-                  'updated_on',)
+                  'observation',)
 
 
 class PublicStudentApplicationSerializer(serializers.HyperlinkedModelSerializer):
@@ -133,6 +140,7 @@ class StudentApplicationSetupSerializer(serializers.HyperlinkedModelSerializer):
                   'candidature_date_start',
                   'candidature_date_end',
                   'candidature_open',
+                  'information_and_tour_date',
                   'interviews_publish_date',
                   'selected_publish_date',
                   'interviews_start_date',

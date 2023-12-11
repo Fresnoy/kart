@@ -79,3 +79,10 @@ class StudentApplicationFactory(factory.django.DjangoModelFactory):
 
     artist = factory.SubFactory(ArtistFactory)
     campaign = factory.SubFactory(StudentApplicationSetupFactory)
+
+
+class AdminStudentApplicationFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.AdminStudentApplication
+
+    application = factory.SubFactory(StudentApplicationFactory)

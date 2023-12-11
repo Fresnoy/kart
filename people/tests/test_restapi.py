@@ -6,11 +6,12 @@ from django.test import TestCase
 from django.urls import reverse
 
 from rest_framework.test import APIClient
+from rest_framework import status
 
 from people.models import FresnoyProfile
-from utils.tests.factories import UserFactory
 
-from .factories import ArtistFactory
+from utils.tests.factories import UserFactory
+from .factories import ArtistFactory, FresnoyProfileFactory
 
 
 class UserEndPoint(TestCase):
@@ -84,6 +85,10 @@ class UserEndPoint(TestCase):
         client_auth = APIClient()
         client_auth.force_authenticate(user=self.user)
 
+        # change the name of the user (be sure)
+        self.user.first_name = "Mickey"
+        self.user.save()
+
         url = reverse('user-detail', kwargs={'pk': self.user.pk})
         # PUT : must send All info
         user_data = client_auth.get(url).data
@@ -93,6 +98,57 @@ class UserEndPoint(TestCase):
         response = client_auth.put(url, data=user_data, format='json')
         # test update ok
         self.assertEqual(response.status_code, 200)
+        response = client_auth.get(url)
+        # test info maj
+        self.assertEqual(response.data['first_name'], "Andy")
+
+    def test_put_anotheruser_infos(self):
+        """
+        Test PUT another info
+        """
+        anotheruser = FresnoyProfileFactory()
+        client_auth = APIClient()
+        client_auth.force_authenticate(user=anotheruser.user)
+
+        # change the name of the user (be sure)
+        self.user.first_name = "Mickey"
+        self.user.save()
+        # get details from another user
+        url = reverse('user-detail', kwargs={'pk': self.user.pk})
+        # PUT : must send All info
+        user_data = client_auth.get(url).data
+        # set new name
+        user_data['first_name'] = "Andy"
+        # Put request
+        response = client_auth.put(url, data=user_data, format='json')
+        # test update
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        response = client_auth.get(url)
+        # test info maj
+        self.assertEqual(response.data['first_name'], "Mickey")
+
+    def test_staff_put_anotheruser_infos(self):
+        """
+        Test PUT another info
+        """
+        anotheruser = FresnoyProfileFactory()
+        anotheruser.user.is_staff = True
+        client_auth = APIClient()
+        client_auth.force_authenticate(user=anotheruser.user)
+
+        # change the name of the user (be sure)
+        self.user.first_name = "Mickey"
+        self.user.save()
+        # get details from another user
+        url = reverse('user-detail', kwargs={'pk': self.user.pk})
+        # PUT : must send All info
+        user_data = client_auth.get(url).data
+        # set new name
+        user_data['first_name'] = "Andy"
+        # Put request
+        response = client_auth.put(url, data=user_data, format='json')
+        # test update : OK
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         response = client_auth.get(url)
         # test info maj
         self.assertEqual(response.data['first_name'], "Andy")
@@ -185,6 +241,55 @@ class ArtistEndPoint(TestCase):
         self.assertIn("artworks", artist)
         self.assertIn("teacher", artist)
         self.assertIn("student", artist)
+
+    def test_owner_put_artist_infos(self):
+        """
+        Test PUT user info
+        """
+        client_auth = APIClient()
+        client_auth.force_authenticate(user=self.artist.user)
+
+        # change the nickname of the artist (be sure)
+        self.artist.nickname = ""
+        self.artist.save()
+
+        url = reverse('artist-detail', kwargs={'pk': self.artist.pk})
+        # PUT : must send All info
+        artist_data = client_auth.get(url).data
+        # set new name
+        artist_data['nickname'] = "JR"
+        # Put request
+        response = client_auth.put(url, data=artist_data, format='json')
+        # test update ok
+        self.assertEqual(response.status_code, 200)
+        response = client_auth.get(url)
+        # test info maj
+        self.assertEqual(response.data['nickname'], "JR")
+
+    def test_anotheruser_put_artist_infos(self):
+        """
+        Test PUT another info
+        """
+        anotheruser = FresnoyProfileFactory()
+        client_auth = APIClient()
+        client_auth.force_authenticate(user=anotheruser.user)
+
+        # change the nickname of the artist (be sure)
+        self.artist.nickname = ""
+        self.artist.save()
+
+        url = reverse('artist-detail', kwargs={'pk': self.artist.pk})
+        # PUT : must send All info
+        artist_data = client_auth.get(url).data
+        # set new name
+        artist_data['nickname'] = "JR"
+        # Put request
+        response = client_auth.put(url, data=artist_data, format='json')
+        # test update
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        response = client_auth.get(url)
+        # test info maj
+        self.assertEqual(response.data['nickname'], "")
 
 
 class ArtistSearchEndPoint(TestCase):
