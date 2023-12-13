@@ -188,3 +188,140 @@ class TeachingArtistGQL(View):
             return JsonResponse({'errors': [str(error) for error in result.errors]}, status=400)
 
         return JsonResponse(result.data, status=200)
+
+
+class CandidatureResultsGQL(View):
+
+    def get(self, request, *args, **kwargs):
+        query = '''
+            query {
+                Campaign : studentApplicationSetup(isCurrentSetup: true) {
+                    informationAndTourDate
+                    interviewsEndDate
+                    interviewsPublishDate
+                    interviewsStartDate
+                    dateOfBirthMax
+                    candidatureDateStart
+                    candidatureDateEnd
+                    selectedPublishDate
+                }
+                ITWselected : studentApplicationAdmins(application_Campaign_IsCurrentSetup: true,
+                                                       selectedForInterview: true) {
+                    edges {
+                        node {
+                            id
+                            selected
+                            waitListed
+                            positionInWaitlist
+                            selectedForInterview
+                            positionInInterviewWaitlist
+                            interviewDate
+                            application {
+                                remoteInterview
+                                binomialApplicationWith
+                                artist {
+                                    displayName
+                                    lastName
+                                    birthdate
+                                    gender
+                                    motherTongue
+                                    otherLanguage
+                                    photo
+                                    nationality
+                                }
+                            }
+                        }
+                    }
+                }
+                ITWonwaitlist : studentApplicationAdmins(application_Campaign_IsCurrentSetup: true,
+                                                         waitListedForInterview: true) {
+                    edges {
+                        node {
+                            id
+                            selected
+                            waitListed
+                            positionInWaitlist
+                            selectedForInterview
+                            positionInInterviewWaitlist
+                            interviewDate
+                            application {
+                                remoteInterview
+                                binomialApplicationWith
+                                artist {
+                                    displayName
+                                    lastName
+                                    birthdate
+                                    gender
+                                    motherTongue
+                                    otherLanguage
+                                    photo
+                                    nationality
+                                }
+                            }
+                        }
+                    }
+                }
+                Selected : studentApplicationAdmins(application_Campaign_IsCurrentSetup: true, selected: true) {
+                    edges {
+                        node {
+                            id
+                            selected
+                            waitListed
+                            positionInWaitlist
+                            selectedForInterview
+                            positionInInterviewWaitlist
+                            interviewDate
+                            application {
+                                remoteInterview
+                                binomialApplicationWith
+                                artist {
+                                    displayName
+                                    lastName
+                                    birthdate
+                                    gender
+                                    motherTongue
+                                    otherLanguage
+                                    photo
+                                    nationality
+                                }
+                            }
+                        }
+                    }
+                }
+                Selectedonwaitlist : studentApplicationAdmins(application_Campaign_IsCurrentSetup: true,
+                                                              waitListed: true) {
+                    edges {
+                        node {
+                            id
+                            selected
+                            waitListed
+                            positionInWaitlist
+                            selectedForInterview
+                            positionInInterviewWaitlist
+                            interviewDate
+                            application {
+                                remoteInterview
+                                binomialApplicationWith
+                                artist {
+                                    displayName
+                                    lastName
+                                    birthdate
+                                    gender
+                                    motherTongue
+                                    otherLanguage
+                                    photo
+                                    nationality
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            '''
+
+        result = schema.execute(query, context=request)
+
+        if result.errors:
+            return JsonResponse({'errors': [str(error) for error in result.errors]}, status=400)
+
+        return JsonResponse(result.data, status=200)
