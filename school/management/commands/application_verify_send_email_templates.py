@@ -23,7 +23,7 @@ from school.models import StudentApplication, AdminStudentApplication, StudentAp
 
 
 def getTemporaryAdminApplication(email):
-    user, created = User.objects.get_or_create(username="XXX", email=email)
+    user, created = User.objects.get_or_create(first_name="Marcel", last_name="Duchamp", username="XXX", email=email)
     artist = Artist.objects.create(user=user)
     campaign = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
     application = StudentApplication.objects.create(artist=artist, campaign=campaign)
