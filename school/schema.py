@@ -199,6 +199,21 @@ class StudentApplicationSetupType(DjangoObjectType):
 
     id = graphene.ID(required=True, source='pk')
 
+    def resolve_selected_publish_date(self, info):
+        return self.selected_publish_date.astimezone()
+
+    def resolve_interviews_publish_date(self, info):
+        return self.interviews_publish_date.astimezone()
+
+    def resolve_candidature_date_start(self, info):
+        return self.candidature_date_start.astimezone()
+
+    def resolve_candidature_date_end(self, info):
+        return self.candidature_date_end.astimezone()
+
+    def resolve_information_and_tour_date(self, info):
+        return self.information_and_tour_date.astimezone()
+
 
 class StudentApplicationType(DjangoObjectType):
     class Meta:
