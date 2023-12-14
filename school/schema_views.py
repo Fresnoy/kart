@@ -205,6 +205,12 @@ class CandidatureResultsGQL(View):
                     candidatureDateStart
                     candidatureDateEnd
                     selectedPublishDate
+                    promotion {
+                      id
+                      name
+                      startingYear
+                      endingYear
+                    }
                 }
                 ITWselected : studentApplicationAdmins(application_Campaign_IsCurrentSetup: true,
                                                        selectedForInterview: true) {
