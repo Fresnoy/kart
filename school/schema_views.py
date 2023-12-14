@@ -319,13 +319,13 @@ class CandidatureResultsGQL(View):
                 }
             }
             '''
-        
+
         # get user by token
-        credential = get_credentials(request)        
+        credential = get_credentials(request)
         payload = get_payload(credential)
         user = get_user_by_payload(payload)
         # replace user in request (why?)
-        request.user=user
+        request.user = user
         result = schema.execute(query, context_value=request)
 
         if result.errors:
