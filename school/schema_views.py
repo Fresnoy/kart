@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from kart.schema import schema
 from django.views import View
+from graphql_jwt.utils import get_user_by_payload, get_credentials, get_payload
 
 
 class PromotionViewGQL(View):
@@ -319,7 +320,13 @@ class CandidatureResultsGQL(View):
             }
             '''
 
-        result = schema.execute(query, context=request)
+        # get user by token
+        credential = get_credentials(request)
+        payload = get_payload(credential)
+        user = get_user_by_payload(payload)
+        # replace user in request (why?)
+        request.user = user
+        result = schema.execute(query, context_value=request)
 
         if result.errors:
             return JsonResponse({'errors': [str(error) for error in result.errors]}, status=400)
