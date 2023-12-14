@@ -260,7 +260,11 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                     user_artist = Artist(user=user)
                     user_artist.save()
                 # get previous apps
+<<<<<<< HEAD
+                last_applications = StudentApplication.objects.filter(artist__user=user.id, 
+=======
                 last_applications = StudentApplication.objects.filter(artist__user=user.id,
+>>>>>>> 8dd71006d8020322ae8a5ecce4bb054948d7f3c0
                                                                       application_completed=True) \
                                                               .values_list('created_on__year', flat=True)
                 # transform all user previous app to string : "2001, 2002, xxxx"
