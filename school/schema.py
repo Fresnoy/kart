@@ -200,19 +200,19 @@ class StudentApplicationSetupType(DjangoObjectType):
     id = graphene.ID(required=True, source='pk')
 
     def resolve_selected_publish_date(self, info):
-        return self.selected_publish_date.astimezone()
+        return self.selected_publish_date.astimezone() if self.selected_publish_date else None
 
     def resolve_interviews_publish_date(self, info):
-        return self.interviews_publish_date.astimezone()
+        return self.interviews_publish_date.astimezone() if self.interviews_publish_date else None
 
     def resolve_candidature_date_start(self, info):
-        return self.candidature_date_start.astimezone()
+        return self.candidature_date_start.astimezone() if self.candidature_date_start else None
 
     def resolve_candidature_date_end(self, info):
-        return self.candidature_date_end.astimezone()
+        return self.candidature_date_end.astimezone() if self.candidature_date_end else None
 
     def resolve_information_and_tour_date(self, info):
-        return self.information_and_tour_date.astimezone()
+        return self.information_and_tour_date.astimezone() if self.information_and_tour_date else None
 
 
 class StudentApplicationType(DjangoObjectType):
@@ -246,8 +246,8 @@ class StudentApplicationAdminType(DjangoObjectType):
     id = graphene.ID(required=True, source='pk')
 
     def resolve_interview_date(self, info):
-        # why ?
-        return self.interview_date.astimezone()
+        # why not giving tz ?
+        return self.interview_date.astimezone() if self.interview_date else None
 
 
 class Query(graphene.ObjectType):
