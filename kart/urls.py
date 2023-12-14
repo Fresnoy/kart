@@ -27,7 +27,8 @@ from people.views import (
 from people import views as people_views
 from school.views import (UserPasswordResetView, PromotionViewSet, StudentViewSet, PhdStudentViewSet,
                           VisitingStudentViewSet, ScienceStudentViewSet, StudentAutocompleteSearchViewSet,
-                          TeachingArtistViewSet, StudentApplicationViewSet, StudentApplicationSetupViewSet
+                          TeachingArtistViewSet, StudentApplicationViewSet, StudentApplicationSetupViewSet,
+                          AdminStudentApplicationViewSet,
                           )
 
 from school import views as school_views
@@ -47,7 +48,8 @@ from assets.views import GalleryViewSet, MediumViewSet
 from assets import views as assets_views
 
 # Graphene
-from school.schema_views import PromotionViewGQL, StudentViewGQL, TeachinArtistListViewGQL, TeachingArtistGQL
+from school.schema_views import (PromotionViewGQL, StudentViewGQL, TeachinArtistListViewGQL,
+                                 TeachingArtistGQL, CandidatureResultsGQL,)
 from production.schema_views import Artworks25ViewGQL
 from graphene_django.views import GraphQLView
 from django.views.decorators.csrf import csrf_exempt
@@ -92,6 +94,7 @@ v2_api.register(r'school/visiting-student', VisitingStudentViewSet)
 v2_api.register(r'school/student-application', StudentApplicationViewSet)
 v2_api.register(r'school/student-application-setup',
                 StudentApplicationSetupViewSet)
+v2_api.register(r'school/admin-student-application', AdminStudentApplicationViewSet)
 v2_api.register(r'school/student-search',
                 StudentAutocompleteSearchViewSet, basename="school-student-search")
 v2_api.register(r'production/artwork', ArtworkViewSet)
@@ -205,6 +208,9 @@ urlpatterns = [
          name='teachingArtistsList_gql'),
     path("page/teachingArtist/<int:id>", csrf_exempt((TeachingArtistGQL.as_view())),
          name='teachingArtist_gql'),
+    # Candidature
+    path("page/candidatureResultsList", csrf_exempt((CandidatureResultsGQL.as_view())),
+         name='candidatureResultsList_gql'),
 
 ] \
     + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \

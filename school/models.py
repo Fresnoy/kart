@@ -30,6 +30,9 @@ class Student(models.Model):
     """
     An artist, part of a promotion, studying for at least 2 years.
     """
+    class Meta:
+        ordering = ['artist__user__first_name']
+
     number = models.CharField(max_length=50, null=True, blank=True)
     promotion = models.ForeignKey(Promotion, null=True, on_delete=models.SET_NULL)
     graduate = models.BooleanField(default=False)
@@ -38,13 +41,19 @@ class Student(models.Model):
     artist = models.OneToOneField(Artist, related_name='student', on_delete=models.PROTECT)
 
     def __str__(self):
-        return '{0} ({1})'.format(self.user, self.number)
+        if(self.artist.nickname):
+            return '{0} ({1})'.format(self.artist, self.artist.user)
+        else:
+            return '{0}'.format(self.artist)
 
 
 class TeachingArtist(models.Model):
     """
     Senior artist mentoring a student in the production of an artwork. Can also produce and exhibit a personal artwork.
     """
+    class Meta:
+        ordering = ['artist']
+
     artist = models.OneToOneField(Artist, related_name='teacher', null=True, on_delete=models.SET_NULL)
     presentation_text_fr = models.TextField(null=True,
                                             blank=True,
@@ -66,6 +75,9 @@ class ScienceStudent(models.Model):
     """
     Scientist specialized in a field. Attends Le Fresnoy at least one year. Produces artworks.
     """
+    class Meta:
+        ordering = ['student']
+
     student = models.OneToOneField(Student, related_name='science_student', on_delete=models.PROTECT)
     field = models.CharField(max_length=50, null=True, blank=True)
 
@@ -77,6 +89,9 @@ class PhdStudent(models.Model):
     """
     At Le Fresnoy, a PhD student accomplishes an extra year (2+1). Their artworks are part of their thesis.
     """
+    class Meta:
+        ordering = ['student']
+
     student = models.OneToOneField(Student, related_name='phd_student', on_delete=models.PROTECT)
     university = models.ForeignKey(Organization, related_name='phd_student', on_delete=models.PROTECT, blank=True)
     director = models.ForeignKey(User, related_name='phd_student', on_delete=models.PROTECT, blank=True)
@@ -91,6 +106,9 @@ class VisitingStudent(models.Model):
     """
     Visiting student included in a promotion but not eligible for degree.
     """
+    class Meta:
+        ordering = ['artist']
+
     number = models.CharField(max_length=50, null=True, blank=True)
     promotion = models.ForeignKey(Promotion, null=True, on_delete=models.SET_NULL)
     user = models.OneToOneField(User, on_delete=models.PROTECT)
@@ -111,6 +129,7 @@ class StudentApplicationSetup(models.Model):
     candidature_date_start = models.DateTimeField(null=False, blank=False)
     candidature_date_end = models.DateTimeField(null=False, blank=False)
     # front text
+    information_and_tour_date = models.DateTimeField(null=True, blank=False, help_text="Front : information and tour")
     interviews_start_date = models.DateField(null=True, blank=False, help_text="Front : interviews start date")
     interviews_end_date = models.DateField(null=True, blank=False, help_text="Front : interviews end date")
     date_of_birth_max = models.DateField(null=True, blank=True, help_text="Maximum date of birth to apply")
@@ -318,48 +337,6 @@ class StudentApplication(models.Model):
         default=False,
         help_text="Candidature's validation"
     )
-    # Administration
-    observation = models.TextField(blank=True, null=True, help_text="Administration - Comments on the application")
-
-    selected_for_interview = models.BooleanField(
-        default=False,
-        help_text="Administration - Is the candidat selected for the Interview"
-    )
-    interview_date = models.DateTimeField(
-        null=True,
-        blank=True,
-        help_text="Administration - Date for interview"
-    )
-    wait_listed_for_interview = models.BooleanField(
-        default=False,
-        help_text="Administration - Is the candidat wait listed for the Interview"
-    )
-    position_in_interview_waitlist = models.PositiveSmallIntegerField(
-        blank=True,
-        null=True,
-        help_text="Administration - Set the position in interview waitlist"
-    )
-    selected = models.BooleanField(
-        default=False,
-        help_text="Administration - Is the candidat selected"
-    )
-    unselected = models.BooleanField(
-        default=False,
-        help_text="Administration - Is the candidat not choosen by the Jury"
-    )
-    wait_listed = models.BooleanField(
-        default=False,
-        help_text="Administration - Is the candidat wait listed"
-    )
-    position_in_waitlist = models.PositiveSmallIntegerField(
-        blank=True,
-        null=True,
-        help_text="Administration - Set the position in waitlist"
-    )
-    application_complete = models.BooleanField(
-        default=False,
-        help_text="Administration - Candidature is complete"
-    )
 
     def _make_application_number(self):
         """
@@ -389,3 +366,59 @@ class StudentApplication(models.Model):
 
     def __str__(self):
         return "{0} ({1})".format(self.current_year_application_count, self.artist)
+
+
+class AdminStudentApplication(models.Model):
+    """
+    Admin part of the Student Application
+    """
+    class Meta:
+        verbose_name = 'Student application admin'
+
+    application = models.OneToOneField(StudentApplication, related_name='administration',
+                                       null=True, blank=False, on_delete=models.SET_NULL)
+    # Administration
+    observation = models.TextField(blank=True, null=True, help_text="Comments on the application")
+
+    selected_for_interview = models.BooleanField(
+        default=False,
+        help_text="Is the candidat selected for the Interview"
+    )
+    interview_date = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Date for interview"
+    )
+    wait_listed_for_interview = models.BooleanField(
+        default=False,
+        help_text="Is the candidat wait listed for the Interview"
+    )
+    position_in_interview_waitlist = models.PositiveSmallIntegerField(
+        blank=True,
+        null=True,
+        help_text="Set the position in interview waitlist"
+    )
+    selected = models.BooleanField(
+        default=False,
+        help_text="Is the candidat selected"
+    )
+    unselected = models.BooleanField(
+        default=False,
+        help_text="Is the candidat not choosen by the Jury"
+    )
+    wait_listed = models.BooleanField(
+        default=False,
+        help_text="Is the candidat wait listed"
+    )
+    position_in_waitlist = models.PositiveSmallIntegerField(
+        blank=True,
+        null=True,
+        help_text="Set the position in waitlist"
+    )
+    application_complete = models.BooleanField(
+        default=False,
+        help_text="Candidature is complete"
+    )
+
+    def __str__(self):
+        return "{0} ({1})".format(self.application.artist, self.application.current_year_application_count)
