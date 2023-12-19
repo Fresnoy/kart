@@ -139,7 +139,7 @@ class AdminStudentApplicationViewSet(viewsets.ModelViewSet):
     serializer_class = AdminStudentApplicationSerializer
     permission_classes = (permissions.IsAdminUser,)
     filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter)
-    search_fields = ('=artist__user__username', 'artist__user__last_name')
+    search_fields = ('=application__artist__user__username', 'application__artist__user__last_name')
     filterset_fields = ('application__application_completed',
                         'application_complete',
                         'selected_for_interview', 'application__remote_interview',
