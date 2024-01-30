@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 
 from django_countries.fields import CountryField
@@ -70,7 +71,14 @@ class Artist(models.Model):
         ordering = ['user__last_name']
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    collective = models.ManyToManyField('self', blank=True, help_text="collective artists, pairs, ...")
+    
     nickname = models.CharField(max_length=255, blank=True)
+    alphabetical_order = models.CharField(max_length=3, blank=True,
+                                          help_text="Never displayed, discern first/last user-name and nickname")
+    
+    artist_photo = models.ImageField(upload_to=make_filepath, blank=True, null=True)
+
     bio_short_fr = models.TextField(blank=True)
     bio_short_en = models.TextField(blank=True)
     bio_fr = models.TextField(blank=True)
@@ -82,9 +90,25 @@ class Artist(models.Model):
     facebook_profile = models.URLField(blank=True)
     websites = models.ManyToManyField(Website, blank=True)
 
+    # Check if User or artists are set
+    def clean(self):
+        if self.user_id is None and not self.collective.exists():
+            raise ValidationError("Either user or collective must be provided.")
+        
+        if self.collective.exists() and self.nickname == "":
+            raise ValidationError("Nickname must be provided with collective")
+        
+        if self.user_id is not None and self.collective.exists():
+            raise ValidationError("What are you doing ? USER and Collective ?")
+
     def __str__(self):
-        return '{}'.format(self.nickname) if self.nickname else "{} {}".format(self.user.first_name,
+        if self.user: 
+            return '{}'.format(self.nickname) if self.nickname else "{} {}".format(self.user.first_name,
                                                                                self.user.last_name)
+        if self.collective.exists():
+            return self.nickname
+        
+        return "???"
 
 
 class Staff(models.Model):
