@@ -20,7 +20,9 @@ def order(students, orderby):
 
     def tt(x):
         if orderby == "displayName":
-            if x.artist.nickname:
+            if x.artist.alphabetical_order != "":
+                art = x.artist.alphabetical_order
+            elif x.artist.nickname != "":
                 art = x.artist.nickname
             else:
                 art = x.artist.user.last_name
@@ -152,9 +154,15 @@ class TeachingArtistsItemType(DjangoObjectType):
     class Meta:
         model = TeachingArtist
 
-    year = graphene.String()
+    years = graphene.List(graphene.Int)
     teachers = graphene.List(TeachingArtistType)
 
+    def resolve_years(parent, info):
+        # Extract the year of production of each artwork mentored by the TA
+        aws = parent.artworks_supervision.all()
+        # Set to remove duplicates dates
+        dates = list(set([aw.production_date.year for aw in aws]))
+        return dates
 
 class ScienceStudentType(DjangoObjectType):
     class Meta:
