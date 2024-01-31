@@ -2,6 +2,7 @@ import graphene
 from graphene_django import DjangoObjectType
 from graphene_django.converter import convert_django_field
 
+from django.db.models import Q
 
 from taggit.managers import TaggableManager
 from itertools import chain
@@ -306,7 +307,7 @@ class Query(graphene.ObjectType):
         ProductionInterface, titleStartsWith=graphene.String())
 
     artwork = graphene.Field(ArtworkType, id=graphene.Int())
-    artworks = graphene.List(ArtworkInterface)
+    artworks = graphene.List(ArtworkInterface, title=graphene.String(required=False))
 
     film = graphene.Field(FilmType, id=graphene.Int())
     films = graphene.List(FilmType)
@@ -348,7 +349,14 @@ class Query(graphene.ObjectType):
 
     # Artwork
     def resolve_artworks(root, info, **kwargs):
-        return Artwork.objects.order_by('authors__last_name').all()
+        title = kwargs.get('title')
+        if title != "":
+            # Item.objects.filter(Q(creator=owner) | Q(moderated=False))
+            return Artwork.objects.filter(Q(title__icontains=title) | 
+                                            Q(former_title__icontains=title) | 
+                                            Q(subtitle__icontains=title))
+        else:
+            return Artwork.objects.order_by('authors__last_name').all()
 
     def resolve_artwork(root, info, **kwargs):
         id = kwargs.get('id')

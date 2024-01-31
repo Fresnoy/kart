@@ -2,6 +2,9 @@ import re
 import graphene
 from graphene_django import DjangoObjectType
 
+from django.db.models import F, Q, Value
+from django.db.models.functions import Concat
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 
@@ -28,7 +31,9 @@ def order(artists, orderby):
 
     def tt(x):
         if orderby == "displayName":
-            if x.nickname:
+            if x.alphabetical_order != "":
+                art = x.alphabetical_order
+            elif x.nickname != "":
                 art = x.nickname
             else:
                 art = x.user.last_name
@@ -202,8 +207,8 @@ class ArtistEmbeddedInterface(graphene.Interface):
         return diffs
 
     def resolve_displayName(parent, info):
-        if parent.artist.nickname:
-            return parent.artist.nickname
+        if parent.artist.nickname != "":
+            return parent.nickname
         else:
             return f"{parent.artist.user.first_name} {parent.artist.user.last_name}"
 
@@ -328,10 +333,12 @@ class Query(graphene.ObjectType):
     users = graphene.List(UserType)
 
     artist = graphene.Field(ArtistType, id=graphene.Int())
-    artists = graphene.List(ArtistType)
+    artists = graphene.List(ArtistType, name=graphene.String(required=False))
 
     profile = graphene.Field(FresnoyProfileType, id=graphene.Int())
     profiles = graphene.List(FresnoyProfileType)
+
+    
 
     def resolve_users(root, info, **kwargs):
         return get_user_model().objects.all()
@@ -343,7 +350,17 @@ class Query(graphene.ObjectType):
         return None
 
     def resolve_artists(root, info, **kwargs):
+        # get current (is_current_setup)
+        name = kwargs.get('name')
         artists = Artist.objects.all()
+        if name != "":
+            # Item.objects.filter(Q(creator=owner) | Q(moderated=False))
+            artists = Artist.objects.annotate(name=Concat(F('user__first_name'), Value(' '), F('user__last_name')))\
+                                    .filter(Q(nickname__icontains=name) | 
+                                            Q(user__first_name__icontains=name) | 
+                                            Q(user__last_name__icontains=name) | 
+                                            Q(name__icontains=name))
+
         # order by displayName by default
         return order(artists, "displayName")
 

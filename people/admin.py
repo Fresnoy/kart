@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 from people.forms import UserCreateForm
 from people.models import Artist, FresnoyProfile, Staff, Organization
@@ -13,7 +14,9 @@ class ArtistAdmin(admin.ModelAdmin):
     """
     list_display = ('nick',)
     search_fields = ['user__first_name', 'user__last_name']
-    filter_horizontal = ('websites',)
+    filter_horizontal = ('websites', 'artists')
+    readonly_fields = ('artist_photo_picture',)
+    
 
     def nick(self, obj):
         return ("{} ({} {})".format(obj.nickname,
@@ -27,6 +30,16 @@ class ArtistAdmin(admin.ModelAdmin):
 
     def lastname(self, obj):
         return obj.user.last_name
+    
+    def artist_photo_picture(self, obj):
+        from django.utils.html import format_html
+        return format_html('<img src="{}" style="max-width:200px; max-height:200px"/>'.format(obj.artist_photo.url))
+
+    fields = ('user', 'artists', 'nickname', 'alphabetical_order', 'artist_photo', 'artist_photo_picture',
+              'bio_short_fr', 'bio_short_en', 'bio_fr', 'bio_en', 'twitter_account', 'facebook_profile', 'websites')
+
+        
+    
 
 
 class FresnoyProfileInline(admin.StackedInline):

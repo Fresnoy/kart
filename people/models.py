@@ -70,8 +70,9 @@ class Artist(models.Model):
     class Meta:
         ordering = ['user__last_name']
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    collective = models.ManyToManyField('self', blank=True, help_text="collective artists, pairs, ...")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    artists = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='collectives',
+                                        help_text="collective artists, pairs, ...")
     
     nickname = models.CharField(max_length=255, blank=True)
     alphabetical_order = models.CharField(max_length=3, blank=True,
@@ -89,17 +90,6 @@ class Artist(models.Model):
     twitter_account = models.CharField(max_length=100, blank=True)
     facebook_profile = models.URLField(blank=True)
     websites = models.ManyToManyField(Website, blank=True)
-
-    # Check if User or artists are set
-    def clean(self):
-        if self.user_id is None and not self.collective.exists():
-            raise ValidationError("Either user or collective must be provided.")
-        
-        if self.collective.exists() and self.nickname == "":
-            raise ValidationError("Nickname must be provided with collective")
-        
-        if self.user_id is not None and self.collective.exists():
-            raise ValidationError("What are you doing ? USER and Collective ?")
 
     def __str__(self):
         if self.user: 

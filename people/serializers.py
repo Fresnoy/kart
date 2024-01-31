@@ -119,8 +119,8 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'id',
             'url',
-            'collective',
             'nickname',
+            'artist_photo',
             'bio_short_fr',
             'bio_short_en',
             'bio_fr',
@@ -128,6 +128,8 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
             'twitter_account',
             'facebook_profile',
             'user',
+            'artists',
+            'collectives',
             'websites',
             'artworks',
             'teacher',

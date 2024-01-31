@@ -49,11 +49,13 @@ class ArtistResource(ModelResource):
             'resource_uri': ALL
         }
 
-        fields = ['id', 'nickname', 'bio_short_fr', 'bio_short_en',
-                  'bio_fr', 'bio_en', 'twitter_account', 'facebook_profile']
+        fields = ['id', 'nickname', 'artist_photo', 'bio_short_fr', 'bio_short_en',
+                  'bio_fr', 'bio_en', 'twitter_account', 'facebook_profile',]
 
     websites = fields.ToManyField(WebsiteResource, 'websites', full=True)
-    user = fields.ForeignKey(UserResource, 'user', full=True)
+    user = fields.ForeignKey(UserResource, 'user', full=True, null=True)
+    artists = fields.ToManyField('people.api.ArtistResource', 'artists', full=True)
+    collectives = fields.ToManyField('people.api.ArtistResource', 'collectives', full=False)
     artworks = fields.ToManyField('production.api.ArtworkResource', 'artworks',
                                   full=False, null=True, use_in=['detail'])
 
@@ -63,6 +65,7 @@ class StaffResource(ModelResource):
         queryset = Staff.objects.all()
         resource_name = 'people/staff'
         fields = ('user',)
+        max_limit = 0
 
     user = fields.ForeignKey(UserResource, 'user', full=True)
 
