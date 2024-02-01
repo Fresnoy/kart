@@ -138,6 +138,9 @@ class TeachingArtistType(DjangoObjectType):
 
     profile = graphene.Field(ProfileType)
 
+    # Artist fields
+    displayName = graphene.String()
+
     def resolve_profile(parent, info):
         return FresnoyProfile.objects.get(user=parent.artist.user)
 
@@ -147,6 +150,15 @@ class TeachingArtistType(DjangoObjectType):
         # Set to remove duplicates dates
         dates = list(set([aw.production_date.year for aw in aws]))
         return dates
+    
+    def resolve_displayName(parent, info):
+        if parent.artist.nickname:
+            return parent.artist.nickname
+        elif parent.artist.user is not None:
+            return f"{parent.artist.user.first_name} {parent.artist.user.last_name}"
+        else:
+            return "???"
+            
 
 
 class TeachingArtistsItemType(DjangoObjectType):
