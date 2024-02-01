@@ -154,15 +154,9 @@ class TeachingArtistsItemType(DjangoObjectType):
     class Meta:
         model = TeachingArtist
 
-    years = graphene.List(graphene.Int)
+    year = graphene.String()
     teachers = graphene.List(TeachingArtistType)
 
-    def resolve_years(parent, info):
-        # Extract the year of production of each artwork mentored by the TA
-        aws = parent.artworks_supervision.all()
-        # Set to remove duplicates dates
-        dates = list(set([aw.production_date.year for aw in aws]))
-        return dates
 
 class ScienceStudentType(DjangoObjectType):
     class Meta:
