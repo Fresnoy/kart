@@ -136,6 +136,7 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
             'student',
             'visiting_student',
         )
+    members = serializers.HyperlinkedIdentityField(view_name='artist-detail', many=True, required=False)
     artworks = serializers.SerializerMethodField()
     teacher = serializers.SerializerMethodField()
     student = serializers.SerializerMethodField()
