@@ -74,26 +74,25 @@ class Artist(models.Model):
         constraints = [
             models.CheckConstraint(
                 name="Artist or collective should be named",
-                check = (
+                check=(
                     Q(Q(user__isnull=True) & ~Q(nickname__exact="")) |
                     Q(~Q(user__isnull=True) & ~Q(nickname__exact="")) |
-                    Q(~Q(user__isnull=True) & Q(nickname__exact="")) 
+                    Q(~Q(user__isnull=True) & Q(nickname__exact=""))
                     )
                 ),
         ]
 
     # Artist has user, collectifs has no user
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-
-    # Artist join a collective 
+    # Artist join a collective
     # symmetrical=False : beacause related_name has no effect on ManyToManyField with a symmetrical relationship
     collectives = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='members',
                                          help_text="Member of collectives")
-    
+
     nickname = models.CharField(max_length=255, blank=True)
     alphabetical_order = models.CharField(max_length=3, blank=True,
                                           help_text="Never displayed, discern first/last user-name and nickname")
-    
+
     artist_photo = models.ImageField(upload_to=make_filepath, blank=True, null=True)
 
     bio_short_fr = models.TextField(blank=True)
@@ -106,19 +105,19 @@ class Artist(models.Model):
     twitter_account = models.CharField(max_length=100, blank=True)
     facebook_profile = models.URLField(blank=True)
     websites = models.ManyToManyField(Website, blank=True)
-    
+
     def clean(self):
         # Check User or nickname are sets
         if self.user is None and self.nickname == "":
-            raise ValidationError("No user is defined, set the nickname if you want to create an artist collective")   
+            raise ValidationError("No user is defined, set the nickname if you want to create an artist collective")
 
     def __str__(self):
-        if self.user: 
+        if self.user:
             return '{}'.format(self.nickname) if self.nickname else "{} {}".format(self.user.first_name,
-                                                                               self.user.last_name)
+                                                                                   self.user.last_name)
         if self.nickname != "":
             return self.nickname
-        
+
         return "???"
 
 

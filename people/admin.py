@@ -40,7 +40,7 @@ class ArtistAdmin(admin.ModelAdmin):
 
     def lastname(self, obj):
         return obj.user.last_name
-    
+
     def artist_photo_picture(self, obj):
         return format_html('<img src="{}" style="max-width:200px; max-height:200px"/>'.format(obj.artist_photo.url))
 

@@ -50,7 +50,7 @@ class ArtistResource(ModelResource):
         }
 
         fields = ['id', 'nickname', 'artist_photo', 'bio_short_fr', 'bio_short_en',
-                  'bio_fr', 'bio_en', 'twitter_account', 'facebook_profile',]
+                  'bio_fr', 'bio_en', 'twitter_account', 'facebook_profile', ]
 
     websites = fields.ToManyField(WebsiteResource, 'websites', full=True)
     user = fields.ForeignKey(UserResource, 'user', full=True, null=True)

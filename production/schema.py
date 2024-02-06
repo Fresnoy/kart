@@ -352,9 +352,9 @@ class Query(graphene.ObjectType):
     def resolve_artworks(root, info, **kwargs):
         title = kwargs.get('title')
         if title != "":
-            return Artwork.objects.filter(Q(title__icontains=title) | 
-                                            Q(former_title__icontains=title) | 
-                                            Q(subtitle__icontains=title))
+            return Artwork.objects.filter(Q(title__icontains=title) |
+                                          Q(former_title__icontains=title) |
+                                          Q(subtitle__icontains=title))
         else:
             return Artwork.objects.order_by('authors__last_name').all()
 

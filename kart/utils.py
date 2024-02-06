@@ -9,4 +9,3 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         # add username in Token
         token['username'] = user.username
         return token
-    

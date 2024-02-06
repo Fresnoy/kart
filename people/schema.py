@@ -345,8 +345,6 @@ class Query(graphene.ObjectType):
     profile = graphene.Field(FresnoyProfileType, id=graphene.Int())
     profiles = graphene.List(FresnoyProfileType)
 
-    
-
     def resolve_users(root, info, **kwargs):
         return get_user_model().objects.all()
 
@@ -363,9 +361,9 @@ class Query(graphene.ObjectType):
         if name != "":
             # Item.objects.filter(Q(creator=owner) | Q(moderated=False))
             artists = Artist.objects.annotate(name=Concat(F('user__first_name'), Value(' '), F('user__last_name')))\
-                                    .filter(Q(nickname__icontains=name) | 
-                                            Q(user__first_name__icontains=name) | 
-                                            Q(user__last_name__icontains=name) | 
+                                    .filter(Q(nickname__icontains=name) |
+                                            Q(user__first_name__icontains=name) |
+                                            Q(user__last_name__icontains=name) |
                                             Q(name__icontains=name))
 
         # order by displayName by default
