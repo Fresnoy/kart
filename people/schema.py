@@ -183,6 +183,10 @@ class ArtistEmbeddedInterface(graphene.Interface):
     # Artist fields
     nickname = graphene.String(
         resolver=DynNameResolver(interface="ArtistEmbedded"))
+    artist_photo = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    collectives = graphene.List("people.schema.ArtistType")
+    members = graphene.List("people.schema.ArtistType")
     displayName = graphene.String()
     bioShortFr = graphene.String(
         resolver=DynNameResolver(interface="ArtistEmbedded"))
@@ -298,6 +302,9 @@ class ArtistType(UserType):
     id = graphene.ID(required=True, source='pk')
 
     nickname = graphene.String(resolver=DynNameResolver())
+    artist_photo = graphene.String(resolver=DynNameResolver())
+    collectives = graphene.List("people.schema.ArtistType", resolver=DynNameResolver())
+    members = graphene.List("people.schema.ArtistType", resolver=DynNameResolver())
     bioShortFr = graphene.String(resolver=DynNameResolver())
     bioShortEn = graphene.String(resolver=DynNameResolver())
     bioFr = graphene.String(resolver=DynNameResolver())

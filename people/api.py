@@ -54,8 +54,8 @@ class ArtistResource(ModelResource):
 
     websites = fields.ToManyField(WebsiteResource, 'websites', full=True)
     user = fields.ForeignKey(UserResource, 'user', full=True, null=True)
-    artists = fields.ToManyField('people.api.ArtistResource', 'artists', full=True)
     collectives = fields.ToManyField('people.api.ArtistResource', 'collectives', full=False)
+    members = fields.ToManyField('people.api.ArtistResource', 'members', full=True)
     artworks = fields.ToManyField('production.api.ArtworkResource', 'artworks',
                                   full=False, null=True, use_in=['detail'])
 
