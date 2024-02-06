@@ -74,6 +74,7 @@ class ArtworkInterface(ProductionInterface):
     # def is_type_of(cls, root, info):
     #     return isinstance(root, Artwork)
     authors = graphene.List(ArtistType)
+    diffusions = graphene.List(DiffusionType)
 
     @classmethod
     def resolve_type(cls, instance, info):
@@ -351,7 +352,6 @@ class Query(graphene.ObjectType):
     def resolve_artworks(root, info, **kwargs):
         title = kwargs.get('title')
         if title != "":
-            # Item.objects.filter(Q(creator=owner) | Q(moderated=False))
             return Artwork.objects.filter(Q(title__icontains=title) | 
                                             Q(former_title__icontains=title) | 
                                             Q(subtitle__icontains=title))
