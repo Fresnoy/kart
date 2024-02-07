@@ -113,10 +113,10 @@ class StudentEmbeddedInterface(graphene.Interface):
         resolver=DynNameResolver(interface="StudentEmbedded"))
 
     def resolve_displayName(parent, info):
-        if parent.student.artist.nickname:
-            return parent.student.artist.nickname
+        if parent.artist.nickname:
+            return parent.artist.nickname
         else:
-            return f"{parent.student.user.first_name} {parent.student.user.last_name}"
+            return f"{parent.artist.user.first_name} {parent.artist.user.last_name}"
 
     def resolve_number(parent, info):
         return parent.student.number

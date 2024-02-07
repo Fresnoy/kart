@@ -212,7 +212,7 @@ class ArtistEmbeddedInterface(graphene.Interface):
 
     def resolve_displayName(parent, info):
         if parent.artist.nickname != "":
-            return parent.nickname
+            return parent.artist.nickname
         else:
             return f"{parent.artist.user.first_name} {parent.artist.user.last_name}"
 
