@@ -189,7 +189,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Graphene
-    path("graphql", csrf_exempt(GraphQLView.as_view(graphiql=True))),
+    path("graphql", csrf_exempt(GraphQLView.as_view(graphiql=True)), name="graphql"),
 
     path("page/promotionGQL/<int:id>", csrf_exempt(PromotionViewGQL.as_view()),
          name='promotionGQL'),
