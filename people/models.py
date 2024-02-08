@@ -31,7 +31,7 @@ class FresnoyProfile(models.Model):
     birthdate = models.DateField(null=True, blank=True)
     birthplace = models.CharField(max_length=255, null=True, blank=True)
     birthplace_country = CountryField(null=True, default="")
-    
+
     deathdate = models.DateField(null=True, blank=True)
 
     homeland_address = models.TextField(blank=True)

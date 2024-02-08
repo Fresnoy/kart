@@ -3,6 +3,7 @@ from kart.schema import schema
 from django.views import View
 from graphql_jwt.utils import get_user_by_payload, get_credentials, get_payload
 
+
 class PromotionViewGQL(View):
 
     def get(self, request, *args, **kwargs):

@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from kart.schema import schema
 from django.views import View
 
+
 # Exhibs ids
 idPano24 = 1949
 idPano25 = 1952
