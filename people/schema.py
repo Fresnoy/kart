@@ -149,6 +149,8 @@ class ArtistEmbeddedInterface(graphene.Interface):
         resolver=DynNameResolver(interface="ArtistEmbedded"))
     birthplace_country = graphene.String(
         resolver=DynNameResolver(interface="ArtistEmbedded"))
+    deathdate = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
     homeland_address = graphene.String(
         resolver=DynNameResolver(interface="ArtistEmbedded"))
     homeland_zipcode = graphene.String(
@@ -224,6 +226,7 @@ class ProfileEmbeddedInterface(graphene.Interface):
     birthdate = graphene.String()
     birthplace = graphene.String()
     birthplace_country = graphene.String()
+    deathdate = graphene.String()
     homeland_address = graphene.String()
     homeland_zipcode = graphene.String()
     homeland_town = graphene.String()
@@ -260,6 +263,7 @@ class UserType(DjangoObjectType):
     birthdate = graphene.String(resolver=DynNameResolver())
     birthplace = graphene.String(resolver=DynNameResolver())
     birthplaceCountry = graphene.String(resolver=DynNameResolver())
+    deathdate = graphene.String(resolver=DynNameResolver())
     homelandAddress = graphene.String(resolver=DynNameResolver())
     homelandZipcode = graphene.String(resolver=DynNameResolver())
     homelandTown = graphene.String(resolver=DynNameResolver())
