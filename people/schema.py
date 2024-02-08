@@ -328,6 +328,8 @@ class ArtistType(UserType):
         else:
             return f"{parent.user.first_name} {parent.user.last_name}"
 
+    teacher = graphene.Field('school.schema.TeachingArtistType')
+
 
 class StaffType(UserType):
     class Meta:

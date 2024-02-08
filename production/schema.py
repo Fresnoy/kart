@@ -75,6 +75,7 @@ class ArtworkInterface(ProductionInterface):
     #     return isinstance(root, Artwork)
     authors = graphene.List(ArtistType)
     diffusions = graphene.List(DiffusionType)
+    mentoring = graphene.List("school.schema.TeachingArtistType")
 
     @classmethod
     def resolve_type(cls, instance, info):
@@ -86,6 +87,9 @@ class ArtworkInterface(ProductionInterface):
             return InstallationType
         else:
             return None
+
+    def resolve_mentoring(parent, info, **kwargs):
+        return parent.mentoring.all()
 
 
 class ProductionType(DjangoObjectType):
