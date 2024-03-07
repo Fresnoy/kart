@@ -26,7 +26,6 @@ class Command(BaseCommand):
         query_applications_started__emails = StudentApplication.objects.filter(
             campaign=campaign,
             application_completed=False,
-            complete=False,
             ).values_list("artist__user__email", flat=True)
         # convert QuerySet to list
         list_emails = list(query_applications_started__emails)
