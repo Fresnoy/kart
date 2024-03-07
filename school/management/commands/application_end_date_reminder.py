@@ -29,7 +29,7 @@ class Command(BaseCommand):
             application_complete=False,
             unselected=False,
             selected=False,
-            ).values_list("artist__user__email", flat=True)
+            ).values_list("application__artist__user__email", flat=True)
         # convert QuerySet to list
         list_emails = list(query_applications_started__emails)
         # question
