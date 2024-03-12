@@ -348,7 +348,7 @@ def send_candidature_not_finalized_to_candidats(request, application_setup, list
         candidature_date_end.strftime("%Hh%M")
     )
     setLocale('en_US.utf8')
-    application_end['en'] = candidature_date_end.strftime("%-I %p (Paris time) on %A %d %B %Y")
+    application_end['en'] = candidature_date_end.strftime("on %A %d %B %Y, %-I %P (Paris time)")
     # Send email : NOT SELECTED
     msg_plain = render_to_string(
         'emails/send_candidature_not_finalized_to_candidat.txt',
