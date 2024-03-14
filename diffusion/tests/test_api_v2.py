@@ -1,4 +1,5 @@
 import pytest
+from django.urls import reverse
 
 from utils.tests.utils import (
     IsAuthenticatedOrReadOnlyModelViewSetMixin,
@@ -28,7 +29,12 @@ class TestPlaceViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestForMo
 class TestAwardViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestForModelViewSet):
     viewset_name = 'diffusion/award'
 
-    fixtures = ['award', 'user']
+    fixtures = ['award', 'user', 'artwork']
+
+    put_fields = ['artwork',]
+    built_fields = {
+        'artwork': lambda x: [reverse('artwork-detail', kwargs={'pk': x.artwork.first().pk})],
+    }
 
     expected_list_size = 1
     expected_fields = ['artwork', 'meta_award', 'event']
