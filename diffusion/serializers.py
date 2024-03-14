@@ -19,7 +19,8 @@ class MetaAwardSerializer(serializers.HyperlinkedModelSerializer):
         model = MetaAward
         fields = '__all__'
 
-    task = StaffTaskSerializer()
+    # Commented for create metaAward instances by api
+    # task = StaffTaskSerializer()
 
 
 class AwardSerializer(serializers.HyperlinkedModelSerializer):

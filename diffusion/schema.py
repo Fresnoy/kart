@@ -45,6 +45,9 @@ class Query(graphene.ObjectType):
     diffusion = graphene.Field(DiffusionType, id=graphene.ID(required=True))
     diffusions = graphene.List(DiffusionType)
 
+    place = graphene.Field(PlaceType, id=graphene.ID(required=True))
+    places = graphene.List(PlaceType)
+
     award = graphene.Field(AwardType, id=graphene.ID(required=True))
     awards = graphene.List(AwardType)
 
@@ -64,6 +67,13 @@ class Query(graphene.ObjectType):
     def resolve_diffusion(root, info, **kwargs):
         id = kwargs.get('id', None)
         return Diffusion.objects.get(pk=id)
+    
+    def resolve_places(root, info, **kwargs):
+        return Place.objects.all()
+
+    def resolve_place(root, info, **kwargs):
+        id = kwargs.get('id', None)
+        return Place.objects.get(pk=id)
     
     def resolve_awards(root, info, **kwargs):
         return Award.objects.all()
