@@ -8,7 +8,7 @@ from taggit.managers import TaggableManager
 from itertools import chain
 
 from .models import Production, Artwork, Film, Installation, \
-    Performance, Event, Task, ProductionOrganizationTask
+    Performance, Event, Task, ProductionOrganizationTask, StaffTask
 
 
 from people.schema import ArtistType, StaffType
@@ -22,6 +22,11 @@ from diffusion.schema import DiffusionType, PlaceType
 class TaskType(DjangoObjectType):
     class Meta:
         model = Task
+
+
+class StaffTaskType(TaskType):
+    class Meta:
+        model = StaffTask
 
 
 class PartnerType(DjangoObjectType):
@@ -346,6 +351,9 @@ class Query(graphene.ObjectType):
     task = graphene.Field(TaskType, id=graphene.Int())
     tasks = graphene.List(TaskType)
 
+    stafftask = graphene.Field(StaffTaskType, id=graphene.Int())
+    stafftasks = graphene.List(StaffTaskType)
+
     # Production
     def resolve_productions(root, info, titleStartsWith=None, **kwargs):
         productions = Production.objects.all()
@@ -438,4 +446,14 @@ class Query(graphene.ObjectType):
         id = kwargs.get('id')
         if id is not None:
             return Task.objects.get(pk=id)
+        return None
+    
+     # StaffTask
+    def resolve_stafftasks(root, info, **kwargs):
+        return StaffTask.objects.all()
+
+    def resolve_stafftask(root, info, **kwargs):
+        id = kwargs.get('id')
+        if id is not None:
+            return StaffTask.objects.get(pk=id)
         return None
