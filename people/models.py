@@ -30,18 +30,20 @@ class FresnoyProfile(models.Model):
     nationality = models.CharField(max_length=24, null=True, blank=True)
     birthdate = models.DateField(null=True, blank=True)
     birthplace = models.CharField(max_length=255, null=True, blank=True)
-    birthplace_country = CountryField(null=True, default="")
+    birthplace_country = CountryField(null=True, default="", blank=True)
+
+    deathdate = models.DateField(null=True, blank=True)
 
     deathdate = models.DateField(null=True, blank=True)
 
     homeland_address = models.TextField(blank=True)
     homeland_zipcode = models.CharField(max_length=10, blank=True)
     homeland_town = models.CharField(max_length=50, blank=True)
-    homeland_country = CountryField(default="")
+    homeland_country = CountryField(null=True, blank=True, default="")
     residence_address = models.TextField(blank=True)
     residence_zipcode = models.CharField(max_length=10, blank=True)
     residence_town = models.CharField(max_length=50, blank=True)
-    residence_country = CountryField(default="")
+    residence_country = CountryField(default="", blank=True)
 
     homeland_phone = models.CharField(max_length=50, blank=True)
     residence_phone = models.CharField(max_length=50, blank=True)

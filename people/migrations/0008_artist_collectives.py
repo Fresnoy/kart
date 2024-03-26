@@ -29,11 +29,6 @@ class Migration(migrations.Migration):
             name='collectives',
             field=models.ManyToManyField(blank=True, help_text='Member of collectives', related_name='members', to='people.artist'),
         ),
-        migrations.AddField(
-            model_name='fresnoyprofile',
-            name='deathdate',
-            field=models.DateField(blank=True, null=True),
-        ),
         migrations.AlterField(
             model_name='artist',
             name='user',
