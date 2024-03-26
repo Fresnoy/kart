@@ -31,7 +31,7 @@ class TestAwardViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestForMo
 
     fixtures = ['award', 'user', 'artwork']
 
-    put_fields = ['artwork',]
+    put_fields = ['artwork', ]
     built_fields = {
         'artwork': lambda x: [reverse('artwork-detail', kwargs={'pk': x.artwork.first().pk})],
     }

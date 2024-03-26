@@ -67,25 +67,24 @@ class Query(graphene.ObjectType):
     def resolve_diffusion(root, info, **kwargs):
         id = kwargs.get('id', None)
         return Diffusion.objects.get(pk=id)
-    
+
     def resolve_places(root, info, **kwargs):
         return Place.objects.all()
 
     def resolve_place(root, info, **kwargs):
         id = kwargs.get('id', None)
         return Place.objects.get(pk=id)
-    
+
     def resolve_awards(root, info, **kwargs):
         return Award.objects.all()
 
     def resolve_award(root, info, **kwargs):
         id = kwargs.get('id', None)
         return Award.objects.get(pk=id)
-    
+
     def resolve_meta_awards(root, info, **kwargs):
         return MetaAward.objects.all()
 
     def resolve_meta_award(root, info, **kwargs):
         id = kwargs.get('id', None)
         return MetaAward.objects.get(pk=id)
-

@@ -281,6 +281,7 @@ class UserType(DjangoObjectType):
     cursus = graphene.String(resolver=DynNameResolver())
     # foreignkeys resolver
     artist = graphene.Field("people.schema.ArtistType")
+
     def resolve_artist(self, info):
         artist = Artist.objects.filter(user__id=self.id)
         return artist.first() if artist.count() > 0 else None

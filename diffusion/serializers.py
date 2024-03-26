@@ -5,7 +5,6 @@ from taggit.serializers import (TagListSerializerField,
 
 from .models import Place, Award, MetaAward, MetaEvent, Diffusion
 from production.models import Artwork
-from production.serializers import StaffTaskSerializer
 
 
 class PlaceSerializer(CountryFieldMixin, serializers.HyperlinkedModelSerializer):

@@ -98,14 +98,6 @@ class ArtworkInterface(ProductionInterface):
 
     def resolve_mentoring(parent, info, **kwargs):
         return parent.mentoring.all()
-    
-    def resolve_type(parent, info):
-        if isinstance(parent, Film):
-            return "Film"
-        if isinstance(parent, Performance):
-            return "Performance"
-        if isinstance(parent, Installation):
-            return "Installation"
 
 
 class ProductionType(DjangoObjectType):
@@ -447,8 +439,8 @@ class Query(graphene.ObjectType):
         if id is not None:
             return Task.objects.get(pk=id)
         return None
-    
-     # StaffTask
+
+    # StaffTask
     def resolve_stafftasks(root, info, **kwargs):
         return StaffTask.objects.all()
 

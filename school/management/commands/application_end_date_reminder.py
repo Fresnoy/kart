@@ -2,7 +2,7 @@
 from django.core.management.base import BaseCommand
 
 from school.utils import candidature_close, send_candidature_not_finalized_to_candidats
-from school.models import AdminStudentApplication, StudentApplication, StudentApplicationSetup
+from school.models import StudentApplication, StudentApplicationSetup
 
 
 class Command(BaseCommand):
