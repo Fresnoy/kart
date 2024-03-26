@@ -73,5 +73,5 @@ class Query(graphene.ObjectType):
         media_type = kwargs.get('media_type')
         if media_type is not None:
             query_media_type = search_media_of_type(media_type)
-            return query_media_type.filter(gallery=self)
+            return query_media_type
         return Medium.objects.all().filter(gallery=self)
