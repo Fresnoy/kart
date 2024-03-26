@@ -53,7 +53,7 @@ class ProductionSerializer(serializers.HyperlinkedModelSerializer):
 class ArtworkSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Artwork
-        fields = '__all__'
+        exclude = ('polymorphic_ctype',)
 
     collaborators = ProductionStaffTaskSerializer(source='staff_tasks', many=True, read_only=True)
     partners = PartnerSerializer(source='organization_tasks', many=True, read_only=True)
@@ -61,6 +61,7 @@ class ArtworkSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
                                                     read_only=True,
                                                     many=True)
     award = serializers.HyperlinkedRelatedField(view_name='award-detail', read_only=True, many=True)
+    keywords = TagListSerializerField()
 
 
 class InstallationSerializer(serializers.HyperlinkedModelSerializer):

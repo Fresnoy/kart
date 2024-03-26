@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
 from kart.site_settings import * # NOQA
-from kart.site_settings import DEBUG as DEBUG, BASE_DIR as BASE_DIR
+from kart.site_settings import DEBUG as DEBUG, BASE_DIR as BASE_DIR, FROM_EMAIL
 import datetime
 import os
 

@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand
 
 from django.db.models import Q
 
-from school.models import (StudentApplication, AdminStudentApplication, Student, ScienceStudent, 
+from school.models import (StudentApplication, AdminStudentApplication, Student, ScienceStudent,
                            VisitingStudent, TeachingArtist)
 from people.models import Staff
 from production.models import Artwork
@@ -92,7 +92,7 @@ class Command(BaseCommand):
         print("Traitement des candidatures <= ", year)
         print("**** Total de : ")
         print("**** {} candidatures".format(StudentApplication.objects.all().count()))
-        print("**** {} candidature a garder (are Student, Staff, visiting Artist, Teaching, )"\
+        print("**** {} candidature a garder (are Student, Staff, visiting Artist, Teaching, )"
               .format(StudentApplication.objects.all().count() - len(sa_expired)))
         print("**** {} user a garder (are Student, Staff, visiting Artist, Teaching, )".format(len(keep_users)))
         print("**** {} étudiants".format(Student.objects.all().count()))

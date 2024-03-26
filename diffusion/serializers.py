@@ -4,7 +4,7 @@ from taggit.serializers import (TagListSerializerField,
                                 TaggitSerializer)
 
 from .models import Place, Award, MetaAward, MetaEvent, Diffusion
-from production.serializers import StaffTaskSerializer
+from production.models import Artwork
 
 
 class PlaceSerializer(CountryFieldMixin, serializers.HyperlinkedModelSerializer):
@@ -18,7 +18,8 @@ class MetaAwardSerializer(serializers.HyperlinkedModelSerializer):
         model = MetaAward
         fields = '__all__'
 
-    task = StaffTaskSerializer()
+    # Commented for create metaAward instances by api
+    # task = StaffTaskSerializer()
 
 
 class AwardSerializer(serializers.HyperlinkedModelSerializer):
@@ -26,7 +27,7 @@ class AwardSerializer(serializers.HyperlinkedModelSerializer):
         model = Award
         fields = '__all__'
 
-    artwork = serializers.HyperlinkedRelatedField(read_only=True, view_name='artwork-detail', many=True)
+    artwork = serializers.HyperlinkedRelatedField(queryset=Artwork.objects.all(), view_name='artwork-detail', many=True)
 
 
 class MetaEventSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer):

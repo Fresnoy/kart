@@ -20,7 +20,9 @@ def order(students, orderby):
 
     def tt(x):
         if orderby == "displayName":
-            if x.artist.nickname:
+            if x.artist.alphabetical_order != "":
+                art = x.artist.alphabetical_order
+            elif x.artist.nickname != "":
                 art = x.artist.nickname
             else:
                 art = x.artist.user.last_name
@@ -65,6 +67,8 @@ class StudentEmbeddedInterface(graphene.Interface):
     birthplace = graphene.String(
         resolver=DynNameResolver(interface="StudentEmbedded"))
     birthplace_country = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    deathdate = graphene.String(
         resolver=DynNameResolver(interface="StudentEmbedded"))
     homeland_address = graphene.String(
         resolver=DynNameResolver(interface="StudentEmbedded"))
@@ -111,10 +115,10 @@ class StudentEmbeddedInterface(graphene.Interface):
         resolver=DynNameResolver(interface="StudentEmbedded"))
 
     def resolve_displayName(parent, info):
-        if parent.student.artist.nickname:
-            return parent.student.artist.nickname
+        if parent.artist.nickname:
+            return parent.artist.nickname
         else:
-            return f"{parent.student.user.first_name} {parent.student.user.last_name}"
+            return f"{parent.artist.user.first_name} {parent.artist.user.last_name}"
 
     def resolve_number(parent, info):
         return parent.student.number
@@ -136,6 +140,9 @@ class TeachingArtistType(DjangoObjectType):
 
     profile = graphene.Field(ProfileType)
 
+    # Artist fields
+    displayName = graphene.String()
+
     def resolve_profile(parent, info):
         return FresnoyProfile.objects.get(user=parent.artist.user)
 
@@ -145,6 +152,14 @@ class TeachingArtistType(DjangoObjectType):
         # Set to remove duplicates dates
         dates = list(set([aw.production_date.year for aw in aws]))
         return dates
+
+    def resolve_displayName(parent, info):
+        if parent.artist.nickname:
+            return parent.artist.nickname
+        elif parent.artist.user is not None:
+            return f"{parent.artist.user.first_name} {parent.artist.user.last_name}"
+        else:
+            return "???"
 
 
 class TeachingArtistsItemType(DjangoObjectType):

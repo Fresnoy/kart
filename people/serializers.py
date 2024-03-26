@@ -78,7 +78,7 @@ class UserSerializer(serializers.ModelSerializer):
     profile = FresnoyProfileSerializer(required=False)
 
     def create(self, validated_data):
-        return validated_data
+        return User.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile', {})
@@ -120,6 +120,7 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
             'id',
             'url',
             'nickname',
+            'artist_photo',
             'bio_short_fr',
             'bio_short_en',
             'bio_fr',
@@ -127,12 +128,15 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
             'twitter_account',
             'facebook_profile',
             'user',
+            'collectives',
+            'members',
             'websites',
             'artworks',
             'teacher',
             'student',
             'visiting_student',
         )
+    members = serializers.HyperlinkedIdentityField(view_name='artist-detail', many=True, required=False)
     artworks = serializers.SerializerMethodField()
     teacher = serializers.SerializerMethodField()
     student = serializers.SerializerMethodField()

@@ -328,8 +328,11 @@ class CandidatureResultsGQL(View):
 
         # get user by token
         credential = get_credentials(request)
-        payload = get_payload(credential)
-        user = get_user_by_payload(payload)
+        if credential:
+            payload = get_payload(credential)
+            user = get_user_by_payload(payload)
+        else:
+            return JsonResponse({'error': "AUTHORIZATION required"}, status=402)
         # replace user in request (why?)
         request.user = user
         result = schema.execute(query, context_value=request)

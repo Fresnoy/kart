@@ -17,13 +17,13 @@ class AwardAdmin(admin.ModelAdmin):
     }
 
     def get_year(self, obj):
-        return obj.date.year
+        return obj.date.year if obj.date else None
 
     get_year.short_description = "Annee"
     get_year.admin_order_field = 'date'
 
     def get_award(self, obj):
-        return obj.meta_award.label
+        return obj.meta_award.label if obj.meta_award else None
 
     get_award.short_description = "Titre"
     get_award.admin_order_field = 'meta_award__label'

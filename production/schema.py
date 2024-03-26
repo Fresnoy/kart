@@ -2,12 +2,13 @@ import graphene
 from graphene_django import DjangoObjectType
 from graphene_django.converter import convert_django_field
 
+from django.db.models import Q
 
 from taggit.managers import TaggableManager
 from itertools import chain
 
 from .models import Production, Artwork, Film, Installation, \
-    Performance, Event, Task, ProductionOrganizationTask
+    Performance, Event, Task, ProductionOrganizationTask, StaffTask
 
 
 from people.schema import ArtistType, StaffType
@@ -21,6 +22,11 @@ from diffusion.schema import DiffusionType, PlaceType
 class TaskType(DjangoObjectType):
     class Meta:
         model = Task
+
+
+class StaffTaskType(TaskType):
+    class Meta:
+        model = StaffTask
 
 
 class PartnerType(DjangoObjectType):
@@ -73,6 +79,11 @@ class ArtworkInterface(ProductionInterface):
     # def is_type_of(cls, root, info):
     #     return isinstance(root, Artwork)
     authors = graphene.List(ArtistType)
+    diffusions = graphene.List(DiffusionType)
+    mentoring = graphene.List("school.schema.TeachingArtistType")
+
+    # The type of artwork (Film, Performance, ...)
+    type = graphene.String()
 
     @classmethod
     def resolve_type(cls, instance, info):
@@ -84,6 +95,9 @@ class ArtworkInterface(ProductionInterface):
             return InstallationType
         else:
             return None
+
+    def resolve_mentoring(parent, info, **kwargs):
+        return parent.mentoring.all()
 
 
 class ProductionType(DjangoObjectType):
@@ -306,7 +320,7 @@ class Query(graphene.ObjectType):
         ProductionInterface, titleStartsWith=graphene.String())
 
     artwork = graphene.Field(ArtworkType, id=graphene.Int())
-    artworks = graphene.List(ArtworkInterface)
+    artworks = graphene.List(ArtworkInterface, title=graphene.String(required=False))
 
     film = graphene.Field(FilmType, id=graphene.Int())
     films = graphene.List(FilmType)
@@ -329,6 +343,9 @@ class Query(graphene.ObjectType):
     task = graphene.Field(TaskType, id=graphene.Int())
     tasks = graphene.List(TaskType)
 
+    stafftask = graphene.Field(StaffTaskType, id=graphene.Int())
+    stafftasks = graphene.List(StaffTaskType)
+
     # Production
     def resolve_productions(root, info, titleStartsWith=None, **kwargs):
         productions = Production.objects.all()
@@ -348,7 +365,13 @@ class Query(graphene.ObjectType):
 
     # Artwork
     def resolve_artworks(root, info, **kwargs):
-        return Artwork.objects.order_by('authors__last_name').all()
+        title = kwargs.get('title')
+        if title != "":
+            return Artwork.objects.filter(Q(title__icontains=title) |
+                                          Q(former_title__icontains=title) |
+                                          Q(subtitle__icontains=title))
+        else:
+            return Artwork.objects.order_by('authors__last_name').all()
 
     def resolve_artwork(root, info, **kwargs):
         id = kwargs.get('id')
@@ -415,4 +438,14 @@ class Query(graphene.ObjectType):
         id = kwargs.get('id')
         if id is not None:
             return Task.objects.get(pk=id)
+        return None
+
+    # StaffTask
+    def resolve_stafftasks(root, info, **kwargs):
+        return StaffTask.objects.all()
+
+    def resolve_stafftask(root, info, **kwargs):
+        id = kwargs.get('id')
+        if id is not None:
+            return StaffTask.objects.get(pk=id)
         return None

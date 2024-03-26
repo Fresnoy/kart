@@ -2,6 +2,9 @@ import re
 import graphene
 from graphene_django import DjangoObjectType
 
+from django.db.models import F, Q, Value
+from django.db.models.functions import Concat
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 
@@ -28,7 +31,9 @@ def order(artists, orderby):
 
     def tt(x):
         if orderby == "displayName":
-            if x.nickname:
+            if x.alphabetical_order != "":
+                art = x.alphabetical_order
+            elif x.nickname != "":
                 art = x.nickname
             else:
                 art = x.user.last_name
@@ -144,6 +149,8 @@ class ArtistEmbeddedInterface(graphene.Interface):
         resolver=DynNameResolver(interface="ArtistEmbedded"))
     birthplace_country = graphene.String(
         resolver=DynNameResolver(interface="ArtistEmbedded"))
+    deathdate = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
     homeland_address = graphene.String(
         resolver=DynNameResolver(interface="ArtistEmbedded"))
     homeland_zipcode = graphene.String(
@@ -178,6 +185,10 @@ class ArtistEmbeddedInterface(graphene.Interface):
     # Artist fields
     nickname = graphene.String(
         resolver=DynNameResolver(interface="ArtistEmbedded"))
+    artist_photo = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    collectives = graphene.List("people.schema.ArtistType")
+    members = graphene.List("people.schema.ArtistType")
     displayName = graphene.String()
     bioShortFr = graphene.String(
         resolver=DynNameResolver(interface="ArtistEmbedded"))
@@ -202,7 +213,7 @@ class ArtistEmbeddedInterface(graphene.Interface):
         return diffs
 
     def resolve_displayName(parent, info):
-        if parent.artist.nickname:
+        if parent.artist.nickname != "":
             return parent.artist.nickname
         else:
             return f"{parent.artist.user.first_name} {parent.artist.user.last_name}"
@@ -215,6 +226,7 @@ class ProfileEmbeddedInterface(graphene.Interface):
     birthdate = graphene.String()
     birthplace = graphene.String()
     birthplace_country = graphene.String()
+    deathdate = graphene.String()
     homeland_address = graphene.String()
     homeland_zipcode = graphene.String()
     homeland_town = graphene.String()
@@ -251,6 +263,7 @@ class UserType(DjangoObjectType):
     birthdate = graphene.String(resolver=DynNameResolver())
     birthplace = graphene.String(resolver=DynNameResolver())
     birthplaceCountry = graphene.String(resolver=DynNameResolver())
+    deathdate = graphene.String(resolver=DynNameResolver())
     homelandAddress = graphene.String(resolver=DynNameResolver())
     homelandZipcode = graphene.String(resolver=DynNameResolver())
     homelandTown = graphene.String(resolver=DynNameResolver())
@@ -266,6 +279,12 @@ class UserType(DjangoObjectType):
     motherTongue = graphene.String(resolver=DynNameResolver())
     otherLanguage = graphene.String(resolver=DynNameResolver())
     cursus = graphene.String(resolver=DynNameResolver())
+    # foreignkeys resolver
+    artist = graphene.Field("people.schema.ArtistType")
+
+    def resolve_artist(self, info):
+        artist = Artist.objects.filter(user__id=self.id)
+        return artist.first() if artist.count() > 0 else None
 
 
 # FresnoProfile
@@ -293,6 +312,9 @@ class ArtistType(UserType):
     id = graphene.ID(required=True, source='pk')
 
     nickname = graphene.String(resolver=DynNameResolver())
+    artist_photo = graphene.String(resolver=DynNameResolver())
+    collectives = graphene.List("people.schema.ArtistType", resolver=DynNameResolver())
+    members = graphene.List("people.schema.ArtistType", resolver=DynNameResolver())
     bioShortFr = graphene.String(resolver=DynNameResolver())
     bioShortEn = graphene.String(resolver=DynNameResolver())
     bioFr = graphene.String(resolver=DynNameResolver())
@@ -312,6 +334,8 @@ class ArtistType(UserType):
         else:
             return f"{parent.user.first_name} {parent.user.last_name}"
 
+    teacher = graphene.Field('school.schema.TeachingArtistType')
+
 
 class StaffType(UserType):
     class Meta:
@@ -328,7 +352,7 @@ class Query(graphene.ObjectType):
     users = graphene.List(UserType)
 
     artist = graphene.Field(ArtistType, id=graphene.Int())
-    artists = graphene.List(ArtistType)
+    artists = graphene.List(ArtistType, name=graphene.String(required=False))
 
     profile = graphene.Field(FresnoyProfileType, id=graphene.Int())
     profiles = graphene.List(FresnoyProfileType)
@@ -343,7 +367,17 @@ class Query(graphene.ObjectType):
         return None
 
     def resolve_artists(root, info, **kwargs):
+        # get current (is_current_setup)
+        name = kwargs.get('name')
         artists = Artist.objects.all()
+        if name != "":
+            # Item.objects.filter(Q(creator=owner) | Q(moderated=False))
+            artists = Artist.objects.annotate(name=Concat(F('user__first_name'), Value(' '), F('user__last_name')))\
+                                    .filter(Q(nickname__icontains=name) |
+                                            Q(user__first_name__icontains=name) |
+                                            Q(user__last_name__icontains=name) |
+                                            Q(name__icontains=name))
+
         # order by displayName by default
         return order(artists, "displayName")
 

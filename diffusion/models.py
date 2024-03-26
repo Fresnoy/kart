@@ -143,7 +143,7 @@ class Award(models.Model):
     def __str__(self):
         artworks = ", ".join([artwork.__str__()
                               for artwork in self.artwork.all()])
-        return '{0} - {1} pour {2}'.format(self.date.year, self.meta_award, artworks)
+        return '{0} - {1} pour {2}'.format(self.date.year if self.date else None, self.meta_award, artworks)
 
 
 class MetaEvent(models.Model):
