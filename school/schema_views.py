@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from kart.schema import schema
 from django.views import View
 from graphql_jwt.utils import get_user_by_payload, get_credentials, get_payload
+from rest_framework.authtoken.models import Token
 
 
 class PromotionViewGQL(View):
@@ -326,14 +327,30 @@ class CandidatureResultsGQL(View):
             }
             '''
 
-        # get user by token
-        credential = get_credentials(request)
-        if credential:
-            payload = get_payload(credential)
-            user = get_user_by_payload(payload)
-        else:
+        user = None
+        authorization = request.META.get('HTTP_AUTHORIZATION')
+        # JWT
+        if authorization and 'JWT' in authorization:
+            try:
+                # get user by token
+                credential = get_credentials(request)
+                payload = get_payload(credential)
+                user = get_user_by_payload(payload)
+            except Exception:
+                return JsonResponse({'error': "Bad JWT AUTHORIZATION"}, status=402)
+        # TOKEN
+        if authorization and 'TOKEN' in authorization:
+            try:
+                # get the key
+                key = authorization.split("TOKEN ")[1]
+                # get user
+                user = Token.objects.get(key=key).user
+            except Exception:
+                return JsonResponse({'error': "Bad TOKEN AUTHORIZATION"}, status=402)
+        # USER is NONE
+        if not user:
             return JsonResponse({'error': "AUTHORIZATION required"}, status=402)
-        # replace user in request (why?)
+        # replace user in request
         request.user = user
         result = schema.execute(query, context_value=request)
 
