@@ -4,6 +4,7 @@ import graphene
 from django.test import TestCase
 from django.urls import reverse
 
+from rest_framework.authtoken.models import Token
 from rest_framework import status
 
 from utils.tests.factories import UserFactory
@@ -25,6 +26,7 @@ class TestGQLPages(TestCase):
         pass
 
     def test_page_candidature_results_list(self):
+        # TEST WITH JWT
         # create value
         StudentApplicationFactory()
         # auth user
@@ -35,6 +37,24 @@ class TestGQLPages(TestCase):
         # get infos
         candidature_results_list_url = reverse('candidatureResultsList_gql')
         response = self.client.get(candidature_results_list_url, HTTP_AUTHORIZATION='JWT {}'.format(jwt['access']))
+
+        results = json.loads(response.content)
+        self.assertFalse(hasattr(results, 'errors'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_page_candidature_results_list_with_token(self):
+        # TEST WITH TOKEN
+        # create value
+        StudentApplicationFactory()
+        # auth user
+        user = UserFactory()
+        user.is_staff = True
+        user.save()
+        token = Token.objects.create(user=user)
+        token.save()
+        # get infos
+        candidature_results_list_url = reverse('candidatureResultsList_gql')
+        response = self.client.get(candidature_results_list_url, HTTP_AUTHORIZATION='TOKEN {}'.format(token))
 
         results = json.loads(response.content)
         self.assertFalse(hasattr(results, 'errors'))
