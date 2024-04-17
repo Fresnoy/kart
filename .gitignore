@@ -8,6 +8,7 @@ kart/site_settings.py
 .coverage
 .tox
 littlechick_db
+.tmp/
 static/
 # templates emails
 school/templates/emails/*.txt
