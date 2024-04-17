@@ -49,6 +49,8 @@ DEBUG = True
 OLD_CWD = os.getcwd()
 os.chdir(pathlib.Path(__file__).parent.absolute())
 
+# Create .tmp dir if needed
+pathlib.Path('./.tmp').mkdir(exist_ok=True)
 
 # Allow to lower data in query with '__lower'
 CharField.register_lookup(Lower)
