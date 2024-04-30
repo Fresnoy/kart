@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 # -*- coding=utf8 -*-
 
+
+import sys
 import os
 from difflib import SequenceMatcher
 
@@ -23,13 +25,14 @@ import unidecode
 from django.apps import apps
 import warnings
 
-""" Uncomment paragraph for standalone mode
+# Uncomment paragraph for standalone mode
 import django
-# ppp = pathlib.Path(__file__).parent.parent.parent.parent.parent.absolute()
-# sys.path.append(str(ppp))
-# # Shell Plus Django Imports (uncomment to use script in standalone mode, recomment before flake8)
-# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kart.settings")
-# django.setup() """
+
+ppp = pathlib.Path(__file__).parent.parent.parent.parent.parent.absolute()
+sys.path.append(str(ppp))
+# Shell Plus Django Imports (uncomment to use script in standalone mode, recomment before flake8)
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kart.settings")
+django.setup()
 
 from production.models import Artwork, Event
 from people.models import Artist
@@ -41,6 +44,7 @@ pd.set_option("display.expand_frame_repr", False)
 
 # TODO: Harmonise created and read files (merge.csv, ...)
 # TODO : clean examples and debug code
+# TODO : logging system (debug, info ...)
 
 DRY_RUN = False  # No save() if True
 DEBUG = True
@@ -50,7 +54,7 @@ OLD_CWD = os.getcwd()
 os.chdir(pathlib.Path(__file__).parent.absolute())
 
 # Create .tmp dir if needed
-pathlib.Path('./.tmp').mkdir(exist_ok=True)
+pathlib.Path("./.tmp").mkdir(exist_ok=True)
 
 # Allow to lower data in query with '__lower'
 CharField.register_lookup(Lower)
@@ -164,9 +168,7 @@ def eventCleaning():
                     break
 
                 # ... otherwise, ask user what to do
-                logger.info(
-                    "\n\n======================================================"
-                )
+                logger.info("\n\n======================================================")
                 logger.info(f"CSV\t\t\t|{csv_title}|")
                 for i in range(nbGuess):
                     # Distance btw the title from csv and the one found in Kart
@@ -176,9 +178,7 @@ def eventCleaning():
                         ).ratio(),
                         2,
                     )
-                    logger.info(
-                        f"({i+1}) Kart\t\t|{guess[i].title}|\t\t\t(dist:{dist})"
-                    )
+                    logger.info(f"({i+1}) Kart\t\t|{guess[i].title}|\t\t\t(dist:{dist})")
 
                 cont = input(
                     """
@@ -225,9 +225,7 @@ def eventCleaning():
     )
 
     # merge the cleaned data with awards csv
-    merge_df = pd.merge(
-        awards, event_df, how="left", left_on="event_title", right_on="NomFichier"
-    )
+    merge_df = pd.merge(awards, event_df, how="left", left_on="event_title", right_on="NomFichier")
     # Drop duplicates
     event_df.drop_duplicates(inplace=True)
 
@@ -267,9 +265,7 @@ def artworkCleaning():
         aw_title = str(aw.artwork_title)
         lastname = str(aw.artist_lastname)
         firstname = str(aw.artist_firstname)
-        _artist_l = getArtistByNames(
-            firstname=firstname, lastname=lastname, listing=True
-        )
+        _artist_l = getArtistByNames(firstname=firstname, lastname=lastname, listing=True)
 
         # If an id is declared, get the aw from kart and check its
         # similarity with the content of the row to validate
@@ -287,9 +283,7 @@ def artworkCleaning():
 
             # Artist/author validation
             # The closest artists in Kart from the data given in CSV (listing => all matches)
-            _artist_l = getArtistByNames(
-                firstname=firstname, lastname=lastname, listing=True
-            )
+            _artist_l = getArtistByNames(firstname=firstname, lastname=lastname, listing=True)
 
             # If no match, should create artist ?
             if not _artist_l:
@@ -326,9 +320,7 @@ def artworkCleaning():
                 continue
             else:
                 # Otherwise, the authors are validated and their id are stored in csv
-                aws.loc[ind, "artist_id"] = ",".join(
-                    [str(x.id) for x in artist_in_authors]
-                )
+                aws.loc[ind, "artist_id"] = ",".join([str(x.id) for x in artist_in_authors])
                 # logger.info(f"authors {aws.loc[ind, 'artist_id']}")
                 # Continue to next row
                 continue
@@ -406,9 +398,7 @@ def getArtworkByTitle(aw_title):
 search_cache = {}
 
 
-def getArtistByNames(
-    firstname="", lastname="", pseudo="", listing=False
-):  # TODO pseudo
+def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TODO pseudo
     """Retrieve the closest artist from the first and last names given
 
     Parameters:
@@ -432,9 +422,7 @@ def getArtistByNames(
     # If data not string
     # print([x for x in [firstname,lastname,pseudo]])
     if not all([isinstance(x, str) for x in [firstname, lastname, pseudo]]):
-        logger.info(
-            "\n** getArtistByNames **\nfirstname,lastname,pseudo must be strings"
-        )
+        logger.info("\n** getArtistByNames **\nfirstname,lastname,pseudo must be strings")
         return False
 
     # List of artists that could match
@@ -528,19 +516,13 @@ def getArtistByNames(
 
             if kart_lastname.find(" ") >= 0 or lastname.find(" ") >= 0:
                 # Check distance btw lastnames without spaces
-                if (
-                    dist2(kart_lastname.replace(" ", ""), lastname.replace(" ", ""))
-                    < 0.9
-                ):
+                if dist2(kart_lastname.replace(" ", ""), lastname.replace(" ", "")) < 0.9:
                     bef = f'"{kart_lastname}" <> "{lastname}"'
                     logger.warning(f"whitespace problem ? {bef}")
 
             if kart_firstname.find(" ") >= 0 or firstname.find(" ") >= 0:
                 # Check distance btw firstnames without spaces
-                if (
-                    dist2(kart_firstname.replace(" ", ""), firstname.replace(" ", ""))
-                    < 0.9
-                ):
+                if dist2(kart_firstname.replace(" ", ""), firstname.replace(" ", "")) < 0.9:
                     bef = f'"{kart_firstname}" <> "{firstname}"'
                     logger.warning(f"whitespace problem ? {bef}")
             ###
@@ -554,9 +536,7 @@ def getArtistByNames(
             guessArtFN = (
                 Artist.objects.prefetch_related("user")
                 .annotate(
-                    similarity=TrigramSimilarity(
-                        "user__first_name__unaccent", firstname
-                    ),
+                    similarity=TrigramSimilarity("user__first_name__unaccent", firstname),
                 )
                 .filter(user__last_name=lastname, similarity__gt=0.8)
                 .order_by("-similarity")
@@ -745,9 +725,7 @@ def getISOname(countryName=None, simili=False):
             dist = SequenceMatcher(None, str(countryName).lower(), name.lower()).ratio()
             # logger.info(f"DIST between {countryName} (unknown) and {name}: {dist}")
             if dist >= 0.95:
-                matchCodes.append(
-                    {"dist": dist, "code": code}
-                )  # 1 ponctuation diff leads to .88
+                matchCodes.append({"dist": dist, "code": code})  # 1 ponctuation diff leads to .88
             if dist >= 0.85:
                 cn1 = unidecode.unidecode(str(countryName))
                 cn2 = unidecode.unidecode(name)
@@ -816,9 +794,7 @@ def createPlaces(source_df=None):
         if guessCity:
             logger.info(f"CITY FOUND IN KART: {guessCity[0].city}")
         else:
-            logger.info(
-                "No close city name in Kart, the place should be created or is empty"
-            )
+            logger.info("No close city name in Kart, the place should be created or is empty")
 
         # Processing COUNTRY
         # Look for ISO country code related to the country name in csv
@@ -836,17 +812,13 @@ def createPlaces(source_df=None):
 
             # Compute the distance between the 2 country names
             dist = round(
-                SequenceMatcher(
-                    None, str(country).lower(), countryNameKart.lower()
-                ).ratio(),
+                SequenceMatcher(None, str(country).lower(), countryNameKart.lower()).ratio(),
                 2,
             )
 
             # If really close, keep the Kart version
             if dist > 0.9:
-                logger.info(
-                    f"Really close name, replacing {country} by {countryNameKart}"
-                )
+                logger.info(f"Really close name, replacing {country} by {countryNameKart}")
                 codeCountryCSV = codeCountryKart
             else:
                 # Process the us case (happens often!)
@@ -975,9 +947,7 @@ def safeGet(obj_class=None, default_index=None, force=False, **args):
     # If multiple entries for the query, fallback on filter
     except MultipleObjectsReturned:
         objs = obj_class.objects.filter(**args)
-        logger.info(
-            f"The request of {args}  returned multiple entries for the class {obj_class}"
-        )
+        logger.info(f"The request of {args}  returned multiple entries for the class {obj_class}")
 
         if default_index:
             try:
@@ -1167,9 +1137,7 @@ def createAwards(awards_df=None):
             if not DRY_RUN:
                 new_aw.save()
         else:
-            new_aw = Award(
-                meta_award=maward, event=event, date=event.starting_date, note=note
-            )
+            new_aw = Award(meta_award=maward, event=event, date=event.starting_date, note=note)
             try:
                 if not DRY_RUN:
                     new_aw.save()
@@ -1245,8 +1213,8 @@ def compareSummaries(sum1=None, sum2=None, restrict=None, force_display=False):
     fakediff = force_display
 
     # Try to globally compare dictionnaries
-    if sum1 == sum2:
-        warnings.warn("Summaries are identical.")
+    # if sum1 == sum2:
+    #     warnings.warn("Summaries are identical.")
 
     # Iterate models and countings
     for k, v in sum1.items():
@@ -1261,12 +1229,76 @@ def compareSummaries(sum1=None, sum2=None, restrict=None, force_display=False):
 
         # If diff and model is in the restricted list, show it
         if fakediff or (
-            diff
-            and ((restrict and (k in restrict and k in sum2.keys())) or not restrict)
+            diff and ((restrict and (k in restrict and k in sum2.keys())) or not restrict)
         ):
 
             sign = "-" if diff < 0 else "+"
             print(f"{k} model count was {v}, is now {sum2[k]} ({sign} {diff})")
             diff_d[k] = f"{sign} {diff}"
 
+    if diff_d == {}:
+        diff_d = "No difference"
+
     return diff_d
+
+
+def geoloc_all_cities(save=False, debug=False):
+    """
+    Geolocate the cities of Kart's places
+
+    From
+    """
+    from geopy.geocoders import Nominatim
+    from geopy.extra.rate_limiter import RateLimiter
+
+    geolocator = Nominatim(user_agent="Kart_location")
+    geocode = RateLimiter(geolocator.geocode, min_delay_seconds=2)
+
+    # List cities and store their geolocalisation coordinates
+    for place in Place.objects.all():
+
+        # Get the city
+        city = place.city
+
+        # Get the country
+        country = place.country
+
+        if city:
+            if debug:
+                print(city)
+            # if the place has no lat or long
+            if not (place.latitude and place.longitude):
+
+                if country:
+                    search_request = f"{city}, {country}"
+                else:
+                    search_request = city
+                # Call to geocode api
+                try:
+                    print("searching for ", search_request)
+                    location = geocode(search_request)
+                except Exception as e:
+                    print(" --- ERROR --- UNKNOWN CITY : ", city, str(e))
+                    continue
+                # If a location is found, fill the missing data
+                if location:
+                    if not place.latitude:
+                        place.latitude = location.latitude
+                    if not place.longitude:
+                        place.longitude = location.longitude
+
+                    # Save the Place in Kart
+                    if save:
+                        print(
+                            "Saving place : ",
+                            place.city,
+                            place.latitude,
+                            place.longitude,
+                        )
+                        place.save()
+                else:
+                    print("---------------- Location unknown : ", city)
+
+
+if __name__ == "__main__":
+    pass
