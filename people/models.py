@@ -33,6 +33,8 @@ class FresnoyProfile(models.Model):
     birthplace_country = CountryField(null=True, default="", blank=True)
 
     deathdate = models.DateField(null=True, blank=True)
+    deathplace = models.CharField(max_length=255, null=True, blank=True)
+    deathplace_country = CountryField(null=True, default="", blank=True)
 
     homeland_address = models.TextField(blank=True)
     homeland_zipcode = models.CharField(max_length=10, blank=True)

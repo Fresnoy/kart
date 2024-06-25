@@ -70,6 +70,10 @@ class StudentEmbeddedInterface(graphene.Interface):
         resolver=DynNameResolver(interface="StudentEmbedded"))
     deathdate = graphene.String(
         resolver=DynNameResolver(interface="StudentEmbedded"))
+    deathplace = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
+    deathplace_country = graphene.String(
+        resolver=DynNameResolver(interface="StudentEmbedded"))
     homeland_address = graphene.String(
         resolver=DynNameResolver(interface="StudentEmbedded"))
     homeland_zipcode = graphene.String(

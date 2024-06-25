@@ -28,15 +28,15 @@ import warnings
 # Uncomment paragraph for standalone mode
 import django
 
+from production.models import Artwork, Event
+from people.models import Artist
+from diffusion.models import Award, MetaAward, Place
+
 ppp = pathlib.Path(__file__).parent.parent.parent.parent.parent.absolute()
 sys.path.append(str(ppp))
 # Shell Plus Django Imports (uncomment to use script in standalone mode, recomment before flake8)
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kart.settings")
 django.setup()
-
-from production.models import Artwork, Event
-from people.models import Artist
-from diffusion.models import Award, MetaAward, Place
 
 # Full width print of dataframe
 pd.set_option("display.expand_frame_repr", False)

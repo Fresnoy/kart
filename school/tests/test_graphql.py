@@ -91,6 +91,9 @@ class TestGQLPages(TestCase):
                         birthdate\
                         birthplace\
                         birthplaceCountry\
+                        deathdate\
+                        deathplace\
+                        deathplaceCountry\
                         bioShortFr\
                         bioShortEn\
                         bioFr\
@@ -146,6 +149,9 @@ class TestGQLPages(TestCase):
                         birthplace\
                         birthplaceCountry\
                         birthdate\
+                        deathdate\
+                        deathplace\
+                        deathplaceCountry\
                         presentationTextFr\
                         presentationTextEn\
                         cursus\

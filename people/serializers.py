@@ -21,6 +21,9 @@ class FresnoyProfileSerializer(serializers.ModelSerializer):
             "birthdate",
             "birthplace",
             "birthplace_country",
+            "deathdate",
+            "deathplace",
+            "deathplace_country",
             "mother_tongue",
             "other_language",
             "homeland_country",
@@ -42,6 +45,7 @@ class FresnoyProfileSerializer(serializers.ModelSerializer):
 
     id = serializers.ReadOnlyField()
     birthplace_country = CountryField(default="", allow_blank=True)
+    deathplace_country = CountryField(default="", allow_blank=True)
     homeland_country = CountryField(default="", allow_blank=True)
     residence_country = CountryField(default="", allow_blank=True)
 
