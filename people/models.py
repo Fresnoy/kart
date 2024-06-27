@@ -74,17 +74,6 @@ class FresnoyProfile(models.Model):
 class Artist(models.Model):
     class Meta:
         ordering = ['user__last_name']
-        # set user / nickname constraints
-        constraints = [
-            models.CheckConstraint(
-                name="Artist or collective should be named",
-                check=(
-                    Q(Q(user__isnull=True) & ~Q(nickname__exact="")) |
-                    Q(~Q(user__isnull=True) & ~Q(nickname__exact="")) |
-                    Q(~Q(user__isnull=True) & Q(nickname__exact=""))
-                    )
-                ),
-        ]
 
     # Artist has user, collectifs has no user
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
@@ -109,11 +98,6 @@ class Artist(models.Model):
     twitter_account = models.CharField(max_length=100, blank=True)
     facebook_profile = models.URLField(blank=True)
     websites = models.ManyToManyField(Website, blank=True)
-
-    def clean(self):
-        # Check User or nickname are sets
-        if self.user is None and self.nickname == "":
-            raise ValidationError("No user is defined, set the nickname if you want to create an artist collective")
 
     def __str__(self):
         if self.user:
