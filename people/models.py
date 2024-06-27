@@ -121,7 +121,9 @@ class Artist(models.Model):
                                                                                    self.user.last_name)
         if self.nickname != "":
             return self.nickname
-
+        # for collective without nikname
+        if self.collectives:
+            return " & ".join(str(a) for a in self.artist.collectives.all())
         return "???"
 
 
