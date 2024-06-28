@@ -73,7 +73,8 @@ class FresnoyProfile(models.Model):
 
 class Artist(models.Model):
     class Meta:
-        ordering = ['user__last_name']
+        ordering = ['nickname', 'user__first_name', 'collectives__user__first_name' ]
+        # pass
 
     # Artist has user, collectifs has no user
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
@@ -107,7 +108,9 @@ class Artist(models.Model):
             return self.nickname
         # for collective without nikname
         if self.collectives:
-            return " & ".join(str(a) for a in self.artist.collectives.all())
+            # return " & ".join(str(a) for a in self.collectives.all())
+            return " & ".join(str(t.to_artist) for t in self.collectives.through.objects.filter(from_artist_id=self.id)
+                              .order_by("id"))
         return "???"
 
 
