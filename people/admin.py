@@ -13,32 +13,27 @@ from guardian.admin import GuardedModelAdmin
 class ArtistAdmin(admin.ModelAdmin):
     """ Admin model for Artist.
     """
-    # list_display = ('nick',)
-    search_fields = ['user__first_name', 'user__last_name', 'nickname', 'collectives__nickname',
-                     'collectives__user__first_name', 'collectives__user__last_name']
+    list_display = ('nick',)
+    search_fields = ['user__first_name', 'user__last_name', 'nickname',]
     filter_horizontal = ('websites', 'collectives')
     readonly_fields = ('artist_photo_picture',)
     # list fields order the picture after artist_photo
     fields = ('user', 'collectives', 'nickname', 'alphabetical_order', 'artist_photo', 'artist_photo_picture',
               'bio_short_fr', 'bio_short_en', 'bio_fr', 'bio_en', 'twitter_account', 'facebook_profile', 'websites')
 
-    # def nick(self, obj):
-    #     # user can be None
-    #     if obj.user:
-    #         if obj.nickname != "":
-    #             return "{} ({} {})".format(obj.nickname, obj.user.first_name, obj.user.last_name)
-    #         else:
-    #             return "{} {}".format(obj.user.first_name, obj.user.last_name)
-    #     # User None
-    #     if obj.nickname != "":
-    #         return obj.nickname
-    #     return "???"
-    # # describe 'nick'
-    # nick.short_description = 'Nick name (real name if any) or real name'
-    def formfield_for_manytomany(self, db_field, request, **kwargs):
-        if db_field.name == "collectives":
-            kwargs["queryset"] = Artist.objects.all().order_by("collectives__id")
-        return super(admin.ModelAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
+    def nick(self, obj):
+        # user can be None
+        if obj.user:
+            if obj.nickname != "":
+                return "{} ({} {})".format(obj.nickname, obj.user.first_name, obj.user.last_name)
+            else:
+                return "{} {}".format(obj.user.first_name, obj.user.last_name)
+        # User None
+        if obj.nickname != "":
+            return obj.nickname
+        return "???"
+    # describe 'nick'
+    nick.short_description = 'Nick name (real name if any) or real name'
 
     def firstname(self, obj):
         return obj.user.first_name

@@ -73,8 +73,18 @@ class FresnoyProfile(models.Model):
 
 class Artist(models.Model):
     class Meta:
-        ordering = ['nickname', 'user__first_name', 'collectives__user__first_name' ]
-        # pass
+        ordering = ['user__last_name']
+        # set user / nickname constraints
+        constraints = [
+            models.CheckConstraint(
+                name="Artist or collective should be named",
+                check=(
+                    Q(Q(user__isnull=True) & ~Q(nickname__exact="")) |
+                    Q(~Q(user__isnull=True) & ~Q(nickname__exact="")) |
+                    Q(~Q(user__isnull=True) & Q(nickname__exact=""))
+                    )
+                ),
+        ]
 
     # Artist has user, collectifs has no user
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
@@ -100,17 +110,18 @@ class Artist(models.Model):
     facebook_profile = models.URLField(blank=True)
     websites = models.ManyToManyField(Website, blank=True)
 
+    def clean(self):
+        # Check User or nickname are sets
+        if self.user is None and self.nickname == "":
+            raise ValidationError("No user is defined, set the nickname if you want to create an artist collective")
+
     def __str__(self):
         if self.user:
             return '{}'.format(self.nickname) if self.nickname else "{} {}".format(self.user.first_name,
                                                                                    self.user.last_name)
         if self.nickname != "":
             return self.nickname
-        # for collective without nikname
-        if self.collectives:
-            # return " & ".join(str(a) for a in self.collectives.all())
-            return " & ".join(str(t.to_artist) for t in self.collectives.through.objects.filter(from_artist_id=self.id)
-                              .order_by("id"))
+
         return "???"
 
 
