@@ -223,6 +223,13 @@ def order(aws, orderby):
     def tt(x):
         if orderby == "author":
             art = x.authors.all().order_by('user__last_name').first().user.last_name
+        if orderby == "author_displayname":
+            first_auth = x.authors.first()            
+            art = first_auth.user.last_name
+            if first_auth.alphabetical_order != "":
+                art = first_auth.alphabetical_order
+            elif first_auth.nickname != "":
+                art = first_auth.nickname            
         elif orderby == "title":
             art = x.title
         elif orderby == "id":
@@ -248,7 +255,7 @@ class EventType(DjangoObjectType):
         interfaces = (ProductionInterface,)
 
     artworks = graphene.List(
-        ArtworkType, orderby=graphene.String(default_value="author"))
+        ArtworkType, orderby=graphene.String(default_value="author_displayname"))
     # artwork = graphene.Field(ArtworkType, id=graphene.ID())
     artworkExhib = graphene.Field(ArtworkEventType, id=graphene.ID())
 
