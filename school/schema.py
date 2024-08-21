@@ -25,7 +25,10 @@ def order(students, orderby):
             elif x.artist.nickname != "":
                 art = x.artist.nickname
             else:
-                art = x.artist.user.last_name
+                if x.artist.user is not None:
+                    art = x.artist.user.last_name
+                else:
+                    art = x.artist.nickname
         else:
             raise Exception("orderby value is undefined or unknown")
         return (art)
@@ -121,8 +124,10 @@ class StudentEmbeddedInterface(graphene.Interface):
     def resolve_displayName(parent, info):
         if parent.artist.nickname:
             return parent.artist.nickname
-        else:
+        if parent.artist.user is not None:            
             return f"{parent.artist.user.first_name} {parent.artist.user.last_name}"
+        else:
+            parent.artist.nickname
 
     def resolve_number(parent, info):
         return parent.student.number

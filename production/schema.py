@@ -225,7 +225,12 @@ def order(aws, orderby):
         #     art = x.authors.all().order_by('user__last_name').first().user.last_name
         if orderby == "author":
             first_auth = x.authors.first()
-            art = first_auth.user.last_name
+            # default
+            art = first_auth.__str__()
+            # default if not collective
+            if first_auth.user is not None:
+                art = first_auth.user.last_name
+            # alpha order or nickname
             if first_auth.alphabetical_order != "":
                 art = first_auth.alphabetical_order
             elif first_auth.nickname != "":
