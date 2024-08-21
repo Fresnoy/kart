@@ -73,10 +73,19 @@ class AdminStudentApplicationAdmin(admin.ModelAdmin):
     )
 
 
+class PhdStudentAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'defended',)
+    ordering = ('student',)
+
+    @admin.display(boolean=True)
+    def defended(self, obj):
+        return obj.thesis_file.name != ""
+
+
 admin.site.register(Promotion)
 admin.site.register(StudentApplication, StudentApplicationAdmin)
 admin.site.register(StudentApplicationSetup, StudentApplicationSetupAdmin)
 admin.site.register(Student, StudentAdmin)
-admin.site.register(PhdStudent)
+admin.site.register(PhdStudent, PhdStudentAdmin)
 admin.site.register(ScienceStudent)
 admin.site.register(VisitingStudent)

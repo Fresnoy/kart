@@ -31,8 +31,14 @@ class PhdStudentFactory(factory.django.DjangoModelFactory):
         model = models.PhdStudent
     student = factory.SubFactory(StudentFactory)
     university = factory.SubFactory(OrganizationFactory)
-    director = factory.SubFactory(UserFactory)
     thesis_object = factory.Faker('word')
+
+    @factory.post_generation
+    def directors(self, create, extracted, **kwargs):
+        if extracted:
+            # A list of user were passed in, use them
+            for user in extracted:
+                self.directors.add(user)
 
 
 class ScienceStudentFactory(factory.django.DjangoModelFactory):

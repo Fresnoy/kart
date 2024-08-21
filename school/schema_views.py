@@ -66,13 +66,15 @@ class StudentViewGQL(View):
             photo
             gender
             nationality
-            birthdate
             firstName
             lastName
             nationality
             birthdate
             birthplace
             birthplaceCountry
+            deathdate
+            deathplace
+            deathplaceCountry
             cursus
             bioShortFr
             bioShortEn
@@ -150,6 +152,9 @@ class TeachingArtistGQL(View):
                 birthdate
                 birthplace
                 birthplaceCountry
+                deathdate
+                deathplace
+                deathplaceCountry
                 bioShortFr
                 bioShortEn
                 bioFr

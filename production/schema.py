@@ -221,8 +221,15 @@ class PerformanceType(ArtworkType):
 def order(aws, orderby):
     # Sort the artworks
     def tt(x):
+        # if orderby == "author":
+        #     art = x.authors.all().order_by('user__last_name').first().user.last_name
         if orderby == "author":
-            art = x.authors.all().order_by('user__last_name').first().user.last_name
+            first_auth = x.authors.first()
+            art = first_auth.user.last_name
+            if first_auth.alphabetical_order != "":
+                art = first_auth.alphabetical_order
+            elif first_auth.nickname != "":
+                art = first_auth.nickname
         elif orderby == "title":
             art = x.title
         elif orderby == "id":
