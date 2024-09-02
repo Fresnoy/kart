@@ -10,8 +10,7 @@ from itertools import chain
 from .models import Production, Artwork, Film, Installation, \
     Performance, Event, Task, ProductionOrganizationTask, StaffTask, ProductionStaffTask
 
-
-from people.schema import ArtistType, StaffType
+from people.schema import ArtistType
 from assets.schema import GalleryType
 from common.schema import WebsiteType
 
@@ -38,9 +37,9 @@ class ProductionStaffTaskType(TaskType):
 
     def resolve_staff_name(parent, info):
         return parent.staff
-        
+
     def resolve_task_name(parent, info):
-        return parent.task    
+        return parent.task
 
 
 class PartnerType(DjangoObjectType):
@@ -55,7 +54,7 @@ class PartnerType(DjangoObjectType):
 
     def resolve_tasks(parent, info):
         return TaskType(label=parent.task.label, description=parent.task.description)
-    
+
     def resolve_task_name(parent, info):
         return parent.task.label
 
@@ -87,7 +86,7 @@ class ProductionInterface(graphene.Interface):
     def resolve_partners(parent, info, **kwargs):
         pots = ProductionOrganizationTask.objects.all().filter(production=parent)
         return pots
-    
+
     def resolve_collaborators(parent, info, **kwargs):
         pots = ProductionStaffTask.objects.all().filter(production=parent)
         return pots
@@ -124,7 +123,7 @@ class ArtworkInterface(ProductionInterface):
 class ProductionType(DjangoObjectType):
     class Meta:
         model = Production
-        interfaces = (ProductionInterface, )
+        interfaces = (ProductionInterface,)
 
     @classmethod
     def is_type_of(cls, root, info):

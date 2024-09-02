@@ -124,7 +124,7 @@ class StudentEmbeddedInterface(graphene.Interface):
     def resolve_displayName(parent, info):
         if parent.artist.nickname:
             return parent.artist.nickname
-        if parent.artist.user is not None:            
+        if parent.artist.user is not None:
             return f"{parent.artist.user.first_name} {parent.artist.user.last_name}"
         else:
             parent.artist.nickname
