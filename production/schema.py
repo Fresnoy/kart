@@ -8,7 +8,7 @@ from taggit.managers import TaggableManager
 from itertools import chain
 
 from .models import Production, Artwork, Film, Installation, \
-    Performance, Event, Task, ProductionOrganizationTask, StaffTask
+    Performance, Event, Task, ProductionOrganizationTask, StaffTask, ProductionStaffTask
 
 
 from people.schema import ArtistType, StaffType
@@ -29,18 +29,35 @@ class StaffTaskType(TaskType):
         model = StaffTask
 
 
+class ProductionStaffTaskType(TaskType):
+    class Meta:
+        model = ProductionStaffTask
+
+    staff_name = graphene.String()
+    task_name = graphene.String()
+
+    def resolve_staff_name(parent, info):
+        return parent.staff
+        
+    def resolve_task_name(parent, info):
+        return parent.task    
+
+
 class PartnerType(DjangoObjectType):
     class Meta:
         model = ProductionOrganizationTask
     name = graphene.String()
+    task_name = graphene.String()
     tasks = graphene.Field(TaskType)
 
     def resolve_name(parent, info):
         return parent.organization.name
 
     def resolve_tasks(parent, info):
-        parent.task.label
         return TaskType(label=parent.task.label, description=parent.task.description)
+    
+    def resolve_task_name(parent, info):
+        return parent.task.label
 
 
 class ProductionInterface(graphene.Interface):
@@ -51,7 +68,7 @@ class ProductionInterface(graphene.Interface):
     updated_on = graphene.Date()
     picture = graphene.String()
     websites = graphene.List(WebsiteType)
-    collaborators = graphene.List(StaffType)
+    collaborators = graphene.List(ProductionStaffTaskType)
     description_short_fr = graphene.String()
     description_short_en = graphene.String()
     description_fr = graphene.String()
@@ -69,6 +86,10 @@ class ProductionInterface(graphene.Interface):
 
     def resolve_partners(parent, info, **kwargs):
         pots = ProductionOrganizationTask.objects.all().filter(production=parent)
+        return pots
+    
+    def resolve_collaborators(parent, info, **kwargs):
+        pots = ProductionStaffTask.objects.all().filter(production=parent)
         return pots
 
 
