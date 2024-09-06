@@ -80,7 +80,7 @@ class OrganizationAdmin(GuardedModelAdmin):
 
 
 def user_unicode(self):
-    return '{0} {1}'.format(self.first_name.capitalize(), self.last_name.capitalize())
+    return '{0} {1}'.format(self.first_name.title(), self.last_name.title())
 
 
 User.__str__ = user_unicode
