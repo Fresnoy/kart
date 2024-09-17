@@ -36,6 +36,10 @@ class ProductionStaffTaskType(TaskType):
     task_name = graphene.String()
 
     def resolve_staff_name(parent, info):
+        # return artist name if any
+        if parent.staff.user.artist_set.all():
+            return parent.staff.user.artist_set.first()
+        # else return staff name
         return parent.staff
 
     def resolve_task_name(parent, info):
