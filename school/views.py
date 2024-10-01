@@ -309,8 +309,9 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         serializer = UserRegisterSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             # save user
-            user = User(first_name=request.data.get('first_name'),
-                        last_name=request.data.get('last_name'),
+            # firstname & lastname with uppercases
+            user = User(first_name=request.data.get('first_name').title(),
+                        last_name=request.data.get('last_name').title(),
                         username=request.data.get('username'),
                         email=request.data.get('email'))
             user.is_active = False
