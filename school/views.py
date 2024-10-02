@@ -157,34 +157,30 @@ class AdminStudentApplicationViewSet(viewsets.ModelViewSet):
         Update by staff user only, see permissions
         """
         admin_app = self.get_object()
-        application = admin_app.application
-
-        # staff = self.request.user
-        candidat = application.artist.user
 
         # send email to candidat when candidature is complete (admin valid infos)
         if (request.data.get('application_complete')):
-            send_candidature_complete_email_to_candidat(request, candidat, admin_app)
+            send_candidature_complete_email_to_candidat(request, admin_app)
 
         # send email to candidat when on interview waiting list
         if (request.data.get('wait_listed_for_interview')):
-            send_interview_selection_on_waitlist_email_to_candidat(request, candidat, admin_app)
+            send_interview_selection_on_waitlist_email_to_candidat(request, admin_app)
 
         # send email to candidat when select for interviews
         if (request.data.get('selected_for_interview')):
-            send_interview_selection_email_to_candidat(request, candidat, admin_app)
+            send_interview_selection_email_to_candidat(request, admin_app)
 
         # send email to candidat when selected
         if (request.data.get('selected')):
-            send_selected_candidature_email_to_candidat(request, candidat, admin_app)
+            send_selected_candidature_email_to_candidat(request, admin_app)
 
         # send email to candidat when is select on waiting list
         if (request.data.get('wait_listed')):
-            send_selected_on_waitlist_candidature_email_to_candidat(request, candidat, admin_app)
+            send_selected_on_waitlist_candidature_email_to_candidat(request, admin_app)
 
         # send email to candidat when is not selected
         if (request.data.get('unselected')):
-            send_not_selected_candidature_email_to_candidat(request, candidat, admin_app)
+            send_not_selected_candidature_email_to_candidat(request, admin_app)
 
         # basic update
         return super(self.__class__, self).update(request, *args, **kwargs)
@@ -252,6 +248,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                 artist__user=user.id,
                 campaign=campaign
             )
+            # user have no application for this year
             if not current_year_application:
                 # take the (first) artist (from user id) on db
                 user_artist = Artist.objects.filter(user=user.id).first()
@@ -259,6 +256,10 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                     # if not, create it
                     user_artist = Artist(user=user)
                     user_artist.save()
+                # delete user birthdate
+                if hasattr(user,"profile"):
+                    user.profile.birthdate = None
+                    user.profile.save()
                 # get previous apps
                 last_applications = StudentApplication.objects.filter(artist__user=user.id,
                                                                       application_completed=True) \
@@ -272,6 +273,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
                                                          )
                 # create application
                 student_application.save()
+
                 return Response(status=status.HTTP_201_CREATED)
             else:
                 # user can't create two application for this year
@@ -298,8 +300,8 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
             # create Admin application
             admin_application, created = AdminStudentApplication.objects.get_or_create(application=application)
             # send emails to admin & user
-            send_candidature_completed_email_to_user(request, user, application)
-            send_candidature_completed_email_to_admin(request, user, admin_application)
+            send_candidature_completed_email_to_user(request, admin_application)
+            send_candidature_completed_email_to_admin(request, admin_application)
 
         # basic update
         return super(self.__class__, self).update(request, *args, **kwargs)

@@ -65,41 +65,46 @@ def send_account_information_email(user):
     return mail_sent
 
 
-def send_candidature_completed_email_to_user(request, user, application):
+def send_candidature_completed_email_to_user(request, application_admin):
+    artist = application_admin.application.artist
+    name = artist.__str__()
     # Send email
     msg_plain = render_to_string(
         'emails/send_candidature_completed_to_user.txt',
         {
-            'user': user,
-            'application': application
+            'name': name,
+            'application': application_admin.application
         }
     )
     msg_html = render_to_string(
         'emails/send_candidature_completed_to_user.html',
         {
-            'user': user,
-            'application': application
+            'name': name,
+            'application': application_admin.application
         }
     )
     mail_sent = send_mail('Réception de votre candidature / Application Received',
                           msg_plain,
                           settings.FROM_EMAIL,
-                          [user.email],
+                          [artist.user.email],
                           html_message=msg_html,
                           )
     return mail_sent
 
 
-def send_candidature_completed_email_to_admin(request, user, application_admin):
-
-    setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
-
+def send_candidature_completed_email_to_admin(request, application_admin):
+    artist = application_admin.application.artist
+    name = artist.__str__()
+    # 
+    setup = application_admin.application.campaign
+    # 
     url = '{0}{1}'.format(setup.candidatures_url, application_admin.id)
     # Send email
     msg_plain = render_to_string(
         'emails/send_candidature_completed_to_admin.txt',
         {
-            'user': user,
+            'user': artist.user,
+            'name': name,
             'url': url,
             'application': application_admin.application
         }
@@ -107,7 +112,8 @@ def send_candidature_completed_email_to_admin(request, user, application_admin):
     msg_html = render_to_string(
         'emails/send_candidature_completed_to_admin.html',
         {
-            'user': user,
+            'user': artist.user,
+            'name': name,
             'url': url,
             'application': application_admin.application
         }
@@ -115,7 +121,7 @@ def send_candidature_completed_email_to_admin(request, user, application_admin):
     mail_sent = send_mail('Envoi d\'une candidature',
                           msg_plain,
                           settings.FROM_EMAIL,
-                          ['selection@lefresnoy.net'],
+                          [settings.FROM_EMAIL],
                           html_message=msg_html,
                           )
 
@@ -131,8 +137,10 @@ def setLocale(str):
         locale.setlocale(locale.LC_ALL, dict[str])
 
 
-def send_candidature_complete_email_to_candidat(request, candidat, application_admin):
+def send_candidature_complete_email_to_candidat(request, application_admin):
     setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
+    artist = application_admin.application.artist
+    name = artist.__str__()
     # set locale  interviews date
     interviews_dates = {'fr': '', "en": ''}
     # having name of day/month in rigth language
@@ -149,28 +157,30 @@ def send_candidature_complete_email_to_candidat(request, candidat, application_a
     msg_plain = render_to_string(
         'emails/send_candidature_complete_to_candidat.txt',
         {
-            'user': candidat,
+            'name': name,
             'interviews_dates': interviews_dates,
         }
     )
     msg_html = render_to_string(
         'emails/send_candidature_complete_to_candidat.html',
         {
-            'user': candidat,
+            'name': name,
             'interviews_dates': interviews_dates,
         }
     )
     mail_sent = send_mail('Votre candidature est complète / Candidature is complete',
                           msg_plain,
                           settings.FROM_EMAIL,
-                          [candidat.email],
+                          [artist.user.email],
                           html_message=msg_html,
                           )
 
     return mail_sent
 
 
-def send_interview_selection_email_to_candidat(request, candidat, application_admin):
+def send_interview_selection_email_to_candidat(request, application_admin):
+    artist = application_admin.application.artist
+    name = artist.__str__()
     # set var for email template
     interview_date = {'fr': '', "en": ''}
     # set locale interviews date
@@ -193,28 +203,30 @@ def send_interview_selection_email_to_candidat(request, candidat, application_ad
     msg_plain = render_to_string(
         'emails/send_interview_selection_to_user.txt',
         {
-            'user': candidat,
+            'name': name,
             'interview_date': interview_date,
         }
     )
     msg_html = render_to_string(
         'emails/send_interview_selection_to_user.html',
         {
-            'user': candidat,
+            'name': name,
             'interview_date': interview_date,
         }
     )
     mail_sent = send_mail('Candidature présélectionnée / Shortlisted application',
                           msg_plain,
                           settings.FROM_EMAIL,
-                          [candidat.email],
+                          [artist.user.email],
                           html_message=msg_html,
                           )
 
     return mail_sent
 
 
-def send_interview_selection_on_waitlist_email_to_candidat(request, candidat, application_admin):
+def send_interview_selection_on_waitlist_email_to_candidat(request, application_admin):
+    artist = application_admin.application.artist
+    name = artist.__str__()
     # set locale  interviews date
     interviews_dates = {'fr': '', "en": ''}
     # having name of day/month in rigth language
@@ -233,7 +245,7 @@ def send_interview_selection_on_waitlist_email_to_candidat(request, candidat, ap
         'emails/send_on_waitlist_for_interview_to_candidat.txt',
         {
             'application_admin': application_admin,
-            'user': candidat,
+            'name': name,
             'interviews_dates': interviews_dates
         }
     )
@@ -241,7 +253,7 @@ def send_interview_selection_on_waitlist_email_to_candidat(request, candidat, ap
         'emails/send_on_waitlist_for_interview_to_candidat.html',
         {
             'application_admin': application_admin,
-            'user': candidat,
+            'name': name,
             'interviews_dates': interviews_dates
         }
     )
@@ -249,24 +261,26 @@ def send_interview_selection_on_waitlist_email_to_candidat(request, candidat, ap
     mail_sent = send_mail(subject,
                           msg_plain,
                           settings.FROM_EMAIL,
-                          [candidat.email],
+                          [artist.user.email],
                           html_message=msg_html,
                           )
     return mail_sent
 
 
-def send_selected_candidature_email_to_candidat(request, candidat, application_admin):
+def send_selected_candidature_email_to_candidat(request, application_admin):
+    artist = application_admin.application.artist
+    name = artist.__str__()
     # Send email : SELECTED
     msg_plain = render_to_string(
         'emails/send_selected_email_to_candidat.txt',
         {
-            'user': candidat,
+            'name': name,
         }
     )
     msg_html = render_to_string(
         'emails/send_selected_email_to_candidat.html',
         {
-            'user': candidat,
+            'name': name,
         }
     )
     subject = 'Candidature Sélectionnée / Application selected'
@@ -274,26 +288,28 @@ def send_selected_candidature_email_to_candidat(request, candidat, application_a
     mail_sent = send_mail(subject,
                           msg_plain,
                           settings.FROM_EMAIL,
-                          [candidat.email],
+                          [artist.user.email],
                           html_message=msg_html,
                           )
     return mail_sent
 
 
-def send_selected_on_waitlist_candidature_email_to_candidat(request, candidat, application_admin):
+def send_selected_on_waitlist_candidature_email_to_candidat(request, application_admin):
+    artist = application_admin.application.artist
+    name = artist.__str__()
     # Send email : SELECTED IN WAITLIST
     msg_plain = render_to_string(
         'emails/send_on_waitlist_for_selection_to_candidat.txt',
         {
             'application_admin': application_admin,
-            'user': candidat,
+            'name': name,
         }
     )
     msg_html = render_to_string(
         'emails/send_on_waitlist_for_selection_to_candidat.html',
         {
             'application_admin': application_admin,
-            'user': candidat,
+            'name': name,
         }
     )
     subject = 'Candidature en liste d\'attente / Application on waiting list'
@@ -301,26 +317,28 @@ def send_selected_on_waitlist_candidature_email_to_candidat(request, candidat, a
     mail_sent = send_mail(subject,
                           msg_plain,
                           settings.FROM_EMAIL,
-                          [candidat.email],
+                          [artist.user.email],
                           html_message=msg_html,
                           )
     return mail_sent
 
 
-def send_not_selected_candidature_email_to_candidat(request, candidat, application_admin):
+def send_not_selected_candidature_email_to_candidat(request, application_admin):
+    artist = application_admin.application.artist
+    name = artist.__str__()
     # Send email : NOT SELECTED
     msg_plain = render_to_string(
         'emails/send_not_selected_email_to_candidat.txt',
         {
             'application': application_admin.application,
-            'user': candidat,
+            'name': name,
         }
     )
     msg_html = render_to_string(
         'emails/send_not_selected_email_to_candidat.html',
         {
             'application': application_admin.application,
-            'user': candidat,
+            'name': name,
         }
     )
     subject = 'Candidature non sélectionée / Application not selected'
@@ -328,7 +346,7 @@ def send_not_selected_candidature_email_to_candidat(request, candidat, applicati
     mail_sent = send_mail(subject,
                           msg_plain,
                           settings.FROM_EMAIL,
-                          [candidat.email],
+                          [artist.user.email],
                           html_message=msg_html,
                           )
     return mail_sent
