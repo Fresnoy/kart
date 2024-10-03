@@ -8,7 +8,13 @@ from school.models import StudentApplication, StudentApplicationSetup
 class Command(BaseCommand):
     help = 'Send emails to users who have not completed their application'
 
+    def add_arguments(self, parser):
+        # -- required
+        parser.add_argument("--novalidation", action="store_true",)
+
     def handle(self, *args, **options):
+        # Require no validation for cron
+        novalidation = options['novalidation']
         # is the campaign open
         candidatures_open = not candidature_close()
         if not candidatures_open:
@@ -32,8 +38,10 @@ class Command(BaseCommand):
         # question
         str_question = "Vous allez envoyer un email à {} candidats "\
                        "(pour {} candidatures au total)? (y/n)".format(len(list_emails), all_applications)
-
-        confirm = input(str_question).lower().strip()
+        # ask or not
+        confirm = 'y' if novalidation else None
+        if not confirm:
+            confirm = input(str_question).lower().strip()
 
         if confirm != "y":
             print("Aucun email n'a été envoyé")
