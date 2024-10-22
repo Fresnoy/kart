@@ -136,6 +136,8 @@ class StudentApplicationSetup(models.Model):
     # Publications's date
     interviews_publish_date = models.DateTimeField(null=True, blank=False, help_text="Interviews web publish")
     selected_publish_date = models.DateTimeField(null=True, blank=False, help_text="Final selection web publish")
+    # Reminder
+    application_reminder_email_date = models.DateField(null=True, blank=True, help_text="Email reminder")
     # front auth
     candidatures_url = models.URLField(null=False, blank=False, help_text="Front : Url list of candidatures")
     reset_password_url = models.URLField(null=False, blank=False, help_text="Front : Url reset password")
