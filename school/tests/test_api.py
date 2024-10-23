@@ -40,7 +40,7 @@ class TestStudentRessource(HaystackSearchModelRessourceMixin, HelpTestForReadOnl
     post_fields = ['user', 'artist']
     hyperlinked_fields = {'user': 'people/user', 'artist': 'people/artist'}
 
-    search_field = 'user'
+    search_field = 'artist'
 
     def target(self):
         return self.student

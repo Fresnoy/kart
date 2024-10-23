@@ -7,8 +7,17 @@ from datetime import datetime
 
 # from diffusion.models import Diffusion
 from people.models import FresnoyProfile
-from school.models import (Student, Promotion, TeachingArtist, ScienceStudent, PhdStudent, VisitingStudent,
-                           StudentApplication, StudentApplicationSetup, AdminStudentApplication)
+from school.models import (
+    Student,
+    Promotion,
+    TeachingArtist,
+    ScienceStudent,
+    PhdStudent,
+    VisitingStudent,
+    StudentApplication,
+    StudentApplicationSetup,
+    AdminStudentApplication,
+)
 from people.schema import ProfileType, DynNameResolver, ArtistEmbeddedInterface
 from production.schema import Artwork, ArtworkType
 from diffusion.schema import DiffusionType
@@ -31,7 +40,7 @@ def order(students, orderby):
                     art = x.artist.nickname
         else:
             raise Exception("orderby value is undefined or unknown")
-        return (art)
+        return art
 
     return sorted(students, key=lambda x: tt(x))
 
@@ -41,7 +50,7 @@ class StudentType(DjangoObjectType):
         model = Student
         interfaces = (ArtistEmbeddedInterface,)
 
-    id = graphene.ID(required=True, source='pk')
+    id = graphene.ID(required=True, source="pk")
     artworks = graphene.List(ArtworkType)
 
     # Retrieve the student's artworks
@@ -50,76 +59,46 @@ class StudentType(DjangoObjectType):
 
 
 class StudentEmbeddedInterface(graphene.Interface):
-    '''Interface of models embedding a student field (indirect polymorphism)'''
+    """Interface of models embedding a student field (indirect polymorphism)"""
 
     # User fields
-    firstName = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    lastName = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
+    firstName = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    lastName = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
 
     # FresnoyProfile fields
-    photo = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    gender = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    nationality = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    birthdate = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    birthplace = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    birthplace_country = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    deathdate = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    deathplace = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    deathplace_country = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    homeland_address = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    homeland_zipcode = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    homeland_town = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    homeland_country = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    residence_address = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    residence_zipcode = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    residence_town = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    residence_country = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    homeland_phone = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    residence_phone = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    social_insurance_number = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    family_status = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    mother_tongue = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    other_language = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    cursus = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
+    photo = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    gender = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    nationality = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    birthdate = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    birthplace = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    birthplace_country = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    deathdate = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    deathplace = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    deathplace_country = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    homeland_address = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    homeland_zipcode = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    homeland_town = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    homeland_country = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    residence_address = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    residence_zipcode = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    residence_town = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    residence_country = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    homeland_phone = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    residence_phone = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    social_insurance_number = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    family_status = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    mother_tongue = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    other_language = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    cursus = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
 
     # Artist fields
     displayName = graphene.String()
 
     # Student fields
-    number = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    promotion = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    graduate = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    diploma_mention = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
+    number = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    promotion = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    graduate = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    diploma_mention = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
 
     def resolve_displayName(parent, info):
         if parent.artist.nickname:
@@ -138,7 +117,7 @@ class TeachingArtistType(DjangoObjectType):
         model = TeachingArtist
         interfaces = (ArtistEmbeddedInterface,)
 
-    id = graphene.ID(required=True, source='pk')
+    id = graphene.ID(required=True, source="pk")
 
     diffusions = graphene.List(DiffusionType)
 
@@ -172,7 +151,8 @@ class TeachingArtistType(DjangoObjectType):
 
 
 class TeachingArtistsItemType(DjangoObjectType):
-    """ Object dedicated to TeachingArtistsList"""
+    """Object dedicated to TeachingArtistsList"""
+
     class Meta:
         model = TeachingArtist
 
@@ -184,29 +164,32 @@ class ScienceStudentType(DjangoObjectType):
     class Meta:
         model = ScienceStudent
         interfaces = (StudentEmbeddedInterface,)
-    id = graphene.ID(required=True, source='pk')
+
+    id = graphene.ID(required=True, source="pk")
 
 
 class PhdStudentType(DjangoObjectType):
     class Meta:
         model = PhdStudent
         interfaces = (StudentEmbeddedInterface,)
-    id = graphene.ID(required=True, source='pk')
+
+    id = graphene.ID(required=True, source="pk")
 
 
 class VisitingStudentType(DjangoObjectType):
     class Meta:
         model = VisitingStudent
         interfaces = (ArtistEmbeddedInterface,)
-    id = graphene.ID(required=True, source='pk')
+
+    id = graphene.ID(required=True, source="pk")
 
 
 class PromoType(DjangoObjectType):
     class Meta:
         model = Promotion
-        filterset_fields = ['name', 'starting_year', 'ending_year']
+        filterset_fields = ["name", "starting_year", "ending_year"]
 
-    id = graphene.ID(required=True, source='pk')
+    id = graphene.ID(required=True, source="pk")
     students = graphene.List(StudentType)
 
     def resolve_students(parent, info):
@@ -221,7 +204,7 @@ class StudentApplicationSetupType(DjangoObjectType):
     class Meta:
         model = StudentApplicationSetup
 
-    id = graphene.ID(required=True, source='pk')
+    id = graphene.ID(required=True, source="pk")
 
     def resolve_selected_publish_date(self, info):
         return self.selected_publish_date.astimezone() if self.selected_publish_date else None
@@ -245,14 +228,12 @@ class StudentApplicationType(DjangoObjectType):
         filterset_fields = ("campaign__is_current_setup",)
         # interfaces = (ArtistEmbeddedInterface,)
 
-    id = graphene.ID(required=True, source='pk')
+    id = graphene.ID(required=True, source="pk")
 
 
 class StudentApplicationAdminInterface(graphene.Interface):
-    id = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
-    selected = graphene.String(
-        resolver=DynNameResolver(interface="StudentEmbedded"))
+    id = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
+    selected = graphene.String(resolver=DynNameResolver(interface="StudentEmbedded"))
 
 
 class StudentApplicationAdminType(DjangoObjectType):
@@ -260,14 +241,19 @@ class StudentApplicationAdminType(DjangoObjectType):
         model = AdminStudentApplication
         interfaces = (graphene.relay.Node,)
         fields = "__all__"
-        filter_fields = ('application__application_completed',
-                         'application_complete',
-                         'selected_for_interview', 'application__remote_interview',
-                         'wait_listed_for_interview', 'selected', 'unselected',
-                         'application__campaign__is_current_setup',
-                         'wait_listed',)
+        filter_fields = (
+            "application__application_completed",
+            "application_complete",
+            "selected_for_interview",
+            "application__remote_interview",
+            "wait_listed_for_interview",
+            "selected",
+            "unselected",
+            "application__campaign__is_current_setup",
+            "wait_listed",
+        )
 
-    id = graphene.ID(required=True, source='pk')
+    id = graphene.ID(required=True, source="pk")
 
     def resolve_interview_date(self, info):
         # why not giving tz ?
@@ -298,8 +284,9 @@ class Query(graphene.ObjectType):
     studentApplications = graphene.List(StudentApplicationType)
 
     # Setup can be filtered by id or by current_setup
-    studentApplicationSetup = graphene.Field(StudentApplicationSetupType, id=graphene.Int(),
-                                             is_current_setup=graphene.Boolean(required=False))
+    studentApplicationSetup = graphene.Field(
+        StudentApplicationSetupType, id=graphene.Int(), is_current_setup=graphene.Boolean(required=False)
+    )
     studentApplicationSetups = graphene.List(StudentApplicationSetupType)
 
     studentApplicationAdmin = graphene.Field(StudentApplicationAdminType, id=graphene.Int())
@@ -311,7 +298,7 @@ class Query(graphene.ObjectType):
         return order(students, "displayName")
 
     def resolve_student(root, info, **kwargs):
-        id = kwargs.get('id')
+        id = kwargs.get("id")
         if id is not None:
             return Student.objects.get(pk=id)
         return None
@@ -320,21 +307,20 @@ class Query(graphene.ObjectType):
         return TeachingArtist.objects.all()
 
     def resolve_teachingArtistsList(root, info, **kwargs):
-        """ A list of teaching artists grouped by year """
+        """A list of teaching artists grouped by year"""
         tal = []
         for ye in range(1997, datetime.now().year + 2):
             tai = TeachingArtistsItemType()
             tai.year = ye
             # Get the TA that mentored artworks for that year
-            tai.teachers = set(TeachingArtist.objects.all().filter(
-                artworks_supervision__production_date__year=ye))
+            tai.teachers = set(TeachingArtist.objects.all().filter(artworks_supervision__production_date__year=ye))
             tai.teachers = order(tai.teachers, "displayName")
             tal += [tai]
         return tal
 
     # Teaching artists
     def resolve_teachingArtist(root, info, **kwargs):
-        id = kwargs.get('id')
+        id = kwargs.get("id")
         if id is not None:
             return TeachingArtist.objects.get(pk=id)
         return None
@@ -344,7 +330,7 @@ class Query(graphene.ObjectType):
         return ScienceStudent.objects.all()
 
     def resolve_scienceStudent(root, info, **kwargs):
-        id = kwargs.get('id')
+        id = kwargs.get("id")
         if id is not None:
             return ScienceStudent.objects.get(pk=id)
         return None
@@ -354,7 +340,7 @@ class Query(graphene.ObjectType):
         return PhdStudent.objects.all()
 
     def resolve_PhdStudent(root, info, **kwargs):
-        id = kwargs.get('id')
+        id = kwargs.get("id")
         if id is not None:
             return PhdStudent.objects.get(pk=id)
         return None
@@ -364,7 +350,7 @@ class Query(graphene.ObjectType):
         return VisitingStudent.objects.all()
 
     def resolve_visitingStudent(root, info, **kwargs):
-        id = kwargs.get('id')
+        id = kwargs.get("id")
         if id is not None:
             return VisitingStudent.objects.get(pk=id)
         return None
@@ -374,7 +360,7 @@ class Query(graphene.ObjectType):
         return Promotion.objects.all()
 
     def resolve_promotion(root, info, **kwargs):
-        id = kwargs.get('id')
+        id = kwargs.get("id")
         if id is not None:
             return Promotion.objects.get(pk=id)
         return None
@@ -388,16 +374,16 @@ class Query(graphene.ObjectType):
 
     def resolve_studentApplication(root, info, **kwargs):
         # get id
-        id = kwargs.get('id')
+        id = kwargs.get("id")
         if id is not None and info.context.user.is_staff:
             return StudentApplication.objects.get(pk=id)
         return None
 
     def resolve_studentApplicationSetup(root, info, **kwargs):
         # get id
-        id = kwargs.get('id')
+        id = kwargs.get("id")
         # get current (is_current_setup)
-        is_current_setup = kwargs.get('is_current_setup')
+        is_current_setup = kwargs.get("is_current_setup")
         if info.context.user.is_authenticated:
             if id:
                 return StudentApplicationSetup.objects.get(pk=id)

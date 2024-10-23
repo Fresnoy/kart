@@ -20,20 +20,20 @@ class MediumViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 @permission_classes((permissions.IsAuthenticated,))
 def vimeo_get_upload_token(request):
     user = request.user
     # send him infos
-    if(user):
+    if user:
         # get setup infos
         setup = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
-        if(setup):
+        if setup:
             # customize returned infos
             vimeo = {
-                'name': setup.video_service_name,
-                'url': setup.video_service_url,
-                'token': setup.video_service_token
+                "name": setup.video_service_name,
+                "url": setup.video_service_url,
+                "token": setup.video_service_token,
             }
             return Response(vimeo, status=status.HTTP_200_OK)
         # No setup

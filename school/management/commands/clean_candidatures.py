@@ -6,35 +6,43 @@ from django.core.management.base import BaseCommand
 
 from django.db.models import Q
 
-from school.models import (StudentApplication, AdminStudentApplication, Student, ScienceStudent,
-                           VisitingStudent, TeachingArtist)
+from school.models import (
+    StudentApplication,
+    AdminStudentApplication,
+    Student,
+    ScienceStudent,
+    VisitingStudent,
+    TeachingArtist,
+)
 from people.models import Staff
 from production.models import Artwork
 
 
 class Command(BaseCommand):
-    help = 'Remove critics informations from old Student Application'
+    help = "Remove critics informations from old Student Application"
 
     def add_arguments(self, parser):
         # -- required
-        parser.add_argument("--year", type=int, help='Default : last year')
+        parser.add_argument("--year", type=int, help="Default : last year")
 
     def handle(self, *args, **options):
         # get the treatment year
-        year = options['year'] if options['year'] else datetime.date.today().year - 1
+        year = options["year"] if options["year"] else datetime.date.today().year - 1
         # get the date when set expired time : we keep 4 years
         expired_candidatures = year - 4
         # expired user : user is too old to candidate (35 years): 35 + 1
         expired_user = year - 36
         # keep user's selected infos (when user postulate more than one time)
         sa_keep_users = AdminStudentApplication.objects.filter(
-                        Q(selected=True) |
-                        Q(wait_listed=True) |
-                        # Organisation staff
-                        Q(application__artist__user__is_staff=True) |
-                        # in case of bad manipulation we keep current year's application infos
-                        Q(application__created_on__year=datetime.date.today().year)
-                       ).values_list("application__artist__user")
+            Q(selected=True)
+            | Q(wait_listed=True)
+            |
+            # Organisation staff
+            Q(application__artist__user__is_staff=True)
+            |
+            # in case of bad manipulation we keep current year's application infos
+            Q(application__created_on__year=datetime.date.today().year)
+        ).values_list("application__artist__user")
         # keep staff user (they may postulate)
         staff_keep_users = Staff.objects.all().values_list("user")
         # keep student
@@ -48,52 +56,60 @@ class Command(BaseCommand):
         # keep user making artworks
         artwork_artist_keep_users = Artwork.objects.all().values_list("authors__user")
         # keep user
-        keep_users = list(chain(sa_keep_users,
-                                staff_keep_users,
-                                student_keep_users,
-                                science_student_keep_users,
-                                visiting_student_keep_users,
-                                teaching_artist_keep_users,
-                                artwork_artist_keep_users))
+        keep_users = list(
+            chain(
+                sa_keep_users,
+                staff_keep_users,
+                student_keep_users,
+                science_student_keep_users,
+                visiting_student_keep_users,
+                teaching_artist_keep_users,
+                artwork_artist_keep_users,
+            )
+        )
 
         # take olds application : last year exclude selected
         sa_olds = StudentApplication.objects.filter(
-                        # __lte : less than equal year
-                        created_on__year__lte=year,
-                        administration__selected=False,
-                  ).exclude(
-                            # exclude selected user (=Artist)
-                            artist__user__in=keep_users,
-                            )
+            # __lte : less than equal year
+            created_on__year__lte=year,
+            administration__selected=False,
+        ).exclude(
+            # exclude selected user (=Artist)
+            artist__user__in=keep_users,
+        )
         # sa expired mean
         #   user is too old to candidate or
         #   we dont keep infos greater than 5 years (grpd)
         sa_expired = StudentApplication.objects.filter(
-                        # Q to make OR (|) statement
-                        Q(created_on__year__lte=expired_candidatures) |
-                        Q(artist__user__profile__birthdate__year__lte=expired_user),
-                     ).exclude(
-                               # exclude selected user (= Artist)
-                               artist__user__in=keep_users,
-                               )
+            # Q to make OR (|) statement
+            Q(created_on__year__lte=expired_candidatures)
+            | Q(artist__user__profile__birthdate__year__lte=expired_user),
+        ).exclude(
+            # exclude selected user (= Artist)
+            artist__user__in=keep_users,
+        )
         # All sa
         sa_all = StudentApplication.objects.exclude(
-                        #
-                        Q(identity_card__isnull=True) |
-                        Q(experience_justification__isnull=True) |
-                        Q(cursus_justifications__isnull=True) |
-                        Q(created_on__year__gt=year) |
-                        # in case of bad manipulation we keep current year application
-                        Q(created_on__year=datetime.date.today().year)
-                 )
+            #
+            Q(identity_card__isnull=True)
+            | Q(experience_justification__isnull=True)
+            | Q(cursus_justifications__isnull=True)
+            | Q(created_on__year__gt=year)
+            |
+            # in case of bad manipulation we keep current year application
+            Q(created_on__year=datetime.date.today().year)
+        )
         # set list of delete info
         list_delete = []
         # Display messages
         print("Traitement des candidatures <= ", year)
         print("**** Total de : ")
         print("**** {} candidatures".format(StudentApplication.objects.all().count()))
-        print("**** {} candidature a garder (are Student, Staff, visiting Artist, Teaching, )"
-              .format(StudentApplication.objects.all().count() - len(sa_expired)))
+        print(
+            "**** {} candidature a garder (are Student, Staff, visiting Artist, Teaching, )".format(
+                StudentApplication.objects.all().count() - len(sa_expired)
+            )
+        )
         print("**** {} user a garder (are Student, Staff, visiting Artist, Teaching, )".format(len(keep_users)))
         print("**** {} étudiants".format(Student.objects.all().count()))
 
@@ -103,7 +119,7 @@ class Command(BaseCommand):
         print("/!\\ Nettoyage, si besoin, des informations de {} anciennes candidatures".format(sa_olds.count()))
 
         # pause to read uplines
-        input('[Press any key to continue]')
+        input("[Press any key to continue]")
         # ALL candidatures : delete critical infos
         for sa in sa_all:
             # set short list
@@ -134,10 +150,10 @@ class Command(BaseCommand):
         confirm = self.ask_user("Voulez-vous supprimer toutes ces informations ? (Y/n)")
         #
         if not confirm:
-            print(u"Aucun fichier n'a été supprimé")
+            print("Aucun fichier n'a été supprimé")
             return
         #
-        print(u"C'est parti ...")
+        print("C'est parti ...")
         #
         for infos in list_delete:
             model, field, value = infos
@@ -147,9 +163,18 @@ class Command(BaseCommand):
     def ask_user(self, str_question):
         check = str(input(str_question)).lower().strip()
         try:
-            if check[0] in ('y', 'yes', 'o', 'oui',):
+            if check[0] in (
+                "y",
+                "yes",
+                "o",
+                "oui",
+            ):
                 return True
-            elif check[0] in ('n', 'no', 'non',):
+            elif check[0] in (
+                "n",
+                "no",
+                "non",
+            ):
                 return False
             else:
                 print("Entrez une valeur correcte")
@@ -161,32 +186,56 @@ class Command(BaseCommand):
 
     def list_critical_identity_infos(self, sa):
         a = []
-        sa_fields_files = ["identity_card", "cursus_justifications", "experience_justification", ]
+        sa_fields_files = [
+            "identity_card",
+            "cursus_justifications",
+            "experience_justification",
+        ]
         for field in sa_fields_files:
             value = getattr(sa, field)
-            if (value):
+            if value:
                 a.append((sa, field, value))
         return a
 
     def list_infos(self, sa):
         a = []
-        sa_fields_files = ["curriculum_vitae", "free_document", "justification_letter",
-                           "remote_interview_info", "presentation_video",
-                           "considered_project_1", "considered_project_2",
-                           "artistic_referencies_project_1", "artistic_referencies_project_2", ]
+        sa_fields_files = [
+            "curriculum_vitae",
+            "free_document",
+            "justification_letter",
+            "remote_interview_info",
+            "presentation_video",
+            "considered_project_1",
+            "considered_project_2",
+            "artistic_referencies_project_1",
+            "artistic_referencies_project_2",
+        ]
         for field in sa_fields_files:
             value = getattr(sa, field)
-            if (value):
+            if value:
                 a.append((sa, field, value))
 
-        user_fields_infos = ["photo", "social_insurance_number", "cursus", "birthdate", "birthplace",
-                             "homeland_address", "homeland_zipcode", "homeland_town", "homeland_phone", ]
+        user_fields_infos = [
+            "photo",
+            "social_insurance_number",
+            "cursus",
+            "birthdate",
+            "birthplace",
+            "homeland_address",
+            "homeland_zipcode",
+            "homeland_town",
+            "homeland_phone",
+        ]
         for field in user_fields_infos:
             value = getattr(sa.artist.user.profile, field)
             if value:
                 a.append((sa.artist.user.profile, field, value))
 
-        artist_fields_infos = ["bio_fr", "twitter_account", "facebook_profile", ]
+        artist_fields_infos = [
+            "bio_fr",
+            "twitter_account",
+            "facebook_profile",
+        ]
         for field in artist_fields_infos:
             value = getattr(sa.artist, field)
             if value:
@@ -201,13 +250,13 @@ class Command(BaseCommand):
         print(model, " - ", field, " : ", value)
         # print(field, " : ", value.__class__.__name__)
         # print(value.__class__.__name__)
-        if value.__class__.__name__ == 'ManyRelatedManager':
+        if value.__class__.__name__ == "ManyRelatedManager":
             # print("delete arrays")
             # print(value.all())
             value.all().delete()
-        elif value.__class__.__name__ in ('FieldFile', 'ImageFieldFile', 'Gallery'):
+        elif value.__class__.__name__ in ("FieldFile", "ImageFieldFile", "Gallery"):
             # print("delete File")
-            if value.__class__.__name__ == 'Gallery':
+            if value.__class__.__name__ == "Gallery":
                 # detach Gallery from main Model
                 model.__setattr__(field, None)
                 model.save()
@@ -216,13 +265,13 @@ class Command(BaseCommand):
             # remove value (file or gallery instance)
             value.delete()
 
-        elif value.__class__.__name__ in ('str',):
+        elif value.__class__.__name__ in ("str",):
             # print("delete str")
             setattr(model, field, "")
-        elif value.__class__.__name__ in ('date'):
+        elif value.__class__.__name__ in ("date"):
             model.__setattr__(field, None)
             model.save()
-        elif value.__class__.__name__ in ('StudentApplication'):
+        elif value.__class__.__name__ in ("StudentApplication"):
             application = value
             artist = application.artist
             user = artist.user

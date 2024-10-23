@@ -13,7 +13,8 @@ from .models import Gallery, Medium
 class MediumType(DjangoObjectType):
     class Meta:
         model = Medium
-    id = graphene.ID(required=True, source='pk')
+
+    id = graphene.ID(required=True, source="pk")
 
 
 def search_strings_in_model_colums(model, columns, strings):
@@ -28,19 +29,19 @@ def search_strings_in_model_colums(model, columns, strings):
 
 def search_media_of_type(type):
 
-    if(type == "audio"):
+    if type == "audio":
         columns = ["label", "description", "medium_url", "file"]
-        audio_strings = ['audio', 'mp3', 'webm', 'aac', 'webm', 'soundcloud', 'deezer', 'spotify']
+        audio_strings = ["audio", "mp3", "webm", "aac", "webm", "soundcloud", "deezer", "spotify"]
         query = search_strings_in_model_colums(Medium, columns, audio_strings)
 
-    if(type == "picture" or type == "image"):
+    if type == "picture" or type == "image":
         columns = ["label", "description", "medium_url", "file", "picture"]
-        picture_strings = ['image', 'jpg', 'jpeg', 'eps', 'psd', 'gif', 'png', 'tiff', 'svg', 'heic']
+        picture_strings = ["image", "jpg", "jpeg", "eps", "psd", "gif", "png", "tiff", "svg", "heic"]
         query = search_strings_in_model_colums(Medium, columns, picture_strings)
 
-    if(type == "video"):
+    if type == "video":
         columns = ["label", "description", "medium_url", "file"]
-        video_strings = ['mp4', 'ogg', 'vimeo', 'youtube']
+        video_strings = ["mp4", "ogg", "vimeo", "youtube"]
         query = search_strings_in_model_colums(Medium, columns, video_strings)
 
     return query
@@ -50,11 +51,11 @@ class GalleryType(DjangoObjectType):
     class Meta:
         model = Gallery
 
-    id = graphene.ID(required=True, source='pk')
+    id = graphene.ID(required=True, source="pk")
     media = graphene.List(MediumType, media_type=graphene.String(required=False))
 
     def resolve_media(self, info, **kwargs):
-        media_type = kwargs.get('media_type')
+        media_type = kwargs.get("media_type")
         if media_type is not None:
             query_media_type = search_media_of_type(media_type)
             return query_media_type.filter(gallery=self)
@@ -70,7 +71,7 @@ class Query(graphene.ObjectType):
     media = graphene.List(MediumType, media_type=graphene.String(required=False))
 
     def resolve_media(self, info, **kwargs):
-        media_type = kwargs.get('media_type')
+        media_type = kwargs.get("media_type")
         if media_type is not None:
             query_media_type = search_media_of_type(media_type)
             return query_media_type

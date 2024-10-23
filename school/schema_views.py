@@ -10,7 +10,7 @@ class PromotionViewGQL(View):
     def get(self, request, *args, **kwargs):
 
         # Promotion id
-        id = kwargs.get('id')
+        id = kwargs.get("id")
 
         # if an id is provided, get data for that promotion ...
         if id:
@@ -19,7 +19,7 @@ class PromotionViewGQL(View):
         else:
             query = "{ promotions"
 
-        query += '''
+        query += """
             {
                 id
                 name
@@ -36,12 +36,12 @@ class PromotionViewGQL(View):
                 }
             }
         }
-        '''
+        """
 
         result = schema.execute(query)
 
         if result.errors:
-            return JsonResponse({'errors': [str(error) for error in result.errors]}, status=400)
+            return JsonResponse({"errors": [str(error) for error in result.errors]}, status=400)
 
         return JsonResponse(result.data, status=200)
 
@@ -50,7 +50,7 @@ class StudentViewGQL(View):
 
     def get(self, request, *args, **kwargs):
         # Student id
-        id = kwargs.get('id')
+        id = kwargs.get("id")
 
         # if an id is provided, get data for that student ...
         if id:
@@ -59,7 +59,7 @@ class StudentViewGQL(View):
         else:
             query = "{ students"
 
-        query += '''{
+        query += """{
             id
             firstName
             lastName
@@ -98,21 +98,21 @@ class StudentViewGQL(View):
             type
             }
         }
-        }'''
+        }"""
 
         result = schema.execute(query)
 
         if result.errors:
-            return JsonResponse({'errors': [str(error) for error in result.errors]}, status=400)
+            return JsonResponse({"errors": [str(error) for error in result.errors]}, status=400)
 
         return JsonResponse(result.data, status=200)
 
 
 class TeachinArtistListViewGQL(View):
-    """ List the teaching artists by year"""
+    """List the teaching artists by year"""
 
     def get(self, request, *args, **kwargs):
-        query = '''
+        query = """
             query teachingArtistList{
                 teachingArtistsList{
                     year
@@ -126,12 +126,12 @@ class TeachinArtistListViewGQL(View):
                     }
                 },
             }
-            '''
+            """
 
         result = schema.execute(query)
 
         if result.errors:
-            return JsonResponse({'errors': [str(error) for error in result.errors]}, status=400)
+            return JsonResponse({"errors": [str(error) for error in result.errors]}, status=400)
 
         return JsonResponse(result.data, status=200)
 
@@ -139,9 +139,9 @@ class TeachinArtistListViewGQL(View):
 class TeachingArtistGQL(View):
 
     def get(self, request, *args, **kwargs):
-        id = kwargs.get('id')
+        id = kwargs.get("id")
 
-        query = '''
+        query = """
         query teachingArtist($id: Int) {
             teachingArtist(id: $id){
                 id
@@ -185,14 +185,13 @@ class TeachingArtistGQL(View):
                 }
             },
         }
-        '''
+        """
 
         context = {}
-        result = schema.execute(
-            query, variables={'id': id}, context=context)
+        result = schema.execute(query, variables={"id": id}, context=context)
 
         if result.errors:
-            return JsonResponse({'errors': [str(error) for error in result.errors]}, status=400)
+            return JsonResponse({"errors": [str(error) for error in result.errors]}, status=400)
 
         return JsonResponse(result.data, status=200)
 
@@ -200,7 +199,7 @@ class TeachingArtistGQL(View):
 class CandidatureResultsGQL(View):
 
     def get(self, request, *args, **kwargs):
-        query = '''
+        query = """
             query {
                 Campaign : studentApplicationSetup(isCurrentSetup: true) {
                     informationAndTourDate
@@ -330,36 +329,36 @@ class CandidatureResultsGQL(View):
                     }
                 }
             }
-            '''
+            """
 
         user = None
-        authorization = request.META.get('HTTP_AUTHORIZATION')
+        authorization = request.META.get("HTTP_AUTHORIZATION")
         # JWT
-        if authorization and 'JWT' in authorization:
+        if authorization and "JWT" in authorization:
             try:
                 # get user by token
                 credential = get_credentials(request)
                 payload = get_payload(credential)
                 user = get_user_by_payload(payload)
             except Exception:
-                return JsonResponse({'error': "Bad JWT AUTHORIZATION"}, status=402)
+                return JsonResponse({"error": "Bad JWT AUTHORIZATION"}, status=402)
         # TOKEN
-        if authorization and 'TOKEN' in authorization:
+        if authorization and "TOKEN" in authorization:
             try:
                 # get the key
                 key = authorization.split("TOKEN ")[1]
                 # get user
                 user = Token.objects.get(key=key).user
             except Exception:
-                return JsonResponse({'error': "Bad TOKEN AUTHORIZATION"}, status=402)
+                return JsonResponse({"error": "Bad TOKEN AUTHORIZATION"}, status=402)
         # USER is NONE
         if not user:
-            return JsonResponse({'error': "AUTHORIZATION required"}, status=402)
+            return JsonResponse({"error": "AUTHORIZATION required"}, status=402)
         # replace user in request
         request.user = user
         result = schema.execute(query, context_value=request)
 
         if result.errors:
-            return JsonResponse({'errors': [str(error) for error in result.errors]}, status=400)
+            return JsonResponse({"errors": [str(error) for error in result.errors]}, status=400)
 
         return JsonResponse(result.data, status=200)
