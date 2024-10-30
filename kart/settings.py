@@ -56,12 +56,12 @@ INSTALLED_APPS = (
     'rest_framework_jwt',
     'rest_framework_jwt.blacklist',
     'rest_framework_simplejwt',
-    'dj_rest_auth',
     'allauth',
     'allauth.account',
+    'dj_rest_auth',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.twitter',
+    # 'allauth.socialaccount.providers.facebook',
+    # 'allauth.socialaccount.providers.twitter',
     'corsheaders',
     'common',
     'people',
@@ -81,6 +81,7 @@ MIDDLEWARE = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 
     'corsheaders.middleware.CorsMiddleware',
 
@@ -119,6 +120,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  # this is default
     'guardian.backends.ObjectPermissionBackend',
     'graphql_jwt.backends.JSONWebTokenBackend',
+
 )
 
 ROOT_URLCONF = 'kart.urls'
@@ -131,7 +133,7 @@ WSGI_APPLICATION = 'kart.wsgi.application'
 
 LANGUAGE_CODE = 'fr-FR'
 
-SITE_ID = 2
+SITE_ID = 1
 
 TIME_ZONE = 'Europe/Paris'
 
