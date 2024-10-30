@@ -15,10 +15,12 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         # Args
         parser.add_argument("--campaign_id", type=int, help="Export candidature's campaign Id")
+        parser.add_argument("--dry_run", action="store_true", help="Nothing saved")
 
     def handle(self, *args, **options):
         # set param vars
         campaign_id = options["campaign_id"]
+        dry_run = options["dry_run"]
 
         # get the current campaign
         campaign = StudentApplicationSetup.objects.filter(Q(id=campaign_id) | Q(is_current_setup=True)).first()
@@ -48,6 +50,11 @@ class Command(BaseCommand):
             .drop_duplicates('id')
             .to_csv(index=False, header=False)
         )
+
+        # dry run for testing (mainly)
+        if dry_run:
+            print("Nothing was written")
+            return
         # open / write csv
         f = open("applications.csv", 'w', encoding='utf-8')
         f.write(csv_head)
