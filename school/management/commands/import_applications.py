@@ -1,9 +1,6 @@
-import pandas as pd
 import csv
 
 from django.core.management.base import BaseCommand
-
-from django.db.models import Q
 
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
@@ -73,7 +70,7 @@ def get_or_create(model, attr, save=True):
     created = False
     try:
         instance = model.objects.get(**attr)
-    except Exception as e:
+    except Exception:
         instance = model(**attr)
         created = True
         # save
@@ -223,7 +220,7 @@ def get_or_create_campaign(data):
     )
     campaign = populate_instance(
         [
-            "name", "candidature_date_start", "candidature_date_end", "candidatures_url", "reset_password_url", 
+            "name", "candidature_date_start", "candidature_date_end", "candidatures_url", "reset_password_url",
             "recover_password_url", "authentification_url", "video_service_url"
         ],
         campaign,

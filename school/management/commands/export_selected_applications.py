@@ -33,8 +33,8 @@ class Command(BaseCommand):
         ]
         user_rows = ["application__artist__user__" + field.name for field in User._meta.get_fields()]
         artist_rows = ["application__artist__" + field.name for field in Artist._meta.get_fields()]
-        promo_rows = ["application__campaign__promotion__" + field.name for field in Promotion._meta.get_fields()] 
-        campaign_rows = ["application__campaign__" + field.name for field in StudentApplicationSetup._meta.get_fields()] 
+        promo_rows = ["application__campaign__promotion__" + field.name for field in Promotion._meta.get_fields()]
+        campaign_rows = ["application__campaign__" + field.name for field in StudentApplicationSetup._meta.get_fields()]
         app_rows = ["application__" + field.name for field in StudentApplication._meta.get_fields()]
         admin_app_rows = [field.name for field in AdminStudentApplication._meta.get_fields()]
         # concat them

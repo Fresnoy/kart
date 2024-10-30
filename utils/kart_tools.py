@@ -13,7 +13,6 @@ from difflib import SequenceMatcher
 
 import logging
 
-from django.conf import settings
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
 from django.contrib.auth.models import User
@@ -31,7 +30,8 @@ def usernamize(fn="", ln="", check_duplicate=False):
     params:
     fn              : (str) Firstname
     ln              : (str) Lastname
-    check_duplicate : (boo) If true, verify if username do not already exist in db, increment suffix if needed (default=False).
+    check_duplicate : (boo) If true, verify if username do not already exist in db,
+                     increment suffix if needed (default=False).
 
     e.g. :
     fn = "Andy"
@@ -41,7 +41,7 @@ def usernamize(fn="", ln="", check_duplicate=False):
     """
 
     # Check if multipart firstname
-    fn_l = re.split('\W+', fn)
+    fn_l = re.split(r'\W+', fn)
 
     # Extract first letter of each fn part
     fn_l = [part[0].lower() for part in fn_l if part.isalpha()]

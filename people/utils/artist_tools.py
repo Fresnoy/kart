@@ -3,8 +3,8 @@ import os
 import unidecode
 
 # Load user model
-from django.db.models.functions import Concat, Lower
-from django.db.models import CharField, Value
+from django.db.models.functions import Lower
+from django.db.models import CharField
 
 # Import our models
 from people.models import Artist
@@ -73,14 +73,14 @@ def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TO
     if pseudo:
         # pseudo_accent = pseudo
         pseudo = unidecode.unidecode(pseudo).lower().strip()
-    fullname = f"{firstname} {lastname}"
+    # fullname = f"{firstname} {lastname}"
 
     # Cache
     fullkey = f'{firstname} {lastname} {pseudo}'
     try:
         # logger.warning("cache", search_cache[fullkey])
         return search_cache[fullkey] if listing else search_cache[fullkey][0]
-    except Exception as e:
+    except Exception:
         pass
 
     # SEARCH WITH LASTNAME then FIRSTNAME
@@ -97,7 +97,7 @@ def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TO
 
                 art_l.append(u)
 
-    ###PSEUDO
+    # PSEUDO
     if pseudo:
         guessArtNN = (
             Artist.objects.annotate(

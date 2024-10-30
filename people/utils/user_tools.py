@@ -63,12 +63,13 @@ def getUserByNames(firstname="", lastname="", listing=False, dist_min=False):
     fullname = f"{firstname} {lastname}"
 
     # Cache
-    fullkey = f'{firstname} {lastname}'
+    # fullkey = f'{firstname} {lastname}'
 
     # First filter by lastname similarity
     guessArtLN = (
         User.objects.annotate(
-            # Concat the full name "first last" to detect misclassifications like: "Hee Won -- Lee" where Hee Won is first
+            # Concat the full name "first last" to detect misclassifications like: "Hee Won -- Lee"
+            # where Hee Won is first
             # name but can be stored as "Hee  -- Won Lee"
             search_name=Concat('first_name__unaccent__lower', Value(' '), 'last_name__unaccent__lower')
         )
@@ -93,13 +94,13 @@ def getUserByNames(firstname="", lastname="", listing=False, dist_min=False):
             kart_firstname_accent = user_kart.first_name
             kart_firstname = unidecode.unidecode(kart_firstname_accent).lower().strip()
 
-            kart_fullname_accent = user_kart.search_name
+            # kart_fullname_accent = user_kart.search_name
 
             # Stripping issues
-            kart_data = {
-                'cleaned': {'lastname': kart_lastname, 'firstname': kart_firstname},
-                'raw': {'lastname': kart_lastname_accent, 'firstname': kart_firstname_accent},
-            }
+            # kart_data = {
+            #     'cleaned': {'lastname': kart_lastname, 'firstname': kart_firstname},
+            #     'raw': {'lastname': kart_lastname_accent, 'firstname': kart_firstname_accent},
+            # }
 
             kart_fullname = f"{kart_firstname} {kart_lastname}".lower()
 
@@ -207,7 +208,7 @@ def getUserByNames(firstname="", lastname="", listing=False, dist_min=False):
                 # If no close firstname found, store with the sole dist_lastname (unlikely candidate)
                 users_l.append({"user": user_kart, 'dist': dist_lastname})
 
-            ### end for user_kart in guessArtLN
+            # ## end for user_kart in guessArtLN
 
         # Take the highest distance score
         users_l.sort(key=lambda i: i['dist'], reverse=True)
