@@ -26,7 +26,7 @@ class CommandsTestCase(TestCase):
 
     def test_application_end_date_reminder(self):
         "Test app end date reminder."
-        call_command("application_end_date_reminder", stdout=self.out)
+        call_command("application_end_date_reminder", novalidation=True, stdout=self.out)
         self.assertTrue
 
     def test_application_verify_send_email_templates(self):
@@ -36,16 +36,27 @@ class CommandsTestCase(TestCase):
         self.assertTrue
 
     def test_export_selected_applications(self):
-        "Test export."
+        "Test export application selected."
         AdminStudentApplicationFactory()
         call_command("export_selected_applications", dry_run=True, stdout=self.out)
         self.assertTrue
 
     def test_import_applications(self):
-        "Test app end date reminder."
+        "Test import applications."
         with File(file=NamedTemporaryFile()) as csvfile:
             csvfile.write(b'test')
             csvfile.write(b'test')
             csvfile.flush()
             call_command("import_applications", input=csvfile.name, mediasurl="http://localhost:8000", stdout=self.out)
             self.assertTrue
+
+    def test_assign_selected_candidatures_to_promo(self):
+        "Test assign selected candidature to promo."
+        admin_app = AdminStudentApplicationFactory()
+        call_command(
+            "assign_selected_candidatures_to_promo",
+            campaign_id=admin_app.application.campaign.id,
+            novalidation=True,
+            stdout=self.out,
+        )
+        self.assertTrue
