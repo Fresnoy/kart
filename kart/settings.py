@@ -133,8 +133,6 @@ WSGI_APPLICATION = 'kart.wsgi.application'
 
 LANGUAGE_CODE = 'fr-FR'
 
-SITE_ID = 1
-
 TIME_ZONE = 'Europe/Paris'
 
 USE_I18N = True
