@@ -396,6 +396,9 @@ class HaystackSearchModelRessourceMixin:
 
         answer = response.json()
 
+        print(data)
+        print(answer)
+
         assert "objects" in answer
         assert len(answer["objects"]) == 1
 

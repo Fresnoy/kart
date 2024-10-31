@@ -34,7 +34,7 @@ class GalleryEndPoint(TestCase):
         """
         Test acces detail of gallery endpoint
         """
-        url = reverse('gallery-detail', kwargs={'pk': 1})
+        url = reverse('gallery-detail', kwargs={'pk': self.gallery.pk})
         self.response = self.client.get(url)
         self.assertEqual(self.response.status_code, 200)
 
@@ -91,7 +91,7 @@ class MediumEndPoint(TestCase):
         """
         Test detail of media
         """
-        url = reverse('medium-detail', kwargs={'pk': 1})
+        url = reverse('medium-detail', kwargs={'pk': self.medium.pk})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
@@ -100,7 +100,7 @@ class MediumEndPoint(TestCase):
         Test upload file
         """
         self.client_auth.force_authenticate(user=self.user)
-        url_post_media = reverse('medium-detail', kwargs={'pk': 1})
+        url_post_media = reverse('medium-detail', kwargs={'pk': self.medium.pk})
         file = self.generate_photo_file()
         data = {
             'label': 'Upload',

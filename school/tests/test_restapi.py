@@ -1,5 +1,6 @@
 import json
 import datetime
+
 # import time
 from django.utils import timezone
 
@@ -21,7 +22,8 @@ class TestApplicationEndPoint(TestCase):
     """
     Tests concernants le endpoint des Student Application
     """
-    fixtures = ['people/fixtures/groups.json']
+
+    fixtures = ["people/fixtures/groups.json"]
 
     def setUp(self):
         self.artist = ArtistFactory()
@@ -39,11 +41,11 @@ class TestApplicationEndPoint(TestCase):
         pass
 
     def _get_list(self):
-        url = reverse('studentapplication-list')
+        url = reverse("studentapplication-list")
         return self.client.get(url)
 
     def _get_list_auth(self):
-        url = reverse('studentapplication-list')
+        url = reverse("studentapplication-list")
         return self.client_auth.get(url)
 
     def test_list(self):
@@ -61,7 +63,7 @@ class TestApplicationEndPoint(TestCase):
         self.assertTrue(candidatures)
         self.assertEqual(len(candidatures), 1)
         # info is NOT accessible when anonymous user
-        self.assertRaises(KeyError, lambda: candidatures[0]['current_year_application_count'])
+        self.assertRaises(KeyError, lambda: candidatures[0]["current_year_application_count"])
 
     def test_list_auth(self):
         """
@@ -76,20 +78,22 @@ class TestApplicationEndPoint(TestCase):
         candidature = json.loads(response.content)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # info is accessible when user is auth
-        assert candidature[0]['current_year_application_count'] is not None
+        assert candidature[0]["current_year_application_count"] is not None
 
     def test_user_register(self):
         """
         Test user register link
         """
-        url = reverse('studentapplication-user-register')
-        user_registration = {'username': 'newuser', 'first_name': 'New', 'last_name': 'User', 'email': 'newuser@ac.art'}
+        url = reverse("studentapplication-user-register")
+        user_registration = {"username": "newuser", "first_name": "New", "last_name": "User", "email": "newuser@ac.art"}
         response = self.client.post(url, user_registration)
         self.assertEqual(response.status_code, 202)
-        user_on_base = User.objects.get(email=user_registration.get('email'),
-                                        first_name=user_registration.get('first_name'),
-                                        last_name=user_registration.get('last_name'),
-                                        username=user_registration.get('username'))
+        user_on_base = User.objects.get(
+            email=user_registration.get("email"),
+            first_name=user_registration.get("first_name"),
+            last_name=user_registration.get("last_name"),
+            username=user_registration.get("username"),
+        )
         assert user_on_base.pk > 0
         assert user_on_base.profile is not None
 
@@ -97,8 +101,8 @@ class TestApplicationEndPoint(TestCase):
         """
         Test user permission
         """
-        permission = Permission.objects.get(codename='add_studentapplication')
-        self.assertEqual(self.user.has_perm(permission.content_type.app_label + '.' + permission.codename), True)
+        permission = Permission.objects.get(codename="add_studentapplication")
+        self.assertEqual(self.user.has_perm(permission.content_type.app_label + "." + permission.codename), True)
 
     def test_userWithoutGroup_create_student_application(self):
         """
@@ -110,7 +114,7 @@ class TestApplicationEndPoint(TestCase):
         # test user has no Student Application group
         self.assertEqual(self.user.groups.filter(name=self.sa_group.name).exists(), False)
         # get uri
-        studentapplication_url = reverse('studentapplication-list')
+        studentapplication_url = reverse("studentapplication-list")
         # auth user
         self.client_auth.force_authenticate(user=self.user)
         # post method
@@ -125,7 +129,7 @@ class TestApplicationEndPoint(TestCase):
         # test if user in group
         self.assertEqual(self.user.groups.filter(name=self.sa_group.name).exists(), True)
 
-        studentapplication_url = reverse('studentapplication-list')
+        studentapplication_url = reverse("studentapplication-list")
         response = self.client_auth.post(studentapplication_url)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(StudentApplication.objects.count(), 1)
@@ -135,7 +139,7 @@ class TestApplicationEndPoint(TestCase):
         """
         Test creating an studentapplication
         """
-        studentapplication_url = reverse('studentapplication-list')
+        studentapplication_url = reverse("studentapplication-list")
         response = self.client_auth.post(studentapplication_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -152,20 +156,21 @@ class TestApplicationEndPoint(TestCase):
         # set up a campaign
         promotion = Promotion(starting_year=2000, ending_year=2001)
         promotion.save()
-        campaign = StudentApplicationSetup(candidature_date_start=timezone.now(),
-                                           candidature_date_end=timezone.now() + datetime.timedelta(days=1),
-                                           promotion=promotion,
-                                           is_current_setup=True,)
+        campaign = StudentApplicationSetup(
+            candidature_date_start=timezone.now(),
+            candidature_date_end=timezone.now() + datetime.timedelta(days=1),
+            promotion=promotion,
+            is_current_setup=True,
+        )
         campaign.save()
         # add a candidature
         application = StudentApplication(artist=self.artist, campaign=campaign)
         application.save()
         # auth user
         self.client_auth.force_authenticate(user=self.user)
-        studentapplication_url = reverse('studentapplication-detail', kwargs={'pk': application.pk})
+        studentapplication_url = reverse("studentapplication-detail", kwargs={"pk": application.pk})
         # update an info
-        response = self.client_auth.patch(studentapplication_url,
-                                          data={'remote_interview': 'true'})
+        response = self.client_auth.patch(studentapplication_url, data={"remote_interview": "true"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_update_anotherstudent_application(self):
@@ -175,10 +180,9 @@ class TestApplicationEndPoint(TestCase):
         application = StudentApplicationFactory()
 
         self.client_auth.force_authenticate(user=self.user)
-        studentapplication_url = reverse('studentapplication-detail', kwargs={'pk': application.pk})
+        studentapplication_url = reverse("studentapplication-detail", kwargs={"pk": application.pk})
         # update an info
-        response = self.client_auth.patch(studentapplication_url,
-                                          data={'remote_interview': 'true'})
+        response = self.client_auth.patch(studentapplication_url, data={"remote_interview": "true"})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_update_birthdate_on_student_application(self):
@@ -188,60 +192,63 @@ class TestApplicationEndPoint(TestCase):
         # set up a campaign
         promotion = Promotion(starting_year=2000, ending_year=2001)
         promotion.save()
-        campaign = StudentApplicationSetup(candidature_date_start=timezone.now(),
-                                           candidature_date_end=timezone.now() + datetime.timedelta(days=1),
-                                           promotion=promotion,
-                                           date_of_birth_max=datetime.date(1983, 12, 31),
-                                           is_current_setup=True,)
+        campaign = StudentApplicationSetup(
+            candidature_date_start=timezone.now(),
+            candidature_date_end=timezone.now() + datetime.timedelta(days=1),
+            promotion=promotion,
+            date_of_birth_max=datetime.date(1983, 12, 31),
+            is_current_setup=True,
+        )
         campaign.save()
         # add a candidature
         application = StudentApplication(artist=self.artist, campaign=campaign)
         application.save()
         # auth user
         self.client_auth.force_authenticate(user=self.user)
-        user_url = reverse('user-detail', kwargs={'pk': self.user.pk})
+        user_url = reverse("user-detail", kwargs={"pk": self.user.pk})
         # update bad info
-        response = self.client_auth.patch(user_url,
-                                          data={'profile': {'birthdate': '1983-12-30'}},
-                                          format='json')
+        response = self.client_auth.patch(user_url, data={"profile": {"birthdate": "1983-12-30"}}, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertNotEqual(self.user.profile.birthdate, '1983-12-30')
+        self.assertNotEqual(self.user.profile.birthdate, "1983-12-30")
         # update OK info
-        response = self.client_auth.patch(user_url,
-                                          data={'profile': {'birthdate': '1983-12-31'}},
-                                          format='json')
+        response = self.client_auth.patch(user_url, data={"profile": {"birthdate": "1983-12-31"}}, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['profile']['birthdate'], '1983-12-31')
+        self.assertEqual(response.data["profile"]["birthdate"], "1983-12-31")
 
 
 class TestApplicationSetupEndPoint(TestCase):
     """
     Tests concernants le endpoint des Student Application Setups
     """
+
     def setUp(self):
         promotion = Promotion(starting_year=2000, ending_year=2001)
         promotion.save()
-        campaign = StudentApplicationSetup(candidature_date_start=timezone.now() - datetime.timedelta(days=1),
-                                           candidature_date_end=timezone.now() + datetime.timedelta(days=1),
-                                           promotion=promotion,
-                                           is_current_setup=True,)
+        campaign = StudentApplicationSetup(
+            candidature_date_start=timezone.now() - datetime.timedelta(days=1),
+            candidature_date_end=timezone.now() + datetime.timedelta(days=1),
+            promotion=promotion,
+            is_current_setup=True,
+        )
         campaign.save()
 
-        campaign = StudentApplicationSetup(candidature_date_start=timezone.now() - datetime.timedelta(days=2),
-                                           candidature_date_end=timezone.now() - datetime.timedelta(days=1),
-                                           promotion=promotion,
-                                           is_current_setup=False,)
+        campaign = StudentApplicationSetup(
+            candidature_date_start=timezone.now() - datetime.timedelta(days=2),
+            candidature_date_end=timezone.now() - datetime.timedelta(days=1),
+            promotion=promotion,
+            is_current_setup=False,
+        )
         campaign.save()
 
     def tearDown(self):
         pass
 
     def _get_list(self):
-        url = reverse('studentapplicationsetup-list')
+        url = reverse("studentapplicationsetup-list")
         return self.client.get(url)
 
     def _get_current_campaign(self):
-        url = reverse('studentapplicationsetup-list')
+        url = reverse("studentapplicationsetup-list")
         return self.client.get("{}?is_current_setup=true".format(url))
 
     def test_list(self):
@@ -262,14 +269,15 @@ class TestApplicationSetupEndPoint(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(campaign), 1)
         # info is True
-        self.assertTrue(campaign[0]['candidature_open'])
+        self.assertTrue(campaign[0]["candidature_open"])
 
 
 class TestAdminApplicationEndPoint(TestCase):
     """
     Tests concernants le endpoint des Student Application
     """
-    fixtures = ['people/fixtures/groups.json']
+
+    fixtures = ["people/fixtures/groups.json"]
 
     def setUp(self):
         self.application_admin = AdminStudentApplicationFactory()
@@ -284,49 +292,63 @@ class TestAdminApplicationEndPoint(TestCase):
     def tearDown(self):
         pass
 
-    def test_anonymUser_list(self,):
-        adminstudentapplication_url = reverse('adminstudentapplication-list')
+    def test_anonymUser_list(
+        self,
+    ):
+        adminstudentapplication_url = reverse("adminstudentapplication-list")
         response = self.client_auth.post(adminstudentapplication_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_candidat_list(self,):
+    def test_candidat_list(
+        self,
+    ):
         self.client_auth.force_authenticate(user=self.user)
         # test if user in group
         self.assertEqual(self.user.groups.filter(name=self.sa_group.name).exists(), True)
 
-        adminstudentapplication_url = reverse('adminstudentapplication-list')
+        adminstudentapplication_url = reverse("adminstudentapplication-list")
         response = self.client_auth.post(adminstudentapplication_url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_candidat_update(self,):
+    def test_candidat_update(
+        self,
+    ):
         self.client_auth.force_authenticate(user=self.user)
 
-        adminstudentapplication_url = reverse('adminstudentapplication-detail',
-                                              kwargs={'pk': self.application_admin.pk})
-        response = self.client_auth.put(adminstudentapplication_url, data={'selected': 'true'})
+        adminstudentapplication_url = reverse(
+            "adminstudentapplication-detail", kwargs={"pk": self.application_admin.pk}
+        )
+        response = self.client_auth.put(adminstudentapplication_url, data={"selected": "true"})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_staff_list(self,):
+    def test_staff_list(
+        self,
+    ):
         self.user.is_staff = True
         self.client_auth.force_authenticate(user=self.user)
 
-        adminstudentapplication_url = reverse('adminstudentapplication-list')
+        adminstudentapplication_url = reverse("adminstudentapplication-list")
         response = self.client_auth.get(adminstudentapplication_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_staff_create(self,):
+    def test_staff_create(
+        self,
+    ):
         self.user.is_staff = True
         self.client_auth.force_authenticate(user=self.user)
 
-        adminstudentapplication_url = reverse('adminstudentapplication-list')
+        adminstudentapplication_url = reverse("adminstudentapplication-list")
         response = self.client_auth.post(adminstudentapplication_url)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_staff_update(self,):
+    def test_staff_update(
+        self,
+    ):
         self.user.is_staff = True
         self.client_auth.force_authenticate(user=self.user)
 
-        adminstudentapplication_url = reverse('adminstudentapplication-detail',
-                                              kwargs={'pk': self.application_admin.pk})
-        response = self.client_auth.put(adminstudentapplication_url, data={'selected': 'true'})
+        adminstudentapplication_url = reverse(
+            "adminstudentapplication-detail", kwargs={"pk": self.application_admin.pk}
+        )
+        response = self.client_auth.put(adminstudentapplication_url, data={"selected": "true"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
