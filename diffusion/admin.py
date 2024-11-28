@@ -69,6 +69,7 @@ class MetaAwardAdmin(admin.ModelAdmin):
 
 class DiffusionAdmin(admin.ModelAdmin):
     list_display = ('artwork', 'event', 'first', 'on_competition')
+    search_fields = ['artwork__title', 'event__title']
     ordering = ['artwork', ]
 
 

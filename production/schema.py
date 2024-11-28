@@ -368,7 +368,8 @@ class Query(graphene.ObjectType):
     performances = graphene.List(PerformanceType)
 
     event = graphene.Field(EventType, id=graphene.Int())
-    events = graphene.List(EventType)
+    events = graphene.List(EventType, eventTitleContains=graphene.String(),
+                           eventPlaceStartWith=graphene.String())
 
     exhibition = graphene.Field(ExhibitionType, id=graphene.Int())
     exhibitions = graphene.List(ExhibitionType)
@@ -446,7 +447,21 @@ class Query(graphene.ObjectType):
         return None
 
     # Event
-    def resolve_events(root, info, **kwargs):
+    def resolve_events(root, info, eventTitleContains=None, eventPlaceStartWith=None, **kwargs):
+        if eventTitleContains:
+            return Event.objects.filter(
+                title__icontains=eventTitleContains,
+                )
+        if eventPlaceStartWith:
+            return Diffusion.objects.filter(
+                place__name__istartswith=eventPlaceStartWith,
+                ) | Diffusion.objects.filter(
+                place__city__istartswith=eventPlaceStartWith,
+                ) | Diffusion.objects.filter(
+                place__country__iexact=eventPlaceStartWith,
+                ) | Diffusion.objects.filter(
+                place__country__iname=eventPlaceStartWith,
+                )
         return Event.objects.all()
 
     def resolve_event(root, info, **kwargs):
