@@ -134,6 +134,8 @@ def search_or_create_Place():
             print("Aucune addresse trouvée, reformulez")
             return search_or_create_Place()
 
+    return place
+
 
 def createEvent(name, date):
 
