@@ -45,9 +45,13 @@ class Query(graphene.ObjectType):
     diffusion = graphene.Field(DiffusionType, id=graphene.ID(required=True))
     diffusions = graphene.List(DiffusionType,
                                eventTitleContains=graphene.String(),
+                               eventYear=graphene.Int(),
                                placeStartWith=graphene.String(),
                                artworkTitleContains=graphene.String(),
-                               artworkArtistNameStartWith=graphene.String())
+                               artworkArtistNameStartWith=graphene.String(),
+                               orderBy=graphene.String(),
+                               limit=graphene.Int(),
+                               )
 
     place = graphene.Field(PlaceType, id=graphene.ID(required=True))
     places = graphene.List(PlaceType, placeStartWith=graphene.String())
@@ -67,40 +71,55 @@ class Query(graphene.ObjectType):
 
     def resolve_diffusions(root, info, eventTitleContains=None,
                            eventPlaceStartWith=None,
+                           eventYear=None,
                            artworkTitleContains=None,
                            artworkArtistNameStartWith=None,
+                           orderBy=None,
+                           limit=None,
                            **kwargs):
+        
+        diffusion = Diffusion.objects.all()
+        
         if eventTitleContains:
-            return Diffusion.objects.filter(
+            diffusion = diffusion.filter(
                 event__title__icontains=eventTitleContains,
                 )
 
         if eventPlaceStartWith:
-            return Diffusion.objects.filter(
+            diffusion =  diffusion.filter(
                 event__place__name__istartswith=eventPlaceStartWith,
-                ) | Diffusion.objects.filter(
+                ) | diffusion.filter(
                 event__place__city__istartswith=eventPlaceStartWith,
-                ) | Diffusion.objects.filter(
+                ) | diffusion.filter(
                 event__place__country__iexact=eventPlaceStartWith,
-                ) | Diffusion.objects.filter(
+                ) | diffusion.filter(
                 event__place__country__iname=eventPlaceStartWith,
                 )
 
         if artworkTitleContains:
-            return Diffusion.objects.filter(
+            diffusion = diffusion.filter(
                 artwork__title__icontains=artworkTitleContains,
                 )
 
         if artworkArtistNameStartWith:
-            return Diffusion.objects.filter(
+            diffusion = diffusion.filter(
                 artwork__authors__nickname__istartswith=artworkArtistNameStartWith
-                ) | Diffusion.objects.filter(
+                ) | diffusion.filter(
                 artwork__authors__user__first_name__istartswith=artworkArtistNameStartWith
-                ) | Diffusion.objects.filter(
+                ) | diffusion.filter(
                 artwork__authors__user__last_name__istartswith=artworkArtistNameStartWith
                 )
+        
+        if eventYear:
+            diffusion = diffusion.filter(event__starting_date__year=eventYear)
+        
+        if orderBy:
+            diffusion = diffusion.order_by(orderBy)
 
-        return Diffusion.objects.all()
+        if limit:
+            diffusion = diffusion[:limit]
+
+        return diffusion
 
     def resolve_diffusion(root, info, **kwargs):
         id = kwargs.get('id', None)
