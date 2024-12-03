@@ -6,6 +6,7 @@ import graphene
 class OrganizationType(DjangoObjectType):
     class Meta:
         model = Organization
+
     id = graphene.ID(required=True, source='pk')
     places = graphene.List("diffusion.schema.PlaceType")
 
@@ -16,18 +17,21 @@ class OrganizationType(DjangoObjectType):
 class DiffusionType(DjangoObjectType):
     class Meta:
         model = Diffusion
+
     id = graphene.ID(required=True, source='pk')
 
 
 class AwardType(DjangoObjectType):
     class Meta:
         model = Award
+
     id = graphene.ID(required=True, source='pk')
 
 
 class MetaAwardType(DjangoObjectType):
     class Meta:
         model = MetaAward
+
     id = graphene.ID(required=True, source='pk')
 
 
@@ -38,20 +42,20 @@ class PlaceType(DjangoObjectType):
 
 class Query(graphene.ObjectType):
 
-    organization = graphene.Field(
-        OrganizationType, id=graphene.ID(required=True))
+    organization = graphene.Field(OrganizationType, id=graphene.ID(required=True))
     organizations = graphene.List(OrganizationType)
 
     diffusion = graphene.Field(DiffusionType, id=graphene.ID(required=True))
-    diffusions = graphene.List(DiffusionType,
-                               eventTitleContains=graphene.String(),
-                               eventYear=graphene.Int(),
-                               placeStartWith=graphene.String(),
-                               artworkTitleContains=graphene.String(),
-                               artworkArtistNameStartWith=graphene.String(),
-                               orderBy=graphene.String(),
-                               limit=graphene.Int(),
-                               )
+    diffusions = graphene.List(
+        DiffusionType,
+        eventTitleContains=graphene.String(),
+        eventYear=graphene.Int(),
+        placeStartWith=graphene.String(),
+        artworkTitleContains=graphene.String(),
+        artworkArtistNameStartWith=graphene.String(),
+        orderBy=graphene.String(),
+        limit=graphene.Int(),
+    )
 
     place = graphene.Field(PlaceType, id=graphene.ID(required=True))
     places = graphene.List(PlaceType, placeStartWith=graphene.String())
@@ -69,50 +73,57 @@ class Query(graphene.ObjectType):
         id = kwargs.get('id', None)
         return Organization.objects.get(pk=id)
 
-    def resolve_diffusions(root, info, eventTitleContains=None,
-                           eventPlaceStartWith=None,
-                           eventYear=None,
-                           artworkTitleContains=None,
-                           artworkArtistNameStartWith=None,
-                           orderBy=None,
-                           limit=None,
-                           **kwargs):
-        
+    def resolve_diffusions(
+        root,
+        info,
+        eventTitleContains=None,
+        eventPlaceStartWith=None,
+        eventYear=None,
+        artworkTitleContains=None,
+        artworkArtistNameStartWith=None,
+        orderBy=None,
+        limit=None,
+        **kwargs
+    ):
+
         diffusion = Diffusion.objects.all()
-        
+
         if eventTitleContains:
             diffusion = diffusion.filter(
                 event__title__icontains=eventTitleContains,
-                )
+            )
 
         if eventPlaceStartWith:
-            diffusion =  diffusion.filter(
-                event__place__name__istartswith=eventPlaceStartWith,
-                ) | diffusion.filter(
-                event__place__city__istartswith=eventPlaceStartWith,
-                ) | diffusion.filter(
-                event__place__country__iexact=eventPlaceStartWith,
-                ) | diffusion.filter(
-                event__place__country__iname=eventPlaceStartWith,
+            diffusion = (
+                diffusion.filter(
+                    event__place__name__istartswith=eventPlaceStartWith,
                 )
+                | diffusion.filter(
+                    event__place__city__istartswith=eventPlaceStartWith,
+                )
+                | diffusion.filter(
+                    event__place__country__iexact=eventPlaceStartWith,
+                )
+                | diffusion.filter(
+                    event__place__country__iname=eventPlaceStartWith,
+                )
+            )
 
         if artworkTitleContains:
             diffusion = diffusion.filter(
                 artwork__title__icontains=artworkTitleContains,
-                )
+            )
 
         if artworkArtistNameStartWith:
-            diffusion = diffusion.filter(
-                artwork__authors__nickname__istartswith=artworkArtistNameStartWith
-                ) | diffusion.filter(
-                artwork__authors__user__first_name__istartswith=artworkArtistNameStartWith
-                ) | diffusion.filter(
-                artwork__authors__user__last_name__istartswith=artworkArtistNameStartWith
-                )
-        
+            diffusion = (
+                diffusion.filter(artwork__authors__nickname__istartswith=artworkArtistNameStartWith)
+                | diffusion.filter(artwork__authors__user__first_name__istartswith=artworkArtistNameStartWith)
+                | diffusion.filter(artwork__authors__user__last_name__istartswith=artworkArtistNameStartWith)
+            )
+
         if eventYear:
             diffusion = diffusion.filter(event__starting_date__year=eventYear)
-        
+
         if orderBy:
             diffusion = diffusion.order_by(orderBy)
 
@@ -127,15 +138,20 @@ class Query(graphene.ObjectType):
 
     def resolve_places(root, info, placeStartWith, **kwargs):
         if placeStartWith:
-            return Place.objects.filter(
-                name__istartswith=placeStartWith,
-                ) | Place.objects.filter(
-                city__istartswith=placeStartWith,
-                ) | Place.objects.filter(
-                country__iexact=placeStartWith,
-                ) | Place.objects.filter(
-                country__iname=placeStartWith,
+            return (
+                Place.objects.filter(
+                    name__istartswith=placeStartWith,
                 )
+                | Place.objects.filter(
+                    city__istartswith=placeStartWith,
+                )
+                | Place.objects.filter(
+                    country__iexact=placeStartWith,
+                )
+                | Place.objects.filter(
+                    country__iname=placeStartWith,
+                )
+            )
         return Place.objects.all()
 
     def resolve_place(root, info, **kwargs):
