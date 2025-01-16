@@ -136,7 +136,8 @@ class Query(graphene.ObjectType):
         id = kwargs.get('id', None)
         return Diffusion.objects.get(pk=id)
 
-    def resolve_places(root, info, placeStartWith, **kwargs):
+    def resolve_places(root, info, **kwargs):
+        placeStartWith = kwargs.get('placeStartWith')
         if placeStartWith:
             return (
                 Place.objects.filter(
