@@ -61,10 +61,10 @@ class Query(graphene.ObjectType):
     places = graphene.List(PlaceType, placeStartWith=graphene.String())
 
     award = graphene.Field(AwardType, id=graphene.ID(required=True))
-    awards = graphene.List(AwardType)
+    awards = graphene.List(AwardType, year=graphene.Int(), name=graphene.String(), limit=graphene.Int())
 
     meta_award = graphene.Field(MetaAwardType, id=graphene.ID(required=True))
-    meta_awards = graphene.List(MetaAwardType)
+    meta_awards = graphene.List(MetaAwardType, name=graphene.String())
 
     def resolve_organizations(root, info, **kwargs):
         return Organization.objects.all()
@@ -160,13 +160,34 @@ class Query(graphene.ObjectType):
         return Place.objects.get(pk=id)
 
     def resolve_awards(root, info, **kwargs):
-        return Award.objects.all()
+        awards = Award.objects.all()
+        # year
+        year = kwargs.get('year')
+        if year:
+            awards = awards.filter(date__year=year)
+        # search by name
+        name = kwargs.get('name')
+        if name:
+            awards = awards.filter(meta_award__label__icontains=name) | awards.filter(
+                meta_award__event__title__icontains=name
+            )
+        # limit
+        limit = kwargs.get('limit')
+        if limit:
+            awards = awards[:limit]
+
+        return awards
 
     def resolve_award(root, info, **kwargs):
         id = kwargs.get('id', None)
         return Award.objects.get(pk=id)
 
     def resolve_meta_awards(root, info, **kwargs):
+        name = kwargs.get('name')
+        if name:
+            return MetaAward.objects.filter(label__icontains=name) | MetaAward.objects.filter(
+                event__title__icontains=name
+            )
         return MetaAward.objects.all()
 
     def resolve_meta_award(root, info, **kwargs):
