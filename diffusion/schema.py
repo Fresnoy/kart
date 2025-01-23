@@ -160,7 +160,7 @@ class Query(graphene.ObjectType):
         return Place.objects.get(pk=id)
 
     def resolve_awards(root, info, **kwargs):
-        awards = Award.objects.all()
+        awards = Award.objects.all().order_by("-date__year")
         # year
         year = kwargs.get('year')
         if year:
