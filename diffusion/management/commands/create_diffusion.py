@@ -5,8 +5,6 @@ import datetime
 
 from django.core.management.base import BaseCommand
 from geopy.geocoders import Nominatim
-from geopy.location import Location
-from geopy.point import Point
 from geopy.exc import GeocoderTimedOut, GeocoderServiceError
 
 from diffusion.models import Place, Diffusion
@@ -190,7 +188,7 @@ def input_choices(values):
         selected = values[select_int]
         return selected
     except Exception as e:
-        print("Choix invalide ")
+        print("Choix invalide", e)
         return False
 
 
