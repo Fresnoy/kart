@@ -357,7 +357,7 @@ class ProfileType(DjangoObjectType):
 
 class Query(graphene.ObjectType):
     user = graphene.Field(UserType, id=graphene.Int())
-    users = graphene.List(UserType)
+    users = graphene.List(UserType, name=graphene.String(required=False))
 
     artist = graphene.Field(ArtistType, id=graphene.Int())
     artists = graphene.List(ArtistType, name=graphene.String(required=False))
@@ -366,7 +366,12 @@ class Query(graphene.ObjectType):
     profiles = graphene.List(FresnoyProfileType)
 
     def resolve_users(root, info, **kwargs):
-        return get_user_model().objects.all()
+        users = get_user_model().objects.all()
+        name = kwargs.get('name')
+        if name:
+            users = users.annotate(name=Concat(F('first_name'), Value(' '), F('last_name')))\
+                         .filter(Q(artist__nickname__icontains=name) | Q(name__icontains=name))
+        return users
 
     def resolve_user(root, info, **kwargs):
         id = kwargs.get('id')
