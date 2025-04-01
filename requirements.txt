@@ -15,8 +15,7 @@ django-haystack==3.3.0
 git+https://github.com/audiolion/django-language-field
 django-markdown==0.8.4
 django-markdownx==4.0.7
-# django-multiselectfield==0.1.12
-git+https://github.com/macmichael01/django-multiselectfield
+django-multiselectfield==0.1.13
 django-pagedown==2.2.1
 django-polymorphic==3.1.0
 dj-rest-auth==7.0.1
