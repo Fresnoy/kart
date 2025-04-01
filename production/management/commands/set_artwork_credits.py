@@ -81,13 +81,13 @@ def setArtworkCredits(aw, credits):
     # staf : task \n
     # staf : name or fistname, lastname
 
-    if not "\n" in credits:
+    if "\n" not in credits:
         return False
 
     credits_arr = credits.split("\n")
     for credit in credits_arr:
 
-        if not ":" in credit:
+        if ":" not in credit:
             print("/!\\ credit n'a pas de ':'" + credit)
             continue
 
@@ -274,7 +274,7 @@ def get_or_create_user(user_str):
             user, created = User.objects.get_or_create(
                 first_name=first_name.title(), last_name=last_name.title(), username=username
             )
-        except Exception as e:
+        except Exception:
             username = usernamize(first_name, last_name, True)
             user, created = User.objects.get_or_create(
                 first_name=first_name.title(), last_name=last_name.title(), username=username
@@ -368,6 +368,6 @@ def multiline_input():
 def setStats(value_from_model, created):
     class_name = value_from_model.__class__.__name__.lower()
     attibute = class_name + "_created" if created else class_name + "_reused"
-    if not attibute in stats:
+    if attibute not in stats:
         stats[attibute] = []
     stats[attibute].append(value_from_model)

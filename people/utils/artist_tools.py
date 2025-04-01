@@ -56,7 +56,7 @@ def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TO
 
     # If data not string
     # print([x for x in [firstname,lastname,pseudo]])
-    if not all([type(x) == str for x in [firstname, lastname, pseudo]]):
+    if not all([type(x) is str for x in [firstname, lastname, pseudo]]):
         logger.info("\n** getArtistByNames **\nfirstname,lastname,pseudo must be strings")
         return False
 

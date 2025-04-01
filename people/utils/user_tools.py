@@ -45,7 +45,7 @@ def getUserByNames(firstname="", lastname="", listing=False, dist_min=False):
         return False
 
     # If data not string
-    if not all([type(x) == str for x in [firstname, lastname]]):
+    if not all([type(x) is str for x in [firstname, lastname]]):
         logger.info("\n** getUserByNames **\nfirstname,lastname must be strings")
         return False
 
