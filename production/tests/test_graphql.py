@@ -92,6 +92,7 @@ class TestGQLPages(TestCase):
         result = schema.execute(query, variables={'idExhib': event.id, })
         self.assertIsNone(result.errors)
 
+    # Following tests about artwork's keywords
     def test_query_all_artworks_keywords(self):
         query = 'query ArtworksKeywords {\
                     artworks {\
@@ -154,3 +155,18 @@ class TestGQLPages(TestCase):
         assert result.data['artwork']['keywords'][0]['name'] == "mythe"
         assert result.data['artwork']['keywords'][1]['name'] == "société"
         self.assertIsNone(result.errors)
+
+    # Following test about artworks query's production date
+    def test_artworks_query_production_date(self):
+        ArtworkFactory()
+
+        query = 'query ArtworksProductionDate {\
+                    artworks {\
+                        productionDate\
+                    }\
+                }'
+
+        schema = graphene.Schema(query=Query)
+        result = schema.execute(query)
+
+        assert result.data['artworks'][0]['productionDate'] is not None
