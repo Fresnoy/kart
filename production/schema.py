@@ -78,6 +78,7 @@ class ProductionInterface(graphene.Interface):
     description_fr = graphene.String()
     description_en = graphene.String()
     partners = graphene.List(PartnerType)
+    production_date = graphene.Date()
 
     @classmethod
     def resolve_type(cls, instance, info):
