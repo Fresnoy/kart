@@ -5,6 +5,7 @@ from graphene_django.converter import convert_django_field
 from django.db.models import Q
 
 from taggit.managers import TaggableManager
+from taggit.models import Tag
 from itertools import chain
 
 from .models import Production, Artwork, Film, Installation, \
@@ -105,6 +106,7 @@ class ArtworkInterface(ProductionInterface):
     authors = graphene.List(ArtistType)
     diffusions = graphene.List(DiffusionType)
     mentoring = graphene.List("school.schema.TeachingArtistType")
+    keywords = graphene.List("production.schema.KeywordType")
 
     # The type of artwork (Film, Performance, ...)
     type = graphene.String()
@@ -134,12 +136,21 @@ class ProductionType(DjangoObjectType):
         return isinstance(root, Production)
 
 
+class KeywordType(DjangoObjectType):
+    class Meta:
+        model = Tag
+    name = graphene.String()
+    slug = graphene.String()
+
+
 class ArtworkType(ProductionType):
     class Meta:
         model = Artwork
         interfaces = (graphene.relay.Node, ProductionInterface)
 
     authors = graphene.List(ArtistType)
+
+    keywords = graphene.List(KeywordType)
 
     # The type of artwork (Film, Performance, ...)
     type = graphene.String()
@@ -187,6 +198,9 @@ class ArtworkType(ProductionType):
 
     def resolve_authors(parent, info):
         return parent.authors.all()
+
+    def resolve_keywords(parent, info):
+        return parent.keywords.all()
 
     def resolve_diffusions(parent, info):
         return Diffusion.objects.all().filter(artwork=parent)

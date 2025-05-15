@@ -76,6 +76,14 @@ class TagFactory(factory.django.DjangoModelFactory):
     slug = factory.Faker('slug')
 
 
+class KeywordFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Tag
+
+    name = factory.Faker('word')
+    slug = factory.Faker('slug')
+
+
 class FilmGenreFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.FilmGenre
