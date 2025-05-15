@@ -134,7 +134,6 @@ class ArtworkAutocompleteSerializer(HaystackSerializerMixin, ArtworkSerializer):
     class Meta(ArtworkSerializer.Meta):
         index_classes = [FilmIndex, InstallationIndex, PerformanceIndex]
         search_fields = ("content_auto", 'type', 'genres', 'keywords', "shooting_place",)
-        fields = ('title', 'url', 'type', 'genres', 'keywords', "shooting_place", "authors")
         field_aliases = {
             "q": "content_auto",
         }

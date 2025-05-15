@@ -1,1 +1,16 @@
-{{ object.user.first_name }} {{ object.user.last_name }}
+{% if object.artist.nickname %}
+    {{ object.artist.nickname }}
+{% elif object.artist.user %}
+    {{ object.artist.user.first_name }} {{ object.artist.user.last_name }}
+{% elif object.artist.collectives %}
+    {% for artist in object.artist.collectives %}
+        {% if artist.nickname %}
+            {{ artist.nickname }}
+        {% else %}
+            {{ artist.user.first_name }} {{ artist.user.last_name }}
+        {% endif %}
+    {% endfor%}
+{% else %}
+    {{ object.user.first_name }} {{ object.user.last_name }}
+{% endif %}
+    

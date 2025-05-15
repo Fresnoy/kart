@@ -21,7 +21,6 @@ SECRET_KEY = '$17%$7@*^nmx&(mb)5=o9v9if&_%s67-*^-skk!iaef3%16*12'
 
 PASSWORD_TOKEN = r'(?P<uidb64>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,40})'
 
-site_name = "Kartel"
 DEFAULT_FROM_EMAIL = FROM_EMAIL or ''
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
@@ -57,12 +56,12 @@ INSTALLED_APPS = (
     'rest_framework_jwt',
     'rest_framework_jwt.blacklist',
     'rest_framework_simplejwt',
-    'dj_rest_auth',
     'allauth',
     'allauth.account',
+    'dj_rest_auth',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.twitter',
+    # 'allauth.socialaccount.providers.facebook',
+    # 'allauth.socialaccount.providers.twitter',
     'corsheaders',
     'common',
     'people',
@@ -82,6 +81,7 @@ MIDDLEWARE = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 
     'corsheaders.middleware.CorsMiddleware',
 
@@ -120,6 +120,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  # this is default
     'guardian.backends.ObjectPermissionBackend',
     'graphql_jwt.backends.JSONWebTokenBackend',
+
 )
 
 ROOT_URLCONF = 'kart.urls'
@@ -131,8 +132,6 @@ WSGI_APPLICATION = 'kart.wsgi.application'
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
 LANGUAGE_CODE = 'fr-FR'
-
-SITE_ID = 2
 
 TIME_ZONE = 'Europe/Paris'
 
@@ -152,9 +151,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
 )
 
-
-# ADMIN CUSTOM
-GRAPPELLI_ADMIN_TITLE = 'Kart'
 
 # TASTYPIE/API
 CORS_ORIGIN_ALLOW_ALL = True

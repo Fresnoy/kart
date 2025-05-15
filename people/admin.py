@@ -14,7 +14,7 @@ class ArtistAdmin(admin.ModelAdmin):
     """ Admin model for Artist.
     """
     list_display = ('nick',)
-    search_fields = ['user__first_name', 'user__last_name', 'nickname']
+    search_fields = ['user__first_name', 'user__last_name', 'nickname', ]
     filter_horizontal = ('websites', 'collectives')
     readonly_fields = ('artist_photo_picture',)
     # list fields order the picture after artist_photo
@@ -80,7 +80,7 @@ class OrganizationAdmin(GuardedModelAdmin):
 
 
 def user_unicode(self):
-    return '{0} {1}'.format(self.first_name.capitalize(), self.last_name.capitalize())
+    return '{0} {1}'.format(self.first_name.title(), self.last_name.title())
 
 
 User.__str__ = user_unicode

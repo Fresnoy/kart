@@ -5,13 +5,13 @@ from graphene_django.converter import convert_django_field
 from django.db.models import Q
 
 from taggit.managers import TaggableManager
+from taggit.models import Tag
 from itertools import chain
 
 from .models import Production, Artwork, Film, Installation, \
-    Performance, Event, Task, ProductionOrganizationTask, StaffTask
+    Performance, Event, Task, ProductionOrganizationTask, StaffTask, ProductionStaffTask
 
-
-from people.schema import ArtistType, StaffType
+from people.schema import ArtistType
 from assets.schema import GalleryType
 from common.schema import WebsiteType
 
@@ -29,18 +29,39 @@ class StaffTaskType(TaskType):
         model = StaffTask
 
 
+class ProductionStaffTaskType(TaskType):
+    class Meta:
+        model = ProductionStaffTask
+
+    staff_name = graphene.String()
+    task_name = graphene.String()
+
+    def resolve_staff_name(parent, info):
+        # return artist name if any
+        if parent.staff.user.artist_set.all():
+            return parent.staff.user.artist_set.first()
+        # else return staff name
+        return parent.staff
+
+    def resolve_task_name(parent, info):
+        return parent.task
+
+
 class PartnerType(DjangoObjectType):
     class Meta:
         model = ProductionOrganizationTask
     name = graphene.String()
+    task_name = graphene.String()
     tasks = graphene.Field(TaskType)
 
     def resolve_name(parent, info):
         return parent.organization.name
 
     def resolve_tasks(parent, info):
-        parent.task.label
         return TaskType(label=parent.task.label, description=parent.task.description)
+
+    def resolve_task_name(parent, info):
+        return parent.task.label
 
 
 class ProductionInterface(graphene.Interface):
@@ -51,7 +72,7 @@ class ProductionInterface(graphene.Interface):
     updated_on = graphene.Date()
     picture = graphene.String()
     websites = graphene.List(WebsiteType)
-    collaborators = graphene.List(StaffType)
+    collaborators = graphene.List(ProductionStaffTaskType)
     description_short_fr = graphene.String()
     description_short_en = graphene.String()
     description_fr = graphene.String()
@@ -71,6 +92,10 @@ class ProductionInterface(graphene.Interface):
         pots = ProductionOrganizationTask.objects.all().filter(production=parent)
         return pots
 
+    def resolve_collaborators(parent, info, **kwargs):
+        pots = ProductionStaffTask.objects.all().filter(production=parent)
+        return pots
+
 
 class ArtworkInterface(ProductionInterface):
     id = graphene.ID(required=True)
@@ -81,6 +106,7 @@ class ArtworkInterface(ProductionInterface):
     authors = graphene.List(ArtistType)
     diffusions = graphene.List(DiffusionType)
     mentoring = graphene.List("school.schema.TeachingArtistType")
+    keywords = graphene.List("production.schema.KeywordType")
 
     # The type of artwork (Film, Performance, ...)
     type = graphene.String()
@@ -103,11 +129,18 @@ class ArtworkInterface(ProductionInterface):
 class ProductionType(DjangoObjectType):
     class Meta:
         model = Production
-        interfaces = (ProductionInterface, )
+        interfaces = (ProductionInterface,)
 
     @classmethod
     def is_type_of(cls, root, info):
         return isinstance(root, Production)
+
+
+class KeywordType(DjangoObjectType):
+    class Meta:
+        model = Tag
+    name = graphene.String()
+    slug = graphene.String()
 
 
 class ArtworkType(ProductionType):
@@ -116,6 +149,8 @@ class ArtworkType(ProductionType):
         interfaces = (graphene.relay.Node, ProductionInterface)
 
     authors = graphene.List(ArtistType)
+
+    keywords = graphene.List(KeywordType)
 
     # The type of artwork (Film, Performance, ...)
     type = graphene.String()
@@ -163,6 +198,9 @@ class ArtworkType(ProductionType):
 
     def resolve_authors(parent, info):
         return parent.authors.all()
+
+    def resolve_keywords(parent, info):
+        return parent.keywords.all()
 
     def resolve_diffusions(parent, info):
         return Diffusion.objects.all().filter(artwork=parent)
@@ -221,8 +259,20 @@ class PerformanceType(ArtworkType):
 def order(aws, orderby):
     # Sort the artworks
     def tt(x):
+        # if orderby == "author":
+        #     art = x.authors.all().order_by('user__last_name').first().user.last_name
         if orderby == "author":
-            art = x.authors.all().order_by('user__last_name').first().user.last_name
+            first_auth = x.authors.first()
+            # default
+            art = first_auth.__str__()
+            # default if not collective
+            if first_auth.user is not None:
+                art = first_auth.user.last_name
+            # alpha order or nickname
+            if first_auth.alphabetical_order != "":
+                art = first_auth.alphabetical_order
+            elif first_auth.nickname != "":
+                art = first_auth.nickname
         elif orderby == "title":
             art = x.title
         elif orderby == "id":
@@ -332,7 +382,8 @@ class Query(graphene.ObjectType):
     performances = graphene.List(PerformanceType)
 
     event = graphene.Field(EventType, id=graphene.Int())
-    events = graphene.List(EventType)
+    events = graphene.List(EventType, eventTitleContains=graphene.String(),
+                           eventPlaceStartWith=graphene.String())
 
     exhibition = graphene.Field(ExhibitionType, id=graphene.Int())
     exhibitions = graphene.List(ExhibitionType)
@@ -366,12 +417,12 @@ class Query(graphene.ObjectType):
     # Artwork
     def resolve_artworks(root, info, **kwargs):
         title = kwargs.get('title')
-        if title != "":
+        if title:
             return Artwork.objects.filter(Q(title__icontains=title) |
                                           Q(former_title__icontains=title) |
                                           Q(subtitle__icontains=title))
         else:
-            return Artwork.objects.order_by('authors__last_name').all()
+            return Artwork.objects.order_by('authors__user__last_name').all()
 
     def resolve_artwork(root, info, **kwargs):
         id = kwargs.get('id')
@@ -410,7 +461,21 @@ class Query(graphene.ObjectType):
         return None
 
     # Event
-    def resolve_events(root, info, **kwargs):
+    def resolve_events(root, info, eventTitleContains=None, eventPlaceStartWith=None, **kwargs):
+        if eventTitleContains:
+            return Event.objects.filter(
+                title__icontains=eventTitleContains,
+                )
+        if eventPlaceStartWith:
+            return Diffusion.objects.filter(
+                place__name__istartswith=eventPlaceStartWith,
+                ) | Diffusion.objects.filter(
+                place__city__istartswith=eventPlaceStartWith,
+                ) | Diffusion.objects.filter(
+                place__country__iexact=eventPlaceStartWith,
+                ) | Diffusion.objects.filter(
+                place__country__iname=eventPlaceStartWith,
+                )
         return Event.objects.all()
 
     def resolve_event(root, info, **kwargs):

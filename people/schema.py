@@ -151,6 +151,10 @@ class ArtistEmbeddedInterface(graphene.Interface):
         resolver=DynNameResolver(interface="ArtistEmbedded"))
     deathdate = graphene.String(
         resolver=DynNameResolver(interface="ArtistEmbedded"))
+    deathplace = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
+    deathplace_country = graphene.String(
+        resolver=DynNameResolver(interface="ArtistEmbedded"))
     homeland_address = graphene.String(
         resolver=DynNameResolver(interface="ArtistEmbedded"))
     homeland_zipcode = graphene.String(
@@ -227,6 +231,8 @@ class ProfileEmbeddedInterface(graphene.Interface):
     birthplace = graphene.String()
     birthplace_country = graphene.String()
     deathdate = graphene.String()
+    deathplace = graphene.String()
+    deathplace_country = graphene.String()
     homeland_address = graphene.String()
     homeland_zipcode = graphene.String()
     homeland_town = graphene.String()
@@ -264,6 +270,8 @@ class UserType(DjangoObjectType):
     birthplace = graphene.String(resolver=DynNameResolver())
     birthplaceCountry = graphene.String(resolver=DynNameResolver())
     deathdate = graphene.String(resolver=DynNameResolver())
+    deathplace = graphene.String(resolver=DynNameResolver())
+    deathplaceCountry = graphene.String(resolver=DynNameResolver())
     homelandAddress = graphene.String(resolver=DynNameResolver())
     homelandZipcode = graphene.String(resolver=DynNameResolver())
     homelandTown = graphene.String(resolver=DynNameResolver())
@@ -349,7 +357,7 @@ class ProfileType(DjangoObjectType):
 
 class Query(graphene.ObjectType):
     user = graphene.Field(UserType, id=graphene.Int())
-    users = graphene.List(UserType)
+    users = graphene.List(UserType, name=graphene.String(required=False))
 
     artist = graphene.Field(ArtistType, id=graphene.Int())
     artists = graphene.List(ArtistType, name=graphene.String(required=False))
@@ -358,7 +366,12 @@ class Query(graphene.ObjectType):
     profiles = graphene.List(FresnoyProfileType)
 
     def resolve_users(root, info, **kwargs):
-        return get_user_model().objects.all()
+        users = get_user_model().objects.all()
+        name = kwargs.get('name')
+        if name:
+            users = users.annotate(name=Concat(F('first_name'), Value(' '), F('last_name')))\
+                         .filter(Q(artist__nickname__icontains=name) | Q(name__icontains=name))
+        return users
 
     def resolve_user(root, info, **kwargs):
         id = kwargs.get('id')

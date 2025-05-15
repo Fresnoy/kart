@@ -4,21 +4,33 @@ from django.db import models
 
 from pagedown.widgets import AdminPagedownWidget
 
-from .models import (Promotion, Student, StudentApplication, StudentApplicationSetup, AdminStudentApplication,
-                     PhdStudent, ScienceStudent, VisitingStudent, TeachingArtist)
+from .models import (
+    Promotion,
+    Student,
+    StudentApplication,
+    StudentApplicationSetup,
+    AdminStudentApplication,
+    PhdStudent,
+    ScienceStudent,
+    VisitingStudent,
+    TeachingArtist,
+)
 
 
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'number', 'promotion', 'graduate')
-    search_fields = ('number', 'artist__user__first_name', 'artist__user__last_name', 'artist__nickname')
+    list_display = ("__str__", "number", "promotion", "graduate")
+    search_fields = ("number", "artist__user__first_name", "artist__user__last_name", "artist__nickname")
 
     formfield_overrides = {
-        models.TextField: {'widget': AdminPagedownWidget},
+        models.TextField: {"widget": AdminPagedownWidget},
     }
 
 
 class StudentApplicationAdmin(admin.ModelAdmin):
-    search_fields = ['artist__user__first_name', 'artist__user__last_name', ]
+    search_fields = [
+        "artist__user__first_name",
+        "artist__user__last_name",
+    ]
 
     def _get_name(self, obj):
         if obj.artist:
@@ -27,10 +39,10 @@ class StudentApplicationAdmin(admin.ModelAdmin):
     _get_name.short_description = "Nom"
 
     list_display = (
-        'campaign',
-        '_get_name',
-        'current_year_application_count',
-        'remark',
+        "campaign",
+        "_get_name",
+        "current_year_application_count",
+        "remark",
     )
 
 
@@ -40,8 +52,8 @@ class StudentApplicationSetupAdmin(admin.ModelAdmin):
         return obj.artist.user.get_full_name()
 
     list_display = (
-        'name',
-        'is_current_setup',
+        "name",
+        "is_current_setup",
     )
 
 
@@ -52,9 +64,12 @@ class TeachingArtistAdmin(admin.ModelAdmin):
 
 @admin.register(AdminStudentApplication)
 class AdminStudentApplicationAdmin(admin.ModelAdmin):
-    search_fields = ['application__artist__user__first_name', 'application__artist__user__last_name',
-                     'application__artist__nickname']
-    ordering = ['-id', '-application__created_on__year', 'application__artist__user__last_name']
+    search_fields = [
+        "application__artist__user__first_name",
+        "application__artist__user__last_name",
+        "application__artist__nickname",
+    ]
+    ordering = ["-id", "-application__created_on__year", "application__artist__user__last_name"]
 
     def candidat(self, obj):
         if obj.application and obj.application.artist:
@@ -65,18 +80,30 @@ class AdminStudentApplicationAdmin(admin.ModelAdmin):
             return obj.application.campaign.promotion.starting_year
 
     list_display = (
-        'id',
-        'candidat',
-        'year',
-        'selected',
-        'wait_listed',
+        "id",
+        "candidat",
+        "year",
+        "selected",
+        "wait_listed",
     )
+
+
+class PhdStudentAdmin(admin.ModelAdmin):
+    list_display = (
+        "__str__",
+        "defended",
+    )
+    ordering = ("student",)
+
+    @admin.display(boolean=True)
+    def defended(self, obj):
+        return obj.thesis_file.name != ""
 
 
 admin.site.register(Promotion)
 admin.site.register(StudentApplication, StudentApplicationAdmin)
 admin.site.register(StudentApplicationSetup, StudentApplicationSetupAdmin)
 admin.site.register(Student, StudentAdmin)
-admin.site.register(PhdStudent)
+admin.site.register(PhdStudent, PhdStudentAdmin)
 admin.site.register(ScienceStudent)
 admin.site.register(VisitingStudent)

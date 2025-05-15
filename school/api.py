@@ -20,25 +20,27 @@ from assets.api import GalleryResource
 class PromotionResource(ModelResource):
     class Meta:
         queryset = Promotion.objects.all()
-        resource_name = 'school/promotion'
-        ordering = ['starting_year']
+        resource_name = "school/promotion"
+        ordering = ["starting_year"]
 
 
 class StudentResource(ArtistResource):
     class Meta:
         queryset = Student.objects.all()
-        resource_name = 'school/student'
-        ordering = ['user', ]
+        resource_name = "school/student"
+        ordering = [
+            "user",
+        ]
         filtering = {
-            'artist': ALL_WITH_RELATIONS,
-            'user': ALL_WITH_RELATIONS,
-            'user__last_name__istartswith': ALL_WITH_RELATIONS,
-            'promotion': ALL,
+            "artist": ALL_WITH_RELATIONS,
+            "user": ALL_WITH_RELATIONS,
+            "user__last_name__istartswith": ALL_WITH_RELATIONS,
+            "promotion": ALL,
         }
-        fields = ['id', 'number', 'promotion', 'graduate', 'user', 'artist']
+        fields = ["id", "number", "promotion", "graduate", "user", "artist"]
 
-    promotion = fields.ForeignKey(PromotionResource, 'promotion')
-    artist = fields.ForeignKey(ArtistResource, 'artist', full=True)
+    promotion = fields.ForeignKey(PromotionResource, "promotion")
+    artist = fields.ForeignKey(ArtistResource, "artist", full=True)
 
     # BUG Error (why?) user__last_name__istartswith
     # "The 'last_name' field does not support relations"
@@ -50,32 +52,35 @@ class StudentResource(ArtistResource):
     def apply_filters(self, request, applicable_filters):
         base_object_list = super(StudentResource, self).apply_filters(request, applicable_filters)
         # override
-        query = request.GET.get('user__last_name__istartswith', None)
+        query = request.GET.get("user__last_name__istartswith", None)
         if query:
-            qset = (Q(user__last_name__istartswith=query))
+            qset = Q(user__last_name__istartswith=query)
             base_object_list = base_object_list.filter(qset).distinct()
 
         return base_object_list
+
     # end of Bug Error
 
     def prepend_urls(self):
         return [
-            re_path(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()),
-                    self.wrap_view('get_search'),
-                    name="api_get_search"),
+            re_path(
+                r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()),
+                self.wrap_view("get_search"),
+                name="api_get_search",
+            ),
         ]
 
     def get_search(self, request, **kwargs):
-        self.method_check(request, allowed=['get'])
+        self.method_check(request, allowed=["get"])
         self.is_authenticated(request)
         self.throttle_check(request)
 
         # Do the query.
-        sqs = SearchQuerySet().models(Student).load_all().autocomplete(content_auto=request.GET.get('q', ''))
+        sqs = SearchQuerySet().models(Student).load_all().autocomplete(content_auto=request.GET.get("q", ""))
         paginator = Paginator(sqs, 20)
 
         try:
-            page = paginator.page(int(request.GET.get('page', 1)))
+            page = paginator.page(int(request.GET.get("page", 1)))
         except ValueError:
             return HttpResponseBadRequest("Bad page number.")
         except InvalidPage:
@@ -89,7 +94,7 @@ class StudentResource(ArtistResource):
             objects.append(bundle)
 
         object_list = {
-            'objects': objects,
+            "objects": objects,
         }
 
         self.log_throttled_access(request)
@@ -99,11 +104,11 @@ class StudentResource(ArtistResource):
 class StudentApplicationResource(ModelResource):
     class Meta:
         queryset = StudentApplication.objects.all()
-        resource_name = 'school/application'
-        ordering = ['created_on']
+        resource_name = "school/application"
+        ordering = ["created_on"]
         # no authorization for Anonymous user
         authorization = DjangoAuthorization()
 
-    artist = fields.ForeignKey(ArtistResource, 'artist')
-    administrative_galleries = fields.ToManyField(GalleryResource, 'administrative_galleries', full=True, null=True)
-    artwork_galleries = fields.ToManyField(GalleryResource, 'artwork_galleries', full=True, null=True)
+    artist = fields.ForeignKey(ArtistResource, "artist")
+    administrative_galleries = fields.ToManyField(GalleryResource, "administrative_galleries", full=True, null=True)
+    artwork_galleries = fields.ToManyField(GalleryResource, "artwork_galleries", full=True, null=True)

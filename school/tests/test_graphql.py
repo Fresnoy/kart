@@ -4,6 +4,7 @@ import graphene
 from django.test import TestCase
 from django.urls import reverse
 
+from rest_framework.authtoken.models import Token
 from rest_framework import status
 
 from utils.tests.factories import UserFactory
@@ -25,6 +26,7 @@ class TestGQLPages(TestCase):
         pass
 
     def test_page_candidature_results_list(self):
+        # TEST WITH JWT
         # create value
         StudentApplicationFactory()
         # auth user
@@ -33,18 +35,36 @@ class TestGQLPages(TestCase):
         user.save()
         jwt = obtain_jwt_token(user)
         # get infos
-        candidature_results_list_url = reverse('candidatureResultsList_gql')
-        response = self.client.get(candidature_results_list_url, HTTP_AUTHORIZATION='JWT {}'.format(jwt['access']))
+        candidature_results_list_url = reverse("candidatureResultsList_gql")
+        response = self.client.get(candidature_results_list_url, HTTP_AUTHORIZATION="JWT {}".format(jwt["access"]))
 
         results = json.loads(response.content)
-        self.assertFalse(hasattr(results, 'errors'))
+        self.assertFalse(hasattr(results, "errors"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_page_candidature_results_list_with_token(self):
+        # TEST WITH TOKEN
+        # create value
+        StudentApplicationFactory()
+        # auth user
+        user = UserFactory()
+        user.is_staff = True
+        user.save()
+        token = Token.objects.create(user=user)
+        token.save()
+        # get infos
+        candidature_results_list_url = reverse("candidatureResultsList_gql")
+        response = self.client.get(candidature_results_list_url, HTTP_AUTHORIZATION="TOKEN {}".format(token))
+
+        results = json.loads(response.content)
+        self.assertFalse(hasattr(results, "errors"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_query_promotions(self):
         # create objects
         self.student = StudentFactory()
         # query
-        query = 'query {\
+        query = "query {\
                     promotions {\
                     name\
                     picture\
@@ -55,7 +75,7 @@ class TestGQLPages(TestCase):
                         displayName\
                     }\
                     }\
-                }'
+                }"
         # execute query
         schema = graphene.Schema(query=Query)
         result = schema.execute(query)
@@ -63,7 +83,7 @@ class TestGQLPages(TestCase):
 
     def test_query_studentx(self):
         self.student = StudentFactory()
-        query = 'query StudentX($etudiantID: Int) {\
+        query = "query StudentX($etudiantID: Int) {\
                     student(id: $etudiantID) {\
                         displayName\
                         photo\
@@ -71,6 +91,9 @@ class TestGQLPages(TestCase):
                         birthdate\
                         birthplace\
                         birthplaceCountry\
+                        deathdate\
+                        deathplace\
+                        deathplaceCountry\
                         bioShortFr\
                         bioShortEn\
                         bioFr\
@@ -99,26 +122,26 @@ class TestGQLPages(TestCase):
                             }\
                         }\
                     }\
-                }'
+                }"
         schema = graphene.Schema(query=Query)
-        result = schema.execute(query, variables={'etudiantID': self.student.id})
+        result = schema.execute(query, variables={"etudiantID": self.student.id})
         self.assertIsNone(result.errors)
 
     def test_page_teaching_artists_list(self):
         # create value
         TeachingArtistFactory()
         #
-        teaching_artists_list_url = reverse('teachingArtistsList_gql')
+        teaching_artists_list_url = reverse("teachingArtistsList_gql")
         response = self.client.get(teaching_artists_list_url)
 
         teachers = json.loads(response.content)
 
-        self.assertFalse(hasattr(teachers, 'errors'))
+        self.assertFalse(hasattr(teachers, "errors"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_query_professorx(self):
         teacher = TeachingArtistFactory()
-        query = 'query ProfessorX($professorID: Int) {\
+        query = "query ProfessorX($professorID: Int) {\
                     teachingArtist(id: $professorID) {\
                         displayName\
                         gender\
@@ -126,13 +149,16 @@ class TestGQLPages(TestCase):
                         birthplace\
                         birthplaceCountry\
                         birthdate\
+                        deathdate\
+                        deathplace\
+                        deathplaceCountry\
                         presentationTextFr\
                         presentationTextEn\
                         cursus\
                         residenceCountry\
                         residenceTown\
                     }\
-                }'
+                }"
         schema = graphene.Schema(query=Query)
-        result = schema.execute(query, variables={'professorID': teacher.id})
+        result = schema.execute(query, variables={"professorID": teacher.id})
         self.assertIsNone(result.errors)

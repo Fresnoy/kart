@@ -20,7 +20,7 @@ class Place(models.Model):
     zipcode = models.CharField(
         max_length=10, blank=True, help_text="Code postal / Zipcode")
     city = models.CharField(max_length=50, blank=True)
-    country = CountryField(default="")
+    country = CountryField(default="", null=True, blank=True)
 
     latitude = models.DecimalField(
         max_digits=9, decimal_places=6, null=True, blank=True)
