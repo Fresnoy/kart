@@ -371,7 +371,11 @@ class Query(graphene.ObjectType):
         ProductionInterface, titleStartsWith=graphene.String())
 
     artwork = graphene.Field(ArtworkType, id=graphene.Int())
-    artworks = graphene.List(ArtworkInterface, title=graphene.String(required=False))
+    artworks = graphene.List(ArtworkInterface,
+                            title=graphene.String(required=False),
+                            hasKeywordName=graphene.List(graphene.String, required=False),
+                            belongProductionYear=graphene.String(required=False),
+                            hasType=graphene.String(required=False))
 
     film = graphene.Field(FilmType, id=graphene.Int())
     films = graphene.List(FilmType)
@@ -414,23 +418,44 @@ class Query(graphene.ObjectType):
         if id is not None:
             return Production.objects.get(pk=id)
         return None
+    
 
     # Artwork
-    def resolve_artworks(root, info, **kwargs):
+    def resolve_artworks(root, info, hasKeywordName=None, belongProductionYear=None, hasType=None, **kwargs):
         title = kwargs.get('title')
+        artworks = Artwork.objects.all()
+
         if title:
-            return Artwork.objects.filter(Q(title__icontains=title) |
+            artworks = artworks.filter(Q(title__icontains=title) |
                                           Q(former_title__icontains=title) |
                                           Q(subtitle__icontains=title))
-        else:
-            return Artwork.objects.order_by('authors__user__last_name').all()
+        if hasKeywordName and hasKeywordName[0] != "":
+            artworks = artworks.filter(
+                keywords__name__in=hasKeywordName)
+        if belongProductionYear:
+            artworks = artworks.filter(
+                production_date__year=belongProductionYear)
+        if hasType:
+            if hasType.lower() == 'film':
+                artworks = artworks.filter(
+                    film__isnull=False)
+            elif hasType.lower() == 'performance':
+                artworks = artworks.filter(
+                    performance__isnull=False)
+            elif hasType.lower() == 'installation':
+                artworks = artworks.filter(
+                    installation__isnull=False)
+            else:
+                # Empty response if artworks aren't one of the previous type
+                artworks = artworks.filter(id__in=[])
+        return artworks.order_by('authors__user__last_name').all()
 
     def resolve_artwork(root, info, **kwargs):
         id = kwargs.get('id')
         if id is not None:
             return Artwork.objects.get(pk=id)
         return None
-
+    
     # Film
     def resolve_films(root, info, **kwargs):
         return Film.objects.all()
