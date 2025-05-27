@@ -471,3 +471,4 @@ class TestGQLPages(TestCase):
         result = schema.execute(query)
 
         assert result.data['artworks'][0]['productionDate'] is not None
+

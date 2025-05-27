@@ -383,7 +383,7 @@ class Query(graphene.ObjectType):
         # get current (is_current_setup)
         name = kwargs.get('name')
         artists = Artist.objects.all()
-        if name != "":
+        if name != "" and name is not None:
             # Item.objects.filter(Q(creator=owner) | Q(moderated=False))
             artists = Artist.objects.annotate(name=Concat(F('user__first_name'), Value(' '), F('user__last_name')))\
                                     .filter(Q(nickname__icontains=name) |
