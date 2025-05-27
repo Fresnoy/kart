@@ -26,6 +26,7 @@ class TestGQLQueries(TestCase):
                     artists {\
                         id\
                         displayName\
+                        displayPhoto\
                     }\
                 }'
         schema = graphene.Schema(query=Query)

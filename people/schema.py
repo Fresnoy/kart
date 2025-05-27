@@ -194,6 +194,7 @@ class ArtistEmbeddedInterface(graphene.Interface):
     collectives = graphene.List("people.schema.ArtistType")
     members = graphene.List("people.schema.ArtistType")
     displayName = graphene.String()
+    displayPhoto = graphene.String()
     bioShortFr = graphene.String(
         resolver=DynNameResolver(interface="ArtistEmbedded"))
     bioShortEn = graphene.String(
@@ -221,6 +222,12 @@ class ArtistEmbeddedInterface(graphene.Interface):
             return parent.artist.nickname
         else:
             return f"{parent.artist.user.first_name} {parent.artist.user.last_name}"
+        
+    def resolve_displayPhoto(parent, info):
+        if parent.artist.artist_photo != "":
+            return parent.artist.artist_photo
+        else:
+            return parent.artist.user.profile.photo if parent.artist.user.profile.photo else None
 
 
 class ProfileEmbeddedInterface(graphene.Interface):
@@ -334,6 +341,7 @@ class ArtistType(UserType):
 
     # Display Name
     displayName = graphene.String()
+    displayPhoto = graphene.String()
 
     def resolve_displayName(parent, info):
         '''Return nickname if exists, first + last name otherwise'''
@@ -341,6 +349,13 @@ class ArtistType(UserType):
             return parent.nickname
         else:
             return f"{parent.user.first_name} {parent.user.last_name}"
+        
+    def resolve_displayPhoto(parent, info):
+        '''Return artist photo if exists, user photo otherwise'''
+        if parent.artist_photo != "":
+            return parent.artist_photo
+        else:
+            return parent.user.profile.photo if parent.user.profile.photo else None
 
     teacher = graphene.Field('school.schema.TeachingArtistType')
 
