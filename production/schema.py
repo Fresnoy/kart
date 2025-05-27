@@ -371,11 +371,13 @@ class Query(graphene.ObjectType):
         ProductionInterface, titleStartsWith=graphene.String())
 
     artwork = graphene.Field(ArtworkType, id=graphene.Int())
-    artworks = graphene.List(ArtworkInterface,
-                            title=graphene.String(required=False),
-                            hasKeywordName=graphene.List(graphene.String, required=False),
-                            belongProductionYear=graphene.String(required=False),
-                            hasType=graphene.String(required=False))
+    artworks = graphene.List(
+            ArtworkInterface,
+            title=graphene.String(required=False),
+            hasKeywordName=graphene.List(graphene.String, required=False),
+            belongProductionYear=graphene.String(required=False),
+            hasType=graphene.String(required=False)
+        )
 
     film = graphene.Field(FilmType, id=graphene.Int())
     films = graphene.List(FilmType)
@@ -418,7 +420,6 @@ class Query(graphene.ObjectType):
         if id is not None:
             return Production.objects.get(pk=id)
         return None
-    
 
     # Artwork
     def resolve_artworks(root, info, hasKeywordName=None, belongProductionYear=None, hasType=None, **kwargs):
@@ -426,9 +427,11 @@ class Query(graphene.ObjectType):
         artworks = Artwork.objects.all()
 
         if title:
-            artworks = artworks.filter(Q(title__icontains=title) |
-                                          Q(former_title__icontains=title) |
-                                          Q(subtitle__icontains=title))
+            artworks = artworks.filter(
+                Q(title__icontains=title) |
+                Q(former_title__icontains=title) |
+                Q(subtitle__icontains=title)
+            )
         if hasKeywordName and hasKeywordName[0] != "":
             artworks = artworks.filter(
                 keywords__name__in=hasKeywordName)
@@ -455,7 +458,7 @@ class Query(graphene.ObjectType):
         if id is not None:
             return Artwork.objects.get(pk=id)
         return None
-    
+
     # Film
     def resolve_films(root, info, **kwargs):
         return Film.objects.all()
