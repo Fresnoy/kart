@@ -263,6 +263,10 @@ def order(aws, orderby):
         # if orderby == "author":
         #     art = x.authors.all().order_by('user__last_name').first().user.last_name
         if orderby == "author":
+            if x.authors.count() == 0:
+                # if no author, return ZZZ : last in the list
+                return "ZZZ"
+            # if more than one author, take the first one
             first_auth = x.authors.first()
             # default
             art = first_auth.__str__()
