@@ -1,6 +1,8 @@
 import graphene
 from graphene_django import DjangoObjectType
 from graphene_django.converter import convert_django_field
+from graphene_django.filter import DjangoFilterConnectionField
+import django_filters
 
 from django.db.models import Q
 
@@ -227,6 +229,12 @@ class ArtworkType(ProductionType):
         return graphene.List(graphene.String, source='get_tags')
 
 
+class ArtworkPagination(django_filters.FilterSet):
+    class Meta:
+        model = Artwork
+        fields = []
+
+
 class ArtworkPanoType(ArtworkType):
     class Meta:
         model = Artwork
@@ -375,6 +383,7 @@ class Query(graphene.ObjectType):
         ProductionInterface, titleStartsWith=graphene.String())
 
     artwork = graphene.Field(ArtworkType, id=graphene.Int())
+
     artworks = graphene.List(
             ArtworkInterface,
             title=graphene.String(required=False),
@@ -382,6 +391,14 @@ class Query(graphene.ObjectType):
             belongProductionYear=graphene.String(required=False),
             hasType=graphene.String(required=False)
         )
+
+    artworks_pagination = DjangoFilterConnectionField(
+        ArtworkType,
+        filterset_class=ArtworkPagination,
+        title=graphene.String(required=False),
+        hasKeywordName=graphene.List(graphene.String, required=False),
+        belongProductionYear=graphene.String(required=False),
+        hasType=graphene.String(required=False))
 
     film = graphene.Field(FilmType, id=graphene.Int())
     films = graphene.List(FilmType)
@@ -462,6 +479,36 @@ class Query(graphene.ObjectType):
         if id is not None:
             return Artwork.objects.get(pk=id)
         return None
+
+    def resolve_artworks_pagination(root, info, hasKeywordName=None, belongProductionYear=None, hasType=None, **kwargs):
+        artworks_pagination = Artwork.objects.all()
+
+        title = kwargs.get('title')
+        if title:
+            return Artwork.objects.filter(Q(title__icontains=title) |
+                                          Q(former_title__icontains=title) |
+                                          Q(subtitle__icontains=title))
+
+        if hasKeywordName and hasKeywordName[0] != "":
+            artworks_pagination = artworks_pagination.filter(
+                keywords__name__in=hasKeywordName)
+        if belongProductionYear:
+            artworks_pagination = artworks_pagination.filter(
+                production_date__year=belongProductionYear)
+        if hasType:
+            if hasType == 'Film':
+                artworks_pagination = artworks_pagination.filter(
+                    film__isnull=False)
+            elif hasType == 'Performance':
+                artworks_pagination = artworks_pagination.filter(
+                    performance__isnull=False)
+            elif hasType == 'Installation':
+                artworks_pagination = artworks_pagination.filter(
+                    installation__isnull=False)
+            else:
+                # Empty response if artworks aren't one of the previous type
+                artworks_pagination = artworks_pagination.filter(id__in=[])
+        return artworks_pagination
 
     # Film
     def resolve_films(root, info, **kwargs):
