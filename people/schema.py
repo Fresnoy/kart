@@ -226,8 +226,9 @@ class ArtistEmbeddedInterface(graphene.Interface):
     def resolve_displayPhoto(parent, info):
         if parent.artist.artist_photo != "":
             return parent.artist.artist_photo
-        else:
-            return parent.artist.user.profile.photo if parent.artist.user.profile.photo else None
+        if hasattr(parent.user, 'profile'):
+            return parent.artist.user.profile.photo if parent.artist.user.profile.photo else ""
+        return ""
 
 
 class ProfileEmbeddedInterface(graphene.Interface):
@@ -354,8 +355,9 @@ class ArtistType(UserType):
         '''Return artist photo if exists, user photo otherwise'''
         if parent.artist_photo != "":
             return parent.artist_photo
-        else:
-            return parent.user.profile.photo if parent.user.profile.photo else None
+        if hasattr(parent.user, 'profile'):
+            return parent.user.profile.photo if parent.user.profile.photo else ""
+        return ""
 
     teacher = graphene.Field('school.schema.TeachingArtistType')
 
@@ -375,7 +377,14 @@ class Query(graphene.ObjectType):
     users = graphene.List(UserType, name=graphene.String(required=False))
 
     artist = graphene.Field(ArtistType, id=graphene.Int())
-    artists = graphene.List(ArtistType, name=graphene.String(required=False))
+    artists = graphene.List(
+            ArtistType,
+            name=graphene.String(required=False),
+            isStudent=graphene.Boolean(required=False),
+            isTeacher=graphene.Boolean(required=False),
+            isScienceStudent=graphene.Boolean(required=False),
+            isVisitingStudent=graphene.Boolean(required=False)
+        )
 
     profile = graphene.Field(FresnoyProfileType, id=graphene.Int())
     profiles = graphene.List(FresnoyProfileType)
@@ -394,7 +403,15 @@ class Query(graphene.ObjectType):
             return User.objects.get(pk=id)
         return None
 
-    def resolve_artists(root, info, **kwargs):
+    def resolve_artists(
+                root,
+                info,
+                isStudent=None,
+                isTeacher=None,
+                isScienceStudent=None,
+                isVisitingStudent=None,
+                **kwargs
+            ):
         # get current (is_current_setup)
         name = kwargs.get('name')
         artists = Artist.objects.all()
@@ -405,7 +422,14 @@ class Query(graphene.ObjectType):
                                             Q(user__first_name__icontains=name) |
                                             Q(user__last_name__icontains=name) |
                                             Q(name__icontains=name))
-
+        if isStudent:
+            artists = artists.filter(student__isnull=False)
+        if isTeacher:
+            artists = artists.filter(teacher__isnull=False)
+        if isScienceStudent:
+            artists = artists.filter(student__science_student__isnull=False)
+        if isVisitingStudent:
+            artists = artists.filter(visiting_student__isnull=False)
         # order by displayName by default
         return order(artists, "displayName")
 
