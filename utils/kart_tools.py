@@ -152,6 +152,6 @@ def safeGet(obj_class=None, default_index=None, force=False, **args):
 
 def dist2(item1, item2):
     """Return the distance between the 2 strings"""
-    if not type(item1) == type(item2) == str:
+    if type(item1) is type(item2) is str:
         raise TypeError("Parameters should be str.")
     return round(SequenceMatcher(None, item1.lower(), item2.lower()).ratio(), 2)

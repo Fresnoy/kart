@@ -32,14 +32,16 @@ def init():
     # Clear terminal
     os.system('clear')
 
-    print("""Coller le texte des crédits de la forme (multiligne) :
+    print(
+        """Coller le texte des crédits de la forme (multiligne) :
              user : task
              user et user et ... : task
              user : task , task, ...
              user , user, ... : task et task et ...
              ...
              ***et OU "," SONT ACCEPTÉS***
-          """)
+          """
+    )
     # Get credits
     credits_text = multiline_input()
     # Get artwork
@@ -101,7 +103,7 @@ def setArtworkCredits(aw, credits):
             str_split = user_str.split(",") if "," in user_str else user_str.split(" et ")
             first_user = str_split[0].strip()
             # is multi ? il y a un espace (nom prénom) et c'est assez long
-            if (" " in first_user and len(first_user) > 3):
+            if " " in first_user and len(first_user) > 3:
                 for u in str_split:
                     user, created = get_or_create_user(u)
                     users.append(user)
@@ -130,9 +132,7 @@ def setArtworkCredits(aw, credits):
         # One user Multi tasks
         # Multi users One task
         # Multi user multi task -> problem
-        if (len(staffs) == 0 or
-            len(tasks) == 0 or
-                (len(staffs) > 1 and len(tasks) > 1)):
+        if len(staffs) == 0 or len(tasks) == 0 or (len(staffs) > 1 and len(tasks) > 1):
             print("Multi user multi task : " + credit)
             for staff in staffs:
                 for task in tasks:
@@ -209,6 +209,7 @@ def get_first_last_name_from_str(str):
         return [first_name, last_name]
     return ["", str]
 
+
 #
 
 
@@ -217,8 +218,8 @@ def get_or_create_user(user_str):
     # return user
 
     first_name, last_name = get_first_last_name_from_str(user_str)
-    print("firsname:"+first_name)
-    print("lastname:"+last_name)
+    print("firsname:" + first_name)
+    print("lastname:" + last_name)
 
     user = False
     user_search = False
@@ -233,7 +234,7 @@ def get_or_create_user(user_str):
     if not user_search:
         user_search = getArtistByNames("", "", user_str)
         search_list_artist = getArtistByNames("", "", user_str, True)
-        if user_search and user_search["dist"] >= .9:
+        if user_search and user_search["dist"] >= 0.9:
             artist = user_search["artist"]
             user = artist.user
             created = False
@@ -270,12 +271,14 @@ def get_or_create_user(user_str):
     if not user:
         username = usernamize(first_name, last_name, False)
         try:
-            user, created = User.objects.get_or_create(first_name=first_name.title(), last_name=last_name.title(),
-                                                       username=username)
-        except Exception as e:
+            user, created = User.objects.get_or_create(
+                first_name=first_name.title(), last_name=last_name.title(), username=username
+            )
+        except Exception:
             username = usernamize(first_name, last_name, True)
-            user, created = User.objects.get_or_create(first_name=first_name.title(), last_name=last_name.title(),
-                                                       username=username)
+            user, created = User.objects.get_or_create(
+                first_name=first_name.title(), last_name=last_name.title(), username=username
+            )
         setStats(user, created)
         print("CREATE User : " + str(user))
 
@@ -331,9 +334,9 @@ def getOrCreateModelInstanceByStr(model, attr, txt_str):
 
     txt_str = txt_str.strip()
 
-    query = model.objects.filter(**{attr+"__iexact": txt_str})
+    query = model.objects.filter(**{attr + "__iexact": txt_str})
     if query.count() == 0:
-        query = model.objects.filter(**{attr+"__icontains": txt_str})
+        query = model.objects.filter(**{attr + "__icontains": txt_str})
 
     if query.count() > 1:
         print(str(model) + " (csv) : " + txt_str)
