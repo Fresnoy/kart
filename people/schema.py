@@ -1,6 +1,8 @@
 import re
 import graphene
 from graphene_django import DjangoObjectType
+from graphene_django.filter import DjangoFilterConnectionField
+import django_filters
 
 from django.db.models import F, Q, Value
 from django.db.models.functions import Concat
@@ -194,6 +196,7 @@ class ArtistEmbeddedInterface(graphene.Interface):
     collectives = graphene.List("people.schema.ArtistType")
     members = graphene.List("people.schema.ArtistType")
     displayName = graphene.String()
+    displayPhoto = graphene.String()
     bioShortFr = graphene.String(
         resolver=DynNameResolver(interface="ArtistEmbedded"))
     bioShortEn = graphene.String(
@@ -221,6 +224,13 @@ class ArtistEmbeddedInterface(graphene.Interface):
             return parent.artist.nickname
         else:
             return f"{parent.artist.user.first_name} {parent.artist.user.last_name}"
+
+    def resolve_displayPhoto(parent, info):
+        if parent.artist.artist_photo != "":
+            return parent.artist.artist_photo
+        if hasattr(parent.user, 'profile'):
+            return parent.artist.user.profile.photo if parent.artist.user.profile.photo else ""
+        return ""
 
 
 class ProfileEmbeddedInterface(graphene.Interface):
@@ -334,6 +344,7 @@ class ArtistType(UserType):
 
     # Display Name
     displayName = graphene.String()
+    displayPhoto = graphene.String()
 
     def resolve_displayName(parent, info):
         '''Return nickname if exists, first + last name otherwise'''
@@ -342,7 +353,22 @@ class ArtistType(UserType):
         else:
             return f"{parent.user.first_name} {parent.user.last_name}"
 
+    def resolve_displayPhoto(parent, info):
+        '''Return artist photo if exists, user photo otherwise'''
+        if parent.artist_photo != "":
+            return parent.artist_photo
+        if hasattr(parent.user, 'profile'):
+            return parent.user.profile.photo if parent.user.profile.photo else ""
+        return ""
+
     teacher = graphene.Field('school.schema.TeachingArtistType')
+
+
+# Dedicated to pagination, copy some elements in order to separate logic
+class ArtistPagination(django_filters.FilterSet):
+    class Meta:
+        model = Artist
+        fields = []
 
 
 class StaffType(UserType):
@@ -360,7 +386,23 @@ class Query(graphene.ObjectType):
     users = graphene.List(UserType, name=graphene.String(required=False))
 
     artist = graphene.Field(ArtistType, id=graphene.Int())
-    artists = graphene.List(ArtistType, name=graphene.String(required=False))
+    artists = graphene.List(
+            ArtistType,
+            name=graphene.String(required=False),
+            isStudent=graphene.Boolean(required=False),
+            isTeacher=graphene.Boolean(required=False),
+            isScienceStudent=graphene.Boolean(required=False),
+            isVisitingStudent=graphene.Boolean(required=False)
+        )
+
+    artists_pagination = DjangoFilterConnectionField(
+        ArtistType,
+        filterset_class=ArtistPagination,
+        name=graphene.String(required=False),
+        isStudent=graphene.Boolean(required=False),
+        isTeacher=graphene.Boolean(required=False),
+        isScienceStudent=graphene.Boolean(required=False),
+        isVisitingStudent=graphene.Boolean(required=False))
 
     profile = graphene.Field(FresnoyProfileType, id=graphene.Int())
     profiles = graphene.List(FresnoyProfileType)
@@ -379,8 +421,50 @@ class Query(graphene.ObjectType):
             return User.objects.get(pk=id)
         return None
 
-    def resolve_artists(root, info, **kwargs):
+    def resolve_artists(
+                root,
+                info,
+                isStudent=None,
+                isTeacher=None,
+                isScienceStudent=None,
+                isVisitingStudent=None,
+                **kwargs
+            ):
         # get current (is_current_setup)
+        name = kwargs.get('name')
+        artists = Artist.objects.all()
+        if name != "" and name is not None:
+            # Item.objects.filter(Q(creator=owner) | Q(moderated=False))
+            artists = Artist.objects.annotate(name=Concat(F('user__first_name'), Value(' '), F('user__last_name')))\
+                                    .filter(Q(nickname__icontains=name) |
+                                            Q(user__first_name__icontains=name) |
+                                            Q(user__last_name__icontains=name) |
+                                            Q(name__icontains=name))
+        if isStudent:
+            artists = artists.filter(student__isnull=False)
+        if isTeacher:
+            artists = artists.filter(teacher__isnull=False)
+        if isScienceStudent:
+            artists = artists.filter(student__science_student__isnull=False)
+        if isVisitingStudent:
+            artists = artists.filter(visiting_student__isnull=False)
+        # order by displayName by default
+        return order(artists, "displayName")
+
+    def resolve_artist(root, info, **kwargs):
+        id = kwargs.get('id')
+        if id is not None:
+            return Artist.objects.get(pk=id)
+        return None
+
+    def resolve_artists_pagination(
+            root,
+            info,
+            isStudent=None,
+            isTeacher=None,
+            isScienceStudent=None,
+            isVisitingStudent=None,
+            **kwargs):
         name = kwargs.get('name')
         artists = Artist.objects.all()
         if name != "":
@@ -390,15 +474,15 @@ class Query(graphene.ObjectType):
                                             Q(user__first_name__icontains=name) |
                                             Q(user__last_name__icontains=name) |
                                             Q(name__icontains=name))
-
-        # order by displayName by default
-        return order(artists, "displayName")
-
-    def resolve_artist(root, info, **kwargs):
-        id = kwargs.get('id')
-        if id is not None:
-            return Artist.objects.get(pk=id)
-        return None
+        if isStudent:
+            artists = artists.filter(student__isnull=False)
+        if isTeacher:
+            artists = artists.filter(teacher__isnull=False)
+        if isScienceStudent:
+            artists = artists.filter(student__science_student__isnull=False)
+        if isVisitingStudent:
+            artists = artists.filter(visiting_student__isnull=False)
+        return artists
 
     def resolve_profiles(root, info, **kwargs):
         return FresnoyProfile.objects.all()

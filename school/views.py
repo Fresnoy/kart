@@ -22,6 +22,7 @@ from guardian.shortcuts import assign_perm
 
 from people.models import User, FresnoyProfile, Artist
 from people.serializers import UserRegisterSerializer
+from common.utils import make_random_password
 
 from .models import (
     Promotion,
@@ -440,7 +441,7 @@ def user_activate(request, uidb64, token):
         if token_is_valid and not user.is_active:
             # Activate the user
             user.is_active = True
-            password = User.objects.make_random_password()
+            password = make_random_password()
             user.set_password(password)
             user.save()
             # send account infos email

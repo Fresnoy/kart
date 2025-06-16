@@ -163,9 +163,10 @@ class TeachingArtistsItemType(DjangoObjectType):
 class ScienceStudentType(DjangoObjectType):
     class Meta:
         model = ScienceStudent
-        interfaces = (StudentEmbeddedInterface,)
+        # interfaces = (StudentEmbeddedInterface,)
 
     id = graphene.ID(required=True, source="pk")
+    student = graphene.Field(StudentType)
 
 
 class PhdStudentType(DjangoObjectType):

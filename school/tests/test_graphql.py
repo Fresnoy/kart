@@ -11,7 +11,10 @@ from utils.tests.factories import UserFactory
 from utils.tests.utils import obtain_jwt_token
 
 from kart.schema import Query
-from school.tests.factories import StudentFactory, TeachingArtistFactory, StudentApplicationFactory
+from school.tests.factories import (StudentFactory,
+                                    TeachingArtistFactory,
+                                    StudentApplicationFactory,
+                                    ScienceStudentFactory)
 
 
 class TestGQLPages(TestCase):
@@ -161,4 +164,36 @@ class TestGQLPages(TestCase):
                 }"
         schema = graphene.Schema(query=Query)
         result = schema.execute(query, variables={"professorID": teacher.id})
+        self.assertIsNone(result.errors)
+
+    def test_query_sciencestudentx(self):
+        science_student = ScienceStudentFactory()
+        query = "query ScienceStudentX($scienceStudentID: Int) {\
+                    scienceStudent(id: $scienceStudentID) {\
+                        student {\
+                            id\
+                            displayName\
+                            photo\
+                            gender\
+                            birthdate\
+                            birthplace\
+                            birthplaceCountry\
+                            deathdate\
+                            deathplace\
+                            deathplaceCountry\
+                            bioShortFr\
+                            bioShortEn\
+                            bioFr\
+                            bioEn\
+                            cursus\
+                            promotion {\
+                                name\
+                                startingYear\
+                                endingYear\
+                            }\
+                        }\
+                    }\
+                }"
+        schema = graphene.Schema(query=Query)
+        result = schema.execute(query, variables={"scienceStudentID": science_student.id})
         self.assertIsNone(result.errors)

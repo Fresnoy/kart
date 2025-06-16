@@ -1,8 +1,12 @@
 import os
 import datetime
+import secrets
 from django.template.defaultfilters import slugify
-from django.contrib.auth.models import User
 from kart import settings
+
+
+def make_random_password(length=10, allowed_chars='abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'):
+    return ''.join(secrets.choice(allowed_chars) for i in range(length))
 
 
 def make_filepath(instance, filename, prefix_folder=None):
@@ -19,15 +23,15 @@ def make_filepath(instance, filename, prefix_folder=None):
     # making unique file in path
     carry_on = True
     while carry_on:
-        new_filename = "{name}_{random}{extension}".format(name=file_name,
-                                                           random=User.objects.make_random_password(3),
-                                                           extension=file_extension)
+        new_filename = "{name}_{random}{extension}".format(
+            name=file_name, random=make_random_password(3), extension=file_extension
+        )
         path = "{app}/{model}/{date}/{name}".format(
             app=instance.__class__._meta.app_label,
             model=instance.__class__.__name__.lower(),
             # prefix or date ( = not empty) to prevent 'app/class//file.fmt'
             date=prefix_folder or default_folder,
-            name=new_filename
+            name=new_filename,
         )
         carry_on = os.path.isfile(os.path.join(settings.MEDIA_ROOT, path))
     return path
