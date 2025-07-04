@@ -1,0 +1,49 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    container_name: kart_web
+    # command: command: gunicorn kart.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 180
+    # command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    ports:
+      - "8002:8000"
+    depends_on:
+      - elasticsearch
+
+  nginx:
+    image: nginx:latest
+    container_name: kart_nginx
+    ports:
+      - "8243:80"
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - static_volume:/app/static
+    depends_on:
+      - web
+  
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+
+volumes:
+  esdata:
+  static_volume:
+

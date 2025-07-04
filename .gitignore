@@ -1,106 +1,44 @@
-*.pyc
-*~
-db.sqlite3
-*#
-media/
-kart/site_settings.py
-.cache/
-.coverage
-.tox
-littlechick_db
-.tmp/
-static/
-# templates emails
-school/templates/emails/*.txt
-school/templates/emails/*.html
-
-# Created by https://www.gitignore.io
-
-### OSX ###
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Icon must end with two \r
-Icon
-
-
-# Thumbnails
-._*
-
-# Files that might appear on external disk
-.Spotlight-V100
-.Trashes
-
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
-
-
-### Python ###
-# Byte-compiled / optimized / DLL files
+# --- Python ---
 __pycache__/
 *.py[cod]
-
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.cache
-nosetests.xml
-coverage.xml
-
-# Translations
-*.mo
-*.pot
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
-
-### Django ###
-*.log
-*.pot
+*.sqlite3
 *.pyc
-__pycache__/
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+env/
+venv/
+ENV/
+*.log
+
+# --- Django ---
+*.db
+db.sqlite3
+media/
+staticfiles/
+static_root/
 local_settings.py
 
+# --- Docker ---
+*.pid
+docker-compose.override.yml
+
+# --- Environment Files ---
 .env
-db.sqlite3
+.env.*
+
+# --- VSCode / IDEs ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- Migrations (optionnel si générés en dev) ---
+**/migrations/*.pyc
+**/migrations/__pycache__/
+
+# --- OS ---
+.DS_Store
+Thumbs.db
 

@@ -1,0 +1,17 @@
+language: python
+os: linux
+dist: "xenial"
+python:
+  - "3.8"
+services:
+  - elasticsearch
+  - postgresql
+before_script:
+  - sleep 10
+  - psql -c 'create database test.db.pg;' -U postgres
+install:
+  - pip install tox==3.28.0 tox-travis==0.13
+script:
+  - cp kart/site_settings.py.dev kart/site_settings.py  
+  - for file in school/templates/emails/*.dev; do cp $file ${file%.dev}; done
+  - tox
