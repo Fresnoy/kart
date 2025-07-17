@@ -85,7 +85,6 @@ def getUserByNames(firstname="", lastname="", listing=False, dist_min=False):
         # TODO: Optimize by checking a same artist does not get tested several times
         for user_kart in guessArtLN:
 
-
             # Clear accents (store a version with accents for further accents issue detection)
             kart_lastname_accent = user_kart.last_name
             kart_lastname = unidecode.unidecode(kart_lastname_accent).lower().strip()

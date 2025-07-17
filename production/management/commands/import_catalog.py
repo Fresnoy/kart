@@ -1,5 +1,8 @@
-import os, re, unicodedata
+import os
+import re
+import unicodedata
 import requests
+
 from django.core.management.base import BaseCommand
 from django.db.models import Count
 from django.contrib.contenttypes.models import ContentType
@@ -26,7 +29,6 @@ import markdownify
 import csv
 import unidecode
 import datetime
-import pytz
 from langdetect import detect
 
 from people.utils.artist_tools import getArtistByNames
@@ -188,10 +190,12 @@ def populateAPI(data):
     # nickname
     if artist_name and slugify(artist_name) != slugify(artist_db.user.first_name + " " + artist_db.user.last_name):
         artist_db.nickname = artist_name
-    
+
     # photo
     if data.get("artist_id_photo"):
-        artist_id_photo = data["artist_id_photo"].replace("identity/", f"{REMOTE_BASE_URL + MEDIA_PATH}{data['user_email']}/identity/")
+        artist_id_photo = data["artist_id_photo"].replace(
+            "identity/", f"{REMOTE_BASE_URL + MEDIA_PATH}{data['user_email']}/identity/"
+        )
         id_photo_name = artist_id_photo.split('/')[-1]
         id_photo_file = createFileFromUrl(artist_id_photo)
         artist_db.artist_photo.save(id_photo_name[-35:], id_photo_file, save=True)
@@ -215,10 +219,10 @@ def populateAPI(data):
         duration = artwork_duration.split(":")
         hours = int(duration[0])
         minutes = int(duration[1])
-         # 00:20:00
-        if len(duration)>2:
+        # 00:20:00
+        if len(duration) > 2:
             seconds = int(duration[2])
-        # 
+        #
         if hours > 2:
             seconds = minutes
             minutes = hours
@@ -238,7 +242,6 @@ def populateAPI(data):
 
     # keywords
     set_keywords(artwork, "keywords", keywords)
-    
 
     # genres
     genres_list = genres.split(",")
@@ -343,7 +346,7 @@ def replaceUrlMedia(str):
 def setStats(value_from_model, created):
     class_name = value_from_model.__class__.__name__.lower()
     attibute = class_name + "_created" if created else class_name + "_reused"
-    if not attibute in stats:
+    if attibute not in stats:
         stats[attibute] = []
     stats[attibute].append(value_from_model)
 
@@ -355,7 +358,7 @@ def get_or_create(model, attr):
     created = False
     try:
         instance = model.objects.get(**attr)
-    except Exception as e:
+    except Exception:
         instance = model(**attr)
         created = True
         if not DRY_RUN:
@@ -399,7 +402,7 @@ def input_choices(values):
         select_int = int(select)
         selected = values[select_int]
         return selected
-    except Exception as e:
+    except Exception:
         return False
 
 
@@ -418,7 +421,7 @@ def highlightChoices(dict):
             hl_text += highlightArtist(artist)
             if artist.user.staff_set.all().count() > 0:
                 hl_text += highlightStaff(artist.user.staff_set.first())
-    except Exception as e:
+    except Exception:
         # print("Error in highlightChoices: ", e)
         hl_text += "\n   > " + str(dict)
     return hl_text
@@ -451,7 +454,7 @@ def set_partners(artwork, partners_str, partners_media):
         partner = partner.strip()
         if partner == "":
             continue
-        if not ":" in partner:
+        if ":" not in partner:
             # set default partenaire type
             partner = "Partenaire : " + partner
 
@@ -515,7 +518,12 @@ def set_partners(artwork, partners_str, partners_media):
 def getOrCreateMultiInstancesByStr(model, attr, txt_str):
     instances = []
     txt_str = txt_str.strip()
-    char_split = [",", "/", ";", " & ",]
+    char_split = [
+        ",",
+        "/",
+        ";",
+        " & ",
+    ]
     if " et " in txt_str:
         print(f"'ET' est présent dans '{ txt_str }', s'agit il de PLUSIEURS { model.__name__ } ?")
         if input_choices([False, True]):
@@ -589,7 +597,7 @@ def set_keywords(instance, field, str):
 
     list = []
     str_list = str.split(',')
-    # 
+    #
     contentype_id = ContentType.objects.get_for_model(instance).id
     for s in str_list:
         # sanitize
@@ -609,13 +617,20 @@ def set_keywords(instance, field, str):
             if len(tag_str) == len(s):
                 s = tag_str
             else:
-                tag_stats_values = q.annotate(tag_count=Count('taggit_taggeditem_items')).order_by('-tag_count').values_list("name","tag_count",)
-                print (f"keywords '{s}' ambigus")
-                print (tag_stats_values)
-                s = input_choices([s,tag_str])
+                tag_stats_values = (
+                    q.annotate(tag_count=Count('taggit_taggeditem_items'))
+                    .order_by('-tag_count')
+                    .values_list(
+                        "name",
+                        "tag_count",
+                    )
+                )
+                print(f"keywords '{s}' ambigus")
+                print(tag_stats_values)
+                s = input_choices([s, tag_str])
 
         list.append(s)
-    
+
     print("Keywords :", str, list)
     instance.keywords.set(list)
 
@@ -664,14 +679,14 @@ def set_credits(aw, credits):
     # staf : task \n
     # staf : name or fistname, lastname
 
-    if not "\n" in credits:
+    if "\n" not in credits:
         return False
 
     credits_arr = credits.split("\n")
-            
+
     for credit in credits_arr:
 
-        if not ":" in credit:
+        if ":" not in credit:
             print("/!\\ credit n'a pas de ':'" + credit)
             continue
 
@@ -692,7 +707,7 @@ def set_credits(aw, credits):
         # OR Nina Guseva et Anna Collard (or Nina Guseva / Anna Collard)
         # on demande si "&"" : "Good Loc & Co"
         char_split = [",", "/", ";", " et "]
-        # 
+        #
         if " & " in user_str:
             print(f"'&' est présent dans { user_str }, s'agit il de plusieurs personnes ?")
             if input_choices([False, True]):
@@ -761,6 +776,7 @@ def set_credits(aw, credits):
 
     # END OF FOR CREDITS
 
+
 def is_staff_task_reverse(credit):
     """
     Check if the credit is in reverse order (task : staff) normaly (staff : task)
@@ -778,13 +794,15 @@ def is_staff_task_reverse(credit):
         staff_upper = sum(1 for c in credit_staff if c.isupper())
         task_upper = sum(1 for c in credit_task if c.isupper())
         # si l'un ou l'autre a des lettres en majuscules successif c'est surement un task
-        if (re.search(r'[A-Z]{2,}', credit_staff) or re.search(r'[A-Z]{2,}', credit_task)
-        # si c'est un chiffre ex +216
-        or re.search(r'[1-9]{2,}', credit_staff) 
-        # egalite : même nombre de majuscule
-        or task_upper == staff_upper
-        # rare : Estelle, Benazet : Chargée De Production
-        or (task_upper > staff_upper and "," in credit_staff)
+        if (
+            re.search(r'[A-Z]{2,}', credit_staff)
+            or re.search(r'[A-Z]{2,}', credit_task)
+            # si c'est un chiffre ex +216
+            or re.search(r'[1-9]{2,}', credit_staff)
+            # egalite : même nombre de majuscule
+            or task_upper == staff_upper
+            # rare : Estelle, Benazet : Chargée De Production
+            or (task_upper > staff_upper and "," in credit_staff)
         ):
             print("Le credit n'est pas clair : " + credit)
             print("Est ce que {} est une tache ?".format(credit_staff))
@@ -793,10 +811,10 @@ def is_staff_task_reverse(credit):
         if task_upper > staff_upper:
             isReverseStaffTask = True
         else:
-            isReverseStaffTask = False        
-
+            isReverseStaffTask = False
 
     return isReverseStaffTask
+
 
 # SET WEBSITE / SOCIAL NETWORK
 def set_website_or_social_network(artist, url):
@@ -813,29 +831,29 @@ def set_website_or_social_network(artist, url):
     if not url:
         print("No URLs provided to set website and social network.")
         return
-    
+
     rs_list = ["facebook", "instagram", "twitter", "linkedin", "vimeo", "youtube", "tiktok", "mastodon"]
 
     website_type = "Site Web"
     website_url = url.strip()
-    # set website 
-    # ex: Instagram : @camillesauerartk / Site web : aleksandrezharaya.net / 
+    # set website
+    # ex: Instagram : @camillesauerartk / Site web : aleksandrezharaya.net /
     if ": " in url or " :" in url:
         # split by :
         website_type, website_url = url.split(":", 1)
         website_type = website_type.strip().lower()
         website_url = website_url.strip()
 
-        if (website_type in rs_list):
+        if website_type in rs_list:
             # not an URL
-            if not "/" in website_url:
+            if "/" not in website_url:
                 website_url = "https://www.{}.com/{}".format(website_type, website_url.replace("@", ""))
 
-    if "@" in website_url and not "http" in website_url:
+    if "@" in website_url and "http" not in website_url:
         website_type = "instagram"
         website_url = "https://www.instagram.com/{}".format(website_url.replace("@", ""))
 
-    if not "http" in website_url:
+    if "http" not in website_url:
         website_url = "https://{}".format(website_url)
 
     if any(rs in url for rs in rs_list):
@@ -847,40 +865,40 @@ def set_website_or_social_network(artist, url):
 
     # find in DB
     artist_website_db = artist.websites.filter(url__icontains=website_url)
-    if artist_website_db.exists() :
-        print (f"Le siteweb existe {website_type}", artist_website_db)
+    if artist_website_db.exists():
+        print(f"Le siteweb existe {website_type}", artist_website_db)
         return
-    
+
     # test url is valid return code 2XX
     test_url_error = False
-    print (f"URL test {website_type} : {website_url} ({url})")
+    print(f"URL test {website_type} : {website_url} ({url})")
     try:
         response = requests.get(website_url, timeout=50)
         if response.status_code >= 400:
             print(f"Invalid URL: {website_url} (status code: {response.status_code})")
             test_url_error = True
-            
+
     except requests.RequestException as e:
         print(f"Error accessing URL: {website_url} - {e}")
         test_url_error = True
-    
+
     if test_url_error:
-        print ("Le site web n'a pas l'air de répondre, sauvegarde quand-même ?")
-        if( not input_choices([False, True])):
+        print("Le site web n'a pas l'air de répondre, sauvegarde quand-même ?")
+        if not input_choices([False, True]):
             return
-    
+
     # instagram -> Instagram
     website_type = website_type.title()
     # create new website
     print("Site web inexistant dans la base, création")
     website, created = Website.objects.get_or_create(
-        title_fr= f" {website_type} de {artist} ",
-        title_en= f" {artist}' {website_type}",
+        title_fr=f" {website_type} de {artist} ",
+        title_en=f" {artist}' {website_type}",
         language="FR",
         url=website_url,
     )
     artist.websites.add(website)
-    
+
     artist.save()
 
 
@@ -912,7 +930,7 @@ def get_or_create_user(user_str):
         if user_search and user_search["dist"] >= 0.9:
             artist = user_search["artist"]
             # ça peut etre un DUO ?
-            if not artist.user and artist.collectives.all().count()>1:
+            if not artist.user and artist.collectives.all().count() > 1:
                 print("c'est un duo d'artistes, on crée un userStaff pour le collectif")
                 user = False
                 created = False
@@ -956,7 +974,7 @@ def get_or_create_user(user_str):
             user, created = User.objects.get_or_create(
                 first_name=first_name.title(), last_name=last_name.title(), username=username
             )
-        except Exception as e:
+        except Exception:
             username = usernamize(first_name, last_name, True)
             user, created = User.objects.get_or_create(
                 first_name=first_name.title(), last_name=last_name.title(), username=username
@@ -1008,6 +1026,7 @@ def get_first_last_name_from_str(str):
 
     return ["", str]
 
+
 #
 def getPlace(str_place):
     from geopy.geocoders import Nominatim
@@ -1027,7 +1046,7 @@ def getPlace(str_place):
         for sep in char_split:
             str_place = str_place.replace(sep, ",")
 
-    if not "," in str_place:
+    if "," not in str_place:
         city = country = str(str_place)
     else:
         city, country = str_place.split(',', 1)
@@ -1107,7 +1126,7 @@ def getPlace(str_place):
             if not DRY_RUN:
                 place.save()
             return place
-    print("/!\/!\/!\/!\ Rien trouvé ! :", str_place, "\n")
+    print("/!\\/!\\/!\\/!\\ Rien trouvé ! :", str_place, "\n")
     return None
 
 
@@ -1121,8 +1140,9 @@ def createFileFromUrl(url):
 
     # url = url.replace("app/static/", "https://catalogue-panorama.lefresnoy.net/static/")
 
-     # get size of the file in MB
+    # get size of the file in MB
     import urllib.request
+
     try:
         response = urllib.request.urlopen(url)
         file_size = response.length or 0
@@ -1186,14 +1206,14 @@ def updateArtistBio(artist, bio_fr, bio_en):
     else:
         # keep infos
         # print(artist.__str__() + " : has an old bio")
-        if not "<!--" in artist.bio_fr and not bio_fr in artist.bio_fr:
+        if "<!--" not in artist.bio_fr and bio_fr not in artist.bio_fr:
             # print(artist.__str__() + " : update his old bio")
             artist.bio_fr = "<!--" + artist.bio_fr + "-->\n" + bio_fr
 
     if artist.bio_en == "":
         artist.bio_en = bio_en
     else:
-        if not "<!--" in artist.bio_en and not bio_fr in artist.bio_en:
+        if "<!--" not in artist.bio_en and bio_fr not in artist.bio_en:
             artist.bio_en = "<!--" + artist.bio_en + "-->\n" + bio_en
 
     return artist
@@ -1219,6 +1239,7 @@ def getArtist(idartist):
         return Artist.objects.get(id=idartist)
     except (Artist.MultipleObjectsReturned, Artist.DoesNotExist):
         searchresult = None
+    return searchresult
 
 
 def getOrCreateProduction(artist, title, type):

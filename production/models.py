@@ -39,8 +39,7 @@ class OrganizationTask(Task):
 
 class ProductionStaffTask(models.Model):
     staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
-    production = models.ForeignKey(
-        'Production', related_name="staff_tasks", on_delete=models.CASCADE)
+    production = models.ForeignKey('Production', related_name="staff_tasks", on_delete=models.CASCADE)
     task = models.ForeignKey(StaffTask, on_delete=models.PROTECT)
 
     def __str__(self):
@@ -51,10 +50,8 @@ class ProductionStaffTask(models.Model):
 
 
 class ProductionOrganizationTask(models.Model):
-    organization = models.ForeignKey(
-        Organization, null=True, on_delete=models.SET_NULL)
-    production = models.ForeignKey(
-        'Production', related_name="organization_tasks", on_delete=models.PROTECT)
+    organization = models.ForeignKey(Organization, null=True, on_delete=models.SET_NULL)
+    production = models.ForeignKey('Production', related_name="organization_tasks", on_delete=models.PROTECT)
     task = models.ForeignKey(OrganizationTask, on_delete=models.PROTECT)
 
     class Meta:
@@ -64,6 +61,7 @@ class ProductionOrganizationTask(models.Model):
 class Production(PolymorphicModel):
     class Meta:
         ordering = ['title']
+
     title = models.CharField(max_length=255)
     former_title = models.CharField(max_length=255, null=True, blank=True)
     subtitle = models.CharField(max_length=255, null=True, blank=True)
@@ -73,11 +71,10 @@ class Production(PolymorphicModel):
     picture = models.ImageField(upload_to=make_filepath, blank=True)
     websites = models.ManyToManyField(Website, blank=True)
 
-    collaborators = models.ManyToManyField(
-        Staff, through=ProductionStaffTask, blank=True, related_name="%(class)s")
-    partners = models.ManyToManyField(Organization,
-                                      through=ProductionOrganizationTask, blank=True,
-                                      related_name="%(class)s")
+    collaborators = models.ManyToManyField(Staff, through=ProductionStaffTask, blank=True, related_name="%(class)s")
+    partners = models.ManyToManyField(
+        Organization, through=ProductionOrganizationTask, blank=True, related_name="%(class)s"
+    )
 
     description_short_fr = models.TextField(blank=True, null=True)
     description_short_en = models.TextField(blank=True, null=True)
@@ -100,29 +97,25 @@ class Artwork(Production):
     copyright_fr = models.TextField(blank=True, null=True)
     copyright_en = models.TextField(blank=True, null=True)
 
-    process_galleries = SortedManyToManyField(
-        Gallery, blank=True, related_name='artworks_process')
-    mediation_galleries = SortedManyToManyField(
-        Gallery, blank=True, related_name='artworks_mediation')
-    in_situ_galleries = SortedManyToManyField(
-        Gallery, blank=True, related_name='artworks_insitu')
-    press_galleries = SortedManyToManyField(
-        Gallery, blank=True, related_name='artworks_press')
-    teaser_galleries = SortedManyToManyField(
-        Gallery, blank=True, related_name='artworks_teaser')
+    process_galleries = SortedManyToManyField(Gallery, blank=True, related_name='artworks_process')
+    mediation_galleries = SortedManyToManyField(Gallery, blank=True, related_name='artworks_mediation')
+    in_situ_galleries = SortedManyToManyField(Gallery, blank=True, related_name='artworks_insitu')
+    press_galleries = SortedManyToManyField(Gallery, blank=True, related_name='artworks_press')
+    teaser_galleries = SortedManyToManyField(Gallery, blank=True, related_name='artworks_teaser')
 
     authors = models.ManyToManyField(Artist, related_name="%(class)ss")
 
-    beacons = models.ManyToManyField(
-        BTBeacon, related_name="%(class)ss", blank=True)
+    beacons = models.ManyToManyField(BTBeacon, related_name="%(class)ss", blank=True)
 
-    keywords = TaggableManager(blank=True,)
+    keywords = TaggableManager(
+        blank=True,
+    )
 
     def __str__(self):
-        authors = (", ".join([author.__str__() for author in self.authors.all()])
-                   if self.authors.count() > 0 else "?")
-        return '{0} ({1}), {2} de {3}'.format(self.title, self.production_date.year,
-                                              self.polymorphic_ctype.name, authors)
+        authors = ", ".join([author.__str__() for author in self.authors.all()]) if self.authors.count() > 0 else "?"
+        return '{0} ({1}), {2} de {3}'.format(
+            self.title, self.production_date.year, self.polymorphic_ctype.name, authors
+        )
 
 
 class FilmGenre(models.Model):
@@ -191,15 +184,11 @@ class Film(Artwork):
         ('RAW', "RAW (Brut)"),
     )
 
-    duration = models.DurationField(
-        blank=True, null=True, help_text="Sous la forme HH:MM:SS")
-    # TODO: Manytomany for specs format/ratio/process 
-    shooting_format = models.CharField(
-        choices=SHOOTING_FORMAT_CHOICES, max_length=10, blank=True)
-    aspect_ratio = models.CharField(
-        choices=ASPECT_RATIO_CHOICES, max_length=10, blank=True)
-    process = models.CharField(
-        choices=PROCESS_CHOICES, max_length=10, blank=True)
+    duration = models.DurationField(blank=True, null=True, help_text="Sous la forme HH:MM:SS")
+    # TODO: Manytomany for specs format/ratio/process
+    shooting_format = models.CharField(choices=SHOOTING_FORMAT_CHOICES, max_length=10, blank=True)
+    aspect_ratio = models.CharField(choices=ASPECT_RATIO_CHOICES, max_length=10, blank=True)
+    process = models.CharField(choices=PROCESS_CHOICES, max_length=10, blank=True)
     genres = models.ManyToManyField(FilmGenre, blank=True)
     shooting_place = models.ManyToManyField(Place, blank=True)
 
@@ -251,16 +240,13 @@ class Event(Production):
     place = models.ForeignKey(Place, null=True, on_delete=models.SET_NULL)
 
     # artwork types
-    installations = models.ManyToManyField(
-        Installation, blank=True, related_name='events')
+    installations = models.ManyToManyField(Installation, blank=True, related_name='events')
     films = models.ManyToManyField(Film, blank=True, related_name='events')
-    performances = models.ManyToManyField(
-        Performance, blank=True, related_name='events')
+    performances = models.ManyToManyField(Performance, blank=True, related_name='events')
     # subevent can't be main event
-    subevents = models.ManyToManyField('Event',
-                                       limit_choices_to=main_event_false_limit,
-                                       blank=True,
-                                       related_name='parent_event')
+    subevents = models.ManyToManyField(
+        'Event', limit_choices_to=main_event_false_limit, blank=True, related_name='parent_event'
+    )
 
     def __str__(self):
         if self.parent_event.exists():
@@ -269,8 +255,7 @@ class Event(Production):
         if not self.main_event:
             # Important to convert to Paris Timezone because a datetime 01/01/2015 00:00
             # returns the year 2014 in UTCtime (one hour before 2015) ..
-            starting_date = self.starting_date.astimezone(
-                pytz.timezone('Europe/Paris'))
+            starting_date = self.starting_date.astimezone(pytz.timezone('Europe/Paris'))
             return f"{self.title} - {starting_date.year}"
         # Main events don't have a particular date
         else:
@@ -282,8 +267,8 @@ class Exhibition(Event):
 
 
 class Itinerary(models.Model):
-    '''An itinerary (ordered selection of artworks) throughout an exhibition.
-    '''
+    '''An itinerary (ordered selection of artworks) throughout an exhibition.'''
+
     class Meta:
         verbose_name_plural = 'itineraries'
 
@@ -293,11 +278,11 @@ class Itinerary(models.Model):
     label_en = models.CharField(max_length=255)
     description_fr = models.TextField()
     description_en = models.TextField()
-    event = models.ForeignKey(Event, limit_choices_to={'type': 'EXHIB'},
-                              related_name='itineraries', on_delete=models.PROTECT)
+    event = models.ForeignKey(
+        Event, limit_choices_to={'type': 'EXHIB'}, related_name='itineraries', on_delete=models.PROTECT
+    )
     artworks = models.ManyToManyField(Artwork, through='ItineraryArtwork')
-    gallery = models.ManyToManyField(
-        Gallery, blank=True, related_name='itineraries')
+    gallery = models.ManyToManyField(Gallery, blank=True, related_name='itineraries')
 
     def __str__(self):
         return '{0} ({1})'.format(self.label_fr, self.event.title)

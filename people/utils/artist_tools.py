@@ -87,10 +87,10 @@ def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TO
     users = getUserByNames(firstname, lastname, listing)
     # no artist user found
     if users and users['user'] and users['user'].artist_set.count() == 0:
-        users_listed = getUserByNames(firstname, lastname, True)        
+        users_listed = getUserByNames(firstname, lastname, True)
         # take one artist in the list of results
         users = next((u for u in users_listed if u['user'].artist_set.count() > 0), None)
-    # 
+    #
     if users and users['user'] and users['user'].artist_set.count() > 0:
         # only one
         users['artist'] = users['user'].artist_set.first()
@@ -102,7 +102,7 @@ def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TO
                 u['artist'] = u['user'].artist_set.first()
 
                 art_l.append(u)
-    
+
     # sometimes nobody know that an name is a pseudo
     if not pseudo and not art_l:
         pseudo = f'{firstname} {lastname}'
@@ -140,7 +140,6 @@ def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TO
                     Kart pseudo: {kart_nickname} : {pseudo}"""
                     )
                     art_l.append({"artist": artist_kart, 'dist': dist_full})
-        
 
     if art_l:
         # Take the highest distance score
@@ -156,11 +155,8 @@ def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TO
     else:
         # LAST TRY
 
-
-
         # research failed
         search_cache[fullkey] = False
-         
 
         return False
     #####
