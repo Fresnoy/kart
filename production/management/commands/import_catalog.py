@@ -272,7 +272,7 @@ def populateAPI(data):
 
     # artwork_languages_subtitles
     if artwork_type.lower() == 'film' and artwork_languages_subtitles:
-        set_languages(artwork, "languages_vo", artwork_languages_subtitles)
+        set_languages(artwork, "languages_subtitles", artwork_languages_subtitles)
 
     # process
     if artwork_type.lower() == 'film' and artwork_process:
