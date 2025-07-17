@@ -5,6 +5,8 @@ from django.db.models import Q
 from polymorphic.models import PolymorphicModel
 from sortedm2m.fields import SortedManyToManyField
 
+from languages.fields import LanguageField
+
 import pytz
 
 from taggit.managers import TaggableManager
@@ -138,42 +140,60 @@ class Film(Artwork):
         ('35MM', "35 MM"),
         ('70MM', "70 MM"),
         ('DV', "DV"),
-        ('DVCAM', "DV-CAM"),
-        ('HD', "HD"),
-        ('HDCAM', "HD-CAM"),
+        ('DVCAM', "DVCAM"),
+        ('HD', "HD (Standard)"),
+        ('HDCAM', "HDCAM"),
         ('HDCINE', "HD CINEMASCOPE"),
-        ('CREANUM', "CREATION NUMERIQUE"),
+        ('CREANUM', "Création Numérique (Générique)"),
         ('BETASP', "BETA SP"),
-        ('BETANUM', "BETA NUM."),
-        ('DIGICAM', "APPAREIL PHOTO"),
-        ('MOBILE', "MOBILE"),
+        ('BETANUM', "BETA Numérique"),
+        ('DIGICAM', "Appareil Photo Numérique"),
+        ('MOBILE', "Mobile"),
         ('HI8', "HI8"),
         ('AVCHD', "AVCHD"),
-        ('XDCAMEX', "XDcamEX"),
-        ('3DREL', "RELIEF 3D"),
+        ('XDCAMEX', "XDCAM EX"),
+        ('3DREL', "Relief 3D"),
         ('2K', "2K"),
-        ('4K', "4K")
+        ('4K', "4K"),
+        ('6K', "6K"),
+        ('8K', "8K"),
+        ('ARRICAM', "ARRI CAM (Numérique)"),
+        ('RED', "RED (Numérique)"),
+        ('SONYCINE', "SONY Cinéma (Numérique)"),
+        ('BLACKMAGIC', "Blackmagic (Numérique)"),
     )
 
     ASPECT_RATIO_CHOICES = (
         ('1.33', "1.33 (4/3)"),
-        ('1.37', "1.37"),
-        ('1.66', "1.66"),
+        ('1.37', "1.37 (Académie)"),
+        ('1.50', "1.50 (3:2 / VistaVision)"),
+        ('1.66', "1.66 (Widescreen Européen)"),
         ('1.77', "1.77 (16/9)"),
         ('1.85', "1.85 (Flat)"),
-        ('1.90', "1.90 (Full Container)"),
+        ('1.89', "1.89 (DCI Native Aspect Ratio)"),
+        ('1.90', "1.90 (IMAX Numérique / DCI Full Container)"),
+        ('2.00', "2.00 (Univisium)"),
+        ('2.20', "2.20 (70mm)"),
         ('2.39', "2.39 (Scope)"),
-
+        ('2.76', "2.76 (Ultra Panavision 70)"),
     )
 
     PROCESS_CHOICES = (
         ('COLOR', "Couleur"),
         ('BW', "Noir & Blanc"),
-        ('COLORBW', "NB & Couleur"),
-        ('SEPIA', "Sépia")
+        ('COLORBW', "Noir & Blanc & Couleur"),
+        ('SEPIA', "Sépia"),
+        ('COLORIZE', "Colorisation"),
+        ('MONOCHROME', "Monochrome (Teinte Spécifique)"),
+        ('VINTAGE', "Vintage / Vieilli"),
+        ('HDR', "HDR (High Dynamic Range)"),
+        ('LOG', "Log (Courbe Logarithmique)"),
+        ('RAW', "RAW (Brut)"),
     )
+
     duration = models.DurationField(
         blank=True, null=True, help_text="Sous la forme HH:MM:SS")
+    # TODO: Manytomany for specs format/ratio/process 
     shooting_format = models.CharField(
         choices=SHOOTING_FORMAT_CHOICES, max_length=10, blank=True)
     aspect_ratio = models.CharField(
@@ -182,6 +202,11 @@ class Film(Artwork):
         choices=PROCESS_CHOICES, max_length=10, blank=True)
     genres = models.ManyToManyField(FilmGenre, blank=True)
     shooting_place = models.ManyToManyField(Place, blank=True)
+
+    # stockage des langues : es, it,
+    # Todo: make a Langage model and manytomany
+    languages_vo = models.CharField(max_length=24, blank=True)
+    languages_subtitles = models.CharField(max_length=24, blank=True)
 
 
 class InstallationGenre(models.Model):

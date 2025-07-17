@@ -85,7 +85,6 @@ def getUserByNames(firstname="", lastname="", listing=False, dist_min=False):
         # TODO: Optimize by checking a same artist does not get tested several times
         for user_kart in guessArtLN:
 
-            # print(f"\tARTIST : {user_kart}")
 
             # Clear accents (store a version with accents for further accents issue detection)
             kart_lastname_accent = user_kart.last_name
@@ -168,6 +167,7 @@ def getUserByNames(firstname="", lastname="", listing=False, dist_min=False):
                 elif dist2(kart_firstname.replace(" ", ""), firstname.replace(" ", "")) > 0.9:
                     bef = f"\"{kart_firstname}\" <> \"{firstname}\""
                     logger.warning(f"whitespace problem ? {bef}")
+                    users_l.append({"user": user_kart, 'dist': dist_full})
             ###
 
             # Artists whose lastname is the candidate's with similar firstname
