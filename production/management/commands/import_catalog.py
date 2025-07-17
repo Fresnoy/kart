@@ -165,7 +165,7 @@ def populateAPI(data):
     images_screen = replaceUrlMedia(images_screen)
     images_screen = images_screen.split("|")
 
-    artwork_avatar = images_screen.pop() if images_screen else images_process.pop() if images_process else ""
+    artwork_avatar = images_screen.pop(0) if images_screen else images_process.pop(0) if images_process else ""
     artwork_medias = images_screen + images_process
 
     artwork_partners_media = replaceUrlMedia(data["artwork_logos"]).split("|") if data["artwork_logos"] else []
