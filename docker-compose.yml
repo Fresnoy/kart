@@ -4,8 +4,6 @@ services:
       context: .
       dockerfile: ./config/web/Dockerfile
     container_name: kart_web
-    # command: command: gunicorn kart.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 180
-    # command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./app:/app
       - ./media:/app/media
