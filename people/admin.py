@@ -11,15 +11,34 @@ from guardian.admin import GuardedModelAdmin
 
 
 class ArtistAdmin(admin.ModelAdmin):
-    """ Admin model for Artist.
-    """
+    """Admin model for Artist."""
+
     list_display = ('nick',)
-    search_fields = ['user__first_name', 'user__last_name', 'nickname', ]
-    filter_horizontal = ('websites', 'collectives')
+    search_fields = [
+        'user__first_name',
+        'user__last_name',
+        'nickname',
+    ]
+    # filter_horizontal = ('websites', 'collectives')
     readonly_fields = ('artist_photo_picture',)
     # list fields order the picture after artist_photo
-    fields = ('user', 'collectives', 'nickname', 'alphabetical_order', 'artist_photo', 'artist_photo_picture',
-              'bio_short_fr', 'bio_short_en', 'bio_fr', 'bio_en', 'twitter_account', 'facebook_profile', 'websites')
+    fields = (
+        'user',
+        'collectives',
+        'nickname',
+        'alphabetical_order',
+        'artist_photo',
+        'artist_photo_picture',
+        'bio_short_fr',
+        'bio_short_en',
+        'bio_fr',
+        'bio_en',
+        'twitter_account',
+        'facebook_profile',
+        'websites',
+    )
+    raw_id_fields = ('user', 'collectives', 'websites')
+    autocomplete_lookup_fields = {'fk': ['user'], 'm2m': ['collectives', 'websites']}
 
     def nick(self, obj):
         # user can be None
@@ -32,6 +51,7 @@ class ArtistAdmin(admin.ModelAdmin):
         if obj.nickname != "":
             return obj.nickname
         return "???"
+
     # describe 'nick'
     nick.short_description = 'Nick name (real name if any) or real name'
 
@@ -46,25 +66,43 @@ class ArtistAdmin(admin.ModelAdmin):
 
 
 class FresnoyProfileInline(admin.StackedInline):
-    """StackedInline admin for FresnoyProfile.
-    """
+    """StackedInline admin for FresnoyProfile."""
+
     model = FresnoyProfile
-    readonly_fields = ('is_artist', 'is_student', 'is_staff',)
+    readonly_fields = (
+        'is_artist',
+        'is_student',
+        'is_staff',
+    )
 
 
 class FresnoyProfileAdmin(UserAdmin):
-    """ Admin for Use and additionnal profile fields.
-    """
+    """Admin for Use and additionnal profile fields."""
+
     inlines = (FresnoyProfileInline,)
     list_display = ('username', 'first_name', 'last_name', 'email', 'is_staff')
     add_form = UserCreateForm
-    add_fieldsets = ((None, {'fields': ('username', 'password1', 'password2', 'first_name', 'last_name', 'email'), }), )
+    add_fieldsets = (
+        (
+            None,
+            {
+                'fields': ('username', 'password1', 'password2', 'first_name', 'last_name', 'email'),
+            },
+        ),
+    )
     ordering = ('first_name',)
 
 
 class StaffAdmin(GuardedModelAdmin):
     search_fields = ['user__username', 'user__last_name', 'user__first_name', 'user__artist__nickname']
-    list_display = ("name", "artist",)
+    list_display = (
+        "name",
+        "artist",
+    )
+    raw_id_fields = ('user',)
+    autocomplete_lookup_fields = {
+        'fk': ['user'],
+    }
 
     def artist(self, obj):
         return obj.user.profile.is_artist

@@ -9,11 +9,30 @@ from .models import Place, Award, MetaAward, MetaEvent, Diffusion
 
 class AwardAdmin(admin.ModelAdmin):
     list_display = ('get_year', 'get_award', 'get_artwork')
-    search_fields = ['meta_award__label', 'artwork__title',
-                     'artwork__authors__user__last_name']
+    search_fields = ['meta_award__label', 'artwork__title', 'artwork__authors__user__last_name']
     ordering = ['date']
     formfield_overrides = {
         models.TextField: {'widget': AdminPagedownWidget},
+    }
+    raw_id_fields = (
+        'meta_award',
+        'artwork',
+        'artist',
+        'event',
+        'giver',
+        'sponsor',
+    )
+    autocomplete_lookup_fields = {
+        'fk': [
+            'meta_award',
+        ],
+        'm2m': [
+            'artwork',
+            'artist',
+            'event',
+            'giver',
+            'sponsor',
+        ],
     }
 
     def get_year(self, obj):
@@ -51,13 +70,16 @@ class PlaceAdmin(admin.ModelAdmin):
 class MetaEventAdmin(admin.ModelAdmin):
     list_display = ('event', 'genres', 'keywords_list', 'get_periode')
     search_fields = ['event__title', 'event__starting_date']
-    ordering = ['event', ]
+    ordering = [
+        'event',
+    ]
 
     def keywords_list(self, obj):
         return u", ".join(o.name for o in obj.keywords.all())
 
     def get_periode(self, obj):
         return obj.event.starting_date.strftime("%B")
+
     get_periode.short_description = 'Periode'
 
 
@@ -70,7 +92,16 @@ class MetaAwardAdmin(admin.ModelAdmin):
 class DiffusionAdmin(admin.ModelAdmin):
     list_display = ('artwork', 'event', 'first', 'on_competition')
     search_fields = ['artwork__title', 'event__title']
-    ordering = ['artwork', ]
+    ordering = [
+        'artwork',
+    ]
+    raw_id_fields = (
+        'artwork',
+        'event',
+    )
+    autocomplete_lookup_fields = {
+        'fk': ['artwork', 'event'],
+    }
 
 
 admin.site.register(Place, PlaceAdmin)
