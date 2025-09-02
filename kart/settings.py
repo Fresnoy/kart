@@ -192,3 +192,39 @@ GRAPHENE = {
         'graphql_jwt.middleware.JSONWebTokenMiddleware',
     ],
 }
+
+# Grappelli
+GRAPPELLI_AUTOCOMPLETE_SEARCH_FIELDS = {
+    "auth": {
+        "user": ("username__icontains", "first_name__icontains", "last_name__icontains", "email__icontains"),
+    },
+    "people": {
+        "artist": ("nickname__icontains", "user__first_name__icontains", "user__last_name__icontains",),
+        "organization": ("name__icontains",)
+    },
+    "common": {
+        "website": ("title_fr__icontains", "title_en__icontains", "url__icontains")
+    },
+    "production": {
+        "production": ("title__icontains",),
+        "artwork": ("title__icontains",),
+        "film": ("title__icontains",),
+        "installation": ("title__icontains",),
+        "performance": ("title__icontains",),
+        "event": ("title__icontains",),
+        "task": ("label__icontains",),
+        "stafftask": ("label__icontains",),
+    },
+    "assets": {
+        "gallery": ("label__icontains", "description__icontains"),
+    },
+    "diffusion": {
+        "place": ("name__icontains", "description__icontains",
+                  "address__icontains", "city__icontains", "country__icontains"),
+        'award': ("meta_award__label__icontains",
+                  "artwork__title__icontains",
+                  "artist__nickname__icontains",
+                  "event__title__icontains"),
+        'metaaward': ("label__icontains", "description__icontains", "event__title__icontains"),
+    }
+}
