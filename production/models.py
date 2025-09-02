@@ -5,8 +5,6 @@ from django.db.models import Q
 from polymorphic.models import PolymorphicModel
 from sortedm2m.fields import SortedManyToManyField
 
-from languages.fields import LanguageField
-
 import pytz
 
 from taggit.managers import TaggableManager
