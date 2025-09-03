@@ -118,12 +118,14 @@ class Artist(models.Model):
             raise ValidationError("No user is defined, set the nickname if you want to create an artist collective")
 
     def __str__(self):
-        if self.user:
-            return '{}'.format(self.nickname) if self.nickname else "{} {}".format(self.user.first_name,
-                                                                                   self.user.last_name)
         if self.nickname != "":
-            return self.nickname
-
+            if self.user:
+                return '{} ({} {})'.format(self.nickname, self.user.first_name, self.user.last_name)
+            if self.collectives.count() > 0:
+                return '{} (collective)'.format(self.nickname)
+            return '{} (no user)'.format(self.nickname)
+        if self.user:
+            return '{} {}'.format(self.user.first_name, self.user.last_name)
         return "???"
 
 
