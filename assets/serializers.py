@@ -18,6 +18,7 @@ class MediumSerializer(serializers.HyperlinkedModelSerializer):
             'gallery',
             'updated_on',
         )
+
     # empty medium when private
     def to_representation(self, instance):
         representation = super().to_representation(instance)

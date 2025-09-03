@@ -1,4 +1,3 @@
-import copy
 from django.db import models
 
 from common.utils import make_filepath

@@ -8,6 +8,7 @@ class MediumResource(ModelResource):
     class Meta:
         queryset = Medium.objects.all()
         resource_name = 'asset/medium'
+
     # empty fields when media is private
     def dehydrate(self, bundle):
         if bundle.obj.private and not bundle.request.user.is_authenticated:

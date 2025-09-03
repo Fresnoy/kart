@@ -61,7 +61,7 @@ class Command(BaseCommand):
                 list_artist = getArtistByNames(firstname=artist2_firstname, lastname=artist2_lastname, listing=True)
                 artist2_choice = input_choices(list_artist)
 
-                if(artist2_choice):
+                if (artist2_choice):
                     artist2 = artist2_choice["artist"]
                     app = artist2.student_application.filter(campaign=campaign).first()
                     if not app:
@@ -105,25 +105,3 @@ class Command(BaseCommand):
 
             print("{} {} : {}".format(student, "(binôme)" if candidat.binomial_application else "", created))
         print("FIN")
-
-
-def input_choices(values):
-
-    if not values:
-        return False
-
-    print("Plusieurs valeurs sont possibles, selectionnez-en une :")
-    for id, value in enumerate(values):
-        print("{} : {}".format(id, value))
-
-    print("n (ou Entré) : pas dans la liste")
-    select = input("Votre choix : ")
-
-    try:
-        select_int = int(select)
-        selected = values[select_int]
-        return selected
-    except Exception:
-        return False
-
-
