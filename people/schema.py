@@ -331,6 +331,7 @@ class ArtistType(UserType):
 
     nickname = graphene.String(resolver=DynNameResolver())
     artist_photo = graphene.String(resolver=DynNameResolver())
+    artist_photo_copyright = graphene.String(resolver=DynNameResolver())
     collectives = graphene.List("people.schema.ArtistType", resolver=DynNameResolver())
     members = graphene.List("people.schema.ArtistType", resolver=DynNameResolver())
     bioShortFr = graphene.String(resolver=DynNameResolver())

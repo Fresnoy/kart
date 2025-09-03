@@ -18,6 +18,16 @@ class MediumSerializer(serializers.HyperlinkedModelSerializer):
             'gallery',
             'updated_on',
         )
+    # empty medium when private
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if instance.private and not self.context['request'].user.is_authenticated:
+            representation['label'] = "Private Media"
+            representation['description'] = "Private Media Description"
+            representation['picture'] = None
+            representation['medium_url'] = None
+            representation['file'] = None
+        return representation
 
 
 class GallerySerializer(serializers.HyperlinkedModelSerializer):

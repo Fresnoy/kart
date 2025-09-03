@@ -100,6 +100,7 @@ class Artist(models.Model):
                                           help_text="Never displayed, discern first/last user-name and nickname")
 
     artist_photo = models.ImageField(upload_to=make_filepath, blank=True, null=True)
+    artist_photo_copyright = models.CharField(max_length=255, blank=True)
 
     bio_short_fr = models.TextField(blank=True)
     bio_short_en = models.TextField(blank=True)

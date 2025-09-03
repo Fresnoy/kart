@@ -29,6 +29,7 @@ class ArtistAdmin(admin.ModelAdmin):
         'alphabetical_order',
         'artist_photo',
         'artist_photo_picture',
+        'artist_photo_copyright',
         'bio_short_fr',
         'bio_short_en',
         'bio_fr',

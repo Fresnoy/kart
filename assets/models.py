@@ -1,3 +1,4 @@
+import copy
 from django.db import models
 
 from common.utils import make_filepath
@@ -32,6 +33,10 @@ class Medium(models.Model):
     picture = models.ImageField(upload_to=make_filepath, null=True, blank=True)
     medium_url = models.URLField(null=True, blank=True)
     file = models.FileField(upload_to=make_filepath, null=True, blank=True)
+
+    copyright = models.CharField(max_length=255, blank=True)
+    private = models.BooleanField(default=False)
+    password = models.CharField(max_length=255, blank=True)
 
     # TODO :
     # Currently, one media can be linked to only one gallery, manyToMany could be relevant ?

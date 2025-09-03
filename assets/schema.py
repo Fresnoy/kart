@@ -16,6 +16,33 @@ class MediumType(DjangoObjectType):
 
     id = graphene.ID(required=True, source="pk")
 
+    # empty medium for all fields when private
+    def resolve_label(self, info):
+        if not info.context.user.is_authenticated and self.private:
+            return "Private Medium"
+        return self.label
+
+    def resolve_description(self, info):
+        if not info.context.user.is_authenticated and self.private:
+            return "Private Medium"
+        return self.description
+
+    def resolve_medium_url(self, info):
+        if not info.context.user.is_authenticated and self.private:
+            return "Private Medium"
+        return self.medium_url
+
+    def resolve_file(self, info):
+        if not info.context.user.is_authenticated and self.private:
+            return "Private Medium"
+        return self.file
+    
+    def resolve_picture(self, info):
+        if not info.context.user.is_authenticated and self.private:
+            return ""
+        return self.file
+    
+
 
 def search_strings_in_model_colums(model, columns, strings):
     # l'idée est de réunir toutes les valeurs des colonnes recherchés en une seule (annotate)
