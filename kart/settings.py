@@ -200,7 +200,8 @@ GRAPPELLI_AUTOCOMPLETE_SEARCH_FIELDS = {
     },
     "people": {
         "artist": ("nickname__icontains", "user__first_name__icontains", "user__last_name__icontains",),
-        "organization": ("name__icontains",)
+        "organization": ("name__icontains",),
+        "staff": ("user__first_name__icontains", "user__last_name__icontains",),
     },
     "common": {
         "website": ("title_fr__icontains", "title_en__icontains", "url__icontains")
