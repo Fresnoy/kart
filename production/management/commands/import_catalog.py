@@ -351,8 +351,6 @@ def setStats(value_from_model, created):
 
 def get_or_create(model, attr):
 
-    global DRY_RUN
-
     created = False
     try:
         instance = model.objects.get(**attr)
@@ -1342,7 +1340,6 @@ def map_csv_to_model(row):
 
 def init(path_to_csv, *args):
     # settup args
-    global DRY_RUN
     if 'DRY_RUN' in args:
         DRY_RUN = True
         print("DRY_RUN Script")

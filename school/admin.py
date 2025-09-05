@@ -67,8 +67,8 @@ class TeachingArtistAdmin(admin.ModelAdmin):
     # filter_vertical = ("artworks_supervision",)
     raw_id_fields = ('artist', 'pictures_gallery', 'artworks_supervision')
     autocomplete_lookup_fields = {
-        'fk': ['artist','pictures_gallery',],
-        'm2m': ['artworks_supervision',]
+        'fk': ['artist', 'pictures_gallery', ],
+        'm2m': ['artworks_supervision', ]
     }
 
 
