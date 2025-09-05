@@ -287,3 +287,4 @@ def run(file):
         lecteur_csv = csv.DictReader(csvfile)
         for row in lecteur_csv:
             populateAPI(row)
+    print("Fin")

@@ -86,12 +86,12 @@ def getArtistByNames(firstname="", lastname="", pseudo="", listing=False):  # TO
     # SEARCH WITH LASTNAME then FIRSTNAME
     users = getUserByNames(firstname, lastname, listing)
     # no artist user found
-    if users and users['user'] and users['user'].artist_set.count() == 0:
+    if users and not listing and users['user'] and users['user'].artist_set.count() == 0:
         users_listed = getUserByNames(firstname, lastname, True)
         # take one artist in the list of results
         users = next((u for u in users_listed if u['user'].artist_set.count() > 0), None)
     #
-    if users and users['user'] and users['user'].artist_set.count() > 0:
+    if users and not listing and users['user'] and users['user'].artist_set.count() > 0:
         # only one
         users['artist'] = users['user'].artist_set.first()
         art_l.append(users)

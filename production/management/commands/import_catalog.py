@@ -51,6 +51,7 @@ os.system('clear')
 stats = {}
 REMOTE_BASE_URL = "https://catalogue-panorama.lefresnoy.net"
 MEDIA_PATH = "/static/uploads/photos/"
+DRY_RUN = False
 
 
 class Command(BaseCommand):
@@ -61,7 +62,6 @@ class Command(BaseCommand):
         parser.add_argument("--path_to_csv", type=str, help="CSV Path")
 
     def handle(self, *args, **options):
-        global DRY_RUN
         # get path to csv file
         path_to_csv = options.get('path_to_csv', None)
         DRY_RUN = options.get('dry_run', False)
@@ -75,8 +75,6 @@ class Command(BaseCommand):
 
 
 def populateAPI(data):
-
-    global DRY_RUN
 
     # GET DB ARTIST
     # get name
@@ -352,8 +350,6 @@ def setStats(value_from_model, created):
 
 
 def get_or_create(model, attr):
-
-    global DRY_RUN
 
     created = False
     try:
@@ -1344,7 +1340,6 @@ def map_csv_to_model(row):
 
 def init(path_to_csv, *args):
     # settup args
-    global DRY_RUN
     if 'DRY_RUN' in args:
         DRY_RUN = True
         print("DRY_RUN Script")

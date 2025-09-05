@@ -73,6 +73,7 @@ class ProductionInterface(graphene.Interface):
     subtitle = graphene.String()
     updated_on = graphene.Date()
     picture = graphene.String()
+    picture_copyright = graphene.String()
     websites = graphene.List(WebsiteType)
     collaborators = graphene.List(ProductionStaffTaskType)
     description_short_fr = graphene.String()

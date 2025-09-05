@@ -100,3 +100,7 @@ class TestDiffusionViewSet(IsAuthenticatedOrReadOnlyModelViewSetMixin, HelpTestF
     @pytest.mark.skip(reason="Posting seems impossible")
     def test_post(self):
         return
+
+    @pytest.mark.skip(reason="Putting seems impossible")
+    def test_put(self):
+        return

@@ -39,7 +39,8 @@ class Student(models.Model):
     promotion = models.ForeignKey(Promotion, null=True, on_delete=models.SET_NULL)
     graduate = models.BooleanField(default=False)
     diploma_mention = models.CharField(max_length=150, null=True, blank=True, help_text="Diploma mention")
-    user = models.OneToOneField(User, on_delete=models.PROTECT)
+    user = models.OneToOneField(User, null=True, blank=True, on_delete=models.PROTECT,
+                                help_text="User account (optional)")
     artist = models.OneToOneField(Artist, related_name="student", on_delete=models.PROTECT)
 
     def __str__(self):

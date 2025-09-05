@@ -200,18 +200,24 @@ GRAPPELLI_AUTOCOMPLETE_SEARCH_FIELDS = {
     },
     "people": {
         "artist": ("nickname__icontains", "user__first_name__icontains", "user__last_name__icontains",),
-        "organization": ("name__icontains",)
+        "organization": ("name__icontains",),
+        "staff": ("user__first_name__icontains", "user__last_name__icontains",),
     },
     "common": {
         "website": ("title_fr__icontains", "title_en__icontains", "url__icontains")
     },
     "production": {
-        "production": ("title__icontains",),
-        "artwork": ("title__icontains",),
-        "film": ("title__icontains",),
-        "installation": ("title__icontains",),
-        "performance": ("title__icontains",),
-        "event": ("title__icontains",),
+        "production": ("title__icontains", "production_date__year__icontains", "authors__nickname__icontains",
+                       "authors__user__first_name__icontains", "authors__user__last_name__icontains"),
+        "artwork": ("title__icontains", "production_date__year__icontains", "authors__nickname__icontains",
+                    "authors__user__first_name__icontains", "authors__user__last_name__icontains"),
+        "film": ("title__icontains", "production_date__year__icontains", "authors__nickname__icontains",
+                 "authors__user__first_name__icontains", "authors__user__last_name__icontains"),
+        "installation": ("title__icontains", "production_date__year__icontains", "authors__nickname__icontains",
+                         "authors__user__first_name__icontains", "authors__user__last_name__icontains"),
+        "performance": ("title__icontains", "production_date__year__icontains", "authors__nickname__icontains",
+                        "authors__user__first_name__icontains", "authors__user__last_name__icontains"),
+        "event": ("title__icontains", "starting_date__year__icontains",),
         "task": ("label__icontains",),
         "stafftask": ("label__icontains",),
     },

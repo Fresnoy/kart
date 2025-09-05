@@ -100,6 +100,7 @@ class Artist(models.Model):
                                           help_text="Never displayed, discern first/last user-name and nickname")
 
     artist_photo = models.ImageField(upload_to=make_filepath, blank=True, null=True)
+    artist_photo_copyright = models.CharField(max_length=255, blank=True)
 
     bio_short_fr = models.TextField(blank=True)
     bio_short_en = models.TextField(blank=True)
@@ -118,12 +119,14 @@ class Artist(models.Model):
             raise ValidationError("No user is defined, set the nickname if you want to create an artist collective")
 
     def __str__(self):
-        if self.user:
-            return '{}'.format(self.nickname) if self.nickname else "{} {}".format(self.user.first_name,
-                                                                                   self.user.last_name)
         if self.nickname != "":
-            return self.nickname
-
+            if self.user:
+                return '{} ({} {})'.format(self.nickname, self.user.first_name, self.user.last_name)
+            if self.collectives.count() > 0:
+                return '{} (collective)'.format(self.nickname)
+            return '{} (no user)'.format(self.nickname)
+        if self.user:
+            return '{} {}'.format(self.user.first_name, self.user.last_name)
         return "???"
 
 

@@ -33,6 +33,10 @@ class Medium(models.Model):
     medium_url = models.URLField(null=True, blank=True)
     file = models.FileField(upload_to=make_filepath, null=True, blank=True)
 
+    copyright = models.CharField(max_length=255, blank=True)
+    private = models.BooleanField(default=False)
+    password = models.CharField(max_length=255, blank=True)
+
     # TODO :
     # Currently, one media can be linked to only one gallery, manyToMany could be relevant ?
     gallery = models.ForeignKey(Gallery, related_name='media', on_delete=models.CASCADE)
