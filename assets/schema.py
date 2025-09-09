@@ -40,7 +40,7 @@ class MediumType(DjangoObjectType):
     def resolve_picture(self, info):
         if not info.context.user.is_authenticated and self.private:
             return ""
-        return self.file
+        return self.picture
 
 
 def search_strings_in_model_colums(model, columns, strings):
