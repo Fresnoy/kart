@@ -119,7 +119,9 @@ class ArtworkAdmin(admin.ModelAdmin):
     get_authors.short_description = "Artist(s)"
 
     def get_diffusions(self, obj):
-        return ", ".join([event.__str__() for event in obj.events.all()])
+        if hasattr(obj, 'events'):
+            return ", ".join([event.__str__() for event in obj.events.all()])
+        return ""
 
     get_diffusions.short_description = "Diffusion(s)"
     get_diffusions.admin_order_field = 'events'

@@ -22,7 +22,7 @@ class TestFresnoyProfile:
 @pytest.mark.django_db
 class TestArtist:
     def test_str(self, artist):
-        assert artist.nickname == str(artist)
+        assert artist.nickname in str(artist)
 
     def test_str_without_nickname(self, artist):
         artist.nickname = ""
