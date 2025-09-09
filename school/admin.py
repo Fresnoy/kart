@@ -25,6 +25,11 @@ class StudentAdmin(admin.ModelAdmin):
         models.TextField: {"widget": AdminPagedownWidget},
     }
 
+    raw_id_fields = ('artist', 'user', 'promotion')
+    autocomplete_lookup_fields = {
+        'fk': ['artist', 'user', 'promotion']
+    }
+
 
 class StudentApplicationAdmin(admin.ModelAdmin):
     search_fields = [
@@ -59,7 +64,12 @@ class StudentApplicationSetupAdmin(admin.ModelAdmin):
 
 @admin.register(TeachingArtist)
 class TeachingArtistAdmin(admin.ModelAdmin):
-    filter_vertical = ("artworks_supervision",)
+    # filter_vertical = ("artworks_supervision",)
+    raw_id_fields = ('artist', 'pictures_gallery', 'artworks_supervision')
+    autocomplete_lookup_fields = {
+        'fk': ['artist', 'pictures_gallery', ],
+        'm2m': ['artworks_supervision', ]
+    }
 
 
 @admin.register(AdminStudentApplication)

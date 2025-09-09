@@ -67,6 +67,8 @@ class Production(PolymorphicModel):
     updated_on = models.DateTimeField(auto_now=True)
 
     picture = models.ImageField(upload_to=make_filepath, blank=True)
+    picture_copyright = models.CharField(max_length=255, blank=True)
+
     websites = models.ManyToManyField(Website, blank=True)
 
     collaborators = models.ManyToManyField(Staff, through=ProductionStaffTask, blank=True, related_name="%(class)s")
