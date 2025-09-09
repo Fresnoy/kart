@@ -52,10 +52,30 @@ class StudentType(DjangoObjectType):
 
     id = graphene.ID(required=True, source="pk")
     artworks = graphene.List(ArtworkType)
+    photo = graphene.String()
+    displayPhoto = graphene.String()
 
     # Retrieve the student's artworks
     def resolve_artworks(parent, info):
         return Artwork.objects.filter(authors=parent.artist)
+
+    def resolve_displayName(parent, info):
+        if parent.artist.nickname:
+            return parent.artist.nickname
+        if parent.artist.user is not None:
+            return f"{parent.artist.user.first_name} {parent.artist.user.last_name}"
+        else:
+            return ""
+
+    def resolve_photo(parent, info):
+        if parent.artist.artist_photo:
+            return parent.artist.artist_photo
+        if hasattr(parent.artist.user, 'profile'):
+            return parent.artist.user.profile.photo if parent.artist.user.profile.photo else ""
+        return ""
+
+    def resolve_displayPhoto(parent, info):
+        return StudentType.resolve_photo(parent, info)
 
 
 class StudentEmbeddedInterface(graphene.Interface):
