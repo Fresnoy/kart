@@ -36,8 +36,6 @@ from people.utils.user_tools import getUserByNames
 from utils.kart_tools import usernamize
 
 
-DRY_RUN = False
-
 """
     USAGE : ./manage.py import_catalog --path_to_csv <path_to_csv_file>
     OU
@@ -51,7 +49,6 @@ os.system('clear')
 stats = {}
 REMOTE_BASE_URL = "https://catalogue-panorama.lefresnoy.net"
 MEDIA_PATH = "/static/uploads/photos/"
-DRY_RUN = False
 
 
 class Command(BaseCommand):
@@ -64,12 +61,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # get path to csv file
         path_to_csv = options.get('path_to_csv', None)
-        DRY_RUN = options.get('dry_run', False)
         if not path_to_csv:
             print("Please provide a path to the csv file with --path_to_csv <path_to_csv_file>")
             return
-        if DRY_RUN:
-            print("DRY RUN MODE ON, NO DATA WILL BE SAVED")
         print("Importing catalogue from file: " + path_to_csv)
         init(path_to_csv=path_to_csv)
 
@@ -203,12 +197,10 @@ def populateAPI(data):
     for website in websites.split("\n"):
         if website.strip() != "":
             website = website.strip()
-            if not DRY_RUN:
-                set_website_or_social_network(artist_db, website)
+            set_website_or_social_network(artist_db, website)
 
     # ARTIST SAVE
-    if not DRY_RUN:
-        artist_db.save()
+    artist_db.save()
 
     # duration
     if artwork_duration:
@@ -357,8 +349,7 @@ def get_or_create(model, attr):
     except Exception:
         instance = model(**attr)
         created = True
-        if not DRY_RUN:
-            instance.save()
+        instance.save()
     return [instance, created]
 
 
@@ -1119,8 +1110,7 @@ def getPlace(str_place):
                 city=location_city[:50],
                 country=country_code,
             )
-            if not DRY_RUN:
-                place.save()
+            place.save()
             return place
     print("/!\\/!\\/!\\/!\\ Rien trouvé ! :", str_place, "\n")
     return None
@@ -1339,13 +1329,6 @@ def map_csv_to_model(row):
 
 
 def init(path_to_csv, *args):
-    # settup args
-    if 'DRY_RUN' in args:
-        DRY_RUN = True
-        print("DRY_RUN Script")
-        c = input("LE DRYRUN NE FONCTIONNE PAS ! Voulez-vous continuer ? Y/n")
-        if c == "n":
-            return
     # get the file
     fichier_csv = path_to_csv
     if not os.path.exists(fichier_csv):
