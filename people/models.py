@@ -120,11 +120,7 @@ class Artist(models.Model):
 
     def __str__(self):
         if self.nickname != "":
-            if self.user:
-                return '{} ({} {})'.format(self.nickname, self.user.first_name, self.user.last_name)
-            if self.collectives.count() > 0:
-                return '{} (collective)'.format(self.nickname)
-            return '{} (no user)'.format(self.nickname)
+            return '{}'.format(self.nickname)
         if self.user:
             return '{} {}'.format(self.user.first_name, self.user.last_name)
         return "???"
