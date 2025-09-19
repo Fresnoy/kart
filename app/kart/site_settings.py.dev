@@ -3,6 +3,8 @@ import dj_database_url
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+SECRET_KEY = os.getenv("SECRET_KEY")
+
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 DATABASES = {
@@ -35,10 +37,11 @@ MEDIA_URL = '/media/'
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'kart.elasticsearch-config.Elasticsearch71SearchEngine',
-        'URL': os.getenv('ELASTICSEARCH_URL', 'http://127.0.0.1:9200/'),
-        'INDEX_NAME': os.getenv('ELASTICSEARCH_INDEX', 'kart'),
+        'URL': os.getenv('ELASTICSEARCH_URL'),
+        'INDEX_NAME': os.getenv('ELASTICSEARCH_INDEX'),
     },
 }
+
 
 FROM_EMAIL = ''
 
