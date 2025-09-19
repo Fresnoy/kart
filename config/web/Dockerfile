@@ -1,10 +1,11 @@
 FROM python:3.11-slim
 
-# Bonnes pratiques : éviter les .pyc et forcer l'affichage
+# Avoid .pyc
 ENV PYTHONDONTWRITEBYTECODE=1
+# No buffer for outputs
 ENV PYTHONUNBUFFERED=1
 
-# Installation des dépendances système utiles
+# Dependencies
 RUN apt-get update && apt-get install -y \
     git \
     libpq-dev gcc python3-dev musl-dev \
@@ -12,29 +13,25 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean
 
 
-# Créer et se placer dans le dossier de l'app
+# cd in the app dir
 WORKDIR /app
 
-# Copier le fichier requirements avant tout pour profiter du cache Docker
+# Copying required files 
 COPY requirements.txt .
+COPY requirements-dev.txt .
 COPY app /app/
 
 
-# Installer les paquets Python
+# Python install
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 RUN pip install python-dotenv
+RUN pip install -r requirements-dev.txt
 
 
-# Copier le script d'entrée
-# COPY config/web/entrypoint.sh /app/entrypoint.sh
-# RUN chmod +x /app/entrypoint.sh
-
-# ENTRYPOINT ["/app/entrypoint.sh"]
-
-# DEV : Django server
+# DEV
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
-# PROD : à activer au besoin
+# PROD 
 # CMD ["gunicorn", "kart.wsgi:application", "--bind", "0.0.0.0:8000"]
 
