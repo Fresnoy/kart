@@ -8,6 +8,7 @@ ENV PYTHONUNBUFFERED=1
 # Dependencies
 RUN apt-get update && apt-get install -y \
     git \
+    curl \
     libpq-dev gcc python3-dev musl-dev \
     netcat-openbsd \
     && apt-get clean
