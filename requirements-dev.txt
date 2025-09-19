@@ -11,3 +11,6 @@ urllib3>=1.24.2
 matplotlib>=3.3.2
 pandas>=1.1.2
 factory_boy>=2.11.0
+drf-spectacular
+drf-spectacular-sidecar
+
