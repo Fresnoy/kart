@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from school.utils import candidature_close, send_candidature_not_finalized_to_candidats
 from school.models import StudentApplication, StudentApplicationSetup
 
-from datetime import date
+from datetime import datetime, date
 
 # Can us with crontab
 # example : run every day at 15h00
@@ -30,6 +30,9 @@ class Command(BaseCommand):
         # no validation for cron
         novalidation = True if automatic_reminder else options["novalidation"]
 
+        if automatic_reminder:
+            print("{}".format(datetime.now()))
+
         # is the campaign open
         candidatures_open = not candidature_close()
         if not candidatures_open:
@@ -42,11 +45,13 @@ class Command(BaseCommand):
             print("Campaign not found")
             return False
 
-        # is the day of automatic send (compare dates with != no 'is not')
-        if automatic_reminder and campaign.application_reminder_email_date != date.today():
+        # is one of the automatic send day (compare dates with != no 'is not')
+        if automatic_reminder and campaign.application_reminder_email_date != date.today() \
+           and campaign.application_reminder_email_date_2 != date.today():
             print(
                 "{} : Ce n'est pas le jour ({}), aucun email de relance de candidature n'a été envoyé".format(
-                    date.today(), campaign.application_reminder_email_date
+                    date.today(), str(campaign.application_reminder_email_date) + " ou " +
+                    str(campaign.application_reminder_email_date_2)
                 )
             )
             return False
@@ -74,6 +79,6 @@ class Command(BaseCommand):
         #
         mail_sent = send_candidature_not_finalized_to_candidats(self, campaign, list_emails)
         if mail_sent:
-            print("Emails envoyés")
+            print("{} Emails envoyés : {}".format(len(list_emails), list_emails))
         else:
             print("Erreur email ")

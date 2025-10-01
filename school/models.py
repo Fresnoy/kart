@@ -121,11 +121,11 @@ class VisitingStudent(models.Model):
 
     number = models.CharField(max_length=50, null=True, blank=True)
     promotion = models.ForeignKey(Promotion, null=True, on_delete=models.SET_NULL)
-    user = models.OneToOneField(User, on_delete=models.PROTECT)
+    user = models.OneToOneField(User, null=True, blank=True, on_delete=models.PROTECT)
     artist = models.OneToOneField(Artist, related_name="visiting_student", on_delete=models.PROTECT)
 
     def __str__(self):
-        return "{0} ({1})".format(self.user, self.number)
+        return "{0} ({1})".format(self.artist, self.number)
 
 
 class StudentApplicationSetup(models.Model):
@@ -149,6 +149,7 @@ class StudentApplicationSetup(models.Model):
     selected_publish_date = models.DateTimeField(null=True, blank=False, help_text="Final selection web publish")
     # Reminder
     application_reminder_email_date = models.DateField(null=True, blank=True, help_text="Email reminder")
+    application_reminder_email_date_2 = models.DateField(null=True, blank=True, help_text="Another date for reminder")
     # front auth
     candidatures_url = models.URLField(null=False, blank=False, help_text="Front : Url list of candidatures")
     reset_password_url = models.URLField(null=False, blank=False, help_text="Front : Url reset password")
@@ -178,7 +179,6 @@ class StudentApplicationSetup(models.Model):
         if not self.date_of_birth_max:
             self.date_of_birth_max = self._make_default_birthdate_max()
         # set all current setups to False
-        # TODO : only one current setup can be true
         if self.is_current_setup:
             StudentApplicationSetup.objects.filter(is_current_setup=True).update(is_current_setup=False)
 

@@ -370,7 +370,7 @@ def send_candidature_not_finalized_to_candidats(request, application_setup, list
     return mail_sent
 
 
-def candidature_close(campaign=None):
+def candidature_close(campaign=None, one_hour_grace=True):
     """
     Test if a candidature is closed
     """
@@ -382,7 +382,12 @@ def candidature_close(campaign=None):
 
     # is candidature on time
     now = timezone.localtime(timezone.now())
-    if now < campaign.candidature_date_start or now > campaign.candidature_date_end:
+    end = campaign.candidature_date_end
+    # candidature_date_end is 1 hours after the date
+    if one_hour_grace:
+        end = end + timezone.timedelta(hours=1)
+    # if now is before start or after end
+    if now < campaign.candidature_date_start or now > end:
         return True
 
     return False
