@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 import datetime
+import requests
 from itertools import chain
 
 from django.core.management.base import BaseCommand
@@ -11,11 +12,14 @@ from school.models import (
     AdminStudentApplication,
     Student,
     ScienceStudent,
+    StudentApplicationSetup,
     VisitingStudent,
     TeachingArtist,
 )
 from people.models import Staff
 from production.models import Artwork
+
+current_app_settings = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
 
 
 class Command(BaseCommand):
@@ -67,7 +71,6 @@ class Command(BaseCommand):
                 artwork_artist_keep_users,
             )
         )
-
         # take olds application : last year exclude selected
         sa_olds = StudentApplication.objects.filter(
             # __lte : less than equal year
@@ -117,6 +120,13 @@ class Command(BaseCommand):
         print("/!\\ Supression complète de {} candidatures expirées".format(sa_expired.count()))
         print("/!\\ Supression des informations critiques de {} candidatures".format(sa_all.count()))
         print("/!\\ Nettoyage, si besoin, des informations de {} anciennes candidatures".format(sa_olds.count()))
+        print(
+            "/!\\ Suppression de {} vidéos VIMEO liées aux candidatures : {}".format(
+                sa_olds.filter(presentation_video__icontains="player.vimeo.com").count(),
+                [sa for sa in sa_olds.filter(presentation_video__icontains="player.vimeo.com")
+                 .values_list("presentation_video", flat=True)]
+            )
+        )
 
         # pause to read uplines
         input("[Press any key to continue]")
@@ -226,6 +236,9 @@ class Command(BaseCommand):
             "homeland_town",
             "homeland_phone",
         ]
+        if not sa.artist or not sa.artist.user or not sa.artist.user.profile:
+            return a
+
         for field in user_fields_infos:
             value = getattr(sa.artist.user.profile, field)
             if value:
@@ -266,6 +279,21 @@ class Command(BaseCommand):
             value.delete()
 
         elif value.__class__.__name__ in ("str",):
+            # special delete vimeo url
+            if field == "presentation_video" and "player.vimeo.com" in value:
+                print("delete vimeo video")
+                # make an REST delete to vimeo api id video
+                video_id = value.split("/")[-1]
+                # keep only digits
+                video_id = ''.join(filter(str.isdigit, video_id))
+                delete_req = requests.delete(
+                    f"{current_app_settings.video_service_url}/videos/{video_id}",
+                    headers={"Authorization": f"Bearer {current_app_settings.video_service_token}"},
+                )
+                if delete_req.status_code == 204:
+                    print("Vimeo video deleted")
+                else:
+                    print("Error during vimeo video deletion : ", delete_req.status_code, delete_req.text, value)
             # print("delete str")
             setattr(model, field, "")
         elif value.__class__.__name__ in ("date"):
@@ -274,9 +302,9 @@ class Command(BaseCommand):
         elif value.__class__.__name__ in ("StudentApplication"):
             application = value
             artist = application.artist
-            user = artist.user
+            user = artist.user if artist and artist.user else None
             # delete user if there is no other application
-            if artist.student_application.all().count == 1:
+            if artist and user and artist.student_application.all().count == 1:
                 user.delete()
                 # artist is deleted : CASCADE deletion
                 # artist.delete()
