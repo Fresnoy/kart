@@ -437,10 +437,10 @@ class Query(graphene.ObjectType):
         if name != "" and name is not None:
             # Item.objects.filter(Q(creator=owner) | Q(moderated=False))
             artists = Artist.objects.annotate(name=Concat(F('user__first_name'), Value(' '), F('user__last_name')))\
-                                    .filter(Q(nickname__icontains=name) |
-                                            Q(user__first_name__icontains=name) |
-                                            Q(user__last_name__icontains=name) |
-                                            Q(name__icontains=name))
+                                    .filter(Q(nickname__unaccent__icontains=name) |
+                                            Q(user__first_name__unaccent__icontains=name) |
+                                            Q(user__last_name__unaccent__icontains=name) |
+                                            Q(name__unaccent__icontains=name))
         if isStudent:
             artists = artists.filter(student__isnull=False)
         if isTeacher:
@@ -471,10 +471,10 @@ class Query(graphene.ObjectType):
         if name != "":
             # Item.objects.filter(Q(creator=owner) | Q(moderated=False))
             artists = Artist.objects.annotate(name=Concat(F('user__first_name'), Value(' '), F('user__last_name')))\
-                                    .filter(Q(nickname__icontains=name) |
-                                            Q(user__first_name__icontains=name) |
-                                            Q(user__last_name__icontains=name) |
-                                            Q(name__icontains=name))
+                                    .filter(Q(nickname__unaccent__icontains=name) |
+                                            Q(user__first_name__unaccent__icontains=name) |
+                                            Q(user__last_name__unaccent__icontains=name) |
+                                            Q(name__unaccent__icontains=name))
         if isStudent:
             artists = artists.filter(student__isnull=False)
         if isTeacher:

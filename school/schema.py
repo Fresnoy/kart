@@ -302,7 +302,7 @@ class Query(graphene.ObjectType):
     visitingStudents = graphene.List(VisitingStudentType)
 
     studentApplication = graphene.Field(StudentApplicationType, id=graphene.Int())
-    studentApplications = graphene.List(StudentApplicationType)
+    studentApplications = graphene.List(StudentApplicationType,)
 
     # Setup can be filtered by id or by current_setup
     studentApplicationSetup = graphene.Field(
