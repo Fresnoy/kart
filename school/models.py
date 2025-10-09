@@ -123,6 +123,7 @@ class VisitingStudent(models.Model):
     promotion = models.ForeignKey(Promotion, null=True, on_delete=models.SET_NULL)
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.PROTECT)
     artist = models.OneToOneField(Artist, related_name="visiting_student", on_delete=models.PROTECT)
+    reason = models.CharField(max_length=255, null=True, blank=True, help_text="Reason for visiting")
 
     def __str__(self):
         return "{0} ({1})".format(self.artist, self.number)

@@ -101,9 +101,19 @@ class AdminStudentApplicationAdmin(admin.ModelAdmin):
 class PhdStudentAdmin(admin.ModelAdmin):
     list_display = (
         "__str__",
+        "direction",
+        "university",
         "defended",
     )
     ordering = ("student",)
+    raw_id_fields = ('directors',)
+    autocomplete_lookup_fields = {
+        'm2m': ['directors', ]
+    }
+
+    admin.display(boolean=True)
+    def direction(self, obj):
+        return ", ".join([str(director) for director in obj.directors.all()])
 
     @admin.display(boolean=True)
     def defended(self, obj):
