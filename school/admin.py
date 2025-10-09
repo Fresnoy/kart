@@ -26,9 +26,7 @@ class StudentAdmin(admin.ModelAdmin):
     }
 
     raw_id_fields = ('artist', 'user', 'promotion')
-    autocomplete_lookup_fields = {
-        'fk': ['artist', 'user', 'promotion']
-    }
+    autocomplete_lookup_fields = {'fk': ['artist', 'user', 'promotion']}
 
 
 class StudentApplicationAdmin(admin.ModelAdmin):
@@ -67,8 +65,13 @@ class TeachingArtistAdmin(admin.ModelAdmin):
     # filter_vertical = ("artworks_supervision",)
     raw_id_fields = ('artist', 'pictures_gallery', 'artworks_supervision')
     autocomplete_lookup_fields = {
-        'fk': ['artist', 'pictures_gallery', ],
-        'm2m': ['artworks_supervision', ]
+        'fk': [
+            'artist',
+            'pictures_gallery',
+        ],
+        'm2m': [
+            'artworks_supervision',
+        ],
     }
 
 
@@ -108,10 +111,13 @@ class PhdStudentAdmin(admin.ModelAdmin):
     ordering = ("student",)
     raw_id_fields = ('directors',)
     autocomplete_lookup_fields = {
-        'm2m': ['directors', ]
+        'm2m': [
+            'directors',
+        ]
     }
 
     admin.display(boolean=True)
+
     def direction(self, obj):
         return ", ".join([str(director) for director in obj.directors.all()])
 

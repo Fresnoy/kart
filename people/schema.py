@@ -37,6 +37,8 @@ def order(artists, orderby):
                 art = x.alphabetical_order
             elif x.nickname != "":
                 art = x.nickname
+            elif x.user.profile.preferred_last_name != "":
+                art = x.user.profile.preferred_last_name
             else:
                 art = x.user.last_name
         else:
@@ -222,6 +224,8 @@ class ArtistEmbeddedInterface(graphene.Interface):
     def resolve_displayName(parent, info):
         if parent.artist.nickname != "":
             return parent.artist.nickname
+        if parent.artist.user.profile.preferred_first_name or parent.artist.user.profile.preferred_last_name:
+            return f"{parent.artist.user.profile.preferred_first_name} {parent.artist.user.profile.preferred_last_name}"
         else:
             return f"{parent.artist.user.first_name} {parent.artist.user.last_name}"
 
@@ -351,6 +355,8 @@ class ArtistType(UserType):
         '''Return nickname if exists, first + last name otherwise'''
         if parent.nickname != "":
             return parent.nickname
+        if parent.user.profile.preferred_first_name or parent.user.profile.preferred_last_name:
+            return f"{parent.user.profile.preferred_first_name} {parent.user.profile.preferred_last_name}"
         else:
             return f"{parent.user.first_name} {parent.user.last_name}"
 
