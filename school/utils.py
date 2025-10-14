@@ -370,6 +370,42 @@ def send_candidature_not_finalized_to_candidats(request, application_setup, list
     return mail_sent
 
 
+def send_candidature_not_finalized_to_candidats_after_date_end(request, application_setup, list_candidats):
+
+    # set locale  interviews date
+    application_end = {"fr": "", "en": ""}
+    # having name of day/month in rigth language
+    setLocale("fr_FR.utf8")
+    tz = pytz.timezone("Europe/Paris")
+    candidature_date_end = application_setup.candidature_date_end.astimezone(tz)
+
+    application_end["fr"] = "{0} à {1}".format(
+        candidature_date_end.strftime("%A %d %B %Y"), candidature_date_end.strftime("%Hh%M")
+    )
+    setLocale("en_US.utf8")
+    application_end["en"] = candidature_date_end.strftime("on %A %d %B %Y, %-I %P (Paris time)")
+    # Send email : NOT SELECTED
+    msg_plain = render_to_string(
+        "emails/send_candidature_not_finalized_to_candidat_after_date_end.txt", {"application_end": application_end}
+    )
+    msg_html = render_to_string(
+        "emails/send_candidature_not_finalized_to_candidat_after_date_end.html", {"application_end": application_end}
+    )
+    mail = EmailMultiAlternatives(
+        "",
+        msg_plain,
+        settings.FROM_EMAIL,
+        [
+            "selection@lefresnoy.net",
+        ],
+        bcc=list_candidats,  # bcc
+        reply_to=["selection@lefresnoy.net"],
+    )
+    mail.attach_alternative(msg_html, "text/html")
+    mail_sent = mail.send()
+    return mail_sent
+
+
 def candidature_close(campaign=None, one_hour_grace=True):
     """
     Test if a candidature is closed
