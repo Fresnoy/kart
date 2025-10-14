@@ -37,7 +37,7 @@ def order(artists, orderby):
                 art = x.alphabetical_order
             elif x.nickname != "":
                 art = x.nickname
-            elif x.user.profile.preferred_last_name != "":
+            elif hasattr(x.user, 'profile') and x.user.profile.preferred_last_name:
                 art = x.user.profile.preferred_last_name
             else:
                 art = x.user.last_name
@@ -418,8 +418,10 @@ class Query(graphene.ObjectType):
         users = get_user_model().objects.all()
         name = kwargs.get('name')
         if name:
-            users = users.annotate(name=Concat(F('first_name'), Value(' '), F('last_name')))\
-                         .filter(Q(artist__nickname__icontains=name) | Q(name__icontains=name))
+            users = users.annotate(name=Concat(F('first_name'), Value(' '), F('last_name'),
+                                               Value(' '), F('profile__preferred_first_name'),
+                                               Value(' '), F('profile__preferred_last_name')))\
+                         .filter(Q(artist__nickname__unaccent__icontains=name) | Q(name__unaccent__icontains=name))
         return users
 
     def resolve_user(root, info, **kwargs):
@@ -442,7 +444,9 @@ class Query(graphene.ObjectType):
         artists = Artist.objects.all()
         if name != "" and name is not None:
             # Item.objects.filter(Q(creator=owner) | Q(moderated=False))
-            artists = Artist.objects.annotate(name=Concat(F('user__first_name'), Value(' '), F('user__last_name')))\
+            artists = Artist.objects.annotate(name=Concat(F('user__first_name'), Value(' '), F('user__last_name'),
+                                                          Value(' '), F('user__profile__preferred_first_name'),
+                                                          Value(' '), F('user__profile__preferred_last_name')))\
                                     .filter(Q(nickname__unaccent__icontains=name) |
                                             Q(user__first_name__unaccent__icontains=name) |
                                             Q(user__last_name__unaccent__icontains=name) |

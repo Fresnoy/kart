@@ -17,6 +17,8 @@ class ArtistAdmin(admin.ModelAdmin):
     search_fields = [
         'user__first_name',
         'user__last_name',
+        'user__profile__preferred_last_name',
+        'user__profile__preferred_first_name',
         'nickname',
     ]
     # filter_horizontal = ('websites', 'collectives')
@@ -43,11 +45,12 @@ class ArtistAdmin(admin.ModelAdmin):
 
     def nick(self, obj):
         # user can be None
+        print(obj.user)
         if obj.user:
             if obj.nickname != "":
-                return "{} ({} {})".format(obj.nickname, obj.user.first_name, obj.user.last_name)
+                return "{} ({})".format(obj.nickname, obj.user.__str__())
             else:
-                return "{} {}".format(obj.user.first_name, obj.user.last_name)
+                return "{}".format(obj.user.__str__())
         # User None
         if obj.nickname != "":
             return obj.nickname
@@ -81,7 +84,10 @@ class FresnoyProfileAdmin(UserAdmin):
     """Admin for Use and additionnal profile fields."""
 
     inlines = (FresnoyProfileInline,)
-    list_display = ('username', 'first_name', 'last_name', 'email', 'is_staff')
+    list_display = ('username', 'first_name', 'last_name', 'preferred_name', 'email', 'is_staff',)
+    ordering = ('first_name', 'last_name', 'profile__preferred_first_name')
+    search_fields = ('username', 'first_name', 'last_name', 'email', 'profile__preferred_first_name',
+                     'profile__preferred_last_name')
     add_form = UserCreateForm
     add_fieldsets = (
         (
@@ -91,7 +97,15 @@ class FresnoyProfileAdmin(UserAdmin):
             },
         ),
     )
-    ordering = ('first_name',)
+
+    def preferred_name(self, obj):
+        if hasattr(obj, 'profile') and (obj.profile.preferred_first_name or obj.profile.preferred_last_name):
+            return "{} {}".format(obj.profile.preferred_first_name, obj.profile.preferred_last_name)
+        return ""
+    # describe 'preferred_name'
+    preferred_name.short_description = 'Nom d\'usage'
+    # order by preferred first name
+    preferred_name.admin_order_field = 'profile__preferred_first_name'
 
 
 class StaffAdmin(GuardedModelAdmin):
@@ -119,6 +133,13 @@ class OrganizationAdmin(GuardedModelAdmin):
 
 
 def user_unicode(self):
+    if hasattr(self, 'profile') and (
+                self.profile.preferred_first_name or self.profile.preferred_last_name
+            ):
+        return '{0} {1}'.format(
+            self.profile.preferred_first_name.title(),
+            self.profile.preferred_last_name.title()
+        )
     return '{0} {1}'.format(self.first_name.title(), self.last_name.title())
 
 

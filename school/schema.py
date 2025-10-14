@@ -35,7 +35,7 @@ def order(students, orderby):
                 art = x.artist.nickname
             else:
                 if x.artist.user is not None:
-                    if x.artist.user.profile.preferred_last_name != "":
+                    if x.artist.user.profile.preferred_last_name:
                         art = x.artist.user.profile.preferred_last_name
                     art = x.artist.user.last_name
                 else:
@@ -130,8 +130,8 @@ class StudentEmbeddedInterface(graphene.Interface):
             return parent.artist.nickname
         if parent.artist.user is not None:
             if (
-                parent.artist.user.profile.preferred_first_name != ""
-                or parent.artist.user.profile.preferred_last_name != ""
+                parent.artist.user.profile.preferred_first_name
+                or parent.artist.user.profile.preferred_last_name
             ):
                 return f"{parent.artist.user.profile.preferred_first_name} \
                      {parent.artist.user.profile.preferred_last_name}"
