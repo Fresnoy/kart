@@ -236,7 +236,7 @@ class Command(BaseCommand):
             "homeland_town",
             "homeland_phone",
         ]
-        if not sa.artist or not sa.artist.user or not sa.artist.user.profile:
+        if not hasattr(sa, "artist") or not hasattr(sa.artist, "user") or not hasattr(sa.artist.user, "profile"):
             return a
 
         for field in user_fields_infos:
