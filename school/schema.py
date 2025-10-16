@@ -35,6 +35,8 @@ def order(students, orderby):
                 art = x.artist.nickname
             else:
                 if x.artist.user is not None:
+                    if x.artist.user.profile.preferred_last_name:
+                        art = x.artist.user.profile.preferred_last_name
                     art = x.artist.user.last_name
                 else:
                     art = x.artist.nickname
@@ -63,6 +65,9 @@ class StudentType(DjangoObjectType):
         if parent.artist.nickname:
             return parent.artist.nickname
         if parent.artist.user is not None:
+            if parent.artist.user.profile.preferred_first_name or parent.artist.user.profile.preferred_last_name:
+                return f"{parent.artist.user.profile.preferred_first_name} \
+                    {parent.artist.user.profile.preferred_last_name}"
             return f"{parent.artist.user.first_name} {parent.artist.user.last_name}"
         else:
             return ""
@@ -124,6 +129,12 @@ class StudentEmbeddedInterface(graphene.Interface):
         if parent.artist.nickname:
             return parent.artist.nickname
         if parent.artist.user is not None:
+            if (
+                parent.artist.user.profile.preferred_first_name
+                or parent.artist.user.profile.preferred_last_name
+            ):
+                return f"{parent.artist.user.profile.preferred_first_name} \
+                     {parent.artist.user.profile.preferred_last_name}"
             return f"{parent.artist.user.first_name} {parent.artist.user.last_name}"
         else:
             parent.artist.nickname
@@ -165,6 +176,9 @@ class TeachingArtistType(DjangoObjectType):
         if parent.artist.nickname:
             return parent.artist.nickname
         elif parent.artist.user is not None:
+            if parent.artist.user.profile.preferred_first_name or parent.artist.user.profile.preferred_last_name:
+                return f"{parent.artist.user.profile.preferred_first_name} \
+                     {parent.artist.user.profile.preferred_last_name}"
             return f"{parent.artist.user.first_name} {parent.artist.user.last_name}"
         else:
             return "???"
@@ -302,7 +316,9 @@ class Query(graphene.ObjectType):
     visitingStudents = graphene.List(VisitingStudentType)
 
     studentApplication = graphene.Field(StudentApplicationType, id=graphene.Int())
-    studentApplications = graphene.List(StudentApplicationType)
+    studentApplications = graphene.List(
+        StudentApplicationType,
+    )
 
     # Setup can be filtered by id or by current_setup
     studentApplicationSetup = graphene.Field(

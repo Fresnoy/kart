@@ -297,8 +297,8 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
         (and write some db info like pasts applications for user)
         """
         user = self.request.user
-        # first of all test current campaign
-        if candidature_close() and not user.is_staff:
+        # first of all test current campaign (not one hour graced for create)
+        if candidature_close(one_hour_grace=False) and not user.is_staff:
             errors = {"candidature": "expired"}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
         campaign = StudentApplicationSetup.objects.filter(is_current_setup=True).first()
@@ -351,7 +351,7 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
             errors = {"Error": "Must update one info at once"}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
         # candidate can't update candidature when expired, admin can !
-        if candidature_close() and not user.is_staff:
+        if candidature_close(one_hour_grace=True) and not user.is_staff:
             errors = {"candidature": "expired"}
             return Response(errors, status=status.HTTP_403_FORBIDDEN)
 

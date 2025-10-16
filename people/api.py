@@ -27,6 +27,8 @@ class UserResource(ModelResource):
 
     def dehydrate(self, bundle):
         if hasattr(bundle.obj, 'profile'):
+            bundle.data['preffered_first_name'] = bundle.obj.profile.preferred_first_name
+            bundle.data['preffered_last_name'] = bundle.obj.profile.preferred_last_name
             bundle.data['photo'] = bundle.obj.profile.photo
             bundle.data['birthdate'] = bundle.obj.profile.birthdate
             bundle.data['birthplace'] = bundle.obj.profile.birthplace

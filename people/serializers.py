@@ -14,6 +14,8 @@ class FresnoyProfileSerializer(serializers.ModelSerializer):
         # exclude = ('user',)
         fields = (
             "id",
+            "preferred_first_name",
+            "preferred_last_name",
             "photo",
             "gender",
             "cursus",

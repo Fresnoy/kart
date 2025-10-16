@@ -4,6 +4,7 @@ import graphene
 
 from kart.schema import Query
 
+from people.tests.factories import FresnoyProfileFactory
 from school.tests.factories import (
     ArtistFactory,
     StudentFactory,
@@ -11,6 +12,7 @@ from school.tests.factories import (
     ScienceStudentFactory,
     VisitingStudentFactory
 )
+from utils.tests.factories import UserFactory
 
 
 class TestGQLQueries(TestCase):
@@ -58,8 +60,29 @@ class TestGQLQueries(TestCase):
         # Check that we have 1 artists in the result
         self.assertEqual(len(result.data['artists']), 1)
 
+    def test_query_specific_artist_displayName(self):
+        # test a user that have an first name different thant preferred first_name thant artistic name
+        user = UserFactory(first_name="Jonathan", last_name="Doebelin")
+        FresnoyProfileFactory(user=user, preferred_first_name="John", preferred_last_name="Doe")
+        ArtistFactory(id="1", user=user, nickname="")
+        ArtistFactory(id="2", user=user, nickname="JD")
+
+        query = 'query FetchArtists {\
+                    artists {\
+                        id\
+                        displayName\
+                        artistPhoto\
+                    }\
+                }'
+
+        schema = graphene.Schema(query=Query)
+        result = schema.execute(query)
+
+        assert result.data['artists'][0]['displayName'] == "John Doe"
+        assert result.data['artists'][1]['displayName'] == "JD"
+
     def test_query_specific_artists(self):
-        ArtistFactory(id="1", nickname="John Doe", artist_photo="jdoe.jpg")
+        ArtistFactory(id="1", nickname="John Doe", artist_photo="jdoe.jpg",)
 
         query = 'query FetchArtists {\
                     artists {\

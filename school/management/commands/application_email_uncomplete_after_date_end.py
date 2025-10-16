@@ -1,10 +1,10 @@
 # -*- encoding: utf-8 -*-
 from django.core.management.base import BaseCommand
 
-from school.utils import candidature_close, send_candidature_not_finalized_to_candidats
+from school.utils import candidature_close, send_candidature_not_finalized_to_candidats_after_date_end
 from school.models import StudentApplication, StudentApplicationSetup
 
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 # Can us with crontab
 # example : run every day at 15h00
@@ -13,7 +13,7 @@ from datetime import datetime, date
 
 
 class Command(BaseCommand):
-    help = "Sends a reminder email to users who have not completed their application"
+    help = "Sends an email to candidates who have not completed their application after the end date"
 
     def add_arguments(self, parser):
         # Args
@@ -21,7 +21,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--automatic_reminder",
             action="store_true",
-            help="Work with application_reminder_email_date Field for current campaign",
+            help="Send email one week after the end date for current campaign",
         )
 
     def handle(self, *args, **options):
@@ -34,9 +34,9 @@ class Command(BaseCommand):
             print("{}".format(datetime.now()))
 
         # is the campaign open
-        candidatures_open = not candidature_close()
-        if not candidatures_open:
-            print("Campaign is not open")
+        candidatures_close = candidature_close()
+        if not candidatures_close:
+            print("Campaign is open")
             return False
 
         # get the current campaign
@@ -45,13 +45,11 @@ class Command(BaseCommand):
             print("Campaign not found")
             return False
 
-        # is one of the automatic send day (compare dates with != no 'is not')
-        if automatic_reminder and campaign.application_reminder_email_date != date.today() \
-           and campaign.application_reminder_email_date_2 != date.today():
+        # is one of the automatic send day (compare dates with != no 'is not') without hours
+        if automatic_reminder and (campaign.candidature_date_end.date() + timedelta(days=7)) != date.today():
             print(
                 "{} : Ce n'est pas le jour ({}), aucun email de relance de candidature n'a été envoyé".format(
-                    date.today(), str(campaign.application_reminder_email_date) + " ou " +
-                    str(campaign.application_reminder_email_date_2)
+                    date.today(), str(campaign.candidature_date_end.date()) + " + 7 jours"
                 )
             )
             return False
@@ -77,7 +75,7 @@ class Command(BaseCommand):
             print("Aucun email n'a été envoyé")
             return
         #
-        mail_sent = send_candidature_not_finalized_to_candidats(self, campaign, list_emails)
+        mail_sent = send_candidature_not_finalized_to_candidats_after_date_end(self, campaign, list_emails)
         if mail_sent:
             print("{} Emails envoyés : {}".format(len(list_emails), list_emails))
         else:

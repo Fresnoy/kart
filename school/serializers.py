@@ -169,6 +169,7 @@ class StudentApplicationSetupSerializer(serializers.HyperlinkedModelSerializer):
             "interviews_publish_date",
             "selected_publish_date",
             "application_reminder_email_date",
+            "application_reminder_email_date_2",
             "interviews_start_date",
             "interviews_end_date",
             "is_current_setup",

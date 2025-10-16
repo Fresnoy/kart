@@ -37,6 +37,8 @@ def order(artists, orderby):
                 art = x.alphabetical_order
             elif x.nickname != "":
                 art = x.nickname
+            elif hasattr(x.user, 'profile') and x.user.profile.preferred_last_name:
+                art = x.user.profile.preferred_last_name
             else:
                 art = x.user.last_name
         else:
@@ -222,6 +224,8 @@ class ArtistEmbeddedInterface(graphene.Interface):
     def resolve_displayName(parent, info):
         if parent.artist.nickname != "":
             return parent.artist.nickname
+        if parent.artist.user.profile.preferred_first_name or parent.artist.user.profile.preferred_last_name:
+            return f"{parent.artist.user.profile.preferred_first_name} {parent.artist.user.profile.preferred_last_name}"
         else:
             return f"{parent.artist.user.first_name} {parent.artist.user.last_name}"
 
@@ -351,6 +355,8 @@ class ArtistType(UserType):
         '''Return nickname if exists, first + last name otherwise'''
         if parent.nickname != "":
             return parent.nickname
+        if parent.user.profile.preferred_first_name or parent.user.profile.preferred_last_name:
+            return f"{parent.user.profile.preferred_first_name} {parent.user.profile.preferred_last_name}"
         else:
             return f"{parent.user.first_name} {parent.user.last_name}"
 
@@ -412,8 +418,10 @@ class Query(graphene.ObjectType):
         users = get_user_model().objects.all()
         name = kwargs.get('name')
         if name:
-            users = users.annotate(name=Concat(F('first_name'), Value(' '), F('last_name')))\
-                         .filter(Q(artist__nickname__icontains=name) | Q(name__icontains=name))
+            users = users.annotate(name=Concat(F('first_name'), Value(' '), F('last_name'),
+                                               Value(' '), F('profile__preferred_first_name'),
+                                               Value(' '), F('profile__preferred_last_name')))\
+                         .filter(Q(artist__nickname__unaccent__icontains=name) | Q(name__unaccent__icontains=name))
         return users
 
     def resolve_user(root, info, **kwargs):
@@ -436,11 +444,13 @@ class Query(graphene.ObjectType):
         artists = Artist.objects.all()
         if name != "" and name is not None:
             # Item.objects.filter(Q(creator=owner) | Q(moderated=False))
-            artists = Artist.objects.annotate(name=Concat(F('user__first_name'), Value(' '), F('user__last_name')))\
-                                    .filter(Q(nickname__icontains=name) |
-                                            Q(user__first_name__icontains=name) |
-                                            Q(user__last_name__icontains=name) |
-                                            Q(name__icontains=name))
+            artists = Artist.objects.annotate(name=Concat(F('user__first_name'), Value(' '), F('user__last_name'),
+                                                          Value(' '), F('user__profile__preferred_first_name'),
+                                                          Value(' '), F('user__profile__preferred_last_name')))\
+                                    .filter(Q(nickname__unaccent__icontains=name) |
+                                            Q(user__first_name__unaccent__icontains=name) |
+                                            Q(user__last_name__unaccent__icontains=name) |
+                                            Q(name__unaccent__icontains=name))
         if isStudent:
             artists = artists.filter(student__isnull=False)
         if isTeacher:
@@ -471,10 +481,10 @@ class Query(graphene.ObjectType):
         if name != "":
             # Item.objects.filter(Q(creator=owner) | Q(moderated=False))
             artists = Artist.objects.annotate(name=Concat(F('user__first_name'), Value(' '), F('user__last_name')))\
-                                    .filter(Q(nickname__icontains=name) |
-                                            Q(user__first_name__icontains=name) |
-                                            Q(user__last_name__icontains=name) |
-                                            Q(name__icontains=name))
+                                    .filter(Q(nickname__unaccent__icontains=name) |
+                                            Q(user__first_name__unaccent__icontains=name) |
+                                            Q(user__last_name__unaccent__icontains=name) |
+                                            Q(name__unaccent__icontains=name))
         if isStudent:
             artists = artists.filter(student__isnull=False)
         if isTeacher:

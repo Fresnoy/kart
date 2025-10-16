@@ -450,9 +450,9 @@ class Query(graphene.ObjectType):
 
         if title:
             artworks = artworks.filter(
-                Q(title__icontains=title) |
-                Q(former_title__icontains=title) |
-                Q(subtitle__icontains=title)
+                Q(title__unaccent__icontains=title) |
+                Q(former_title__unaccent__icontains=title) |
+                Q(subtitle__unaccent__icontains=title)
             )
         if hasKeywordName and hasKeywordName[0] != "":
             artworks = artworks.filter(
@@ -486,9 +486,9 @@ class Query(graphene.ObjectType):
 
         title = kwargs.get('title')
         if title:
-            return Artwork.objects.filter(Q(title__icontains=title) |
-                                          Q(former_title__icontains=title) |
-                                          Q(subtitle__icontains=title))
+            return Artwork.objects.filter(Q(title__unaccent__icontains=title) |
+                                          Q(former_title__unaccent__icontains=title) |
+                                          Q(subtitle__unaccent__icontains=title))
 
         if hasKeywordName and hasKeywordName[0] != "":
             artworks_pagination = artworks_pagination.filter(
@@ -549,13 +549,13 @@ class Query(graphene.ObjectType):
                 )
         if eventPlaceStartWith:
             return Diffusion.objects.filter(
-                place__name__istartswith=eventPlaceStartWith,
+                place__name__unaccent__istartswith=eventPlaceStartWith,
                 ) | Diffusion.objects.filter(
-                place__city__istartswith=eventPlaceStartWith,
+                place__city__unaccent__istartswith=eventPlaceStartWith,
                 ) | Diffusion.objects.filter(
-                place__country__iexact=eventPlaceStartWith,
+                place__country__unaccent__iexact=eventPlaceStartWith,
                 ) | Diffusion.objects.filter(
-                place__country__iname=eventPlaceStartWith,
+                place__country__unaccent__iname=eventPlaceStartWith,
                 )
         return Event.objects.all()
 

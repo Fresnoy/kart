@@ -24,6 +24,10 @@ class FresnoyProfile(models.Model):
     )
 
     user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
+
+    preferred_first_name = models.CharField(max_length=150, blank=True, null=True, verbose_name="Prénom d'usage")
+    preferred_last_name = models.CharField(max_length=150, blank=True, null=True, verbose_name="Nom d'usage")
+
     photo = models.ImageField(upload_to=make_filepath, blank=True, null=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
 
@@ -51,8 +55,7 @@ class FresnoyProfile(models.Model):
     residence_phone = models.CharField(max_length=50, blank=True)
 
     social_insurance_number = models.CharField(max_length=50, blank=True)
-    family_status = models.CharField(max_length=50,
-                                     null=True, blank=True)
+    family_status = models.CharField(max_length=50, null=True, blank=True)
 
     mother_tongue = LanguageField(max_length=8, blank=True, null=True)
     other_language = models.CharField(max_length=24, null=True, blank=True)
@@ -81,23 +84,25 @@ class Artist(models.Model):
             models.CheckConstraint(
                 name="Artist or collective should be named",
                 check=(
-                    Q(Q(user__isnull=True) & ~Q(nickname__exact="")) |
-                    Q(~Q(user__isnull=True) & ~Q(nickname__exact="")) |
-                    Q(~Q(user__isnull=True) & Q(nickname__exact=""))
-                    )
+                    Q(Q(user__isnull=True) & ~Q(nickname__exact=""))
+                    | Q(~Q(user__isnull=True) & ~Q(nickname__exact=""))
+                    | Q(~Q(user__isnull=True) & Q(nickname__exact=""))
                 ),
+            ),
         ]
 
     # Artist has user, collectifs has no user
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     # Artist join a collective
     # symmetrical=False : beacause related_name has no effect on ManyToManyField with a symmetrical relationship
-    collectives = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='members',
-                                         help_text="Member of collectives")
+    collectives = models.ManyToManyField(
+        'self', blank=True, symmetrical=False, related_name='members', help_text="Member of collectives"
+    )
 
     nickname = models.CharField(max_length=255, blank=True)
-    alphabetical_order = models.CharField(max_length=3, blank=True,
-                                          help_text="Never displayed, discern first/last user-name and nickname")
+    alphabetical_order = models.CharField(
+        max_length=3, blank=True, help_text="Never displayed, discern first/last user-name and nickname"
+    )
 
     artist_photo = models.ImageField(upload_to=make_filepath, blank=True, null=True)
     artist_photo_copyright = models.CharField(max_length=255, blank=True)
@@ -122,6 +127,10 @@ class Artist(models.Model):
         if self.nickname != "":
             return '{}'.format(self.nickname)
         if self.user:
+            if hasattr(self.user, 'profile') and (
+                self.user.profile.preferred_first_name or self.user.profile.preferred_last_name
+            ):
+                return '{} {}'.format(self.user.profile.preferred_first_name, self.user.profile.preferred_last_name)
             return '{} {}'.format(self.user.first_name, self.user.last_name)
         return "???"
 
@@ -130,15 +139,19 @@ class Staff(models.Model):
     """
     Someone working at Le Fresnoy (insider) or for a production
     """
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     updated_on = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         # display artist name if any
-        if (self.user.artist_set.count() > 0 and
-                self.user.artist_set.all().first().nickname != ''):
-            return "{} ({})".format(self.user.artist_set.all().first().__str__(), self.user)
-
+        if self.user.artist_set.count() > 0 and self.user.artist_set.all().first().nickname != '':
+            return "{}".format(self.user.artist_set.all().first().__str__())
+        # preferred name
+        if hasattr(self.user, 'profile') and (
+            self.user.profile.preferred_first_name or self.user.profile.preferred_last_name
+        ):
+            return '{} {}'.format(self.user.profile.preferred_first_name, self.user.profile.preferred_last_name)
         return '{0}'.format(self.user)
 
     class Meta:
@@ -149,6 +162,7 @@ class Organization(models.Model):
     """
     An organisation
     """
+
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     picture = models.ImageField(upload_to=make_filepath, blank=True)
