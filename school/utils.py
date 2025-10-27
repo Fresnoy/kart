@@ -59,7 +59,7 @@ def send_account_information_email(user):
         {"user": user, "recover_password_url": recover_password_url, "authentification_url": authentification_url},
     )
     mail_sent = send_mail(
-        "Résumé de votre compte / Account information",
+        "Données d'identification de votre compte / Account information",
         msg_plain,
         settings.FROM_EMAIL,
         [user.email],
@@ -79,7 +79,7 @@ def send_candidature_completed_email_to_user(request, application_admin):
         "emails/send_candidature_completed_to_user.html", {"name": name, "application": application_admin.application}
     )
     mail_sent = send_mail(
-        "Réception de votre candidature / Application Received",
+        "Accusé réception / Application Received",
         msg_plain,
         settings.FROM_EMAIL,
         [artist.user.email],
@@ -156,7 +156,7 @@ def send_candidature_complete_email_to_candidat(request, application_admin):
         },
     )
     mail_sent = send_mail(
-        "Votre candidature est complète / Candidature is complete",
+        "Validation de votre candidature / Validation of your application",
         msg_plain,
         settings.FROM_EMAIL,
         [artist.user.email],
@@ -200,7 +200,7 @@ def send_interview_selection_email_to_candidat(request, application_admin):
         },
     )
     mail_sent = send_mail(
-        "Candidature présélectionnée / Shortlisted application",
+        "Résultats de la présélection / Shortlisted results",
         msg_plain,
         settings.FROM_EMAIL,
         [artist.user.email],
@@ -218,7 +218,7 @@ def send_interview_selection_on_waitlist_email_to_candidat(request, application_
     # having name of day/month in rigth language
     setLocale("fr_FR.utf8")
     setup = application_admin.application.campaign
-    interviews_dates["fr"] = "entre le {0} au {1}".format(
+    interviews_dates["fr"] = "entre le {0} et le {1}".format(
         setup.interviews_start_date.strftime("%A %d %B"), setup.interviews_end_date.strftime("%A %d %B %Y")
     )
     setLocale("en_US.utf8")
@@ -235,7 +235,7 @@ def send_interview_selection_on_waitlist_email_to_candidat(request, application_
         "emails/send_on_waitlist_for_interview_to_candidat.html",
         {"application_admin": application_admin, "name": name, "interviews_dates": interviews_dates},
     )
-    subject = "Candidature en liste d'attente pour l'entretien / Application on waiting list for interview"
+    subject = "Résultats de la présélection / Shortlisted results"
     mail_sent = send_mail(
         subject,
         msg_plain,
@@ -262,7 +262,7 @@ def send_selected_candidature_email_to_candidat(request, application_admin):
             "name": name,
         },
     )
-    subject = "Candidature Sélectionnée / Application selected"
+    subject = "Résultats de la sélection / Selection results"
 
     mail_sent = send_mail(
         subject,
@@ -292,7 +292,7 @@ def send_selected_on_waitlist_candidature_email_to_candidat(request, application
             "name": name,
         },
     )
-    subject = "Candidature en liste d'attente / Application on waiting list"
+    subject = "Résultats de la sélection / Selection results"
 
     mail_sent = send_mail(
         subject,
@@ -322,7 +322,7 @@ def send_not_selected_candidature_email_to_candidat(request, application_admin):
             "name": name,
         },
     )
-    subject = "Candidature non sélectionée / Application not selected"
+    subject = "Résultats de la sélection / Selection results"
 
     mail_sent = send_mail(
         subject,
@@ -356,7 +356,7 @@ def send_candidature_not_finalized_to_candidats(request, application_setup, list
         "emails/send_candidature_not_finalized_to_candidat.html", {"application_end": application_end}
     )
     mail = EmailMultiAlternatives(
-        "Finalisez votre candidature / Finalize your application ",
+        "Encore quelques semaines pour candidater / Only a few weeks left to apply",
         msg_plain,
         settings.FROM_EMAIL,
         [

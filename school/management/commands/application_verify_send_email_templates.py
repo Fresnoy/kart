@@ -91,14 +91,27 @@ class Command(BaseCommand):
         print("send_interview_selection_on_waitlist_email_to_candidat")
         send_interview_selection_on_waitlist_email_to_candidat(request=request, application_admin=application_admin)
 
+        #  ITW waitlist second position
+        application_admin.position_in_interview_waitlist = 2
+
+        print("send_interview_selection_on_waitlist_email_to_candidat")
+        send_interview_selection_on_waitlist_email_to_candidat(request=request, application_admin=application_admin)
+
         # selected
         application_admin.selected = True
+
         print("send_selected_candidature_email_to_candidat")
         send_selected_candidature_email_to_candidat(request=request, application_admin=application_admin)
 
         # selected waiting
         application_admin.wait_listed = True
         application_admin.position_in_waitlist = 1
+
+        print("send_selected_on_waitlist_candidature_email_to_candidat")
+        send_selected_on_waitlist_candidature_email_to_candidat(request=request, application_admin=application_admin)
+
+        # selected waiting second position
+        application_admin.position_in_waitlist = 2
 
         print("send_selected_on_waitlist_candidature_email_to_candidat")
         send_selected_on_waitlist_candidature_email_to_candidat(request=request, application_admin=application_admin)
