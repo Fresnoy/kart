@@ -70,9 +70,10 @@ class Command(BaseCommand):
 
         for index, row in df.iterrows():
             event_title = row.get("event__title")
-            event_start_date = row.get("event__starting_date")
             
+            event_start_date = row.get("event__starting_date")
             event_end_date = row.get("event__ending_date")
+
             event_type = row.get("event__type")
 
             event = get_or_create_event(
