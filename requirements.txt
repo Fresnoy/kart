@@ -1,12 +1,12 @@
-Django==5.1.12
-django-allauth==65.11.2
+Django==5.1.15
+django-allauth==65.13.1
 django-allauth[socialaccount]
 django-cleanup==9.0.0
 django-cors-headers==4.9.0
-django-countries==7.6.1
+django-countries==8.2.0
 django-extensions==4.1
 django-filter==25.1
-django-grappelli==4.0.2
+django-grappelli==4.0.3
 django-guardian==3.2.0
 django-haystack==3.3.0
 # django-language-field==0.0.3
@@ -17,7 +17,7 @@ django-markdown==0.8.4
 django-markdownx==4.0.9
 django-multiselectfield==1.0.1
 django-pagedown==2.2.1
-django-polymorphic==4.1.0
+django-polymorphic==4.6.0
 # dj-rest-auth==7.0.1
 git+https://github.com/iMerica/dj-rest-auth.git@refs/pull/686/head
 django-rest-polymorphic==0.1.10
@@ -31,18 +31,18 @@ djangorestframework==3.15.2
 djangorestframework-simplejwt==5.5.1
 drf-jwt==1.19.2
 # drf-haystack==1.8.13
-git+https://github.com/rhblind/drf-haystack.git
+git+https://github.com/ulgens/drf-haystack.git
 elasticsearch==7.15.1
 geopy==2.4.1
-Pillow==11.3.0
+Pillow==12.1.0
 pytz==2022.2.1
-psycopg2==2.9.10
+psycopg2==2.9.11
 pyjwt==2.10.1
 # tools
 unidecode==1.4.0
-markdownify==1.1.0
+markdownify==1.2.2
 langdetect==1.0.9
-pandas==2.3.2
+pandas==2.3.3
 # Graphene
 graphene-django==3.2.3
 django-graphql-jwt==0.4.0
