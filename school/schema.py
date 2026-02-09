@@ -261,9 +261,10 @@ class StudentApplicationType(DjangoObjectType):
     class Meta:
         model = StudentApplication
         filterset_fields = ("campaign__is_current_setup",)
-        # interfaces = (ArtistEmbeddedInterface,)
+        interfaces = (ArtistEmbeddedInterface,)
 
     id = graphene.ID(required=True, source="pk")
+    
 
 
 class StudentApplicationAdminInterface(graphene.Interface):

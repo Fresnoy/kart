@@ -211,7 +211,10 @@ class AdminStudentApplicationViewSet(viewsets.ModelViewSet):
         """
         Update by staff user only, see permissions
         """
-        admin_app = self.get_object()
+        serializer = self.get_serializer(self.get_object(), data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+
+        admin_app = serializer.save()
 
         # send email to candidat when candidature is complete (admin valid infos)
         if request.data.get("application_complete"):
