@@ -75,7 +75,7 @@ class StudentType(DjangoObjectType):
     def resolve_photo(parent, info):
         if parent.artist.artist_photo:
             return parent.artist.artist_photo
-        if hasattr(parent.artist.user, 'profile'):
+        if hasattr(parent.artist.user, "profile"):
             return parent.artist.user.profile.photo if parent.artist.user.profile.photo else ""
         return ""
 
@@ -129,10 +129,7 @@ class StudentEmbeddedInterface(graphene.Interface):
         if parent.artist.nickname:
             return parent.artist.nickname
         if parent.artist.user is not None:
-            if (
-                parent.artist.user.profile.preferred_first_name
-                or parent.artist.user.profile.preferred_last_name
-            ):
+            if parent.artist.user.profile.preferred_first_name or parent.artist.user.profile.preferred_last_name:
                 return f"{parent.artist.user.profile.preferred_first_name} \
                      {parent.artist.user.profile.preferred_last_name}"
             return f"{parent.artist.user.first_name} {parent.artist.user.last_name}"
@@ -264,7 +261,6 @@ class StudentApplicationType(DjangoObjectType):
         interfaces = (ArtistEmbeddedInterface,)
 
     id = graphene.ID(required=True, source="pk")
-    
 
 
 class StudentApplicationAdminInterface(graphene.Interface):
@@ -323,7 +319,9 @@ class Query(graphene.ObjectType):
 
     # Setup can be filtered by id or by current_setup
     studentApplicationSetup = graphene.Field(
-        StudentApplicationSetupType, id=graphene.Int(), is_current_setup=graphene.Boolean(required=False)
+        StudentApplicationSetupType,
+        id=graphene.Int(),
+        is_current_setup=graphene.Boolean(required=False),
     )
     studentApplicationSetups = graphene.List(StudentApplicationSetupType)
 
