@@ -186,8 +186,15 @@ class AdminStudentApplicationViewSet(viewsets.ModelViewSet):
     queryset = AdminStudentApplication.objects.all()
     serializer_class = AdminStudentApplicationSerializer
     permission_classes = (permissions.IsAdminUser,)
-    filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter)
-    search_fields = ("=application__artist__user__username", "application__artist__user__last_name")
+    filter_backends = (
+        filters.SearchFilter,
+        DjangoFilterBackend,
+        filters.OrderingFilter,
+    )
+    search_fields = (
+        "=application__artist__user__username",
+        "application__artist__user__last_name",
+    )
     filterset_fields = (
         "application__application_completed",
         "application_complete",
@@ -211,7 +218,10 @@ class AdminStudentApplicationViewSet(viewsets.ModelViewSet):
         """
         Update by staff user only, see permissions
         """
-        admin_app = self.get_object()
+        serializer = self.get_serializer(self.get_object(), data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+
+        admin_app = serializer.save()
 
         # send email to candidat when candidature is complete (admin valid infos)
         if request.data.get("application_complete"):
@@ -245,9 +255,16 @@ class StudentApplicationViewSet(viewsets.ModelViewSet):
     queryset = StudentApplication.objects.all()
     # serializer_class = StudentApplicationSerializer
     permission_classes = (permissions.DjangoModelPermissionsOrAnonReadOnly,)
-    filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter)
-    search_fields = ("=artist__user__username", "artist__user__last_name", 
-                     "artist__user__profile__preferred_last_name",)
+    filter_backends = (
+        filters.SearchFilter,
+        DjangoFilterBackend,
+        filters.OrderingFilter,
+    )
+    search_fields = (
+        "=artist__user__username",
+        "artist__user__last_name",
+        "artist__user__profile__preferred_last_name",
+    )
     filterset_fields = (
         "application_completed",
         "remote_interview",
@@ -453,7 +470,11 @@ def user_activate(request, uidb64, token):
         if user.is_active:
             activation_already_ok = render_to_string(
                 "emails/account/activation_already_ok.html",
-                {"username": user.username, "email": user.email, "link_change_password": change_password_link},
+                {
+                    "username": user.username,
+                    "email": user.email,
+                    "link_change_password": change_password_link,
+                },
             )
             return HttpResponse(activation_already_ok)
 
