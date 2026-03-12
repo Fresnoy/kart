@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-import locale
 import pytz
 
 from django.conf import settings
 from django.urls import reverse
-from django.utils import timezone, translation, formats
+from django.utils import timezone, translation
 
 from django.utils.http import int_to_base36
 from django.contrib.auth.tokens import default_token_generator

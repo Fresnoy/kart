@@ -346,6 +346,7 @@ class ArtistType(UserType):
     twitterAccount = graphene.String(resolver=DynNameResolver())
     facebookProfile = graphene.String(resolver=DynNameResolver())
     websites = graphene.List(WebsiteType, resolver=DynNameResolver())
+    teacher = graphene.Field('school.schema.TeachingArtistType')
 
     # Display Name
     displayName = graphene.String()
@@ -368,8 +369,10 @@ class ArtistType(UserType):
             return parent.user.profile.photo if parent.user.profile.photo else ""
         return ""
 
-    teacher = graphene.Field('school.schema.TeachingArtistType')
-
+    # def resolve_collectives(parent, info):
+    #     artists = Artist.objects.filter(id__in=parent.collectives)
+    #     print (parent.collectives)
+    #     return artists
 
 # Dedicated to pagination, copy some elements in order to separate logic
 class ArtistPagination(django_filters.FilterSet):
