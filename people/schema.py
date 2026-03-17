@@ -374,6 +374,7 @@ class ArtistType(UserType):
     #     print (parent.collectives)
     #     return artists
 
+
 # Dedicated to pagination, copy some elements in order to separate logic
 class ArtistPagination(django_filters.FilterSet):
     class Meta:
