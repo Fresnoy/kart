@@ -29,6 +29,7 @@ class StudentResource(ArtistResource):
         queryset = Student.objects.all()
         resource_name = "school/student"
         ordering = [
+            "artist",
             "user",
         ]
         filtering = {
