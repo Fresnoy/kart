@@ -49,7 +49,7 @@ class FresnoyProfile(models.Model):
     residence_address = models.TextField(blank=True)
     residence_zipcode = models.CharField(max_length=10, blank=True)
     residence_town = models.CharField(max_length=50, blank=True)
-    residence_country = CountryField(default="", blank=True)
+    residence_country = CountryField(default="", blank=True, null=True)
 
     homeland_phone = models.CharField(max_length=50, blank=True)
     residence_phone = models.CharField(max_length=50, blank=True)
